@@ -16,7 +16,7 @@ int ode_num_jac(struct state_struct *state,
 		int64_t *nfcalls /* scalar returned */) {
   /*
     Called by: ode23tb
-    Calls:     num_jac_col, sqrt, pow, abs, max, min, dcopy
+    Calls:     num_jac_col, sqrt, pow, fabs, dcopy
     thresh[i] = 1.e-6;
     Looks like we need 10 temporary vectors.
 
@@ -112,7 +112,6 @@ int ode_num_jac(struct state_struct *state,
   dfdy_tmp      = (double*)&fdiff[ny];
   forward_rxn_likelihoods = (double*)&dfdy_tmp[ny];
   reverse_rxn_likelihoods = (double*)&forward_rxn_likelihoods[nrxns];
-
   
   if (first_time == 1) {
     for (j=0;j<ny;j++) {
@@ -129,9 +128,9 @@ int ode_num_jac(struct state_struct *state,
     facj = fac[j];
     threshj = thresh[j];
     /*
-    yscalej   = max (abs(yj),threshj);
+    yscalej   = max (fabs(yj),threshj);
     */
-    yscalej   = abs(yj);
+    yscalej   = fabs(yj);
     if (yscalej < threshj) {
       yscalej = threshj;
     }
@@ -152,9 +151,9 @@ int ode_num_jac(struct state_struct *state,
       }
     } /* end while (delj == 0.0 */
     if (fj >= 0.0) {
-      delj = abs(delj);
+      delj = fabs(delj);
     } else {
-      delj = - abs(delj);
+      delj = - fabs(delj);
     }
     num_jac_col(state,ny,j,y,f,&delj,threshj,
 		y_counts,fdel,fdiff,
@@ -184,6 +183,11 @@ int ode_num_jac(struct state_struct *state,
 	}
 	delj   = (yj + (tmpfac * yscalej)) - yj;
 	if ((tmpfac != facj) && (delj != 0.0)) {
+	  if (fj >= 0.0) {
+	    delj = fabs(delj);
+	  } else {
+	    delj = - fabs(delj);
+	  }
 	  num_jac_col(state,ny,j,y,f,&delj,threshj,
 		      y_counts,fdel,fdiff,
 		      forward_rxn_likelihoods,
