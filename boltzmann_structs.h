@@ -20,12 +20,13 @@ under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 specific language governing permissions and limitations under the License.
 */
-#ifndef __SSS_STRUCTS__
-#define __SSS_STRUCTS__ 1
+#ifndef __BOLTZMANN_STRUCTS__
+#define __BOLTZMANN_STRUCTS__ 1
 #ifdef TIMING_ON
 #include "djb_timing_b.h"
 #endif
 #include "state_struct.h"
 #include "rxn_struct.h"
 #include "rxn_matrix_struct.h"
+#include "istring_elem_struct.h"
 #endif
