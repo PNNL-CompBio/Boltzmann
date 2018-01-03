@@ -1,6 +1,5 @@
 #include "boltzmann_structs.h"
 
-#include "compute_flux_scaling.h"
 #include "approximate_delta_concs.h"
 /*
 #define DBG 1 
@@ -18,11 +17,8 @@ int num_jac_col(struct state_struct *state,
 		double *f,
 		double *delj_p,
 		double threshj,
-		double *y_counts,
 		double *fdel,
 		double *fdiff,
-		double *forward_rxn_likelihoods,
-		double *reverse_rxn_likelihoods,
 		double *dfdy_colj,
 		double *absfvaluerm_p,
 		double *absfdelrm_p,
@@ -40,7 +36,7 @@ int num_jac_col(struct state_struct *state,
 
     Arguments          TMF    Descriptin
     state              G*I    Boltzmann state for passing to approxmate_fluxes(f)
-    ny                 ISI    length of f, y, y_counts, fdel, fdiff, dfdy_colj
+    ny                 ISI    length of f, y, fdel, fdiff, dfdy_colj
                               vectors,
 
     j                  ISI    integer in 0:ny-1 specifying which y element
@@ -56,24 +52,12 @@ int num_jac_col(struct state_struct *state,
 
     threshj            DIS    value of thresh[j] from calling routine.
 
-    y_counts           D*B    vector of concentrations converted to counts
-                              needed by the approximate_fluxes routine,
-			      modifide but then returned to its input
-			      values by this routine.
 
     fdel               D*W    scratch vector of length ny used to compute
                               flux at ydel.
 
     fdiff              D*W    scratch vector of length ny used to compute
                               flux at ydel minus flux at y.
-
-    forward_rxn_likelihoods
-                       D*W    scratch vector of length ny used to 
-		              compute flux.
-
-    reverse_rxn_likelihoods
-                       D*W    scratch vector of length ny used to 
-		              compute flux.
 
     dfdy_colj          D*O    output vector of length ny corresponding to
                               the j'th column of dfdy.
@@ -95,7 +79,6 @@ int num_jac_col(struct state_struct *state,
   double delj;
   double y_counts_savej;
   double ydelj;
-  double flux_scaling;
   double conc_scalej;
   double absdfdy_coljk;
   double absfdiffmax;
@@ -152,7 +135,6 @@ int num_jac_col(struct state_struct *state,
     } else {
       yj = y[j];
       conc_scalej    = conc_to_count[j];
-      y_counts_savej = y_counts[j];
       ydelj          = yj + delj;
       /*
 	Now here we want to be careful, to keep y non-negativ.
@@ -167,32 +149,23 @@ int num_jac_col(struct state_struct *state,
       if (ydelj < 0.0) {
 	ydelj = 0.0;
       }
-      y_counts[j]    = ydelj * conc_scalej;
       /*
 	evalueate flux at ydelj
       */
       y[j] = ydelj;
-      flux_scaling = compute_flux_scaling(state,y);
-      approximate_delta_concs(state,y_counts,
-			      forward_rxn_likelihoods,
-			      reverse_rxn_likelihoods,
-			      fdel,flux_scaling,base_rxn, choice);
+      approximate_delta_concs(state,y,fdel,choice);
 #ifdef DBG
       if (lfp) {
-	fprintf(lfp,"num_jac_col: after call to approximate_fluxes, flux_scaling = %le\n",flux_scaling);
 	origin = 1000+j; 
 	t0 = 0.0;
 	h  = 0.0;
 	nsteps = 0;
-	print_concs_fluxes(state,ny,fdel,y,y_counts,
-			   forward_rxn_likelihoods,
-			   reverse_rxn_likelihoods,t0,h,nsteps,origin);
+	print_concs_fluxes(state,ny,fdel,y,t0,h,nsteps,origin);
       }
 #endif
       /*
-	Restore y_counts and y vector.
+	Restore y vector.
       */
-      y_counts[j]    = y_counts_savej;
       y[j]           = yj;
       if (delj != 0) {
 	recip_delj = 1.0/delj;
