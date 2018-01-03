@@ -4,6 +4,18 @@
 #include "blas.h"
 
 #include "ode_num_jac.h"
+/*
+int ode_num_jac(struct state_struct *state,
+		int    first_time, // 1 for first call, 0 otherwise. 
+		double *dfdy, // ny x ny 
+		double t,  // scalar 
+		double *y, // ny x 1 
+		double *f, // ny x 1 
+		double *fac, // ny x 1 
+		double *thresh, // ny x 1 
+		double *ode_num_jac_scratch, // 4*ny 
+		int64_t *nfcalls // scalar returned ) 
+*/
 int ode_num_jac(struct state_struct *state,
 		int    first_time, /* 1 for first call, 0 otherwise. */
 		double *dfdy, /* ny x ny */
@@ -12,7 +24,12 @@ int ode_num_jac(struct state_struct *state,
 		double *f, /* ny x 1 */
 		double *fac, /* ny x 1 */
 		double *thresh, /* ny x 1 */
-		double *ode_num_jac_scratch, /* 4*ny */
+		double *y_counts, /* ny x 1 */
+		double *fdel, /* ny x 1 */
+		double *fdiff, /* ny x 1 */
+		double *dfdy_tmp, /* ny x 1 */
+		double *forward_rxn_likelihoods, /* nrxns x 1 */
+		double *reverse_rxn_likelihoods, /* nrxns x 1 */
 		int64_t *nfcalls /* scalar returned */) {
   /*
     Called by: ode23tb
@@ -22,6 +39,7 @@ int ode_num_jac(struct state_struct *state,
 
     Variable                    TMF
     state                       G*I Uses nunique_molecles, 
+                                    number_reactions
                                     base_reaction, conc_to_count fields
 				    kf_base_reaction,
 				    base_reactants (in num_jac_col)
@@ -32,18 +50,25 @@ int ode_num_jac(struct state_struct *state,
     f                           D*I vector of fluxes,  length ny
     fac                         D*B history vector of length ny
     thresh                      D*I threshold vector, length ny
-    ode_num_jac_scratch         D*W scratch space length 4*ny + 2*nrxns
+    y_counts                    D*W scratch vector length ny
+    fdel                        D*W scratch vector length ny
+    fdiff                       D*W scratch vector length ny
+    dfdy_tmp                    D*W scratch vector length ny
+    forward_rxn_likelihoods     D*W scratch vector length nrxns
+    reverse_rxn_likelihoods     D*W scratch vector length nrxns
     *nfcalls                    PSO number of funtion calls to approximate 
                                     fluxes 
 
   */
-  double *y_counts;   /* ny x 1 */
-  double *fdiff;        /* ny x 1 */
-  double *fdel;   /* ny x 1 */
-  double *dfdy_tmp;    /* ny x 1 */
-  double *forward_rxn_likelihoods;  /* nrxns x 1 */
-  double *reverse_rxn_likelihoods; /* nrxnx x 1 */
-
+  /*
+    These vectors are nos passed in as arcuments.
+  double *y_counts;   // ny x 1 
+  double *fdiff;      // ny x 1 
+  double *fdel;       // ny x 1 
+  double *dfdy_tmp;   // ny x 1 
+  double *forward_rxn_likelihoods;  // nrxns x 1 
+  double *reverse_rxn_likelihoods; // nrxnx x 1 
+  */
   double *conc_to_count; /* from state ny x 1 */
   double *dfdy_colj;    /* pointer into dfdy matrix, not allocated ny x 1 */
 
@@ -72,6 +97,7 @@ int ode_num_jac(struct state_struct *state,
   double absfdiffmax_tmp;
   double absfdelrm_tmp;
   double tmpfac;
+  double tmpval;
   double *dblptr;
   int64_t eps_hex;
   int64_t sqrt_eps_hex;
@@ -86,11 +112,7 @@ int ode_num_jac(struct state_struct *state,
   int nrxns;
 
   int rowmax;
-#ifdef DBG
   int i;
-#else
-  int padi;
-#endif
 
   FILE *lfp;
   FILE *efp;
@@ -118,12 +140,14 @@ int ode_num_jac(struct state_struct *state,
   facmax       = .1;
   nfc          = 0;
 
+  /*
   y_counts      = (double*)ode_num_jac_scratch;
   fdel          = (double*)&y_counts[ny];
   fdiff         = (double*)&fdel[ny];
   dfdy_tmp      = (double*)&fdiff[ny];
   forward_rxn_likelihoods = (double*)&dfdy_tmp[ny];
   reverse_rxn_likelihoods = (double*)&forward_rxn_likelihoods[nrxns];
+  */
   /*
 #define DBG 1
   */
