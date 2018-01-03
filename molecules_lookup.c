@@ -31,7 +31,7 @@ int molecules_lookup(char *molecule_name, int compartment_index,
     or -1 if not found.
     Called by: read_initial_concentrations.
   */
-  struct istring_elem_struct *sorted_molecules;
+  struct molecule_struct *sorted_molecules;
   char *molecules_text;
   char *molecule;
   int64_t *compartment_ptrs;
