@@ -33,18 +33,11 @@ int read_params (char *param_file_name, struct state_struct *state) {
   double rt;
   double m_r_rt;
   double m_rt;
-  double joules_per_cal;
-  double cals_per_joule;
   double ideal_gas_r;
-  double avogadro;
   double temp_kelvin;
-  double epsilon;
   double min_conc;
   double default_volume_candidate;
-  double flux_scaling;
   int64_t max_param_line_len;
-  int64_t ode_solver_choice;
-  int64_t delta_concs_choice;
   char *param_buffer;
   char *key;
   char *value;
@@ -100,6 +93,11 @@ int read_params (char *param_file_name, struct state_struct *state) {
     state->rxn_mat_file[0]     = '\0';
     state->dg0ke_file[0]       = '\0';
     state->dictionary_file[0]  = '\0';
+    state->ode_flux_file[0]    = '\0';
+    state->ode_bflux_file[0]   = '\0';
+    state->ode_lklhd_file[0]   = '\0';
+    state->net_lklhd_file[0]   = '\0';
+    state->nl_bndry_flx_file[0] = '\0';
     /*
       Following line Added by DGT on 4/18/2013
      */
@@ -138,6 +136,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
     state->record_steps        = (int64_t)1000;
     state->free_energy_format  = (int64_t)0;
     state->rxn_view_freq       = (int64_t)0;
+    state->ode_rxn_view_freq   = (int64_t)0;
     state->count_view_freq     = (int64_t)0;
     state->lklhd_view_freq     = (int64_t)0;
     state->fe_view_freq        = (int64_t)0;
