@@ -48,7 +48,7 @@ int boot_alloc4 (struct boot_state_struct *boot_state) {
   if (molecules_text == NULL) {
     success = 0;
     if (lfp) {
-      fprintf(lfp,"boot_alloc4: Error could not allocate %ld "
+      fprintf(lfp,"boot_alloc4: Error could not allocate %lld "
 	      "bytes for molecules_text\n",molecule_text_length);
       fflush(lfp);
     }
@@ -59,7 +59,7 @@ int boot_alloc4 (struct boot_state_struct *boot_state) {
     if (compartments_text == NULL) {
       success = 0;
       if (lfp) {
-    	fprintf(lfp,"boot_alloc4: Error could not allocate %ld "
+    	fprintf(lfp,"boot_alloc4: Error could not allocate %lld "
     		"bytes for compartments_text\n",compartment_text_length);
     	fflush(lfp);
       }
@@ -72,7 +72,7 @@ int boot_alloc4 (struct boot_state_struct *boot_state) {
     if (molecule_names == NULL) {
       success = 0;
       if (lfp) {
-    	fprintf(lfp,"boot_alloc4: Error could not allocate %ld "
+    	fprintf(lfp,"boot_alloc4: Error could not allocate %lld "
     		"bytes for molecule_names\n",ask_for);
     	fflush(lfp);
       }
@@ -85,7 +85,7 @@ int boot_alloc4 (struct boot_state_struct *boot_state) {
     if (compartment_names == NULL) {
       success = 0;
       if (lfp) {
-    	fprintf(lfp,"boot_alloc4: Error could not allocate %ld "
+    	fprintf(lfp,"boot_alloc4: Error could not allocate %lld "
     		"bytes for compartment_names\n",ask_for);
     	fflush(lfp);
       }
@@ -97,7 +97,7 @@ int boot_alloc4 (struct boot_state_struct *boot_state) {
     io_buff = (char *)calloc(one_l,ask_for);
     if (io_buff == NULL) {
       if (lfp) {
-	fprintf(lfp,"boot_alloc4: Unable to allocate %ld bytes for io_buff. Will try single page size.\n",ask_for);
+	fprintf(lfp,"boot_alloc4: Unable to allocate %lld bytes for io_buff. Will try single page size.\n",ask_for);
 	fflush(lfp);
       }
       boot_state->io_buff_size_in_pages = 1;
@@ -106,7 +106,7 @@ int boot_alloc4 (struct boot_state_struct *boot_state) {
       if (io_buff == NULL) {
 	success = 0;
 	if (lfp) {
-	  fprintf(lfp,"boot_alloc4: Unable to allocate %ld bytes for io_buff.\n",ask_for);
+	  fprintf(lfp,"boot_alloc4: Unable to allocate %lld bytes for io_buff.\n",ask_for);
 	  fflush(lfp);
 	}
       }
