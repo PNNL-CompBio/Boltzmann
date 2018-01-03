@@ -130,6 +130,7 @@ int read_initial_concentrations(struct state_struct *state) {
   }
   num_fixed_concs = 0;
   conc_fp = fopen(state->init_conc_file,"r");
+  min_conc     = state->min_conc;
   if (conc_fp) {
     /*
       Read the required volume line.
@@ -304,8 +305,8 @@ int read_initial_concentrations(struct state_struct *state) {
 	/*
 	volume       = compartment->volume;
 	recip_volume = compartment->recip_volume;
-	*/
 	min_conc     = compartment->count_to_conc;
+	*/
 	multiplier   = compartment->conc_to_count;
 	if (e_val <= 0.0) {
 	  /*
@@ -327,15 +328,26 @@ int read_initial_concentrations(struct state_struct *state) {
 	      for the count field stored in the counts array, where
 	      multiplier is volume * units * Avogadro's number.
 	    */
+	    /*
+	    Continuous case, we want to allow fractional counts.
+	    counts[si] = conc * multiplier;
+	    opt_count  = u_val * multiplier;
+	    exp_count  = e_val * multiplier;
+	    */
+	    /*
+	      Stochastic case, only whole molecules allowed.
+	    */
 	    counts[si] = (double)((int64_t)((conc * multiplier) + half));
 	    opt_count  = (double)((int64_t)((u_val * multiplier) + half));
 	    exp_count  = (double)((int64_t)((e_val * multiplier) + half));
+	    /*
 	    if (opt_count < 1.0) {
 	      opt_count = 1.0;
 	    }
 	    if (exp_count < 1.0) {
 	      exp_count = 1.0;
 	    }
+	    */
 	    compartment->ntotal_opt += opt_count;
 	    compartment->ntotal_exp += exp_count;
 	    kss_e_val[si] = e_val;
