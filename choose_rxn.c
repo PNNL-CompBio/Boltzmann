@@ -43,8 +43,8 @@ int choose_rxn(struct state_struct *state,
     state       G*B   Pointer to the state structure.
                       Modifies forward_rxn_likelihood and
 		               reverse_rxn_likelihood fields,
-			       future_concs
-			       bndry_flux_concs 
+			       future_counts
+			       bndry_flux_counts 
 			          (via the bndry_flux_update call)
 		      Uses number_reactions, activities,
 		           vgrng2_state
@@ -58,7 +58,7 @@ int choose_rxn(struct state_struct *state,
   double *forward_rxn_likelihood;
   double *reverse_rxn_likelihood;
   double *activities;
-  double *future_concs;
+  double *future_counts;
   double *ke;
   double dchoice;
   double scaling;
@@ -85,13 +85,13 @@ int choose_rxn(struct state_struct *state,
   forward_rxn_likelihood = state->forward_rxn_likelihood;
   reverse_rxn_likelihood = state->reverse_rxn_likelihood;
   activities             = state->activities;
-  future_concs           = state->future_concentrations;
+  future_counts          = state->future_counts;
   vgrng2_state           = state->vgrng2_state;
   number_reactions_t2    = number_reactions << 1;
   accept = 0;
   for (j=0;((j<number_reactions)&&(accept == 0));j++) {
     /*
-      Get a trial choice. This sets the future_concentrations field of 
+      Get a trial choice. This sets the future_counts field of 
       the state structure.
     */
     rxn_choice = candidate_rxn(state,&scaling,r_sum_likelihoodp);
@@ -127,7 +127,7 @@ int choose_rxn(struct state_struct *state,
       /*
     	Compute the reaction likelihood for this reaction.
       */
-      likelihood = rxn_likelihood_postselection(future_concs,
+      likelihood = rxn_likelihood_postselection(future_counts,
     						state,rxn_direction,i);
     	  
       /*
