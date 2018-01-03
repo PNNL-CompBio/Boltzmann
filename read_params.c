@@ -170,7 +170,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
     state->adjust_steady_state = (int64_t)0;
     state->print_output        = (int64_t)0;
     state->use_pseudoisomers   = (int64_t)1;
-    state->use_deltag0         = (int64_t)0;
+    state->use_dgzero          = (int64_t)0;
     state->use_metropolis      = (int64_t)1;
     state->use_regulation      = (int64_t)1;
     state->max_regs_per_rxn    = (int64_t)4;
@@ -239,8 +239,8 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	sscan_ok = sscanf(value,"%s",state->ms2js_file);
       } else if (strncmp(key,"USE_PSEUDOISOMERS",17) == 0) {
 	sscan_ok = sscanf(value,"%ld",&state->use_pseudoisomers);
-      } else if (strncmp(key,"USE_DELTAG0",11) == 0) {
-	sscan_ok = sscanf(value,"%ld",&state->use_deltag0);
+      } else if (strncmp(key,"USE_DGZERO",11) == 0) {
+	sscan_ok = sscanf(value,"%ld",&state->use_dgzero);
       } else if (strncmp(key,"USE_METROPOLIS",14) == 0) {
 	sscan_ok = sscanf(value,"%ld",&state->use_metropolis);
       } else if (strncmp(key,"USE_REGULATION",14) == 0) {
