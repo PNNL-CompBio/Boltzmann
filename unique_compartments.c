@@ -48,22 +48,28 @@ int unique_compartments(struct state_struct *state) {
   char *compartment_text;
   char *sstring;
   char *cstring;
+  int64_t sum_compartment_len;
+
   int nzr;
   int i;
+
   int success;
   int nu_cmpts;
+
   success = 1;
   nzr            = state->number_compartments;
   sorted_cmpts   = state->sorted_cmpts;
   rxns_matrix    = state->reactions_matrix;
   compartment_text = state->compartment_text;
   compartment_indices = rxns_matrix->compartment_indices;
+  sum_compartment_len = (int64_t)0;
   /* loop over sorted compartments. */
   nu_cmpts = 0;
   if (nzr > 1) {
     if (sorted_cmpts->string >= 0) {
       compartment_indices[sorted_cmpts->c_index] = nu_cmpts;
       cstring = (char*)&compartment_text[sorted_cmpts->string];
+      sum_compartment_len += ((int64_t)strlen(cstring));
     } else {
       compartment_indices[sorted_cmpts->c_index] = -1;
       cstring = NULL;
@@ -72,6 +78,7 @@ int unique_compartments(struct state_struct *state) {
     sorted_cmpts += 1; /* Caution address arithmetic. */
     ucmpts_next  = sorted_cmpts;
   }
+  sum_compartment_len = (int64_t)0;
   for (i=1;i<nzr;i++) {
     if (sorted_cmpts->string>=0) {
       sstring = (char*)&compartment_text[sorted_cmpts->string];
@@ -80,6 +87,7 @@ int unique_compartments(struct state_struct *state) {
 	nu_cmpts += 1;
 	cur_cmpt = sorted_cmpts;
 	cstring  = sstring;
+	sum_compartment_len += ((int64_t)strlen(cstring));
 	ucmpts_next->string = cur_cmpt->string;
 	ucmpts_next += 1; /* Caution address arithmetic. */
       }
@@ -90,5 +98,6 @@ int unique_compartments(struct state_struct *state) {
     sorted_cmpts += 1; /* Caution address arithmetic. */
   }
   state->unique_compartments = nu_cmpts + 1;
+  state->sum_compartment_len = sum_compartment_len;
   return(success);
 }
