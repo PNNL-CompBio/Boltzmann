@@ -99,6 +99,11 @@ int update_regulation (struct state_struct *state, int rxn) {
       activity *= ndirection;
     }
   } /* end for (i...) */
+  if (activity > 0.5) {
+    activity = 1.0;
+  } else {
+    activity = 0.0;
+  }
   activities[rxn] = activity;
   return (success);
 }
