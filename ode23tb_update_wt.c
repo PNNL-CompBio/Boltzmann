@@ -11,7 +11,6 @@ void ode23tb_update_wt(int normcontrol, int ny, double normy,
     Called by: ode23tb
     Calls:     fabs
   */
-  double wt2;
   double wta;
   int    i;
   int    padi;
