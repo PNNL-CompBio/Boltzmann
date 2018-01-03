@@ -25,7 +25,7 @@ specific language governing permissions and limitations under the License.
 #include "open_output_files.h"
 int open_output_files(struct state_struct *state) {
   /*
-    Open the log, concentrations, rxn_likelihoods, free_energy, and 
+    Open the log, counts, rxn_likelihoods, free_energy, and 
     bndry_flux output files.
     Called by: boltzmann_init
     Calls:     fopen, fprintf, fflush.
@@ -51,7 +51,7 @@ int open_output_files(struct state_struct *state) {
   if (success) {
     if (state->counts_out_file) {
       /*
-	Open the concentrations output file.
+	Open the counts output file.
       */
       state->counts_out_fp = fopen(state->counts_out_file,"w");
       if (state->counts_out_fp == NULL) {
