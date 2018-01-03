@@ -8,7 +8,7 @@ void print_net_likelihood_header(struct state_struct *state) {
     Caleld by: ode23tb
     Calls: fopen, fprint, fflush
   */
-  struct rxn_struct *reaction;
+  struct reaction_struct *reaction;
   int64_t number_reactions;
   char *net_lklhd_file;
   char *rxn_title_text;
