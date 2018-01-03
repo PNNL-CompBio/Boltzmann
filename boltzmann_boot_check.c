@@ -100,7 +100,8 @@ int boltzmann_boot_check(struct super_state_struct *super_statep, FILE *lfp) {
 	  */
 	  fprintf (lfp,"reaction file: %s, state size = %ld\n",
 		   lstate->reaction_file,lsize);
-	  success = echo_reactions_file(lstate,lfp);
+	  lstate->lfp = lfp;
+	  success = echo_reactions_file(lstate);
 	}
 	/*
 	  Now print out the intial concentrations using the
