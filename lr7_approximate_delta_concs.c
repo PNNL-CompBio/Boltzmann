@@ -20,7 +20,7 @@ int lr7_approximate_delta_concs(struct state_struct *state,
                                       uses number_reactions,
 				           unique_moleules,
 					   sorted_molecules,
-					   sorted_cmpts,
+					   sorted_compartments,
                                            molecules_matrix,
 					   ke, rke,
 					   product_term as scratch.
@@ -42,7 +42,7 @@ int lr7_approximate_delta_concs(struct state_struct *state,
   struct  compartment_struct *compartments;
   struct  compartment_struct *compartment;
   struct  molecules_matrix_struct *molecules_matrix;
-  struct  rxn_matrix_struct *rxn_matrix;
+  struct  reactions_matrix_struct *rxn_matrix;
   double  *rfc;
   double  *ke;
   double  *rke;
@@ -89,10 +89,10 @@ int lr7_approximate_delta_concs(struct state_struct *state,
   num_rxns = state->number_reactions;
   num_species = state->nunique_molecules;
   molecules   = state->sorted_molecules;
-  compartments = state->sorted_cmpts;
+  compartments = state->sorted_compartments;
   molecules_matrix = state->molecules_matrix;
   molecules_ptrs   = molecules_matrix->molecules_ptrs;
-  rxn_indices      = molecules_matrix->rxn_indices;
+  rxn_indices      = molecules_matrix->reaction_indices;
   coefficients     = molecules_matrix->coefficients;
   rxn_matrix       = state->reactions_matrix;
   rxn_ptrs         = rxn_matrix->rxn_ptrs;
