@@ -151,6 +151,7 @@ struct state_struct {
   int64_t num_files;
   int64_t solvent_pos;
   int64_t use_pseudoisomers;
+  int64_t use_deltag0;
   int64_t use_metropolis;
   int64_t use_regulation;
   int64_t max_regs_per_rxn;
