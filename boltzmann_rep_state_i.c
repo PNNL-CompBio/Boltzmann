@@ -36,8 +36,17 @@ specific language governing permissions and limitations under the License.
 
 #include "flatten_state.h"
 #include "boltzmann_rep_state_i.h"
-int boltzmann_rep_state_i(int64_t *super_statep, int i, 
-			 struct state_struct **l_statep) {
+int boltzmann_rep_state_i(struct super_state_struct *super_statep, int i, 
+			  struct state_struct **l_statep) {
+  /*
+    Part of user api.
+    Allocates space for the state struct for the i'th reaction file
+    and fills it from the super_state structure returning a pointer 
+    to the local state in l_statep;
+    Assumes the pointer fields of the super_state structure have 
+    been set by a call to flatten_super_state (eg. in boltzmann_boot
+    or boltzmann_load calls).
+  */
   struct  state_struct *lstate;
   int64_t *super_statel;
   int64_t *state_offsets_sizes;
@@ -51,14 +60,18 @@ int boltzmann_rep_state_i(int64_t *super_statep, int i,
   one_l   = (int64_t)1;
   super_statec = (char*)super_statep;
   super_statel = (int64_t*)super_statep;
-  state_offsets_sizes = &super_statel[super_statel[12]];
-  if ((int64_t)i < super_statel[0]) {
+  state_offsets_sizes = &super_statel[super_statep->state_offsets_sizes_offset_in_words];
+  if ((int64_t)i < super_statep->number_of_reaction_files) {
     index = i<<1;
     lstate_offset = state_offsets_sizes[index];
     lstate_size   = state_offsets_sizes[index+1];
-    lstate        = (struct state_struct*)calloc(one_l,lstate_size);
+    if (*l_statep == NULL) {
+      lstate        = (struct state_struct*)calloc(one_l,lstate_size);
+    } else {
+      lstate = *l_statep;
+    }
     if (lstate) {
-      memcpy(lstate,(void *)&super_statec[lstate_offset],lstate_size);
+      memmove(lstate,(void *)&super_statec[lstate_offset],lstate_size);
       success = flatten_state(lstate,&lstate);
     } else {
       success = 0;
