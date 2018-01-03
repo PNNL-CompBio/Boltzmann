@@ -37,6 +37,7 @@ int print_molecules_dictionary(struct state_struct *state) {
   struct istring_elem_struct *cur_molecules;
   struct istring_elem_struct *cur_cmpts;
   struct istring_elem_struct *cur_cmpt;
+  double *molecule_dg0tfs;
   char *compartment_text;
   char *molecules_text;
   char *cmpt_string;
@@ -54,10 +55,11 @@ int print_molecules_dictionary(struct state_struct *state) {
   FILE *conc_fp;
   success = 1;
   nu_molecules     = state->nunique_molecules;
-  cur_molecules = state->sorted_molecules;
-  cur_cmpts     = state->sorted_cmpts;
-  conc_fp       = state->concs_out_fp;
-  molecules_text = state->molecules_text;
+  cur_molecules    = state->sorted_molecules;
+  cur_cmpts        = state->sorted_cmpts;
+  conc_fp          = state->concs_out_fp;
+  molecule_dg0tfs  = state->molecule_dg0tfs;
+  molecules_text   = state->molecules_text;
   compartment_text = state->compartment_text;
   dict_fp = fopen("molecules.dict","w+");
   if (dict_fp == NULL) {
@@ -73,6 +75,7 @@ int print_molecules_dictionary(struct state_struct *state) {
     if (conc_fp) {
       fprintf(conc_fp,"iter");
     }
+    fprintf(dict_fp,"number name free_energy_of_formation\n");
     for (i=0;i<nu_molecules;i++) {
       ci = cur_molecules->c_index;
       molecule    = (char *)&molecules_text[cur_molecules->string];
@@ -84,12 +87,12 @@ int print_molecules_dictionary(struct state_struct *state) {
 	}
       }
       if (ci > 0) {
-	fprintf(dict_fp,"%d %s %s\n",i,molecule,cmpt_string);
+	fprintf(dict_fp,"%d %s %s %le\n",i,molecule,cmpt_string,molecule_dg0tfs[i]);
 	if (conc_fp) {
 	  fprintf(conc_fp,"\t%s:%s",molecule,cmpt_string);
 	}
       } else {
-	fprintf(dict_fp,"%d %s\n",i,molecule);
+	fprintf(dict_fp,"%d %s %le\n",i,molecule,molecule_dg0tfs[i]);
 	if (conc_fp) {
 	  fprintf(conc_fp,"\t%s",molecule);
 	}
