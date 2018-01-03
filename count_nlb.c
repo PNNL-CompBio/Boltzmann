@@ -28,7 +28,7 @@ int count_nlb(char *line) {
   /*
     Return the number of leading non-pound characters ('#') 
     in the character string, line.
-    Called by: keg_from_pseudoisomer.c 
+    Called by: kegg_from_pseudoisomer.c 
     Calls      strlen(intrinsic).
   */
   int nlb_chars;
