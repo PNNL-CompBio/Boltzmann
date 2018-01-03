@@ -25,6 +25,7 @@ specific language governing permissions and limitations under the License.
 #include <string.h>
 #include <strings.h>
 #include <float.h>
+#include <math.h>
 #include <signal.h>
 #include <unistd.h>
 
@@ -48,7 +49,9 @@ int compute_ke(struct state_struct *state) {
   double dg0;
   double *dg0s;
   double *ke;
+  double rt;
   double m_r_rt;
+  double m_rt;
   double joules_per_cal_gm;
   double ideal_gas_r;
   double temp_kelvin;
@@ -60,9 +63,13 @@ int compute_ke(struct state_struct *state) {
   success = 1;
   ideal_gas_r = state->ideal_gas_r;
   temp_kelvin = state->temp_kelvin;
-  if (temp_kelvin > 0) {
-    m_r_rt = -1.0/(ideal_gas_r * temp_kelvin);
+  rt          = ideal_gas_r * temp_kelvin;
+  state->rt   = rt;
+  if (rt > 0.0) {
+    m_r_rt = -1.0/rt;
+    m_rt   = 0.0 - rt;
     state->m_r_rt = m_r_rt;
+    state->m_rt   = m_rt;
   } else {
     success = 0;
     fprintf (stderr,
@@ -78,12 +85,12 @@ int compute_ke(struct state_struct *state) {
     reaction = reactions;
     for (i=0;i<nrxns;i++) {
       if (reaction->unit_i == 0) {
+	dg0 = reaction->delta_g0;
+      } else {
 	/*
-	  Delta_g0 units was in calories, convert to joules.
+	  Delta_g0 units was in KJoules, convert to Kcals.
 	*/
 	dg0 = reaction->delta_g0 * joules_per_cal_gm;
-      } else {
-	dg0 = reaction->delta_g0;
       }
       dg0s[i] = dg0;
       ke[i] = exp(dg0 * m_r_rt);
