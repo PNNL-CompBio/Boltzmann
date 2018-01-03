@@ -2,8 +2,8 @@ CC      = gcc
 CLINKER = gcc
 AR = ar
 ARFLAGS = -crv
-#OPT_FLAGS = -g -O2
-OPT_FLAGS = -g -O0 -Wall
+OPT_FLAGS = -O2
+#OPT_FLAGS = -g -O0 -Wall
 #
 ### End User configurable options ###
 LIBS = libboltzmann.a -lm 
