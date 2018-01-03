@@ -59,7 +59,7 @@ int boltzmann_global_to_local_fluxes(struct super_state_struct *super_state,
   }
   if (success) {
     state_index         = local_state->agent_type;
-    local_fluxes        = local_state->bndry_flux_concs;
+    local_fluxes        = local_state->bndry_flux_counts;
     nunique_molecules   = local_state->nunique_molecules;
     molecule_map_starts = super_state_pointers->molecule_map_starts;
     molecule_maps       = super_state_pointers->molecule_map;
