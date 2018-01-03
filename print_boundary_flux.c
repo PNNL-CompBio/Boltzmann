@@ -39,8 +39,8 @@ void print_boundary_flux(struct state_struct *state) {
   */
   struct molecule_struct *sorted_molecules;
   struct molecule_struct *molecule;
-  struct molecule_struct *sorted_cmpts;
-  struct molecule_struct *cur_cmpt;
+  struct compartment_struct *sorted_cmpts;
+  struct compartment_struct *cur_cmpt;
   double *bndry_flux_counts;
   char *molecules_text;
   char *compartment_text;
@@ -71,7 +71,7 @@ void print_boundary_flux(struct state_struct *state) {
       if (ci != oi) {
 	oi = ci;
 	if (ci > 0) {
-	  cur_cmpt = (struct molecule_struct *)&(sorted_cmpts[ci]);
+	  cur_cmpt = (struct compartment_struct *)&(sorted_cmpts[ci]);
 	  cmpt_string = (char *)&compartment_text[cur_cmpt->string];
 	} else {
 	  cmpt_string = NULL;
