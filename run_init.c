@@ -93,7 +93,7 @@ int run_init(struct state_struct *state, struct state_struct **flattened_state) 
   */
   *flattened_state = stateq;
   if (success) {
-    success - free_boot_state2(state);
+    success = free_boot_state2(state);
   }
   return(success);
 }
