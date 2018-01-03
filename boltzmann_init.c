@@ -131,6 +131,11 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
       success = echo_params(state->lfp,state);
     }
   }
+  /*
+    Here is where the sbml file processing will need to go.
+  */
+
+
   if (success) {
     success = size_rxns_file(state,state->reaction_file);
   }
