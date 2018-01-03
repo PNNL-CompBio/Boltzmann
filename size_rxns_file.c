@@ -154,7 +154,7 @@ int size_rxns_file(struct state_struct *state,
 	Line header matched.
       */
       switch (line_type) {
-	case 0: 
+      case 0: /* REACTION */
 	  /*
 	    Reaction title line.
 	    Get size of reaction title.
@@ -162,50 +162,53 @@ int size_rxns_file(struct state_struct *state,
 	  rxns += 1;
 	  rxn_title_len += line_len - kl - ws_chars;
 	  break;
-	case 1:
+      case 1: /* PATHWAY */
 	  /*
 	    Pathway line.
 	  */
 	  pathway_len += line_len - kl - ws_chars;
 	  break;
-	case 2: 
-        case 3:
-        case 4:
+      case 2: /* COMPARTMENT */ 
+      case 3: /* LEFT_COMPARTMENT */
+      case 4: /* RIGHT_COMPARTMENT */
 	  /*
 	    Compartment line.
 	  */
 	  cmpts += 1;
 	  compartment_len += line_len - kl - ws_chars;
 	  break;
-	case 5:
+      case 5: /* LEFT */
 	  /*
 	    A left line, count molecules.
 	  */
-	  rctnts = (char *)&rxn_buffer[kl];
+   	  rctnts = (char *)&rxn_buffer[kl];
 	  molecules += count_molecules(rctnts,&molecules_len);
 	  break;
-	case 6:
+      case 6: /* RIGHT */
 	  /*
 	    A right line, count molecules.
 	  */
 	  prdcts = (char *)&rxn_buffer[kl];
 	  molecules += count_molecules(prdcts,&molecules_len);
 	  break;
-        case 7:
-	case 8:
+      case 7: /* DGZERO */
+      case 8: /* DGZERO-UNITS */
 	  break;
-	case 9:
-        case 12:
+      case 9:  /* ACTIVITY */
+      case 12: /* ENZYME_LEVEL */
+      case 13: /* // */
+      case 14: /* FORWARD_RATE */
+      case 15: /* REVERSE_RATE */
 	  break;
-        case 10:
-        case 11:
+      case 10: /* PREGULATION */
+      case 11: /* NREGLATION */
 	  /*
 	    A PREGULATION or NREGULATION line.
 	  */
 	  species_len = count_nws((char*)&rxn_buffer[kl+ws_chars]);
 	  regulation_len += species_len;
-        default:
-	  break;
+      default:
+	break;
       }
       fgp = fgets(rxn_buffer,rxn_buff_len,rxn_fp);
     } /* end while(fgp...) */
