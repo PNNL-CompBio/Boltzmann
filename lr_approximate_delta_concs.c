@@ -14,7 +14,7 @@ int lr_approximate_delta_concs(struct state_struct *state, double *counts,
     Based on likelihood ratios and assumption that all
     reverse reaction likelihoods are the same as the base reaction.
     Get reference from Bill Cannon
-    Called by: ode23tb, num_jac_col, ode_it_solve
+    Called by: approximate_delta_concs
     Calls:     update_rxn_likelihoods
 
                                 TMF
