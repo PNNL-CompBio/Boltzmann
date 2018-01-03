@@ -79,8 +79,8 @@ int parse_side_line(char *rctnts_p,
 
     
   */
-  struct istring_elem_struct *unsorted_molecules;
-  struct istring_elem_struct *unsorted_cmpts;
+  struct molecule_struct *unsorted_molecules;
+  struct molecule_struct *unsorted_cmpts;
   struct rxn_matrix_struct *rxns_matrix;
   int64_t *molecules_indices;
   int64_t *coefficients;
@@ -118,8 +118,8 @@ int parse_side_line(char *rctnts_p,
   compartment_pos    = *compartment_pos_p;
   molecules          = *molecules_p;
   cmpts              = *cmpts_p;
-  unsorted_molecules = (struct istring_elem_struct *)&state->unsorted_molecules[molecules];
-  unsorted_cmpts     = (struct istring_elem_struct *)&state->unsorted_cmpts[cmpts];
+  unsorted_molecules = (struct molecule_struct *)&state->unsorted_molecules[molecules];
+  unsorted_cmpts     = (struct molecule_struct *)&state->unsorted_cmpts[cmpts];
   rctnts             = rctnts_p;
 
   rxns_matrix        = state->reactions_matrix;
