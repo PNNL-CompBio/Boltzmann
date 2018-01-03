@@ -182,6 +182,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
     state->ode_solver_choice   = (int64_t)0;
     state->delta_concs_choice  = (int64_t)0;
     state->concs_or_counts     = (int64_t)3;
+    state->use_bulk_water      = (int64_t)1;
 
     state->default_initial_count = (int64_t)0;
     param_buffer       = state->param_buffer;
@@ -245,8 +246,10 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	sscan_ok = sscanf(value,"%s",state->ms2js_file);
       } else if (strncmp(key,"USE_PSEUDOISOMERS",17) == 0) {
 	sscan_ok = sscanf(value,"%ld",&state->use_pseudoisomers);
-      } else if (strncmp(key,"USE_DGZERO",11) == 0) {
+      } else if (strncmp(key,"USE_DGZERO",10) == 0) {
 	sscan_ok = sscanf(value,"%ld",&state->use_dgzero);
+      } else if (strncmp(key,"USE_BULK_WATER",14) == 0) {
+	sscan_ok = sscanf(value,"%ld",&state->use_bulk_water);
       } else if (strncmp(key,"USE_METROPOLIS",14) == 0) {
 	sscan_ok = sscanf(value,"%ld",&state->use_metropolis);
       } else if (strncmp(key,"USE_REGULATION",14) == 0) {
