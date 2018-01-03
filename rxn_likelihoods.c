@@ -92,7 +92,7 @@ int rxn_likelihoods(double *concs,
   int padi;
 
   success           = 1;
-  nrxns             = state->number_reactions;
+  nrxns             = (int)state->number_reactions;
   for (i=0;i<nrxns;i++) {
     rxn_likelihood_values[i] = rxn_likelihood(concs,state,rxn_direction,i);
   } /* end for(i...) */
