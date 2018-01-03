@@ -36,8 +36,8 @@ int print_reactions_matrix(struct state_struct *state) {
     As this routine is called after the solvent coefficients have been 
     zeroed out, we need to restore them
   */
-  struct rxn_struct *reaction;
-  struct rxn_matrix_struct *rxns_matrix;
+  struct reaction_struct *reaction;
+  struct reactions_matrix_struct *rxns_matrix;
   struct molecule_struct *molecules;
   struct compartment_struct *compartments;
   struct compartment_struct *cur_cmpt;
@@ -113,7 +113,7 @@ int print_reactions_matrix(struct state_struct *state) {
     nrxns                = (int)state->number_reactions;
     nmols                = (int)state->nunique_molecules;
     molecules            = state->sorted_molecules;
-    compartments         = state->sorted_cmpts;
+    compartments         = state->sorted_compartments;
     mat_row              = state->rxn_mat_row;
 
     /*
