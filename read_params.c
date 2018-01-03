@@ -78,6 +78,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
       Following line Added by DGT on 4/18/2013
      */
     strcpy(state->pseudoisomer_file,"./pseudoisomer_dg0f.txt");
+    strcpy(state->solvent_string,"H2O");
     strcpy(state->input_dir,"./");
     strcpy(state->output_dir,"./");
     state->align_len        = (int64_t)16;
@@ -156,6 +157,8 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	sscan_ok = sscanf(value,"%ld",&state->use_pseudoisomers);
       } else if (strncmp(key,"LOG_FILE",8) == 0) {
 	sscan_ok = sscanf(value,"%s",state->log_file);
+      } else if (strncmp(key,"SOLVENT",7) == 0) {
+	sscan_ok = sscanf(value,"%s",state->solvent_string);
       } else if (strncmp(key,"ALIGN_LEN",9) == 0) {
 	sscan_ok = sscanf(value,"%ld",&(state->align_len));
 	if (state->align_len < 0) {
