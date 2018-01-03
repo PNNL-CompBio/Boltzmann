@@ -57,6 +57,7 @@ int check_initial_concentrations(struct state_struct *state) {
   compartments      = state->sorted_compartments;
   molecules_text    = state->molecules_text;
   compartment_text  = state->compartment_text;
+  cmpt_string = "";
   oi          = -1;
   for (i=0;i<nunique_molecules;i++) {
     ci = molecules->c_index;
