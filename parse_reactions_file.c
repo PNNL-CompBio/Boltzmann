@@ -231,6 +231,7 @@ int parse_reactions_file(struct state_struct *state,
     reaction->num_reactants     = 0;
     reaction->num_products      = 0;
     reaction->activity          = 1.0;
+    reaction->enzyme_level      = 1.0;
     reaction->temp_kelvin       = state->temp_kelvin;
     reaction->deltag0_computed  = 0;
     reaction->ph                = state->ph;
@@ -667,9 +668,7 @@ int parse_reactions_file(struct state_struct *state,
 	    reaction->right_compartment = 0;
 	    reaction->num_reactants     = 0;
 	    reaction->num_products      = 0;
-	    /*
 	    reaction->activity          = 1.0;
-	    */
 	    reaction->enzyme_level      = 1.0;
 	    /*
 	      The following three lines added by DGT on 4/18/2013
