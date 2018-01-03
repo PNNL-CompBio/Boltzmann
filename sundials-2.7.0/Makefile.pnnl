@@ -9,7 +9,7 @@ $(SUNDIALS_LIB_DIR)/libsundials_cvodes.a: src/cvodes/cvodea.c src/cvodes/cvodea_
 	cd src/cvodes && $(MAKE)
 
 #$(SUNDIALS_LIB_DIR)/libsundials_nvec_ser.a $(SUNDIALS_LIB_DIR)/libsundials_nvec_ser.so: src/nvec_ser/fnvector_serial.c src/nvec_ser/nvector_serial.c
-$(SUNDIALS_LIB_DIR)/libsundials_nvec_ser.a src/nvec_ser/fnvector_serial.c src/nvec_ser/nvector_serial.c
+$(SUNDIALS_LIB_DIR)/libsundials_nvec_ser.a: src/nvec_ser/fnvector_serial.c src/nvec_ser/nvector_serial.c
 	cd src/nvec_ser && $(MAKE)
 
 #$(SUNDIALS_LIB_DIR)/libsundials.so $(SUNDIALS_LIB_DIR)/libsundials.a: src/sundials/sundials_band.c src/sundials/sundials_dense.c src/sundials/sundials_direct.c src/sundials/sundials_iterative.c src/sundials/sundials_math.c src/sundials/sundials_nvector.c src/sundials/sundials_pcg.c src/sundials/sundials_sparse.c src/sundials/sundials_spbcgs.c src/sundials/sundials_spfgmr.c src/sundials/sundials_spgmr.c src/sundials/sundials_sptfqmr.c
