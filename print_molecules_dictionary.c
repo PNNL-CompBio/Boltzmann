@@ -35,8 +35,8 @@ int print_molecules_dictionary(struct state_struct *state) {
   struct rxn_matrix_struct *rxns_matrix;
   int64_t *column_indices;
   struct molecule_struct *cur_molecules;
-  struct molecule_struct *cur_cmpts;
-  struct molecule_struct *cur_cmpt;
+  struct compartment_struct *cur_cmpts;
+  struct compartment_struct *cur_cmpt;
   double *molecule_dg0tfs;
   char *compartment_text;
   char *molecules_text;
@@ -86,7 +86,7 @@ int print_molecules_dictionary(struct state_struct *state) {
       if (ci != oi) {
 	oi = ci;
 	if (ci > 0) {
-	  cur_cmpt = (struct molecule_struct *)&(cur_cmpts[ci]);
+	  cur_cmpt = (struct compartment_struct *)&(cur_cmpts[ci]);
 	  cmpt_string = (char *)&compartment_text[cur_cmpt->string];
 	}
       }
