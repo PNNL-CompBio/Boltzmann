@@ -64,6 +64,10 @@ void sbml_process_list_of_products_tag(int max_key_len,
   nb = count_ws(line);
   line += nb; /* Caution address arithmetic */
   ns = strlen(line);
+  /*
+    Finish previous reactants line.
+  */
+  fprintf(rxns_fp,"\n");
   while (ns != 0)  {
     if (line[0] == '>') {
       /*
