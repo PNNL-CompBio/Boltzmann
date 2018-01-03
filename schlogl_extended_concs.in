@@ -1,0 +1,14 @@
+VOLUME	1.0e-15
+CONC_UNITS      1.0e-9
+A0	583     F
+A1	100     V
+A2	100     V
+A3	100     V
+A4	100     V
+X	100     V
+B4	100     V
+B3	100     V
+B2	100     V
+B1	100     V
+B0	100     F
+*	100
