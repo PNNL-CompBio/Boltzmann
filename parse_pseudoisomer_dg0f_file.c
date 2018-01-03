@@ -106,6 +106,7 @@ int parse_pseudoisomer_dg0f_file(struct pseudoisomer_struct *pseudoisomers,
   /*
     chew up the header line.
   */
+  cpd_ct = (int64_t)0;
   if (success) {
     bptr = fgets(buffer,buff_len,psi_fp);
     if (bptr) {
