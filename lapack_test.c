@@ -3,6 +3,7 @@
 #include "dgetrs.h"
 #include "dtrsm.h"
 #include "dlaswp.h"
+#include "dgemm.h"
 #include "blas.h"
 
 int main(int argc, char **argv)
