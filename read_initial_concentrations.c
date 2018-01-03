@@ -40,14 +40,13 @@ int read_initial_concentrations(struct state_struct *state) {
   */
   struct  molecule_struct *sorted_molecules;
   struct  molecule_struct *molecule;
-  struct  molecule_struct *sorted_compartments;
-  struct  molecule_struct *compartment;
+  struct  compartment_struct *sorted_compartments;
+  struct  compartment_struct *compartment;
   double  volume;
   double  recip_volume;
   double  default_volume;
   double  min_count;
   double  min_conc;
-  double  default_min_conc;
   double  conc_units;
   double  conc;
   double  count;
@@ -206,7 +205,7 @@ int read_initial_concentrations(struct state_struct *state) {
       ntotal_exp, ntotal_opt, conc_to_count, and count_to_conc fields.
     */
     units_avo = conc_units * avogadro;
-    compartment = (struct molecule_struct *)&sorted_compartments[0];
+    compartment = (struct compartment_struct *)&sorted_compartments[0];
     for (i=0;i<nu_compartments;i++) {
       if (compartment->volume <= 0.0) {
 	compartment->volume = volume;
@@ -214,7 +213,6 @@ int read_initial_concentrations(struct state_struct *state) {
       compartment->recip_volume = 1.0/compartment->volume;
       compartment->ntotal_exp   = 0.0;
       compartment->ntotal_opt   = 0.0;
-      compartment->min_conc     = compartment->recip_volume * recip_avogadro;
       multiplier                = units_avo * volume;
       compartment->conc_to_count = multiplier;
       if (multiplier > 0.0) {
@@ -222,11 +220,16 @@ int read_initial_concentrations(struct state_struct *state) {
       } else {
 	success = 0;
       }
+      /*
+	Because of the way we use u_val and e_val below I think
+	we want to just have min_conc = count_to_conc.
+      compartment->min_conc     = compartment->recip_volume * recip_avogadro;
+      */
       compartment += 1; /* Caution address arithmetic */
     }
   }	
   if (success) {
-    compartment = (struct molecule_struct *)&sorted_compartments[0];
+    compartment = (struct compartment_struct *)&sorted_compartments[0];
     compartment->volume = volume;
     compartment->recip_volume = 1.0/volume;
     state->conc_to_count  = compartment->conc_to_count;
@@ -296,10 +299,10 @@ int read_initial_concentrations(struct state_struct *state) {
 	  upcase(cmpt_len,compartment_name,compartment_name);
 	  ci = compartment_lookup(compartment_name,state);
 	}
-	compartment = (struct molecule_struct *)&sorted_compartments[ci];
+	compartment = (struct compartment_struct *)&sorted_compartments[ci];
 	volume       = compartment->volume;
 	recip_volume = compartment->recip_volume;
-	min_conc     = compartment->min_conc;
+	min_conc     = compartment->count_to_conc;
 	multiplier   = compartment->conc_to_count;
 	if (e_val == 0.0) {
 	  /*
