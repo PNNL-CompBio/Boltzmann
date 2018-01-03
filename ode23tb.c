@@ -715,7 +715,7 @@ int ode23tb (struct state_struct *state, double *counts,
 	  /*
 	    Set miter to be the identity matrix.
 	  */
-	  for (i=0;i<ny*ny;i += (ny+1)) {
+	  for (i=0;i<nysq;i += (ny+1)) {
 	    miter[i] = 1.0;
 	  }
 	  /*
