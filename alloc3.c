@@ -27,9 +27,23 @@ specific language governing permissions and limitations under the License.
 
 int alloc3(struct state_struct *state) {
   /*
-    Allocate space for the molecule_name field for reading
-    in intial concentrations, the concentrations vector,
-    and 
+    Allocate space for the following vector fields for reading in
+    information about species concentrations, experimental values
+    and user values.
+    compartment_pointers   	     (nunique_compartments + 1) 
+    current_counts         	     (nunique_molecules)
+    bndry_flux_counts      	     (nunique_molecules)
+    count_to_conc          	     (nunique_molecules)
+    conc_to_count          	     (nunique_molecules)
+    dg0s                   	     (number_reactions)  
+    ke                     	     (number_reactions) 
+    kss                    	     (number_reactions)
+    kssr                   	     (number_reactions)
+    kss_eval               	     (nunique_molecules)
+    kss_uval               	     (nunique_molecules)
+    dg0tfs                 	     (nunique_molecules)
+    molecule_probabilities 	     (nunique_molecules)
+    molecule_chemical_potentials     (nunique_molecules)
     Called by: boltzmann_init
     Calls:     calloc, fprintf, fflush (intrinsic)
   */
@@ -144,7 +158,6 @@ int alloc3(struct state_struct *state) {
       fflush(stderr);
       success = 0;
     } 
-    
   }
   /*
     Allocate space for the reaction equilibrium coefficients.
