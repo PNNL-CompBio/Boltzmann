@@ -32,7 +32,7 @@ int compute_kss(struct state_struct *state) {
   /*
     Set the delta_g0 field for all of the reactions
     based on energies of formation.
-    Called by: boltzmann_init, boltzmann_boot
+    Called by: energy_init
     Calls:     fprintf, fflush
   */
   int success;
