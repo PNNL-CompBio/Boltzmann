@@ -1,7 +1,7 @@
 #include "system_includes.h"
 #include "lsame.h"
 #include "dgemm.h"
-void dgemm(char *transa_p, char *transb_p, int *m_p, int *n_p, int *k_p,
+void dgemm_(char *transa_p, char *transb_p, int *m_p, int *n_p, int *k_p,
 	   double *alpha_p, double *a, int *lda_p, double *b, 
 	   int *ldb_p, double *beta_p, double *c, int *ldc_p) {
   /*
@@ -78,8 +78,8 @@ void dgemm(char *transa_p, char *transb_p, int *m_p, int *n_p, int *k_p,
   zero    = 0.0;
   inc1    = 1;
 
-  nota = lsame(&transa,&n_char);
-  notb = lsame(&transb,&n_char);
+  nota = lsame_(&transa,&n_char);
+  notb = lsame_(&transb,&n_char);
    
   if (nota) {
     nrowa = m;
@@ -95,11 +95,11 @@ void dgemm(char *transa_p, char *transb_p, int *m_p, int *n_p, int *k_p,
   }
   info = 0;
   if ((nota == 0)  && 
-      (lsame(&transa,&c_char) + lsame(&transa,&t_char) == 0)) {
+      (lsame_(&transa,&c_char) + lsame_(&transa,&t_char) == 0)) {
     info = 1;
   } else {
     if ((notb == 0) && 
-	(lsame(&transb,&c_char) + lsame(&transb,&t_char) == 0)) {
+	(lsame_(&transb,&c_char) + lsame_(&transb,&t_char) == 0)) {
       info = 2;
     } else {
       if (m < 0) {
@@ -175,14 +175,14 @@ void dgemm(char *transa_p, char *transb_p, int *m_p, int *n_p, int *k_p,
 		}
 	      } else {
 		if (beta != one) {
-		  dscal(&m,&beta,c_col,&inc1);
+		  dscal_(&m,&beta,c_col,&inc1);
 		} 
 	      }
 	      a_pos = 0;
 	      for (l = 0; l<k;l++) {
 		a_col = &a[a_pos];
 		temp = alpha * b_col[l];
-		daxpy(&m,&temp,a_col,&inc1,c_col,&inc1);
+		daxpy_(&m,&temp,a_col,&inc1,c_col,&inc1);
 		a_pos += lda;
 	      } /* end for (l...) */
 	      c_pos += ldc;
@@ -204,13 +204,13 @@ void dgemm(char *transa_p, char *transb_p, int *m_p, int *n_p, int *k_p,
 		}
 	      } else {
 		if (beta != one) {
-		  dscal(&m,&beta,c_col,&inc1);
+		  dscal_(&m,&beta,c_col,&inc1);
 		} 
 	      }
 	      a_pos = 0;
 	      for (i=0;i<m;i++) {
 		a_col = &a[a_pos];
-		temp = ddot(&k,a_col,&inc1,b_col,&inc1);
+		temp = ddot_(&k,a_col,&inc1,b_col,&inc1);
 		c_col[i] += alpha * temp;
 		a_pos += lda;
 	      }
@@ -235,7 +235,7 @@ void dgemm(char *transa_p, char *transb_p, int *m_p, int *n_p, int *k_p,
 		} 
 	      } else {
 		if (beta != one) {
-		  dscal(&m,&beta,c_col,&inc1);
+		  dscal_(&m,&beta,c_col,&inc1);
 		}
 	      }
 	      a_pos = 0;
@@ -244,7 +244,7 @@ void dgemm(char *transa_p, char *transb_p, int *m_p, int *n_p, int *k_p,
 		a_col = &a[a_pos];
 		b_col = &b[b_pos];
 		temp = alpha*b_col[j];
-		daxpy(&m,temp,a_col,&inc1,c_col,&inc1);
+		daxpy_(&m,temp,a_col,&inc1,c_col,&inc1);
 		a_pos += lda;
 		b_pos += ldb;
 	      }
@@ -264,7 +264,7 @@ void dgemm(char *transa_p, char *transb_p, int *m_p, int *n_p, int *k_p,
 		} 
 	      } else {
 		if (beta != one) {
-		  dscal(&m,&beta,c_col,&inc1);
+		  dscal_(&m,&beta,c_col,&inc1);
 		}
 	      }
 	      a_pos = 0;
