@@ -204,8 +204,8 @@ SERIAL_OBJS7 = deq_run.o alloc7.o ode_solver.o ode23tb.o \
 	ode23tb_limit_h.o ode23tb_init_wt.o ode23tb_update_wt.o \
 	vec_set_constant.o ode23tb_build_factor_miter.o \
 	ode23tb_max_abs_ratio.o ode23tb_nonneg_err.o \
-	ode23tb_enforce_nonneg.o get_counts.o boltzmann_monitor_ode.o \
-	print_dense_jacobian.o
+	ode23tb_enforce_nonneg.o get_counts.o ode_test_steady_state.o \
+	boltzmann_monitor_ode.o print_dense_jacobian.o
 SERIAL_OBJS8 = boltzmann_cvodes.o boltzmann_size_jacobian.o boltzmann_cvodes_rhs.o boltzmann_print_cvodeinit_errors.o boltzmann_cvodes_init.o boltzmann_check_cvodeset_errors.o boltzmann_check_tol_errors.o boltzmann_set_cvodes_linear_solver.o boltzmann_check_cvdls_errors.o boltzmann_check_cvspils_errors.o boltzmann_check_cvodesens_errors.o approximate_ys0.o lr8_approximate_ys0.o boltzmann_cvodes_psetup.o approximate_jacobian.o boltzmann_sparse_to_dense.o boltzmann_dense_to_sparse.o lr8_approximate_jacobian.o crs_column_sort_rows.o build_newton_matrix.o precondition_newton_matrix.o iluvf.o dcrsng_mag_sort.o dcrsng_mag_merge.o isort.o imerge.o boltzmann_cvodes_psolve.o boltzmann_cvodes_bsolve.o boltzmann_cvodes_fsolve.o boltzmann_cvodes_jtimes.o boltzmann_sparse_mvp.o boltzmann_print_cvode_error.o dgbtrf.o dgbtf2.o dger.o dgbtrs.o dswap.o dtbsv.o print_sparse_jacobian.o boltzmann_print_sensitivities.o
 
 #SERIAL_OBJS9 = flatten_state.o free_boot_state2.o free_boot_state.o
@@ -767,6 +767,7 @@ libboltzmann.a: $(SERIAL_OBJS1)  $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SERIAL_OBJS4)
 	$(AR) $(ARFLAGS) libboltzmann.a ode_print_dconcs.o
 	$(AR) $(ARFLAGS) libboltzmann.a ode_print_lklhds.o
 	$(AR) $(ARFLAGS) libboltzmann.a get_counts.o
+	$(AR) $(ARFLAGS) libboltzmann.a ode_test_steady_state.o
 	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_monitor_ode.o
 	$(AR) $(ARFLAGS) libboltzmann.a print_dense_jacobian.o
 	$(AR) $(ARFLAGS) libboltzmann.a print_sparse_jacobian.o
@@ -1476,7 +1477,7 @@ ode_print_lklhd_header.o: ode_print_lklhd_header.c ode_print_lklhd_header.h $(SE
 ode_solver.o: ode_solver.c ode_solver.h ode23tb.h $(SERIAL_INCS) boltzmann_cvodes.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c ode_solver.c
 
-ode23tb.o: ode23tb.c ode23tb.h $(SERIAL_INCS) compute_flux_scaling.h approximate_delta_concs.h ode_num_jac.h ode_it_solve.h print_concs_fluxes.h blas.h ode_print_concs.h ode_print_lklhds.h compute_net_likelihoods.h compute_net_lklhd_bndry_flux.h print_net_likelihood_header.h print_net_lklhd_bndry_flux_header.h print_net_likelihoods.h print_net_lklhd_bndry_flux.h ode23tb_normyp_o_wt.h ode23tb_limit_h.h ode23tb_init_wt.h ode23tb_update_wt.h vec_set_constant.h ode23tb_build_factor_miter.h ode23tb_max_abs_ratio.h ode23tb_nonneg_err.h ode23tb_enforce_nonneg.h boltzmann_monitor_ode.h print_dense_jacobian.h approximate_jacobian.h
+ode23tb.o: ode23tb.c ode23tb.h $(SERIAL_INCS) compute_flux_scaling.h approximate_delta_concs.h ode_num_jac.h ode_it_solve.h print_concs_fluxes.h blas.h ode_print_concs.h ode_print_lklhds.h compute_net_likelihoods.h compute_net_lklhd_bndry_flux.h print_net_likelihood_header.h print_net_lklhd_bndry_flux_header.h print_net_likelihoods.h print_net_lklhd_bndry_flux.h ode23tb_normyp_o_wt.h ode23tb_limit_h.h ode23tb_init_wt.h ode23tb_update_wt.h vec_set_constant.h ode23tb_build_factor_miter.h ode23tb_max_abs_ratio.h ode23tb_nonneg_err.h ode23tb_enforce_nonneg.h boltzmann_monitor_ode.h print_dense_jacobian.h approximate_jacobian.h ode_test_steady_state.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c ode23tb.c 
 
 ode23tb_normyp_o_wt.o: ode23tb_normyp_o_wt.c ode23tb_normyp_o_wt.h $(SERIAL_INCS)
@@ -1517,6 +1518,9 @@ ode_print_lklhds.o: ode_print_lklhds.c ode_print_lklhds.h $(SERIAL_INCS)
 
 get_counts.o: get_counts.c get_counts.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c get_counts.c
+
+ode_test_steady_state.o: ode_test_steady_state.c ode_test_steady_state.h blas.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c ode_test_steady_state.c
 
 boltzmann_monitor_ode.o: boltzmann_monitor_ode.c boltzmann_monitor_ode.h $(SERIAL_INCS) ode_print_concs.h get_counts.h update_rxn_likelihoods.h ode_print_lklhds.h approximate_delta_concs.h ode_print_dconcs.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_monitor_ode.c
@@ -1656,7 +1660,7 @@ update_rxn_likelihoods.o: update_rxn_likelihoods.c update_rxn_likelihoods.h rxn_
 print_concs_dconcs.o: print_concs_dconcs.c print_concs_dconcs.h update_rxn_likelihoods.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c print_concs_dconcs.c 
 
-boltzmann_cvodes.o: boltzmann_cvodes.c boltzmann_cvodes.h $(SERIAL_INCS) boltzmann_size_jacobian.h boltzmann_cvodes_rhs.h boltzmann_print_cvodeinit_errors.h boltzmann_cvodes_init.h boltzmann_print_cvode_error.h boltzmann_monitor_ode.h boltzmann_print_sensitivities.h
+boltzmann_cvodes.o: boltzmann_cvodes.c boltzmann_cvodes.h $(SERIAL_INCS) boltzmann_size_jacobian.h boltzmann_cvodes_rhs.h boltzmann_print_cvodeinit_errors.h boltzmann_cvodes_init.h boltzmann_print_cvode_error.h boltzmann_monitor_ode.h boltzmann_print_sensitivities.h ode_test_steady_state.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_cvodes.c
 
 boltzmann_size_jacobian.o: boltzmann_size_jacobian.c boltzmann_size_jacobian.h $(SERIAL_INCS)
