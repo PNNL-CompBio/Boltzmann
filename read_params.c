@@ -76,6 +76,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
     strcpy(state->restart_file,"./restart.concs");
     strcpy(state->rxn_view_file,"./rxns.view");
     strcpy(state->bndry_flux_file,"./boundary_flux.txt");
+    strcpy(state->ms2js_file,"./modelseed_2_json.srt");
     state->compartment_file[0] = '\0';
     state->sbml_file[0]        = '\0';
     /*
@@ -168,6 +169,8 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	sscan_ok = sscanf(value,"%s",state->compartment_file);
       } else if (strncmp(key,"SBML_FILE",9) == 0) {
 	sscan_ok = sscanf(value,"%s",state->sbml_file);
+      } else if (strncmp(key,"MS2JS_FILE",9) == 0) {
+	sscan_ok = sscanf(value,"%s",state->ms2js_file);
       } else if (strncmp(key,"USE_PSEUDOISOMERS",17) == 0) {
 	sscan_ok = sscanf(value,"%ld",&state->use_pseudoisomers);
       } else if (strncmp(key,"USE_METROPOLIS",14) == 0) {
