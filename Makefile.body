@@ -100,13 +100,13 @@ libboltzmann.a: $(SERIAL_OBJS1) $(SERIAL_OBJS1_5) $(SERIAL_OBJS2) $(SERIAL_OBJS3
 	$(AR) $(ARFLAGS) libboltzmann.a print_reactions_view.o
 	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_global_to_local_concs.o
 	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_global_to_local_fluxes.o
-	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_local_to_global_concs.o  
+	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_local_to_global_concs.o
 	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_local_to_global_fluxes.o
-	$(AR) $(ARFLAGS) libboltzmann.a size_file.o  
+	$(AR) $(ARFLAGS) libboltzmann.a size_file.o
 	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_load.o
 	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_global_molecule_count.o
-	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_max_local_state_size.o   
-	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_length_state_i.o    
+	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_max_local_state_size.o  
+	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_length_state_i.o
 	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_number_of_reaction_files.o
 	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_size_superstate.o
 	$(AR) $(ARFLAGS) libboltzmann.a rxn_map_init.o
@@ -218,7 +218,7 @@ upcase.o: upcase.c upcase.h
 find_colon.o: find_colon.c find_colon.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c find_colon.c
 
-echo_reactions_file.o: $(SERIAL_INCS) echo_reactions_file.h echo_reactions_file.c 
+echo_reactions_file.o: $(SERIAL_INCS) echo_reactions_file.h echo_reactions_file.c
 	$(CC) $(DCFLAGS) $(TFLAGS) -c echo_reactions_file.c
 
 sort_molecules.o: $(SERIAL_INCS) sort_molecules.c sort_molecules.h merge_molecules.h
@@ -287,7 +287,7 @@ alloc5.o: $(SERIAL_INCS) alloc5.c alloc5.h
 
 parse_pseudoisomer_dg0f_file.o: $(SERIAL_INCS) parse_pseudoisomer_dg0f_file.c parse_pseudoisomer_dg0f_file.h sharp_pos.h blank_to_dash.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c parse_pseudoisomer_dg0f_file.c
-	
+
 sharp_pos.o: $(SERIAL_INCS) sharp_pos.c sharp_pos.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c sharp_pos.c
 
