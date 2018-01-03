@@ -68,6 +68,12 @@ int rxn_conc_update(int rxn_no, int direction,
       future_concs[i] = current_concs[i];
     }
   }
+  /*
+    Note that for solvent molcule the coefficients vector has
+    had its corresponding solvent molecule coefficients set to 0 and hence
+    its concentration will not be changed. This comment added with
+    the implementation of the solvent concept. 8/19/2013 DJB.
+  */
   if (direction > 0) {
     for (j=rxn_ptrs[rxn_no];j<rxn_ptrs[rxn_no+1];j++) {
       k = molecules_indices[j];
