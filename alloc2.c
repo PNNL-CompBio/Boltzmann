@@ -261,22 +261,24 @@ int alloc2(struct state_struct *state) {
   }
   if (success) {
     ask_for = (int64_t)sizeof(vss);
-    statep->vgrng_state = (struct vgrng_state_struct *)calloc(one_l,ask_for);
-    if (statep->vgrng_state == NULL) {
+    usage += ask_for;
+    state->vgrng_state = (struct vgrng_state_struct *)calloc(one_l,ask_for);
+    if (state->vgrng_state == NULL) {
       success = 0;
       fprintf(stderr,
-	      "alloc0: unable to allocate %ld bytes for state->vgrng_state.\n",
+	      "alloc2: unable to allocate %ld bytes for state->vgrng_state.\n",
 	      ask_for);
       fflush(stderr);
     }
   }
   if (success) {
     ask_for = (int64_t)sizeof(vss);
-    statep->vgrng2_state = (struct vgrng_state_struct *)calloc(one_l,ask_for);
-    if (statep->vgrng2_state == NULL) {
+    usage += ask_for;
+    state->vgrng2_state = (struct vgrng_state_struct *)calloc(one_l,ask_for);
+    if (state->vgrng2_state == NULL) {
       success = 0;
       fprintf(stderr,
-	      "alloc0: unable to allocate %ld bytes for state->vgrng2_state.\n",
+	      "alloc2: unable to allocate %ld bytes for state->vgrng2_state.\n",
 	      ask_for);
       fflush(stderr);
     }
