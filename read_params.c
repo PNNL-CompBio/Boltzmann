@@ -21,6 +21,7 @@ CONDITIONS OF ANY KIND, either express or implied. See the License for the
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
 #include "boltzmann_structs.h"
+#include "boltzmann_cvodes_headers.h"
 #include "count_nws.h"
 #include "upcase.h"
 #include "read_params.h"
@@ -34,6 +35,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
   */
   struct vgrng_state_struct *vgrng_state;
   struct vgrng_state_struct *vgrng2_state;
+  struct cvodes_params_struct *cvodes_params;
   double rt;
   double m_r_rt;
   double m_rt;
@@ -54,6 +56,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
   success = 1;
   vgrng_state  = state->vgrng_state;
   vgrng2_state = state->vgrng2_state;
+  cvodes_params = state->cvodes_params;
   if (param_file_name == NULL) {
     fprintf(stdout,"read_params: Warning no param_file_name given, looking for ./boltzmann.in input file.\n");
     fflush(stdout);
@@ -183,8 +186,41 @@ int read_params (char *param_file_name, struct state_struct *state) {
     state->delta_concs_choice  = (int64_t)0;
     state->concs_or_counts     = (int64_t)3;
     state->use_bulk_water      = (int64_t)1;
+    state->cvodes_rhs_choice   = (int64_t)0;
+    state->cvodes_jtimes_choice = (int64_t)2;
+    state->cvodes_prec_choice  = (int64_t)2;
+    state->ode_jacobian_choice = (int64_t)8;
+    state->cvodes_prec_fill    = (int64_t)0;
 
     state->default_initial_count = (int64_t)0;
+
+    cvodes_params->linear_multistep_method = CV_BDF;
+    cvodes_params->iterative_method        = CV_NEWTON;
+    cvodes_params->reltol = 1.0e-6;
+    cvodes_params->abstol = 1.0e-10;
+    cvodes_params->hin    = 0.0;
+    cvodes_params->hmin   = 0.0;
+    cvodes_params->nlscoef = 0.1;
+    cvodes_params->eplifac = 0.05;
+    cvodes_params->hmax   = state->ode_t_final;
+    cvodes_params->adams_q_max = 12;
+    cvodes_params->bdf_q_max   = 5;
+    cvodes_params->max_ord     = 5;
+    cvodes_params->mxsteps     = 500;
+    cvodes_params->mxhnil      = 10;
+    cvodes_params->use_stab_lim_det = 0;
+    cvodes_params->maxnef      = 7;
+    cvodes_params->maxcor      = 3;
+    cvodes_params->maxncf      = 10;
+    cvodes_params->maxl        = 30;
+    cvodes_params->pretype     = PREC_NONE;
+    cvodes_params->gstype      = MODIFIED_GS;
+    cvodes_params->num_cvode_steps = 100;
+    /*
+      Linear solver choice for cvodes, (CVDense)
+    */
+    cvodes_params->linear_solver_method = 0;
+
     param_buffer       = state->param_buffer;
     max_param_line_len = state->max_param_line_len;
     key                = param_buffer + max_param_line_len; /* address arithmetic */
@@ -254,6 +290,20 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	sscan_ok = sscanf(value,"%ld",&state->use_metropolis);
       } else if (strncmp(key,"USE_REGULATION",14) == 0) {
 	sscan_ok = sscanf(value,"%ld",&state->use_regulation);
+      } else if (strncmp(value,"CVODES_RHS_CHOICE",17) == 0) {
+	sscan_ok = sscanf(value,"%ld",&state->cvodes_rhs_choice);
+	cvodes_params->cvodes_rhs_choice = (int)state->cvodes_rhs_choice;
+      } else if (strncmp(value,"CVODES_JTIMES_CHOICE",20) == 0) {
+	sscan_ok = sscanf(value,"%ld",&state->cvodes_jtimes_choice);
+	cvodes_params->cvodes_jtimes_choice = (int)state->cvodes_jtimes_choice;
+      } else if (strncmp(value,"CVODES_PREC_CHOICE",18) == 0) {
+	sscan_ok = sscanf(value,"%ld",&state->cvodes_prec_choice);
+	cvodes_params->cvodes_prec_choice = (int)state->cvodes_prec_choice;
+      } else if (strncmp(value,"CVODES_PREC_FILL",16) == 0) {
+	sscan_ok = sscanf(value,"%ld",&state->cvodes_prec_fill);
+	cvodes_params->prec_fill = (int)state->cvodes_prec_fill;
+      } else if (strncmp(value,"ODE_JACOBIAN_CHOICE",19) == 0) {
+	sscan_ok = sscanf(value,"%ld",&state->ode_jacobian_choice);
       } else if (strncmp(key,"LOG_FILE",8) == 0) {
 	sscan_ok = sscanf(value,"%s",state->log_file);
       } else if (strncmp(key,"SOLVENT",7) == 0) {
@@ -310,6 +360,20 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	if (min_conc >= 0.0) {
 	  state->min_conc = min_conc;
 	}
+      } else if (strncmp(key,"CVODES_RELTOL",13) == 0) {
+	sscan_ok = sscanf(value,"%le",&cvodes_params->reltol);
+      } else if (strncmp(key,"CVODES_ABSTOL",13) == 0) {
+	sscan_ok = sscanf(value,"%le",&cvodes_params->abstol);
+      } else if (strncmp(key,"CVODES_HIN",10) == 0) {
+	sscan_ok = sscanf(value,"%le",&cvodes_params->hin);
+      } else if (strncmp(key,"CVODES_HMIN",11) == 0) {
+	sscan_ok = sscanf(value,"%le",&cvodes_params->hmin);
+      } else if (strncmp(key,"CVODES_HMAX",11) == 0) {
+	sscan_ok = sscanf(value,"%le",&cvodes_params->hmax);
+      } else if (strncmp(key,"CVODES_NLSCOEF",14) == 0) {
+	sscan_ok = sscanf(value,"%le",&cvodes_params->nlscoef);
+      } else if (strncmp(key,"CVODES_EPLIFAC",14) == 0) {
+	sscan_ok = sscanf(value,"%le",&cvodes_params->eplifac);
       } else if (strncmp(key,"RSEED0",6) == 0) {
 	sscan_ok = sscanf(value,"%ld",&(vgrng_state->fib_seed[0]));
       } else if (strncmp(key,"RSEED1",6) == 0) {
@@ -425,6 +489,66 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	    state->free_energy_format = 0;
 	  }
 	}
+      } else if (strncmp(key,"CVODES_LMM",10) == 0) {
+        if (strncmp(value,"ADAMS",8) == 0) {
+	cvodes_params->linear_multistep_method = CV_ADAMS;
+	} else if (strncmp(value,"BDF",6) == 0) {
+	  cvodes_params->linear_multistep_method = CV_BDF;
+	}
+      } else if (strncmp(key,"CVODES_ITER",11) == 0) {
+	if (strncmp(value,"NEWTON",6) == 0) {
+	  cvodes_params->iterative_method = CV_NEWTON;
+	} else if (strncmp(value,"FUNCTIONAL",10) == 0) {
+	  cvodes_params->iterative_method = CV_FUNCTIONAL;
+	}
+      } else if (strncmp(key,"CVODES_SOLVER",13) == 0) {
+	if (strncmp(value,"DENSE",5) == 0) {
+	  cvodes_params->linear_solver_method = 0;
+	} else if (strncmp(value,"BAND",4) == 0) {
+	  cvodes_params->linear_solver_method = 2;
+	} else if (strncmp(value,"DIAG",4) == 0) {
+	  cvodes_params->linear_solver_method = 4;
+	} else if (strncmp(value,"GMR",3) == 0) {
+	  cvodes_params->linear_solver_method = 7;
+	} else if (strncmp(value,"BCG",3) == 0) {
+	  cvodes_params->linear_solver_method = 8;
+	} else if (strncmp(value,"TFQMR",5) == 0) {
+	  cvodes_params->linear_solver_method = 9;
+	}
+      } else if (strncmp(key,"CVODES_MAX_ORD",14) == 0) {
+	sscan_ok = sscanf(value,"%d",&cvodes_params->max_ord);
+      } else if (strncmp(key,"CVODES_MXSTEPS",14) == 0) {
+	sscan_ok = sscanf(value,"%d",&cvodes_params->mxsteps);
+      } else if (strncmp(key,"CVODES_MXHNIL",13) == 0) {
+	sscan_ok = sscanf(value,"%d",&cvodes_params->mxhnil);
+      } else if (strncmp(key,"CVODES_USE_STAB_LIM",19) == 0) {
+	sscan_ok = sscanf(value,"%d",&cvodes_params->use_stab_lim_det);
+      } else if (strncmp(key,"CVODES_MAXNEF",13) == 0) {
+	sscan_ok = sscanf(value,"%d",&cvodes_params->maxnef);
+      } else if (strncmp(key,"CVODES_MAXCOR",13) == 0) {
+	sscan_ok = sscanf(value,"%d",&cvodes_params->maxcor);
+      } else if (strncmp(key,"CVODES_MAXNCF",13) == 0) {
+	sscan_ok = sscanf(value,"%d",&cvodes_params->maxncf);
+      } else if (strncmp(key,"CVODES_MAXL",11) == 0) {
+	sscan_ok = sscanf(value,"%d",&cvodes_params->maxl);
+      } else if (strncmp(key,"CVODES_PRETYPE",14) == 0) {
+	if (strncmp(value,"NONE",4) == 0) {
+	  cvodes_params->pretype = PREC_NONE;
+	} else if (strncmp(value,"LEFT",4) == 0) {
+	  cvodes_params->pretype = PREC_LEFT;
+	} else if (strncmp(value,"RIGHT",5) == 0) {
+	  cvodes_params->pretype = PREC_RIGHT;
+	} else if (strncmp(value,"BOTH",4) == 0) {
+	  cvodes_params->pretype = PREC_BOTH;
+	}
+      } else if (strncmp(key,"CVODES_GSTYPE",13) == 0) {
+	if (strncmp(value,"MODIFIED",8) == 0) {
+	  cvodes_params->gstype = MODIFIED_GS;
+	} else if (strncmp(value,"CLASSICAL",9) == 0) {
+	  cvodes_params->gstype = CLASSICAL_GS;
+	}
+      } else if (strncmp(key,"CVODES_NUM_STEPS",16) == 0) {
+	sscan_ok = sscanf(value,"%d",&cvodes_params->num_cvode_steps);
       }
       sscan_ok = 0;
       rtp = fgets(param_buffer,max_param_line_len,in_fp);
