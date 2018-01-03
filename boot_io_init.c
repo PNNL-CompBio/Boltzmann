@@ -25,7 +25,7 @@ int boot_io_init(struct state_struct *state,
   FILE *boot_work_fp;
   FILE *global_state_fp;
   FILE *efp;
-
+  success           = 1;
   max_base          = (int)boot_state->filename_len - 7;
   boot_log_file     = boot_state->boot_log_file;
   rxn_list_file     = boot_state->rxn_list_file;
