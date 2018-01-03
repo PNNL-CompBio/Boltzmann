@@ -31,6 +31,6 @@ specific language governing permissions and limitations under the License.
 #ifndef _COMPUTE_CHEMICAL_POTENTIAL_H_
 #define _COMPUTE_CHEMICAL_POTENTIAL_H_ 1
 
-extern int compute_chemical_potential(struct formation_energy_struct *formation_energies);
+extern int compute_chemical_potential(struct state_struct *state);
 
 #endif /* _COMPUTE_CHEMICAL_POTENTIAL_H_ */
