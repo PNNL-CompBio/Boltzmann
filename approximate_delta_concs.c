@@ -50,7 +50,6 @@ int approximate_delta_concs(struct state_struct *state, double *concs,
                                       2 for ce_approximate_delta_concs
 
   */
-  double alt_flux_scaling;
   int success;
   int padi;
   FILE *lfp;
