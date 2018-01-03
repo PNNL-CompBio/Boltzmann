@@ -45,6 +45,9 @@ int unique_compartments(struct state_struct *state) {
   struct istring_elem_struct *sorted_cmpts;
   struct istring_elem_struct *cur_cmpt;
   struct istring_elem_struct *ucmpts_next;
+  char *compartment_text;
+  char *sstring;
+  char *cstring;
   int nzr;
   int i;
   int success;
@@ -53,25 +56,30 @@ int unique_compartments(struct state_struct *state) {
   nzr            = state->number_compartments;
   sorted_cmpts   = state->sorted_cmpts;
   rxns_matrix    = state->reactions_matrix;
+  compartment_text = state->compartment_text;
   compartment_indices = rxns_matrix->compartment_indices;
   /* loop over sorted compartments. */
   nu_cmpts = 0;
   if (nzr > 1) {
-    if (sorted_cmpts->string) {
+    if (sorted_cmpts->string >= 0) {
       compartment_indices[sorted_cmpts->c_index] = nu_cmpts;
+      cstring = (char*)&compartment_text[sorted_cmpts->string];
     } else {
       compartment_indices[sorted_cmpts->c_index] = -1;
+      cstring = NULL;
     }
     cur_cmpt = sorted_cmpts;
     sorted_cmpts += 1; /* Caution address arithmetic. */
     ucmpts_next  = sorted_cmpts;
   }
   for (i=1;i<nzr;i++) {
-    if (sorted_cmpts->string) {
-      if ((cur_cmpt->string == NULL) ||
-          (strcmp(sorted_cmpts->string,cur_cmpt->string) != 0)) {
+    if (sorted_cmpts->string>=0) {
+      sstring = (char*)&compartment_text[sorted_cmpts->string];
+      if ((cur_cmpt->string < 0) ||
+	  (strcmp(sstring,cstring) != 0)) {
 	nu_cmpts += 1;
 	cur_cmpt = sorted_cmpts;
+	cstring  = sstring;
 	ucmpts_next->string = cur_cmpt->string;
 	ucmpts_next += 1; /* Caution address arithmetic. */
       }
@@ -79,7 +87,6 @@ int unique_compartments(struct state_struct *state) {
     } else {
       compartment_indices[sorted_cmpts->c_index] = -1;
     }
-
     sorted_cmpts += 1; /* Caution address arithmetic. */
   }
   state->unique_compartments = nu_cmpts + 1;
