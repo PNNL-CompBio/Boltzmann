@@ -5,7 +5,7 @@
 #define DBG 1 
 */
 #ifdef DBG
-#include "print_concs_fluxes.h"
+#include "print_concs_dconcs.h"
 #endif
 
 #include "num_jac_col.h"
@@ -32,7 +32,7 @@ int num_jac_col(struct state_struct *state,
     two scractch
 
     Called by: ode_num_jac
-    Calls:     compute_flux_scaling, approximate_delta_concs, fabs
+    Calls:     approximate_delta_concs, fabs
 
     Arguments          TMF    Descriptin
     state              G*I    Boltzmann state for passing to approxmate_fluxes(f)
@@ -94,8 +94,6 @@ int num_jac_col(struct state_struct *state,
   int    nsteps;
 #endif
 
-  int    base_rxn;
-  int    k;
 
   int    success;
   int    rowmax;
@@ -103,11 +101,13 @@ int num_jac_col(struct state_struct *state,
   int    variable;
   int    choice;
 
+  int    k;
+  int    padi;
+
   FILE   *lfp;
   FILE   *efp;
 
   success = 1;
-  base_rxn      = state->base_reaction;
   conc_to_count = state->conc_to_count;
   lfp           = state->lfp;
   molecules     = state->sorted_molecules;
@@ -160,7 +160,7 @@ int num_jac_col(struct state_struct *state,
 	t0 = 0.0;
 	h  = 0.0;
 	nsteps = 0;
-	print_concs_fluxes(state,ny,fdel,y,t0,h,nsteps,origin);
+	print_concs_dconcs(state,ny,fdel,y,t0,h,nsteps,origin);
       }
 #endif
       /*
