@@ -95,13 +95,22 @@ int print_restart_file(struct state_struct *state) {
 	  cmpt_string = (char*)&compartment_text[cur_cmpt->string];
 	}
       }
-      if (cur_molecules->variable) {
-	vbsp = vbsv;
+      conc = ccounts[i] * multiplier;
+      if (cur_molecules->solvent == 1) {
+	if (state->use_bulk_water) {
+	  conc = 1.00;
+	  vbsp = vbsc;
+	} else {
+	  vbsp = vbsv;
+	}
       } else {
-	vbsp = vbsc;
+	if (cur_molecules->variable) {
+	  vbsp = vbsc;
+	} else {
+	  vbsp = vbsv;
+	}
       }
       molecule = (char*)&molecules_text[cur_molecules->string];
-      conc = ccounts[i] * multiplier;
       if (ci > 0) {
 	fprintf(restart_fp," %s:%s\t%le\t%c\n",
 		molecule,cmpt_string,conc,vbsp[0]);
