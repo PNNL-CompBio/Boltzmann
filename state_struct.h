@@ -74,16 +74,16 @@ struct state_struct {
   double  joule_per_cal_gm;
   int  *cmpts_map;
   int  number_reactions;
-  int  number_species;
-
   int  number_compartments;
-  int  molecules_or_conc;
+
+  int  number_species;
+  int  unique_species;
 
   int  max_species_len;
   int  min_species_len;
 
+  int  molecules_or_conc;
   int  num_rxn_file_keywords;
-  int  pad1;
 #ifdef TIMING_ON
   struct timing_struct timing_data;
 #endif
