@@ -242,7 +242,7 @@ int ode_it_solve(struct state_struct *state,
       */
       vec_max(&ny,scratch,scratch,wt);
       /*
-	scratch <- del ./  max(|y|,st)
+	scratch <- del ./  max(|y|,wt)
       */
       vec_div(&ny,scratch,del,scratch);
       newnrm = fabs(scratch[idamax_(&ny,scratch,&inc1)-1]);
