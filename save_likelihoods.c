@@ -20,16 +20,6 @@ under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <strings.h>
-#include <float.h>
-#include <math.h>
-#include <signal.h>
-#include <unistd.h>
-
-#include "djb_timing_b.h"
 #include "boltzmann_structs.h"
 
 #include "save_likelihoods.h"
@@ -38,7 +28,7 @@ void save_likelihoods(struct state_struct *state, int rxn_view_pos) {
     save the likelihoods in a transposed matrix for output to the rxns.view 
     file.
 
-    Called by: boltzmann_run_sim
+    Called by: boltzmann_run
     
 
     Arguments:
