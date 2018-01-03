@@ -1,7 +1,9 @@
 #include "boltzmann_structs.h"
 
 #include "print_net_likelihoods.h"
-void print_net_likelihoods(struct state_struct *state, double time) {
+void print_net_likelihoods(struct state_struct *state, 
+			   double *net_likelihood,
+			   double time) {
   /*
     open the net likelihood file and print a header
     with the reaction titles
@@ -10,8 +12,6 @@ void print_net_likelihoods(struct state_struct *state, double time) {
   */
   struct rxn_struct *reaction;
   int64_t number_reactions;
-  double  *net_likelihood;
-
   int  i;
   int  padi;
   FILE *net_lklhd_fp;
@@ -19,7 +19,6 @@ void print_net_likelihoods(struct state_struct *state, double time) {
 
   net_lklhd_fp      = state->net_lklhd_fp;
   number_reactions  = state->number_reactions;
-  net_likelihood    = state->net_likelihood;
   if (net_lklhd_fp != NULL) {
     fprintf(net_lklhd_fp,"%le",time);
     for (i=0;i<number_reactions;i++) {
