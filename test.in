@@ -1,5 +1,5 @@
 RXN_FILE test.dat
-INIT_FILE test_concs.in
+INIT_FILE test_conc.in
 WARMUP_STEPS 0
 RECORD_STEPS 5000
 TEMP_KELVIN 298.15
