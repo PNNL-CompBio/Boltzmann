@@ -174,7 +174,6 @@ int parse_reactions_file(struct state_struct *state,
     keyword_lens = state->rxn_file_keyword_lengths;
     rxns    = 0;
     molecules = 0;
-    cmpts   = 0;
     /*
       Should get a reaction line, a pathway line, a left line, a right line,
       a dgzero line, a dgzero-units line and a terminating // line per
@@ -202,11 +201,11 @@ int parse_reactions_file(struct state_struct *state,
     molecules_indices           = rxns_matrix->molecules_indices;
     coefficients                = rxns_matrix->coefficients;
     reaction                    = reactions;
-    reaction->lcompartment      = -1;
-    reaction->rcompartment      = -1;
+    reaction->lcompartment      = 0;
+    reaction->rcompartment      = 0;
     reaction->pathway           = -1;
-    reaction->left_compartment  = -1;
-    reaction->right_compartment = -1;
+    reaction->left_compartment  = 0;
+    reaction->right_compartment = 0;
     reaction->num_reactants     = 0;
     reaction->num_products      = 0;
     reaction->activity          = 1.0;
@@ -217,6 +216,16 @@ int parse_reactions_file(struct state_struct *state,
     state->min_molecule_len = rxn_buff_len;
     state->max_compartment_len = (int64_t)0;
     state->min_compartment_len = rxn_buff_len;
+    /*
+      Build in the empty compartment.
+    */
+    unsorted_cmpts->string = compartment_pos;
+    unsorted_cmpts->m_index  = -1;
+    unsorted_cmpts->c_index  = 0;
+    unsorted_cmpts += 1; /* Caution address arithmetic */
+    compartment_text[0] = '\0';
+    compartment_pos = align_len;
+    cmpts = 1;
     while ((fgp && success) && (! feof(rxn_fp))) {
       line_len = strlen(rxn_buffer);
       /*
@@ -320,7 +329,7 @@ int parse_reactions_file(struct state_struct *state,
 	    success = 0;
 	    break;
 	  }
-	  reaction->rcompartment = -1;
+	  reaction->rcompartment = 0;
 	  padding = (align_len - (compartment_len & align_mask)) & align_mask;
 	  reaction->left_compartment = cmpts;
 	  reaction->right_compartment = cmpts;
@@ -501,7 +510,7 @@ int parse_reactions_file(struct state_struct *state,
 	      Only look to set the compartment index if the molecule did
 	      not have a local compartment (:compartment).
 	    */
-	    if (rxn_molecules->c_index < 0) {
+	    if (rxn_molecules->c_index == 0) {
 	      if (coefficients[j] < 0) {
 		rxn_molecules->c_index = reaction->left_compartment;
 	      } else {
@@ -517,11 +526,11 @@ int parse_reactions_file(struct state_struct *state,
 	  */
 	  reaction += 1;
 	  if (rxns < (int)state->number_reactions) {
-	    reaction->lcompartment      = -1;
-	    reaction->rcompartment      = -1;
+	    reaction->lcompartment      = 0;
+	    reaction->rcompartment      = 0;
 	    reaction->pathway           = -1;
-	    reaction->left_compartment  = -1;
-	    reaction->right_compartment = -1;
+	    reaction->left_compartment  = 0;
+	    reaction->right_compartment = 0;
 	    reaction->num_reactants     = 0;
 	    reaction->num_products      = 0;
 	    reaction->activity          = 1.0;
