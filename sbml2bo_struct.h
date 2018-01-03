@@ -24,23 +24,34 @@ specific language governing permissions and limitations under the License.
 struct sbml2bo_struct {
   struct compartment_struct *sorted_compartments;
   struct compartment_struct *unsorted_compartments;
-  struct ms2js_struct       *ms2js_data;
+  struct t2js_struct       *ms2js_data;
+  struct t2js_struct       *kg2js_data;
   int64_t num_modelseed_ids;
   int64_t length_ms2js_strings;
+  int64_t num_kegg_ids;
+  int64_t length_kg2js_strings;
   char *sbml_file;
   char *concs_in_file;
   char *rxns_dat_file;
   char *cmpts_dat_file;
   char *ms2js_file;
+  char *kg2js_file;
   char *log_file;
   char *id_name_file;
   char *compartment_text;
+  char *specid_2_json_strings;
+  char **json_ids;
+  char **sort_json_ids_scratch;
+  char **spec_ids;
+  char **translations;
+  char **sort_species_trans_scratch;
   double avogadro;
   double recip_avogadro;
   double default_comp_size;
   
   int  align_mask;
   int  alignment;
+
   int  file_name_len;
   int  num_files;
 
@@ -49,6 +60,9 @@ struct sbml2bo_struct {
 
   int  num_cmpts;
   int  max_compartment_len;
+
+  int  max_specid_len;
+  int  max_species_len;
 
   FILE *sbml_fp;
   FILE *concs_fp;
