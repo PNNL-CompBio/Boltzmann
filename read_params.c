@@ -89,8 +89,10 @@ int read_params (char *param_file_name, struct state_struct *state) {
     state->warmup_steps     = 1000;
     state->record_steps     = 1000;
     state->free_energy_format = 0;
-    state->lthf             = 0;
-    state->use_activities   = 0;
+    state->rxn_view_freq      = 0;
+    state->conc_view_freq     = 1;
+    state->lklhd_view_freq    = 1;
+    state->use_activities     = 0;
     param_buffer       = state->param_buffer;
     max_param_line_len = state->max_param_line_len;
     key                = state->param_key;
@@ -143,9 +145,19 @@ int read_params (char *param_file_name, struct state_struct *state) {
       } else if (strncmp(key,"WARMUP_STEPS",12) == 0) {
 	sscan_ok = sscanf(value,"%d",&(state->warmup_steps));
       } else if (strncmp(key,"RXN_VIEW_FREQ",13) == 0) {
-	sscan_ok = sscanf(value,"%d",&(state->lthf));
-	if (state->lthf < 0) {
-	  state->lthf = 0;
+	sscan_ok = sscanf(value,"%d",&(state->rxn_view_freq));
+	if (state->rxn_view_freq < 0) {
+	  state->rxn_view_freq = 0;
+	}
+      } else if (strncmp(key,"CONC_VIEW_FREQ",14) == 0) {
+	sscan_ok = sscanf(value,"%d",&(state->conc_view_freq));
+	if (state->conc_view_freq < 0) {
+	  state->conc_view_freq = 1;
+	}
+      } else if (strncmp(key,"LKLHD_VIEW_FREQ",15) == 0) {
+	sscan_ok = sscanf(value,"%d",&(state->lklhd_view_freq));
+	if (state->lklhd_view_freq < 0) {
+	  state->lklhd_view_freq = 1;
 	}
       } else if (strncmp(key,"USE_ACTIVITIES",14) == 0) {
 	sscan_ok = sscanf(value,"%d",&(state->use_activities));
