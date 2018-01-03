@@ -35,14 +35,14 @@ int parse_reactions_file(struct state_struct *state,
   /*
 
     This routine fills the unsorted_molecules and unsorted_cmpts
-    istring_elem structures. 
+    molecule structures. 
     It fills the reactions structure.
     It also sets the molecules_indices, coefficients,
     and text fields of the reactions matrix.
     It also fills the rxn_title_text, pathway_text, compartment_text
     and molecules_text buffers.
    
-    An istring_elem_struct has 4 fields. The first three are set by 
+    An molecule_struct has 4 fields. The first three are set by 
     this routine.
     
         string  - pointer to a null terminated string that
@@ -75,9 +75,9 @@ int parse_reactions_file(struct state_struct *state,
   struct rxn_struct *reactions;
   struct rxn_struct *reaction;
   struct rxn_matrix_struct *rxns_matrix;
-  struct istring_elem_struct *unsorted_molecules;
-  struct istring_elem_struct *rxn_molecules;
-  struct istring_elem_struct *unsorted_cmpts;
+  struct molecule_struct *unsorted_molecules;
+  struct molecule_struct *rxn_molecules;
+  struct molecule_struct *unsorted_cmpts;
   double *activities;
   int64_t *keyword_lens;
   int64_t *rxn_ptrs;
@@ -498,7 +498,7 @@ int parse_reactions_file(struct state_struct *state,
 	    products get the reaction->right_compartment value for c_index;
 	  */
 	  mol_pos = rxn_ptrs[rxns];
-	  rxn_molecules = (struct istring_elem_struct *)&state->unsorted_molecules[mol_pos];
+	  rxn_molecules = (struct molecule_struct *)&state->unsorted_molecules[mol_pos];
 	  mol_pos_lim = mol_pos + reaction->num_reactants +
 	    reaction->num_products;
 	  for (j = mol_pos;j<mol_pos_lim;j++) {
