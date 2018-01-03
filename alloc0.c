@@ -122,5 +122,16 @@ int alloc0(struct state_struct **state) {
       fflush(stderr);
     }
   }
+  if (success) {
+    ask_for = (int64_t)sizeof(vss);
+    statep->vgrng2_state = (struct vgrng_state_struct *)calloc(one_l,ask_for);
+    if (statep->vgrng2_state == NULL) {
+      success = 0;
+      fprintf(stderr,
+	      "alloc0: unable to allocate %ld bytes for state->vgrng2_state.\n",
+	      ask_for);
+      fflush(stderr);
+    }
+  }
   return(success);
 }
