@@ -45,7 +45,7 @@ void init_rxn_file_keywords(struct state_struct *state) {
   strcpy((char *)&keyword_buffer[144],
 	 "NREGULATION     ENZYME_LEVEL    //              ");
   strcpy((char *)&keyword_buffer[192],
-	 "FORWARD_RATE    REVERSE_RATE                    ");
+	 "K_FORWARD       K_REVERSE                       ");
   keywords[0]  	     = (char*)(&keyword_buffer[0]);
   keywords[1]  	     = (char*)(&keyword_buffer[8]);
   keywords[2]  	     = (char*)(&keyword_buffer[16]);
@@ -76,6 +76,6 @@ void init_rxn_file_keywords(struct state_struct *state) {
   keyword_len[11]    = (int64_t)11;
   keyword_len[12]    = (int64_t)12;
   keyword_len[13]    = (int64_t)2;
-  keyword_len[14]    = (int64_t)12;
-  keyword_len[15]    = (int64_t)12;
+  keyword_len[14]    = (int64_t)9;
+  keyword_len[15]    = (int64_t)9;
 }
