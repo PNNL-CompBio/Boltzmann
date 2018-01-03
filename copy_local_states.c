@@ -6,7 +6,6 @@ int copy_local_states(struct boot_state_struct *boot_state) {
     Called by: write_super_state;
     Calls:     fseek, read, write, fprintf, fflush, fclose
   */
-  int64_t ntw;
   int64_t nw;
   int64_t ntr;
   int64_t nr;
