@@ -20,16 +20,6 @@ under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <strings.h>
-#include <float.h>
-#include <math.h>
-#include <signal.h>
-#include <unistd.h>
-
-#include "djb_timing_b.h"
 #include "boltzmann_structs.h"
 
 #include "print_free_energy.h"
@@ -38,7 +28,7 @@ void print_free_energy(struct state_struct *state, int step) {
     For recording step, print the free energies to the free 
     energy file according to the free_energy_format field of state.
 
-    Called by: boltzmann_run_sim
+    Called by: boltzmann_run
     calls    : fprintf
 
     Arguments:
