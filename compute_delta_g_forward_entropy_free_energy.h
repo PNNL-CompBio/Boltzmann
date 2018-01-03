@@ -24,4 +24,4 @@ extern int compute_delta_g_forward_entropy_free_energy(
 						struct state_struct *state,
 						double *dg_forward_p,
 						double *entropy_p,
-						int step);
+						int64_t step);
