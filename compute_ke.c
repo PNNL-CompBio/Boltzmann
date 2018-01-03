@@ -77,7 +77,7 @@ int compute_ke(struct state_struct *state) {
     fflush(stderr);
   }
   if (success) {
-    nrxns     = state->number_reactions;
+    nrxns     = (int)state->number_reactions;
     reactions = state->reactions;
     dg0s      = state->dg0s;
     ke        = state->ke;
