@@ -36,6 +36,18 @@ specific language governing permissions and limitations under the License.
 int compute_standard_energies(struct state_struct *state,
 		       struct formation_energy_struct **formation_energies_p) {
   struct formation_energy_struct *formation_energies;
+  /*
+    Called by: boltzmann_init, boltzmann_boot
+    Calls size_pseudoisomer_file,
+          alloc5,
+	  parse_pseudoisomer_dg0f_file
+	  alloc6
+	  compute_molecule_dg0tfs
+	  compute_molecular_partiton_probability
+	  compute_chemical_potential
+	  compute_reaction_dg0
+	  unalloc6
+  */
   int64_t num_pseudoisomers;
   int64_t length_pseudoisomer_strings;
   int success;
