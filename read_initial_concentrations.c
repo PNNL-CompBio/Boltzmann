@@ -38,15 +38,23 @@ int read_initial_concentrations(struct state_struct *state) {
 	       upcase,
                fopen, fgets, fclose, fprintf, fflush (intrinsic)
   */
-  struct molecule_struct *sorted_molecules;
-  struct molecule_struct *molecule;
+  struct  molecule_struct *sorted_molecules;
+  struct  molecule_struct *molecule;
+  double  volume;
+  double  conc_units;
   double  conc;
   double  conc_multiple;
   double  c_multiple;
-  double *concs;
-  double *bndry_flux_concs;
+  double  *concs;
+  double  *bndry_flux_concs;
   int64_t molecules_buff_len;
   int64_t one_l;
+  char *molecules_buffer;
+  char *molecule_name;
+  char *compartment_name;
+  char *variable_c;
+  char *compute_c;
+  char *fgp;
   int success;
   int nzr;
 
@@ -68,14 +76,9 @@ int read_initial_concentrations(struct state_struct *state) {
   int compute_conc;
   int padi;
   
-  char *molecules_buffer;
-  char *molecule_name;
-  char *compartment_name;
-  char *variable_c;
-  char *compute_c;
   char vc[2];
   char cc[2];
-  char *fgp;
+  int padj;
   
   FILE *conc_fp;
   nu_molecules       = state->nunique_molecules;
@@ -97,7 +100,71 @@ int read_initial_concentrations(struct state_struct *state) {
   num_fixed_concs = 0;
   conc_fp = fopen(state->init_conc_file,"r");
   if (conc_fp) {
-
+    /*
+      Read the required volume line.
+    */
+    fgp = fgets(molecules_buffer,molecules_buff_len,conc_fp);
+    if (fgp) {
+      if (strncmp(molecules_buffer,"VOLUME",6) != 0) {
+	fprintf(stderr,
+		"read_intial_concentrations Error: Concentratiosn input file "
+		"does not start with a VOLUME line.\n");
+	fflush(stderr);
+	success = 0;
+      } else {
+	nscan = sscanf((char*)&molecules_buffer[6],"%le",&volume);
+	if (nscan != 1) {
+	  fprintf(stderr,
+		  "read_intial_concentrations Error: invalid volume spec.\n");
+	  fflush(stderr);
+	  success = 0;
+	} else {
+	  state->volume = volume;
+	}
+      }
+    } else {
+      fprintf(stderr,
+	      "read_initial_concentrations Error: Empty concentrations "
+	      "file.\n");
+      fflush(stderr);
+      success = 0;
+    }
+  } else {
+    fprintf(stderr,
+	    "read_intial_concentrations Error: Unable to open inital "
+	    "concentrations file, %s\n",state->init_conc_file);
+    fflush(stderr);
+    success = 0;
+  }
+  if (success) {
+    fgp = fgets(molecules_buffer,molecules_buff_len,conc_fp);
+    if (fgp) {
+      if (strncmp(molecules_buffer,"CONC_UNITS",10) != 0) {
+	fprintf(stderr,
+		"read_intial_concentrations Error: Concentratiosn input file "
+		"does not have a second line with CONC_UNITS setting.\n");
+	fflush(stderr);
+	success = 0;
+      } else {
+	nscan = sscanf((char*)&molecules_buffer[10],"%le",&conc_units);
+	if (nscan != 1) {
+	  fprintf(stderr,
+	  "read_intial_concentrations Error: invalid conc_units spec.\n");
+	  fflush(stderr);
+	  success = 0;
+	} else {
+	  state->conc_units = conc_units;
+	}
+      }
+    } else {
+      fprintf(stderr,
+	      "read_initial_concentrations Error: No CONC_UNITS line in "
+	      "concentrations file.\n");
+      fflush(stderr);
+      success = 0;
+    }
+  }
+  if (success) {
     while (!feof(conc_fp)) {
       fgp = fgets(molecules_buffer,molecules_buff_len,conc_fp);
       if (fgp) {
