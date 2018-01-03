@@ -23,23 +23,17 @@ specific language governing permissions and limitations under the License.
 
 #include "boltzmann_structs.h"
 
-#include "init_rxn_file_keywords.h"
-#include "parse_rxn_file_keyword.h"
-#include "count_molecules.h"
-#include "count_ws.h"
-
 #include "size_rxns_list.h"
-int size_rxns_list(struct state_struct *state) {
+int size_rxns_list(struct boot_state_struct *boot_state) {
   /*
     Determine the number of reaction files,
-    Called by: boltzmann_boot
-    Calls    : count_ws,
-               count_molecules,
-               fopen, fgets, fprintf, fflush (intrinsic)
+    Called by: boot_init
+    Calls    : fopen, fgets, fprintf, fflush 
   */
   int64_t rxn_buff_len;
-  char *rxn_buffer;
-  char *fgp;
+  char    *rxn_list_buffer;
+  char    *rxn_list_file;
+  char    *fgp;
 
   int success;
   int rxns;
@@ -49,27 +43,32 @@ int size_rxns_list(struct state_struct *state) {
 
   FILE *rxn_fp;
   FILE *lfp;
+
   success = 1;
-  rxn_buff_len = state->max_param_line_len << 1;
-  lfp          = state->lfp;
-  rxn_fp       = fopen(state->reaction_file,"r");
+  lfp             = boot_state->lfp;
+  rxn_buff_len    = boot_state->rxn_list_buffer_len;
+  rxn_list_buffer = boot_state->rxn_list_buffer;
+  rxn_list_file   = boot_state->rxn_list_file;
+  rxn_fp          = fopen(rxn_list_file,"r");
   if (rxn_fp == NULL) {
     success = 0;
     num_reaction_files = -1;
-    fprintf(stderr,"size_rxn_list: unable to open reaction list file, %s\n",
-	    state->reaction_file);
-    fflush(stderr);
+    if (lfp) {
+      fprintf(lfp,"size_rxn_list: unable to open reaction list file, %s\n",
+	      rxn_list_file);
+      fflush(lfp);
+    }
   }
   if (success) {
-    rxn_buffer = state->param_buffer;
     num_reaction_files = 0;
     while (! feof(rxn_fp)) {
-      fgp = fgets(rxn_buffer,rxn_buff_len,rxn_fp);
+      fgp = fgets(rxn_list_buffer,rxn_buff_len,rxn_fp);
       if (fgp) {
 	num_reaction_files += 1;
       }
     }
   }
   fclose(rxn_fp);
-  return(num_reaction_files);
+  boot_state->num_reaction_files = num_reaction_files;
+  return(success);
 }
