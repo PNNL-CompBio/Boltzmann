@@ -33,8 +33,9 @@ specific language governing permissions and limitations under the License.
 #include "ode_print_concs_header.h"
 /*
 #include "fill_flux_pieces.h"
-*/
 #include "ode23tb.h"
+*/
+#include "ode_solver.h"
 
 #include "deq_run.h"
 int deq_run(struct state_struct *state) {
@@ -142,6 +143,10 @@ int deq_run(struct state_struct *state) {
   int normcontrol;
   int print_ode_concs;
 
+  int solver_choice;
+  int padi;
+
+
   FILE *lfp;
   success = 1;
   one_l   = (int64_t)1;
@@ -174,6 +179,7 @@ int deq_run(struct state_struct *state) {
   molecules              = state->sorted_molecules;
   compartments           = state->sorted_cmpts;
   print_ode_concs        = state->print_ode_concs;
+  solver_choice          = (int)state->ode_solver_choice;
   rxn_view_pos         	 = zero_l;
   choice_view_freq       = lklhd_view_freq;
   rxn_view_step        	 = one_l;
@@ -251,8 +257,8 @@ int deq_run(struct state_struct *state) {
     if (print_ode_concs) {
       ode_print_concs_header(state);
     }
-    success = ode23tb(state,counts,htry,nonnegative,normcontrol,
-		      print_ode_concs);
+    success = ode_solver(state,counts,htry,nonnegative,normcontrol,
+			 print_ode_concs,choice);
   }
   /*
   j = 1;
