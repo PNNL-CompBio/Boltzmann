@@ -390,14 +390,14 @@ Malonyl-CoA#C00083#2#Group Contribution#39#1#-3670.81254217451#ChemAxon
 Malonyl-CoA#C00083#2#Group Contribution#40#2#-3675.43354830889#ChemAxon
 Acetaldehyde#C00084#1#Alberty (2006)#4#0#-139#Alberty 2006
 Acetaldehyde#C00084#2#Group Contribution#4#0#-137.943924720144#
-D-Fructose 6-phosphate#C00085#1#Alberty (2006)#11#-2#-1760.8#Alberty 2006
-D-Fructose 6-phosphate#C00085#1#Alberty (2006)#12#-1#-1796.6#Alberty 2006
-D-Fructose 6-phosphate#C00085#2#Group Contribution#8#-5#-1547.69971070799#
-D-Fructose 6-phosphate#C00085#2#Group Contribution#9#-4#-1627.51190307824#ChemAxon
-D-Fructose 6-phosphate#C00085#2#Group Contribution#10#-3#-1700.1358636839#ChemAxon
-D-Fructose 6-phosphate#C00085#2#Group Contribution#11#-2#-1758.78270696955#ChemAxon
-D-Fructose 6-phosphate#C00085#2#Group Contribution#12#-1#-1794.43861850022#ChemAxon
-D-Fructose 6-phosphate#C00085#2#Group Contribution#13#0#-1801.398652431#ChemAxon
+D-Fructose_6-phosphate#C00085#1#Alberty (2006)#11#-2#-1760.8#Alberty 2006
+D-Fructose_6-phosphate#C00085#1#Alberty (2006)#12#-1#-1796.6#Alberty 2006
+D-Fructose_6-phosphate#C00085#2#Group Contribution#8#-5#-1547.69971070799#
+D-Fructose_6-phosphate#C00085#2#Group Contribution#9#-4#-1627.51190307824#ChemAxon
+D-Fructose_6-phosphate#C00085#2#Group Contribution#10#-3#-1700.1358636839#ChemAxon
+D-Fructose_6-phosphate#C00085#2#Group Contribution#11#-2#-1758.78270696955#ChemAxon
+D-Fructose_6-phosphate#C00085#2#Group Contribution#12#-1#-1794.43861850022#ChemAxon
+D-Fructose_6-phosphate#C00085#2#Group Contribution#13#0#-1801.398652431#ChemAxon
 Urea#C00086#1#Alberty (2006)#4#0#-202.8#Alberty 2006
 Urea#C00086#2#Alberty (2006)#4#0#-202.8#
 Sulfur#C00087#1#Alberty (2006)#0#0#0#Alberty 2006
@@ -519,12 +519,12 @@ Anthranilate#C00108#2#Group Contribution#8#1#-226.138302625361#ChemAxon
 Dolichyl phosphate#C00110#2#Group Contribution#43#-2#-581.266773359426#
 Dolichyl phosphate#C00110#2#Group Contribution#44#-1#-620.174504021692#ChemAxon
 Dolichyl phosphate#C00110#2#Group Contribution#45#0#-630.443406542524#ChemAxon
-Glycerone phosphate#C00111#1#Alberty (2006)#5#-2#-1296.26#Alberty 2006
-Glycerone phosphate#C00111#1#Alberty (2006)#6#-1#-1328.8#Alberty 2006
-Glycerone phosphate#C00111#2#Group Contribution#4#-3#-1214.55160022554#
-Glycerone phosphate#C00111#2#Group Contribution#5#-2#-1293.16575396836#ChemAxon
-Glycerone phosphate#C00111#2#Group Contribution#6#-1#-1328.65051712368#ChemAxon
-Glycerone phosphate#C00111#2#Group Contribution#7#0#-1335.43940267912#ChemAxon
+Glycerone_phosphate#C00111#1#Alberty (2006)#5#-2#-1296.26#Alberty 2006
+Glycerone_phosphate#C00111#1#Alberty (2006)#6#-1#-1328.8#Alberty 2006
+Glycerone_phosphate#C00111#2#Group Contribution#4#-3#-1214.55160022554#
+Glycerone_phosphate#C00111#2#Group Contribution#5#-2#-1293.16575396836#ChemAxon
+Glycerone_phosphate#C00111#2#Group Contribution#6#-1#-1328.65051712368#ChemAxon
+Glycerone_phosphate#C00111#2#Group Contribution#7#0#-1335.43940267912#ChemAxon
 CDP#C00112#2#Group Contribution#11#-4#-2143.78688408301#
 CDP#C00112#2#Group Contribution#12#-3#-2215.44100389505#ChemAxon
 CDP#C00112#2#Group Contribution#13#-2#-2257.65760314736#ChemAxon
@@ -659,10 +659,10 @@ myo-Inositol#C00137#2#Group Contribution#9#-3#-701.945117831094#
 myo-Inositol#C00137#2#Group Contribution#10#-2#-779.532381321829#ChemAxon
 myo-Inositol#C00137#2#Group Contribution#11#-1#-853.183232179579#ChemAxon
 myo-Inositol#C00137#2#Group Contribution#12#0#-923.297016613486#ChemAxon
-Reduced ferredoxin#C00138#1#Alberty (2006)#0#0#38.07#Alberty 2006
-Reduced ferredoxin#C00138#2#Thauer (1977)#0#2#38.39904#
-Oxidized ferredoxin#C00139#1#Alberty (2006)#0#1#0#Alberty 2006
-Oxidized ferredoxin#C00139#2#Thauer (1977)#0#3#0#
+Reduced_ferredoxin#C00138#1#Alberty (2006)#0#0#38.07#Alberty 2006
+Reduced_ferredoxin#C00138#2#Thauer (1977)#0#2#38.39904#
+Oxidized_ferredoxin#C00139#1#Alberty (2006)#0#1#0#Alberty 2006
+Oxidized_ferredoxin#C00139#2#Thauer (1977)#0#3#0#
 N-Acetyl-D-glucosamine#C00140#2#Group Contribution#12#-3#-664.619082184317#
 N-Acetyl-D-glucosamine#C00140#2#Group Contribution#13#-2#-741.350603798317#ChemAxon
 N-Acetyl-D-glucosamine#C00140#2#Group Contribution#14#-1#-814.430960071576#ChemAxon
@@ -965,15 +965,15 @@ Dimethylallyl diphosphate#C00235#2#Group Contribution#9#-3#-1800.65070540704#
 Dimethylallyl diphosphate#C00235#2#Group Contribution#10#-2#-1842.86730465935#ChemAxon
 Dimethylallyl diphosphate#C00235#2#Group Contribution#11#-1#-1861.00903244615#ChemAxon
 Dimethylallyl diphosphate#C00235#2#Group Contribution#12#0#-1870.99268767474#ChemAxon
-3-Phospho-D-glyceroyl phosphate#C00236#1#Alberty (2006)#4#-4#-2356.14#Alberty 2006
-3-Phospho-D-glyceroyl phosphate#C00236#1#Alberty (2006)#5#-3#-2401.58#Alberty 2006
-3-Phospho-D-glyceroyl phosphate#C00236#1#Alberty (2006)#6#-2#-2436#Alberty 2006
-3-Phospho-D-glyceroyl phosphate#C00236#2#Group Contribution#3#-5#-2304.67246251889#
-3-Phospho-D-glyceroyl phosphate#C00236#2#Group Contribution#4#-4#-2372.90361482398#ChemAxon
-3-Phospho-D-glyceroyl phosphate#C00236#2#Group Contribution#5#-3#-2410.78445523416#ChemAxon
-3-Phospho-D-glyceroyl phosphate#C00236#2#Group Contribution#6#-2#-2445.2423281374#ChemAxon
-3-Phospho-D-glyceroyl phosphate#C00236#2#Group Contribution#7#-1#-2454.4272909477#ChemAxon
-3-Phospho-D-glyceroyl phosphate#C00236#2#Group Contribution#8#0#-2460.18928625106#ChemAxon
+3-Phospho-D-glyceroyl_phosphate#C00236#1#Alberty (2006)#4#-4#-2356.14#Alberty 2006
+3-Phospho-D-glyceroyl_phosphate#C00236#1#Alberty (2006)#5#-3#-2401.58#Alberty 2006
+3-Phospho-D-glyceroyl_phosphate#C00236#1#Alberty (2006)#6#-2#-2436#Alberty 2006
+3-Phospho-D-glyceroyl_phosphate#C00236#2#Group Contribution#3#-5#-2304.67246251889#
+3-Phospho-D-glyceroyl_phosphate#C00236#2#Group Contribution#4#-4#-2372.90361482398#ChemAxon
+3-Phospho-D-glyceroyl_phosphate#C00236#2#Group Contribution#5#-3#-2410.78445523416#ChemAxon
+3-Phospho-D-glyceroyl_phosphate#C00236#2#Group Contribution#6#-2#-2445.2423281374#ChemAxon
+3-Phospho-D-glyceroyl_phosphate#C00236#2#Group Contribution#7#-1#-2454.4272909477#ChemAxon
+3-Phospho-D-glyceroyl_phosphate#C00236#2#Group Contribution#8#0#-2460.18928625106#ChemAxon
 CO#C00237#1#Alberty (2006)#0#0#-119.9#Alberty 2006
 CO#C00237#2#Alberty (2006)#0#-2#-119.9#
 dCMP#C00239#2#Group Contribution#11#-3#-1096.68286862435#
@@ -1329,16 +1329,16 @@ Geranylgeranyl diphosphate#C00353#2#Group Contribution#33#-3#-1482.18736170236#
 Geranylgeranyl diphosphate#C00353#2#Group Contribution#34#-2#-1524.40396095467#ChemAxon
 Geranylgeranyl diphosphate#C00353#2#Group Contribution#35#-1#-1542.54568874148#ChemAxon
 Geranylgeranyl diphosphate#C00353#2#Group Contribution#36#0#-1552.52934397007#ChemAxon
-D-Fructose 1,6-bisphosphate#C00354#1#Alberty (2006)#10#-4#-2601.4#Alberty 2006
-D-Fructose 1,6-bisphosphate#C00354#1#Alberty (2006)#11#-3#-2639.36#Alberty 2006
-D-Fructose 1,6-bisphosphate#C00354#1#Alberty (2006)#12#-2#-2673.89#Alberty 2006
-D-Fructose 1,6-bisphosphate#C00354#2#Group Contribution#8#-6#-2473.49441047582#
-D-Fructose 1,6-bisphosphate#C00354#2#Group Contribution#9#-5#-2546.23246999838#ChemAxon
-D-Fructose 1,6-bisphosphate#C00354#2#Group Contribution#10#-4#-2604.93636274247#ChemAxon
-D-Fructose 1,6-bisphosphate#C00354#2#Group Contribution#11#-3#-2642.13260965127#ChemAxon
-D-Fructose 1,6-bisphosphate#C00354#2#Group Contribution#12#-2#-2675.90588905312#ChemAxon
-D-Fructose 1,6-bisphosphate#C00354#2#Group Contribution#13#-1#-2684.40625836203#ChemAxon
-D-Fructose 1,6-bisphosphate#C00354#2#Group Contribution#14#0#-2689.48366016399#ChemAxon
+D-Fructose_1,6-bisphosphate#C00354#1#Alberty (2006)#10#-4#-2601.4#Alberty 2006
+D-Fructose_1,6-bisphosphate#C00354#1#Alberty (2006)#11#-3#-2639.36#Alberty 2006
+D-Fructose_1,6-bisphosphate#C00354#1#Alberty (2006)#12#-2#-2673.89#Alberty 2006
+D-Fructose_1,6-bisphosphate#C00354#2#Group Contribution#8#-6#-2473.49441047582#
+D-Fructose_1,6-bisphosphate#C00354#2#Group Contribution#9#-5#-2546.23246999838#ChemAxon
+D-Fructose_1,6-bisphosphate#C00354#2#Group Contribution#10#-4#-2604.93636274247#ChemAxon
+D-Fructose_1,6-bisphosphate#C00354#2#Group Contribution#11#-3#-2642.13260965127#ChemAxon
+D-Fructose_1,6-bisphosphate#C00354#2#Group Contribution#12#-2#-2675.90588905312#ChemAxon
+D-Fructose_1,6-bisphosphate#C00354#2#Group Contribution#13#-1#-2684.40625836203#ChemAxon
+D-Fructose_1,6-bisphosphate#C00354#2#Group Contribution#14#0#-2689.48366016399#ChemAxon
 3,4-Dihydroxy-L-phenylalanine#C00355#2#Group Contribution#8#-3#-372.69377787167#
 3,4-Dihydroxy-L-phenylalanine#C00355#2#Group Contribution#9#-2#-445.374787935786#ChemAxon
 3,4-Dihydroxy-L-phenylalanine#C00355#2#Group Contribution#10#-1#-500.655713172935#ChemAxon
@@ -1594,14 +1594,14 @@ alpha-D-Galactose 1-phosphate#C00446#2#Group Contribution#10#-3#-1681.0145691196
 alpha-D-Galactose 1-phosphate#C00446#2#Group Contribution#11#-2#-1750.72900734439#ChemAxon
 alpha-D-Galactose 1-phosphate#C00446#2#Group Contribution#12#-1#-1786.21377049971#ChemAxon
 alpha-D-Galactose 1-phosphate#C00446#2#Group Contribution#13#0#-1792.8315076798#ChemAxon
-Sedoheptulose 1,7-bisphosphate#C00447#2#Group Contribution#9#-7#-2534.72503735964#
-Sedoheptulose 1,7-bisphosphate#C00447#2#Group Contribution#10#-6#-2613.90968568695#ChemAxon
-Sedoheptulose 1,7-bisphosphate#C00447#2#Group Contribution#11#-5#-2685.84905279123#ChemAxon
-Sedoheptulose 1,7-bisphosphate#C00447#2#Group Contribution#12#-4#-2753.96610617942#ChemAxon
-Sedoheptulose 1,7-bisphosphate#C00447#2#Group Contribution#13#-3#-2792.81678738324#ChemAxon
-Sedoheptulose 1,7-bisphosphate#C00447#2#Group Contribution#14#-2#-2828.18745162166#ChemAxon
-Sedoheptulose 1,7-bisphosphate#C00447#2#Group Contribution#15#-1#-2838.34225522559#ChemAxon
-Sedoheptulose 1,7-bisphosphate#C00447#2#Group Contribution#16#0#-2845.07409132258#ChemAxon
+Sedoheptulose_1,7-bisphosphate#C00447#2#Group Contribution#9#-7#-2534.72503735964#
+Sedoheptulose_1,7-bisphosphate#C00447#2#Group Contribution#10#-6#-2613.90968568695#ChemAxon
+Sedoheptulose_1,7-bisphosphate#C00447#2#Group Contribution#11#-5#-2685.84905279123#ChemAxon
+Sedoheptulose_1,7-bisphosphate#C00447#2#Group Contribution#12#-4#-2753.96610617942#ChemAxon
+Sedoheptulose_1,7-bisphosphate#C00447#2#Group Contribution#13#-3#-2792.81678738324#ChemAxon
+Sedoheptulose_1,7-bisphosphate#C00447#2#Group Contribution#14#-2#-2828.18745162166#ChemAxon
+Sedoheptulose_1,7-bisphosphate#C00447#2#Group Contribution#15#-1#-2838.34225522559#ChemAxon
+Sedoheptulose_1,7-bisphosphate#C00447#2#Group Contribution#16#0#-2845.07409132258#ChemAxon
 trans,trans-Farnesyl diphosphate#C00448#2#Group Contribution#25#-3#-1588.34180960392#
 trans,trans-Farnesyl diphosphate#C00448#2#Group Contribution#26#-2#-1630.55840885623#ChemAxon
 trans,trans-Farnesyl diphosphate#C00448#2#Group Contribution#27#-1#-1648.70013664304#ChemAxon
@@ -3699,12 +3699,12 @@ alpha-D-Galactosyl-(1->3)-1D-myo-inositol#C01235#2#Group Contribution#20#-2#-144
 alpha-D-Galactosyl-(1->3)-1D-myo-inositol#C01235#2#Group Contribution#21#-1#-1516.18630127282#ChemAxon
 alpha-D-Galactosyl-(1->3)-1D-myo-inositol#C01235#2#Group Contribution#22#0#-1584.53155249481#ChemAxon
 D-Glucono-1,5-lactone 6-phosphate#C01236#1#Alberty (2006)#9#-2#-1746.08#Alberty 2006
-D-Glucono-1,5-lactone 6-phosphate#C01236#1#Alberty (2006)#10#-1#-1782.73#Alberty 2006
-D-Glucono-1,5-lactone 6-phosphate#C01236#2#Group Contribution#7#-4#-1608.25907389339#
-D-Glucono-1,5-lactone 6-phosphate#C01236#2#Group Contribution#8#-3#-1682.82271608633#ChemAxon
-D-Glucono-1,5-lactone 6-phosphate#C01236#2#Group Contribution#9#-2#-1749.11418680414#ChemAxon
-D-Glucono-1,5-lactone 6-phosphate#C01236#2#Group Contribution#10#-1#-1785.22649400241#ChemAxon
-D-Glucono-1,5-lactone 6-phosphate#C01236#2#Group Contribution#11#0#-1792.64292360079#ChemAxon
+D-Glucono-1,5-lactone_6-phosphate#C01236#1#Alberty (2006)#10#-1#-1782.73#Alberty 2006
+D-Glucono-1,5-lactone_6-phosphate#C01236#2#Group Contribution#7#-4#-1608.25907389339#
+D-Glucono-1,5-lactone_6-phosphate#C01236#2#Group Contribution#8#-3#-1682.82271608633#ChemAxon
+D-Glucono-1,5-lactone_6-phosphate#C01236#2#Group Contribution#9#-2#-1749.11418680414#ChemAxon
+D-Glucono-1,5-lactone_6-phosphate#C01236#2#Group Contribution#10#-1#-1785.22649400241#ChemAxon
+D-Glucono-1,5-lactone_6-phosphate#C01236#2#Group Contribution#11#0#-1792.64292360079#ChemAxon
 N-Acetyl-beta-D-glucosaminylamine#C01239#2#Group Contribution#14#-2#-602.093138827691#
 N-Acetyl-beta-D-glucosaminylamine#C01239#2#Group Contribution#15#-1#-676.942028312871#ChemAxon
 N-Acetyl-beta-D-glucosaminylamine#C01239#2#Group Contribution#16#0#-748.310900832658#ChemAxon
@@ -11417,12 +11417,12 @@ Nicotinurate#C05380#2#Group Contribution#9#1#-379.399567546733#ChemAxon
 3-Carboxy-1-hydroxypropyl-ThPP#C05381#2#Group Contribution#24#0#-2141.62769755766#ChemAxon
 3-Carboxy-1-hydroxypropyl-ThPP#C05381#2#Group Contribution#25#1#-2159.31302967687#ChemAxon
 3-Carboxy-1-hydroxypropyl-ThPP#C05381#2#Group Contribution#26#2#-2169.29668490546#ChemAxon
-Sedoheptulose 7-phosphate#C05382#2#Group Contribution#10#-5#-1685.83300758116#
-Sedoheptulose 7-phosphate#C05382#2#Group Contribution#11#-4#-1764.73240861623#ChemAxon
-Sedoheptulose 7-phosphate#C05382#2#Group Contribution#12#-3#-1838.78260568312#ChemAxon
-Sedoheptulose 7-phosphate#C05382#2#Group Contribution#13#-2#-1907.8124504065#ChemAxon
-Sedoheptulose 7-phosphate#C05382#2#Group Contribution#14#-1#-1943.24016410337#ChemAxon
-Sedoheptulose 7-phosphate#C05382#2#Group Contribution#15#0#-1949.97200020036#ChemAxon
+Sedoheptulose_7-phosphate#C05382#2#Group Contribution#10#-5#-1685.83300758116#
+Sedoheptulose_7-phosphate#C05382#2#Group Contribution#11#-4#-1764.73240861623#ChemAxon
+Sedoheptulose_7-phosphate#C05382#2#Group Contribution#12#-3#-1838.78260568312#ChemAxon
+Sedoheptulose_7-phosphate#C05382#2#Group Contribution#13#-2#-1907.8124504065#ChemAxon
+Sedoheptulose_7-phosphate#C05382#2#Group Contribution#14#-1#-1943.24016410337#ChemAxon
+Sedoheptulose_7-phosphate#C05382#2#Group Contribution#15#0#-1949.97200020036#ChemAxon
 D-Glucuronate 1-phosphate#C05385#2#Group Contribution#6#-5#-1784.76693321837#
 D-Glucuronate 1-phosphate#C05385#2#Group Contribution#7#-4#-1860.52861403874#ChemAxon
 D-Glucuronate 1-phosphate#C05385#2#Group Contribution#8#-3#-1930.3571511804#ChemAxon
@@ -42325,3 +42325,31 @@ ap-nadh#C80058#2#Group Contribution#31#1#-2262.11623027716#ChemAxon
 ap-nadh#C80058#2#Group Contribution#32#2#-2272.32808333954#ChemAxon
 FADenz(ox)#C80059#2#Alberty (2006)#33#0#0#Alberty (2006)
 FADenz(red)#C80060#2#Alberty (2006)#35#0#-88.56864#Alberty (2006)
+Reduced_plastocyanin-TL#C03025#1#Anderson(2006)#0#0#-35.89#ANDERSON, ET AL, BIOCH ET BIOPHYS ACTA 894, 386-398
+Oxidized_plastocyanin-TL#C03162#1#Anderson(2006)#0#0#0#ANDERSON, ET AL, BIOCH ET BIOPHYS ACTA 894, 386-398
+Plastoquinol-9-TM#C16695#2#Group Contribution#80#-2#826.886418672477#
+Plastoquinol-9-TM#C16695#2#Group Contribution#81#-1#759.282810410329#ChemAxon
+Plastoquinol-9-TM#C16695#2#Group Contribution#82#0#702.119253044361#ChemAxon
+Plastoquinone-9-TM#C10385#2#Group Contribution#78#-2#990.452807140543#
+Plastoquinone-9-TM#C10385#2#Group Contribution#79#-1#923.704940755131#ChemAxon
+Plastoquinone-9-TM#C10385#2#Group Contribution#80#0#867.168927432102#ChemAxon
+H+-TL#C00080#1#Alberty (2006)#1#1#0#Alberty 2006
+H+-TL#C00080#2#Alberty (2006)#1#1#0#
+HV680-PLASTOQUINONE-9-TM#XXXXXX#1#Sun#0#0#175.81#negative of absorption oflight at wavelength 680 nm by plastoquinone
+HV700-REDUCED_PLASTOCYANIN#XXXXXX#1#Sun#0#0#171.13#negative of Absorption of light at wavelength 700 nm by plasticyanin
+A#xxxxxx#1#Bill#0#0#0.0#Hypothetical comnpound A
+B#xxxxxx#1#Bill#0#0#-3.9895#Hypothetical comnpound B
+C#xxxxxx#1#Bill#0#0#-7.9790#Hypothetical comnpound C
+D#xxxxxx#1#Bill#0#0#-11.9685#Hypothetical comnpound D
+redox2#xxx#1#Alberty (2006)#4#-2#-690.44#
+redox2#xxx#1#Alberty (2006)#5#-1#-722.62#
+redox2#xxx#1#Alberty (2006)#6#0#-746.64#
+redox2#xxx#2#Group Contribution#4#-2#-677.883933623465#
+redox2#xxx#2#Group Contribution#5#-1#-710.345075480986#
+redox2#xxx#2#Group Contribution#6#0#-730.597633230406#
+redox1#xxx#1#Alberty (2006)#2#-2#-601.87#
+redox1#xxx#1#Alberty (2006)#3#-1#-628.14#
+redox1#xxx#1#Alberty (2006)#4#0#-645.8#
+redox1#xxx#2#Group Contribution#2#-2#-596.950453312941#
+redox1#xxx#2#Group Contribution#3#-1#-622.10926448898#
+redox1#xxx#2#Group Contribution#4#0#-642.3618222384#
