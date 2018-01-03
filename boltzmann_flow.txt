@@ -666,7 +666,27 @@ boltzmann.c is the main program
 
             lr_approximate_delta_concs // Approximate concentration derivatives
 	                               // wrt time using likelihood ratio
-				       // approximations
+				       // approximations. See 
+				       // approximate_delta_concs.txt for 
+				       // details
+
+            lr1_approximate_delta_concs // Approximate concentration derivatives
+	                               // wrt time using likelihood ratio
+				       // approximations. See 
+				       // approximate_delta_concs.txt for 
+				       // details
+
+            lr2_approximate_delta_concs // Approximate concentration derivatives
+	                               // wrt time using likelihood ratio
+				       // approximations. See 
+				       // approximate_delta_concs.txt for 
+				       // details
+
+            lr3_approximate_delta_concs // Approximate concentration derivatives
+	                               // wrt time using likelihood ratio
+				       // approximations. See 
+				       // approximate_delta_concs.txt for 
+				       // details
 
               update_rxn_likelihoods   // Update the forward
 	                               // and reverse reaction likelihoods
