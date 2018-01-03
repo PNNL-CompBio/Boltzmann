@@ -23,7 +23,6 @@ int lr8_approximate_delta_concs(struct state_struct *state,
                                       uses number_reactions,
 				           unique_moleules,
 					   sorted_molecules,
-					   sorted_compartments,
                                            molecules_matrix,
 					   ke, rke,
 					   product_term as scratch.
@@ -42,8 +41,10 @@ int lr8_approximate_delta_concs(struct state_struct *state,
   */
   struct  molecule_struct *molecules;
   struct  molecule_struct *molecule;
+  /*
   struct  compartment_struct *compartments;
   struct  compartment_struct *compartment;
+  */
   struct  molecules_matrix_struct *molecules_matrix;
   struct  reactions_matrix_struct *rxn_matrix;
   double  *activities;
@@ -103,7 +104,9 @@ int lr8_approximate_delta_concs(struct state_struct *state,
   num_rxns         = state->number_reactions;
   num_species      = state->nunique_molecules;
   molecules        = state->sorted_molecules;
+  /*
   compartments     = state->sorted_compartments;
+  */
   activities       = state->activities;
   forward_lklhd    = state->ode_forward_lklhds;
   reverse_lklhd    = state->ode_reverse_lklhds;
