@@ -41,6 +41,7 @@ struct state_struct {
   char *rxn_lklhd_file;
   char *free_energy_file;
   char *restart_file;
+  char *rxn_view_file;
   char *output_dir;
   char *rxn_buffer;
   char *conc_buffer;
@@ -99,6 +100,8 @@ struct state_struct {
   double  *current_rxn_log_likelihood_ratio;
   double  *future_rxn_log_likelihood_ratio;
   double  *l_thermo;
+  double  *rxn_view_likelihoods;
+  double  *rev_rxn_view_likelihoods;
   int  *cmpts_map;
 
   int  number_reactions;
@@ -126,6 +129,17 @@ struct state_struct {
   int  warmup_steps;
   int  record_steps;
 
+  /*
+    reaction view history frequency.
+    Default value is 0: don't display.
+  */
+  int  lthf;
+  /*
+    Likelihood transpose history length:
+    lthl = floor((record_steps + lthf - 1)/lthf);
+  */
+  int  lthl;
+
 #ifdef TIMING_ON
   struct timing_struct timing_data;
 #endif
@@ -136,6 +150,7 @@ struct state_struct {
   FILE *rxn_lklhd_fp;
   FILE *free_energy_fp;
   FILE *restart_fp;
+  FILE *rxn_view_fp;
   FILE *lfp;
 }
 ;
