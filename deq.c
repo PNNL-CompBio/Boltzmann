@@ -50,7 +50,7 @@ int main(int argc, char **argv)
   struct state_struct *state;
   char *param_file_name;
   int success;
-  int padi;
+  int j;
 
   /*
 #ifdef LIBUNWIND
@@ -72,6 +72,8 @@ int main(int argc, char **argv)
   TIMING_STOP(INITIALIZE);
   if (success) {
     success = deq_run(state);
+    j = 1;
+    print_counts(state,j);
   }
   TIMING_STOP(TOTAL_TIME);
   TIMING_PRINT(stdout);
