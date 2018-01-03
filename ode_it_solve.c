@@ -36,7 +36,6 @@ int ode_it_solve(struct state_struct *state,
   double kappa;
   double errit;
   double eps;
-  double flux_scaling;
   double minnrm;
   double *conc_to_count;
   double newnrm;
