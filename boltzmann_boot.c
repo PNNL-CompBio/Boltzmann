@@ -564,16 +564,6 @@ int boltzmann_boot(char *param_file_name,
 	  success = unique_molecules(state);
 	}
 	/*
-	  At this juncture we have echoed the reactions file if requested and
-	  need to zero out the coefficients in the reaction matrix that
-	  correspond to the solvent molecule (by default H2O) so as not to
-	  have it influence the computation of likelihoods, nor change
-	  concentration (see rxn_likelihood.c and comment in rxn_conc_update.c)
-	*/
-	if (success) {
-	  success = zero_solvent_coefficients(state);
-	}
-	/*
 	  Print the molecules dictionary and the header lines for 
 	  the concentrations output file.
 	*/
@@ -629,6 +619,23 @@ int boltzmann_boot(char *param_file_name,
 	*/
 	if (success) {
 	  success = compute_ke(state);
+	}
+	/*
+	  Here we won't print the dg0 and ke values as they go to a
+	  hardwired output file name and would overwrite eachother.
+	if (success) {
+	  if (print_output) {
+	    success = print_dg0_ke(state);
+	  }
+	}
+	  At this juncture we have echoed the reactions file if requested and
+	  need to zero out the coefficients in the reaction matrix that
+	  correspond to the solvent molecule (by default H2O) so as not to
+	  have it influence the computation of likelihoods, nor change
+	  concentration (see rxn_likelihood.c and comment in rxn_conc_update.c)
+	*/
+	if (success) {
+	  success = zero_solvent_coefficients(state);
 	}
 	/*
 	  If use_activities has not been turned on, set all activities to
