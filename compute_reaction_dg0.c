@@ -68,11 +68,13 @@ int compute_reaction_dg0(struct state_struct *state){
   int k;
 
   int coeff;
+  int use_deltag0;
+
+  int try_pseudoisomer;
   int padi;
 
-
   FILE* lfp;
-
+  FILE* efp;
 
   success = 1;
   
@@ -86,6 +88,7 @@ int compute_reaction_dg0(struct state_struct *state){
   matrix_text    	   = rxns_matrix->text;
   nrxns                    = (int)state->number_reactions;
   molecules_text           = state->molecules_text;
+  use_deltag0              = state->use_deltag0;
   
   molecule_dg0tfs          = state->molecule_dg0tfs;
 
@@ -102,43 +105,49 @@ int compute_reaction_dg0(struct state_struct *state){
       fprintf(lfp,"Number of reactants = %i\n",reaction->num_reactants);
       fprintf(lfp,"Number of products = %i\n",reaction->num_products);
     }
-    /*
-      Set the free energy units to KJ/mol.
-    */
-    reaction->unit_i = 1;
-    sum = 0;
-    rxn_dg0_tf = (double)0.0;
-    for (j=rxn_ptrs[rxns];j<rxn_ptrs[rxns+1];j++) {
-      k = molecules_indices[j];
-      coeff = coefficients[j];
-      m_dg0_tf = molecule_dg0tfs[k];
-      mto = matrix_text[j];
-      molecule = (char*)&molecules_text[mto];
-      if (m_dg0_tf != 0.0) {
-	if (print_output) {
-	  fprintf(lfp,"coefficient of molecule %s = %i and dg0_tf = %f kJ/mol.\n",
-		  molecule,coeff,m_dg0_tf);
+    
+    try_pseudoisomer = (use_deltag0 == 0) || ((use_deltag0 == 1) && (reaction->deltag0_computed != -1)) ;
+    if (try_pseudoisomer) {
+      /*
+	Set the free energy units to KJ/mol.
+      */
+      reaction->unit_i = 1;
+      sum = 0;
+      rxn_dg0_tf = (double)0.0;
+      for (j=rxn_ptrs[rxns];j<rxn_ptrs[rxns+1];j++) {
+	k = molecules_indices[j];
+	coeff = coefficients[j];
+	m_dg0_tf = molecule_dg0tfs[k];
+	mto = matrix_text[j];
+	molecule = (char*)&molecules_text[mto];
+	if (m_dg0_tf != 0.0) {
+	  if (print_output) {
+	    fprintf(lfp,"coefficient of molecule %s = %i and dg0_tf = %f kJ/mol.\n",
+		    molecule,coeff,m_dg0_tf);
+	  }
+	  rxn_dg0_tf += (coeff * m_dg0_tf);
+	} else {
+	  sum += 1;
+	  rxn_dg0_tf = (double)0.0;
+	  if (print_output) {
+	    fprintf(lfp,"molecule %s reaction %d, did not have a "
+		    "formation energy.\n",molecule,rxns);
+	    fflush(lfp);
+	  }
 	}
-	rxn_dg0_tf += (coeff * m_dg0_tf);
+      } /* end for(j...) */
+      if (sum == 0) {
+	reaction->delta_g0 = rxn_dg0_tf;
+	reaction->deltag0_computed = 1;
+	if (print_output) {
+	  fprintf(lfp,"Computed reaction delta_g0 = %le\n",rxn_dg0_tf);
+	}
       } else {
-	sum += 1;
-	rxn_dg0_tf = (double)0.0;
+	reaction->deltag0_computed = 0;
 	if (print_output) {
-	  fprintf(lfp,"molecule %s reaction %d, did not have a "
-		  "formation energy.\n",molecule,rxns);
-	  fflush(lfp);
+	  fprintf(lfp,"Using input reaction delta_g0 = %le\n",
+		  reaction->delta_g0);
 	}
-      }
-    } /* end for(j...) */
-    if (sum == 0) {
-      reaction->delta_g0 = rxn_dg0_tf;
-      if (print_output) {
-	fprintf(lfp,"Computed reaction delta_g0 = %le\n",rxn_dg0_tf);
-      }
-    } else {
-      if (print_output) {
-	fprintf(lfp,"Using input reaction delta_g0 = %le\n",
-		reaction->delta_g0);
       }
     }
     reaction += 1; /* Caution address arithmetic */
