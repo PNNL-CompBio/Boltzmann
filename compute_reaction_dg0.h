@@ -31,6 +31,6 @@ specific language governing permissions and limitations under the License.
 #ifndef _COMPUTE_REACTION_DG0_H_
 #define _COMPUTE_REACTION_DG0_H_ 1
 
-extern int compute_reaction_dg0(struct formation_energy_struct *state);
+extern int compute_reaction_dg0(struct state_struct *state);
 
 #endif /* _COMPUTE_REACTION_DG0_H_ */
