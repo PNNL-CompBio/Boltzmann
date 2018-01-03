@@ -60,7 +60,7 @@ void print_counts(struct state_struct *state, int64_t step) {
     if (step < (int64_t)0) {
       fprintf(counts_out_fp,"init");
     } else {
-      fprintf(counts_out_fp,"%ld",step);
+      fprintf(counts_out_fp,"%lld",step);
     }
     for (j=0;j<unique_molecules;j++) {
       if (j != solvent_pos) {
