@@ -43,7 +43,7 @@ int boltzmann_flatten_rmatrix(struct state_struct *state,
   lfstate = (int64_t *)fstate;
   dfstate = (double  *)fstate;
 
-  rmatrix_len = (int64_t)3 + (2*number_reactions)  + (4*nz);
+  rmatrix_len = (int64_t)3 + (3*number_reactions)  + (4*nz);
 
   word_pos += 1;
   if (direction == 0) {
