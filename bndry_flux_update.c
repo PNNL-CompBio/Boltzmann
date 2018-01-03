@@ -56,9 +56,6 @@ int bndry_flux_update(int rxn_no, int direction,
   rxn_ptrs          = rxns_matrix->rxn_ptrs;
   molecules_indices = rxns_matrix->molecules_indices;
   coefficients      = rxns_matrix->coefficients;
-  /*
-    The following could be done with an memmove
-  */
   if (direction > 0) {
     for (j=rxn_ptrs[rxn_no];j<rxn_ptrs[rxn_no+1];j++) {
       k = molecules_indices[j];
