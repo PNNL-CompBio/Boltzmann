@@ -34,6 +34,7 @@ specific language governing permissions and limitations under the License.
 #include "sort_compartments.h"
 int sort_compartments(struct istring_elem_struct **unsorted_compartments,
 		      struct istring_elem_struct **sorted_compartments,
+		      char *compartment_text,
 		      int n) {
   /*
     Sort the uppercase istring names.
@@ -72,7 +73,8 @@ int sort_compartments(struct istring_elem_struct **unsorted_compartments,
 	if (l2 > step) l2 = step;
 	merge_compartments((struct istring_elem_struct *)&u_compartments[j],
 		       (struct istring_elem_struct *)&u_compartments[j+step],
-	               (struct istring_elem_struct *)&s_compartments[j],l1,l2);
+			   (struct istring_elem_struct *)&s_compartments[j],
+			   compartment_text,l1,l2);
       }
       /* Now if the last group is <= step they just need to be copied
 	 in to the sorted list.
@@ -80,7 +82,7 @@ int sort_compartments(struct istring_elem_struct **unsorted_compartments,
       ln = n & (step + step - 1);
       if (ln <= step) {
 	for (j = n-ln;j<n;j++) {
-	  s_compartments[j].string = u_compartments[j].string;
+	  s_compartments[j].string   = u_compartments[j].string;
 	  s_compartments[j].m_index  = u_compartments[j].m_index;
 	  s_compartments[j].c_index  = u_compartments[j].c_index;
 	}
