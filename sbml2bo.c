@@ -21,9 +21,9 @@ CONDITIONS OF ANY KIND, either express or implied. See the License for the
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
 
-#include "sbml2bo_structs.h"
 #include "boltzmann_structs.h"
 
+#include "size_ms2js_file.h"
 #include "sbml_alloc0.h"
 #include "sbml_set_file_names.h"
 #include "sbml_alloc1.h"
@@ -32,7 +32,10 @@ specific language governing permissions and limitations under the License.
 
 int main(int argc, char **argv)
 {
+  struct state_struct state;
   struct sbml2bo_struct *sbml_state;
+  int64_t num_modelseed_ids;
+  int64_t length_ms2js_strings;
   int success;
   int base_len;
 
@@ -47,7 +50,13 @@ int main(int argc, char **argv)
   FILE *extra_fp;
     
   max_file_name_len = 1024;
-  success = 1;
+  /*
+    Set the fields of the state structure that size_ms2js_file needs.
+  */
+  state.align_len = 16;
+  strcpy(state.ms2js_file,"./modelseed_2_json.srt");
+  success = size_ms2js_file(&state,&num_modelseed_ids,
+			    &length_ms2js_strings);
   /*
     Need to allocate space for the sbml_state structure and its
     filename fields.
@@ -66,6 +75,17 @@ int main(int argc, char **argv)
   }
   if (success) {
     success = sbml_set_file_names(sbml_state);
+  }
+  if (success) {
+    strcpy(sbml_state->ms2js_file,state.ms2js_file);
+    sbml_state->num_modelseed_ids = num_modelseed_ids;
+    sbml_state->length_ms2js_strings = length_ms2js_strings;
+    success = sbml_alloc2(sbml_state,num_modelseed_ids,length_ms2js_strings);
+    if (success) {
+      success = read_ms2js(sbml_state);
+    }
+  }
+  if (success) {
   }
   if (success) {
     lfp = fopen(sbml_state->log_file,"w");
