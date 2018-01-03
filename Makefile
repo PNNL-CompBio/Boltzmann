@@ -59,17 +59,17 @@ DIST_ARCHIVES = $(distdir).tar.gz
 GZIP_ENV = --best
 distuninstallcheck_listfiles = find . -type f -print
 distcleancheck_listfiles = find . -type f -print
-ACLOCAL = ${SHELL} /home/dbaxter/boltzmann/missing --run aclocal-1.9
+ACLOCAL = ${SHELL} /home/dbaxter/boltzmann/trunk/missing --run aclocal-1.9
 AMDEP_FALSE = #
 AMDEP_TRUE = 
-AMTAR = ${SHELL} /home/dbaxter/boltzmann/missing --run tar
-AUTOCONF = ${SHELL} /home/dbaxter/boltzmann/missing --run autoconf
-AUTOHEADER = ${SHELL} /home/dbaxter/boltzmann/missing --run autoheader
-AUTOMAKE = ${SHELL} /home/dbaxter/boltzmann/missing --run automake-1.9
+AMTAR = ${SHELL} /home/dbaxter/boltzmann/trunk/missing --run tar
+AUTOCONF = ${SHELL} /home/dbaxter/boltzmann/trunk/missing --run autoconf
+AUTOHEADER = ${SHELL} /home/dbaxter/boltzmann/trunk/missing --run autoheader
+AUTOMAKE = ${SHELL} /home/dbaxter/boltzmann/trunk/missing --run automake-1.9
 AWK = gawk
 CC = gcc
 CCDEPMODE = depmode=none
-CFLAGS = ${BCFLAGS} ${OPT_FLAGS} ${DBG_FLAGS}
+CFLAGS = ${OPT_FLAGS} ${DBG_FLAGS}
 CPP = gcc -E
 CPPFLAGS = 
 CYGPATH_W = echo
@@ -87,7 +87,7 @@ LDFLAGS =
 LIBOBJS = 
 LIBS = 
 LTLIBOBJS = 
-MAKEINFO = ${SHELL} /home/dbaxter/boltzmann/missing --run makeinfo
+MAKEINFO = ${SHELL} /home/dbaxter/boltzmann/trunk/missing --run makeinfo
 MMAP_CONFIG = no_
 MPI_EXECS = 
 OBJEXT = o
@@ -120,7 +120,7 @@ exec_prefix = ${prefix}
 host_alias = 
 includedir = ${prefix}/include
 infodir = ${prefix}/info
-install_sh = /home/dbaxter/boltzmann/install-sh
+install_sh = /home/dbaxter/boltzmann/trunk/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localstatedir = ${prefix}/var
@@ -144,19 +144,18 @@ EXECS =  boltzmann
 FFLAGS = @FFLAGS@
 ASFLAGS = @ASFLAGS@
 DBG_FLAGS = 
-MASS_FLAGS = 
-OPT_FLAGS = -O0 -g  -DLINUX
-NO_OPT_FLAGS = -O0 -g  -DLINUX
+OPT_FLAGS = -O0 -g -DLINUX
+NO_OPT_FLAGS = -O0 -g -DLINUX
 BLFLAGS =  -lm
-BCFLAGS = -O0 -g  -DLINUX ${MASS_FLAGS}
+BCFLAGS = -O0 -g -DLINUX 
 LFLAGS = ${BLFLAGS} 
-NO_OPT_CFLAGS = ${BCFLAGS} ${NO_OPT_FLAGS} ${DBG_FLAGS}
+NO_OPT_CFLAGS = ${BCFLAGS} ${DBG_FLAGS}
 DCFLAGS = ${NO_OPT_CFLAGS} 
 DLFLAGS = ${BLFLAGS} 
 TIMING_DEPS = timingi.h djb_timing_b.h djb_timing.h
 LUNWIND_DEPS = luwtb.h luwtb1.h luwtb2.h
-SERIAL_INCS = boltzmann_structs.h state_struct.h rxn_struct.h rxn_matrix_struct.h $(TIMING_DEPS) $(LUNWIND_DEPS)
-SERIAL_OBJS = boltzmann.o alloc0.o read_params.o alloc1.o echo_params.o size_rxns_file.o init_rxn_file_keywords.o parse_rxn_file_keyword.o count_species.o count_ws.o count_nws.o is_a_coef.o
+SERIAL_INCS = boltzmann_structs.h state_struct.h rxn_struct.h rxn_matrix_struct.h molecules_matrix_struct.h vgrng_state_struct.h $(TIMING_DEPS) $(LUNWIND_DEPS)
+SERIAL_OBJS = boltzmann_drv.o boltzmann_init.o alloc0.o read_params.o vgrng_init.o vgrng.o alloc1.o echo_params.o size_rxns_file.o init_rxn_file_keywords.o parse_rxn_file_keyword.o count_molecules.o count_ws.o count_nws.o is_a_coef.o alloc2.o parse_reactions_file.o upcase.o echo_reactions_file.o sort_molecules.o merge_molecules.o unique_molecules.o sort_compartments.o merge_compartments.o unique_compartments.o translate_compartments.o print_molecules_dictionary.o alloc3.o set_compartment_ptrs.o read_initial_concentrations.o compartment_lookup.o molecules_lookup.o form_molecules_matrix.o compute_ke.o boltzmann_run_sim.o free_energy_changes.o rxn_log_likelihoods.o rxn_likelihoods.o binary_search_l_u_b.o forward_rxn_conc_update.o reverse_rxn_conc_update.o
 all: all-am
 
 .SUFFIXES:
@@ -428,8 +427,11 @@ include Makefile.no_timing
 boltzmann: $(SERIAL_OBJS) $(MMAP_OBJS) $(TIMING_LIB)
 	$(CLINKER) $(LFLAGS) -o boltzmann $(SERIAL_OBJS) $(MMAP_OBJS) $(TIMING_LIB)
 
-boltzmann.o: $(SERIAL_INCS) boltzmann.c alloc0.h read_params.h echo_params.h size_rxns_file.h
-	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann.c
+boltzmann_drv.o: $(SERIAL_INCS) boltzmann_drv.c boltzmann_init.h boltzmann_run_sim.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_drv.c
+
+boltzmann_init.o: $(SERIAL_INCS) boltzmann_init.c boltzmann_init.h alloc0.h read_params.h vgrng_init.o vgrng.o echo_params.h size_rxns_file.h alloc1.h alloc2.h parse_reactions_file.h echo_reactions_file.h sort_compartments.h unique_compartments.h translate_compartments.h sort_molecules.h unique_molecules.h print_molecules_dictionary.h alloc3.h set_compartment_ptrs.h read_initial_concentrations.h form_molecules_matrix.h vgrng_init.h vgrng.h compute_ke.h 
+	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_init.c
 
 alloc0.o: $(SERIAL_INCS) alloc0.c alloc0.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c alloc0.c
@@ -437,13 +439,19 @@ alloc0.o: $(SERIAL_INCS) alloc0.c alloc0.h
 read_params.o: $(SERIAL_INCS) read_params.c read_params.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c read_params.c
 
+vgrng_init.o: $(SERIAL_INCS) vgrng_init.c vgrng_init.h vgrng.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c vgrng_init.c
+
+vgrng.o: $(SERIAL_INCS) vgrng.c vgrng.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c vgrng.c
+
 alloc1.o: $(SERIAL_INCS) alloc1.c alloc1.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c alloc1.c
 
 echo_params.o: $(SERIAL_INCS) echo_params.c echo_params.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c echo_params.c
 
-size_rxns_file.o: $(SERIAL_INCS) size_rxns_file.c size_rxns_file.h init_rxn_file_keywords.h parse_rxn_file_keyword.h count_species.h count_ws.h
+size_rxns_file.o: $(SERIAL_INCS) size_rxns_file.c size_rxns_file.h init_rxn_file_keywords.h parse_rxn_file_keyword.h count_molecules.h count_ws.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c size_rxns_file.c
 
 init_rxn_file_keywords.o: $(SERIAL_INCS) init_rxn_file_keywords.c init_rxn_file_keywords.h
@@ -452,14 +460,89 @@ init_rxn_file_keywords.o: $(SERIAL_INCS) init_rxn_file_keywords.c init_rxn_file_
 parse_rxn_file_keyword.o: $(SERIAL_INCS) parse_rxn_file_keyword.c parse_rxn_file_keyword.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c parse_rxn_file_keyword.c
 
-count_species.o: $(SERIAL_INCS) count_species.c count_species.h count_ws.h count_nws.h is_a_coef.h
-	$(CC) $(DCFLAGS) $(TFLAGS) -c count_species.c
+count_molecules.o: $(SERIAL_INCS) count_molecules.c count_molecules.h count_ws.h count_nws.h is_a_coef.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c count_molecules.c
 
 count_ws.o: $(SERIAL_INCS) count_ws.c count_ws.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c count_ws.c
 
 count_nws.o: $(SERIAL_INCS) count_nws.c count_nws.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c count_nws.c
+
+alloc2.o: $(SERIAL_INCS) alloc2.c alloc2.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c alloc2.c
+
+parse_reactions_file.o: $(SERIAL_INCS) parse_reactions_file.h parse_reactions_file.c parse_rxn_file_keyword.h count_ws.h count_nws.h upcase.h is_a_coef.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c parse_reactions_file.c
+
+upcase.o: upcase.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c upcase.c
+
+echo_reactions_file.o: $(SERIAL_INCS) echo_reactions_file.h echo_reactions_file.c 
+	$(CC) $(DCFLAGS) $(TFLAGS) -c echo_reactions_file.c
+
+sort_molecules.o: $(SERIAL_INCS) sort_molecules.c sort_molecules.h merge_molecules.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c sort_molecules.c
+
+merge_molecules.o: $(SERIAL_INCS) merge_molecules.c merge_molecules.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c merge_molecules.c
+
+unique_molecules.o: $(SERIAL_INCS) unique_molecules.c unique_molecules.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c unique_molecules.c
+
+sort_compartments.o: $(SERIAL_INCS) sort_compartments.c sort_compartments.h merge_compartments.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c sort_compartments.c
+
+merge_compartments.o: $(SERIAL_INCS) merge_compartments.c merge_compartments.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c merge_compartments.c
+
+unique_compartments.o: $(SERIAL_INCS) unique_compartments.c unique_compartments.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c unique_compartments.c
+
+translate_compartments.o: $(SERIAL_INCS) translate_compartments.c translate_compartments.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c translate_compartments.c
+
+print_molecules_dictionary.o: $(SERIAL_INCS) print_molecules_dictionary.c print_molecules_dictionary.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c print_molecules_dictionary.c
+
+alloc3.o: $(SERIAL_INCS) alloc3.c alloc3.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c alloc3.c
+
+set_compartment_ptrs.o: $(SERIAL_INCS) set_compartment_ptrs.c set_compartment_ptrs.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c set_compartment_ptrs.c
+
+read_intial_concentrations.o: $(SERIAL_INCS) read_intial_concentrations.c read_intial_concentrations.h compartment_lookup.h molecules_lookup.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c read_initial_concentrations.c
+
+molecules_lookup.o: $(SERIAL_INCS) molecules_lookup.c molecules_lookup.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c molecules_lookup.c
+
+compartment_lookup.o: $(SERIAL_INCS) compartment_lookup.c compartment_lookup.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c compartment_lookup.c
+
+form_molecules_matrix.o: $(SERIAL_INCS) form_molecules_matrix.c form_molecules_matrix.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c form_molecules_matrix.c
+
+boltzmann_run_sim.o: $(SERIAL_INCS) boltzmann_run_sim.c boltzmann_run_sim.h free_energy_changes.h vgrng.h binary_search_l_u_b.h forward_rxn_conc_update.h reverse_rxn_conc_update.h rxn_log_likelihoods.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_run_sim.c
+
+free_energy_changes.o: $(SERIAL_INCS) free_energy_changes.c free_energy_changes.h rxn_log_likelihoods.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c free_energy_changes.c
+
+rxn_log_likelihoods.o: $(SERIAL_INCS) rxn_log_likelihoods.c rxn_log_likelihoods.h rxn_likelihoods.h 
+	$(CC) $(DCFLAGS) $(TFLAGS) -c rxn_log_likelihoods.c
+
+rxn_likelihoods.o: $(SERIAL_INCS) rxn_likelihoods.c rxn_likelihoods.h 
+	$(CC) $(DCFLAGS) $(TFLAGS) -c rxn_likelihoods.c
+
+binary_search_l_u_b.o: $(SERIAL_INCS) binary_search_l_u_b.c binary_search_l_u_b.h 
+	$(CC) $(DCFLAGS) $(TFLAGS) -c binary_search_l_u_b.c
+
+forward_rxn_conc_update.o: $(SERIAL_INCS) forward_rxn_conc_update.c forward_rxn_conc_update.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c forward_rxn_conc_update.c
+
+reverse_rxn_conc_update.o: $(SERIAL_INCS) reverse_rxn_conc_update.c reverse_rxn_conc_update.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c reverse_rxn_conc_update.c
 
 clean:
 	-/bin/rm -f *.o *~ $(EXECS)
