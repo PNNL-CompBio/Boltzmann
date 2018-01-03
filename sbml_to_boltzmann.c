@@ -109,6 +109,7 @@ int sbml_to_boltzmann(struct state_struct *state) {
     strcpy(sbml_state->ms2js_file,state->ms2js_file);
     sbml_state->num_modelseed_ids = num_modelseed_ids;
     sbml_state->length_ms2js_strings = length_ms2js_strings;
+    sbml_state->default_comp_size = 1.0e-15;
     success = sbml_alloc2(sbml_state,num_modelseed_ids,length_ms2js_strings);
     if (success) {
       success = read_ms2js(sbml_state);
