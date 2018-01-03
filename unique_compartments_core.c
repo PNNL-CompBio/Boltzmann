@@ -25,7 +25,7 @@ specific language governing permissions and limitations under the License.
 
 #include "unique_compartments_core.h"
 int unique_compartments_core(int nzr,
-			     struct molecule_struct *sorted_cmpts,
+			     struct compartment_struct *sorted_cmpts,
 			     char   *compartment_text,
 			     int64_t *compartment_indices,
 			     int64_t *nunique_compartments,
@@ -40,9 +40,9 @@ int unique_compartments_core(int nzr,
     Called by: unique_compartments, boltzmann_boot
     Calls:     strcmp (intrinsic)
   */
-  struct molecule_struct *srtd_cmpts;
-  struct molecule_struct *cur_cmpt;
-  struct molecule_struct *ucmpts_next;
+  struct compartment_struct *srtd_cmpts;
+  struct compartment_struct *cur_cmpt;
+  struct compartment_struct *ucmpts_next;
   char *sstring;
   char *cstring;
   int64_t compartment_len;
