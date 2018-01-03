@@ -36,7 +36,7 @@ int boltzmann_cvodes_bsolve(struct state_struct *state, double *r, double *z) {
       k = ju[j];
       sum -= z[k] * u[j];
     }
-    z[i] *= recip_diag_u[i];
+    z[i] = sum * recip_diag_u[i];
   }
   return(success);
 }
