@@ -45,6 +45,7 @@ int ode_it_solve(struct state_struct *state,
   double p9_old_rate;
   double rate;
   double *dbl_ptr;
+  double yi;
 
   int64_t eps_hex;
   int itfail;
@@ -92,7 +93,18 @@ int ode_it_solve(struct state_struct *state,
     for (i=0;i<ny;i++) {
       znew[i] = h * znew[i];
       del[i]  = znew[i] - z[i];
-      y[i]    = y[i] + d * del[i];
+      yi      = y[i];
+      y[i]    = yi + d * del[i];
+      /*
+	Here again we need to not let y be negative.
+	We do assume that y[i] is nonnegative on input,
+	maybe should test that hypothesis.
+      */
+      if (y[i] < 0.0) {
+	y[i] = .5*yi;
+	del[i] = -(.5 * yi) / d;
+	znew[i] = z[i] + del[i];
+      }
       z[i]    = znew[i];
       del_scale = abs(y[i]);
       if (wt > del_scale) {
