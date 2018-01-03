@@ -361,6 +361,7 @@ struct state_struct {
   double  *count_to_conc; /* len = unique_molecules */
   double  *conc_to_count; /* len = unique_molecules */
   double  *activities;   /* len = number_reactions */
+  double  *enzyme_level; /* len = number_reactions */
   double  *reg_constant; /* len = number_reactions * max_regs_per_rxn */
   double  *reg_exponent; /* len = number_reactions * max_regs_per_rxn */
   double  *reg_drctn;    /* len = number_reactions * max_regs_per_rxn */
