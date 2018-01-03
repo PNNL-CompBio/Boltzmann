@@ -89,28 +89,24 @@ int boltzmann_boot(char *param_file_name, int64_t **super_statep) {
     meta_data[6] 8-byte global number of molecules.
     meta_data[7] 8-byte unique_global_molecules
     meta_data[8] 8-byte molecule_text_length (in bytes)
-    meta_data[9] 8-byte global number of compartments. (in 8byte words)
-    meta_data[10] 8-byte unique_global_compartments (in 8byte words)
+    meta_data[9] 8-byte global number of compartments. 
+    meta_data[10] 8-byte unique_global_compartments 
     meta_data[11] 8-byte compartment_text_length (in bytes)
     meta_data[12] 8 byte state_offsets_sizes_offset (in 8byte words)
-    meta_data[13] 8 byte molecule_indices_offset; (in 8byte words)
-    meta_data[14] 8 byte compartment_indices_offset; (in 8byte words)
-    meta_data[15] 8-byte molecule_map_offset (in 8byte words)
-    meta_data[16] 8-byte molecule_names_offset (in 8byte words)
-    meta_data[17] 8-byte compartment_map_offset (in 8byte words)
-    meta_data[18] 8-byte compartment_names_offset (in 8byte words)
-    meta_data[19] 8-byte molecules_text_offset (in bytes)
-    meta_data[20] 8-byte compartments_text_offset (in bytes)
+    meta_data[13] 8 byte molecule_map_starts_offset; (in 8byte words)
+    meta_data[14] 8-byte molecule_map_offset (in 8byte words)
+    meta_data[15] 8-byte molecule_names_offset (in 8byte words)
+    meta_data[16] 8-byte compartment_map_offset (in 8byte words)
+    meta_data[17] 8-byte compartment_names_offset (in 8byte words)
+    meta_data[18] 8-byte molecules_text_offset (in bytes)
+    meta_data[19] 8-byte compartments_text_offset (in bytes)
 
     state_offsets_sizes[number_of_reaction_files]
        offset in bytes, length pairs of the reaction states.
 
-    molecule_indices [number_of_reaction_files+1]
+    molecule_map_starts [number_of_reaction_files+1]
       These are indexes to the first element per reaction file 
       for the molecles_map vector.
-    compartment_indices [number_of_reaction_files+1]
-      These are indexes to the first element per reaction file 
-      for the compartments_map vector.
 
     molecule_map           [global_number_of_molecules]
     compartment_map        [global_number_of_molecules]
@@ -121,11 +117,15 @@ int boltzmann_boot(char *param_file_name, int64_t **super_statep) {
     
     compartment_names  [unique_global_number_of_compartments]
        These will be character offsets relative to the
-       beginning of the cartments_text address.
+       beginning of the compartments_text address.
 
     molecule_text      [molecule_text_length]
     comparmtent_text  [compartment_text_length]
 ----------
+    compartment_list_starts [number_of_reaction_files+1]
+      These are indexes to the first element per reaction file 
+      for the compartments_list vector.
+    compartment_list_starts is only needed as workspace, no need to save it.
 
     compartment_list   [global_number_of_compartments]
     compartment_list is only needed as workspace, no need to save it.
@@ -190,14 +190,17 @@ int boltzmann_boot(char *param_file_name, int64_t **super_statep) {
   int64_t *compartment_map;
   int64_t *state_offsets_sizes;
   int64_t *state_offset_size;
-  int64_t *molecule_map_indices;
+  int64_t *molecule_map_starts;
+  /*
   int64_t *compartment_map_indices;
+  */
+  int64_t *compartment_list_starts;
   int64_t *compartment_list;
   int64_t *global_compartment;
   int64_t *global_molecule;
   int64_t state_offsets_sizes_offset;
   
-  int64_t molecule_indices_offset;
+  int64_t molecule_map_starts_offset;
   int64_t compartment_indices_offset;
   int64_t molecule_map_offset;
   int64_t compartment_map_offset;
@@ -396,9 +399,19 @@ int boltzmann_boot(char *param_file_name, int64_t **super_statep) {
     } 
   }
   if (success) {
-    state_offsets_sizes_offset = (int64_t)22;
-    meta_data_size = (state_offsets_sizes_offset + (int64_t)2) + 
-                       (int64_t)(num_reaction_files << 2);
+    ask_for = (int64_t)(num_reaction_files+1) * (int64_t)sizeof(int64_t);
+    compartment_list_starts = calloc(one_l,ask_for);
+    if (compartment_list_starts == NULL) {
+      fprintf(stderr,"boltzmann_boot: Error unable to allocate %ld bytes "
+	      "for compartment_list_starts\n",ask_for);
+      fflush(stderr);
+      success = 0;
+    }
+  }  
+  if (success) {
+    state_offsets_sizes_offset = (int64_t)20;
+    meta_data_size = (state_offsets_sizes_offset + (int64_t)1) + 
+                       (int64_t)(num_reaction_files *3);
     ask_for = sizeof(int64_t) * meta_data_size;
     meta_data = (int64_t *)calloc(one_l,ask_for);
     if (meta_data == NULL) {
@@ -409,14 +422,11 @@ int boltzmann_boot(char *param_file_name, int64_t **super_statep) {
   }
   if (success) {
     state_offsets_sizes        = (int64_t *)&meta_data[state_offsets_sizes_offset];
-    molecule_indices_offset    = state_offsets_sizes_offset + 
+    molecule_map_starts_offset    = state_offsets_sizes_offset + 
                                    (num_reaction_files << 1);
-    molecule_map_indices       = (int64_t *)&meta_data[molecule_indices_offset];
-    compartment_indices_offset = molecule_indices_offset + 
-                                   num_reaction_files + 1;
-    compartment_map_indices    = (int64_t *)&meta_data[compartment_indices_offset];
-    molecule_map_indices[0] = (int64_t)0;
-    compartment_map_indices[0] = (int64_t)0;
+    molecule_map_starts       = (int64_t *)&meta_data[molecule_map_starts_offset];
+    molecule_map_starts[0] = (int64_t)0;
+    compartment_list_starts[0] = (int64_t)0;
 
     rxn_list_buffp = (char *)&rxn_list_buffer[0];
     rxn_list_line_len = 1024;
@@ -668,9 +678,9 @@ int boltzmann_boot(char *param_file_name, int64_t **super_statep) {
 	  state_offset_size += 1;
 	  nunique_molecules = statep->nunique_molecules;
 	  nunique_compartments = statep->nunique_compartments;
-	  molecule_map_indices[i+1]    = molecule_map_indices[i] + 
+	  molecule_map_starts[i+1]    = molecule_map_starts[i] + 
 	                                   nunique_molecules;
-	  compartment_map_indices[i+1] = compartment_map_indices[i] + 
+	  compartment_list_starts[i+1] = compartment_list_starts[i] + 
 	                                   nunique_compartments;
 	  if (nunique_molecules > unique_molecules_max) {
 	    unique_molecules_max = nunique_molecules;
@@ -700,8 +710,8 @@ int boltzmann_boot(char *param_file_name, int64_t **super_statep) {
     tmp_state_fd = fileno(tmp_state_fp);
   }
   if (success) {
-    global_number_of_compartments = compartment_map_indices[num_reaction_files];
-    global_number_of_molecules = molecule_map_indices[num_reaction_files];
+    global_number_of_compartments = compartment_list_starts[num_reaction_files];
+    global_number_of_molecules = molecule_map_starts[num_reaction_files];
 
     /*
       Now to merge the compartment lists into one global list, and then the 
@@ -715,7 +725,7 @@ int boltzmann_boot(char *param_file_name, int64_t **super_statep) {
       string_offset quadruple for compartments.
       Then we need to sort the compartments building the compartment map
       of length number total_number_compartments indexd by 
-      compartment_map_indices, followed by sorting the molecules in
+      compartment_list_starts, followed by sorting the molecules in
       which we also fill in the global compartment numbers from
       the compartment map.
     	we need to parse the sorted_molecules and sorted_compartment
@@ -862,7 +872,7 @@ int boltzmann_boot(char *param_file_name, int64_t **super_statep) {
 	istring_space = nunique_compartments * sizeof(ies);
 	lseek_pos = offset + local_state.sorted_compartments_offset_in_bytes;
 	lseek(tmp_state_fd,lseek_pos,whence);
-	ci_base = compartment_map_indices[i];
+	ci_base = compartment_list_starts[i];
 	istrings = (struct istring_elem_struct *)&compartment_sort_ws[ci_base];
 	nr = read(tmp_state_fd,istrings,istring_space);
 	if (nr != istring_space) {
@@ -894,7 +904,7 @@ int boltzmann_boot(char *param_file_name, int64_t **super_statep) {
 	istring_space = nunique_molecules * sizeof(ies);
 	lseek_pos = offset + local_state.sorted_molecules_offset_in_bytes;
 	lseek(tmp_state_fd,lseek_pos,whence);
-	mi_base = molecule_map_indices[i];
+	mi_base = molecule_map_starts[i];
 	istrings = (struct istring_elem_struct *)&molecule_sort_ws[mi_base];
 	nr = read(tmp_state_fd,
 		  (struct istring_elem_struct *)istrings,istring_space);
@@ -947,7 +957,7 @@ int boltzmann_boot(char *param_file_name, int64_t **super_statep) {
     sorted_compartments   = (struct istring_elem_struct *)&compartment_sort_ws[global_number_of_compartments];
     success = sort_global_compartments(&unsorted_compartments,
 				       &sorted_compartments,
-				       compartment_map_indices,
+				       compartment_list_starts,
 				       compartment_text_ws,
 				       num_reaction_files);
   }
@@ -974,14 +984,14 @@ int boltzmann_boot(char *param_file_name, int64_t **super_statep) {
     istrings = (struct istring_elem_struct *)&molecule_sort_ws[0];
     for (i=0;i<global_number_of_molecules;i++) {
       /*
-	compartment_list list of all unique compartment names with in
+	compartment_list is a list of all unique compartment names with in
 	each reaction file by reaction file.
 	istrings->g_index is the reaction_file number.
-	compartment_map_indices[istrings->g_index] points to where
+	compartment_list_starts[istrings->g_index] points to where
 	in the compartment_list to start, and istrings->c_index gives
 	the offset from the start.
       */
-      istrings->c_index = compartment_list[compartment_map_indices[istrings->g_index] + istrings->c_index];
+      istrings->c_index = compartment_list[compartment_list_starts[istrings->g_index] + istrings->c_index];
       compartment_map[i] = istrings->c_index;
       istrings++; /* Caution address arithmetic */
     }
@@ -995,14 +1005,13 @@ int boltzmann_boot(char *param_file_name, int64_t **super_statep) {
     sorted_molecules   = (struct istring_elem_struct *)&molecule_sort_ws[global_number_of_molecules];
     success = sort_global_molecules(&unsorted_molecules,
 				    &sorted_molecules,
-				    molecule_map_indices,
+				    molecule_map_starts,
 				    molecule_text_ws,
 				    num_reaction_files);
   }
   if (success) {
     /*
-      Now we need to extract the list of unique global molecules.
-    */
+      Now we need to extract the list of unique global molecules.    */
     align_len     = state->align_len;
     align_mask     = state->align_mask;
     nzr            = global_number_of_molecules;
@@ -1066,6 +1075,7 @@ int boltzmann_boot(char *param_file_name, int64_t **super_statep) {
       pad_size = (align_len  - (cmpt_size & align_mask)) & align_mask;
       strcpy((char*)&(compartment_text[cws_pos]),cstring);
       compartment_names[i] = cws_pos;
+      istrings->string = cws_pos;
       cws_pos += (cmpt_size + pad_size);
       istrings++; /* Caution address arithmetic */
     }
@@ -1077,6 +1087,7 @@ int boltzmann_boot(char *param_file_name, int64_t **super_statep) {
       pad_size = (align_len  - (mlcl_size & align_mask)) & align_mask;
       strcpy((char*)&(molecule_text[mws_pos]),mstring);
       molecule_names[i] = mws_pos;
+      istrings->string = mws_pos;
       mws_pos += (mlcl_size + pad_size);
       istrings++; /* Caution address arithmetic */
     }
@@ -1109,14 +1120,13 @@ int boltzmann_boot(char *param_file_name, int64_t **super_statep) {
     meta_data[10] = unique_global_compartments;
     meta_data[11] = cws_pos;
     meta_data[12] = state_offsets_sizes_offset;
-    meta_data[13] = molecule_indices_offset;
-    meta_data[14] = compartment_indices_offset; 
-    meta_data[15] = molecule_map_offset;
-    meta_data[16] = molecule_names_offset; 
-    meta_data[17] = compartment_map_offset;
-    meta_data[18] = compartment_names_offset;
-    meta_data[19] = molecules_text_offset; 
-    meta_data[20] = compartments_text_offset;
+    meta_data[13] = molecule_map_starts_offset;
+    meta_data[14] = molecule_map_offset;
+    meta_data[15] = molecule_names_offset; 
+    meta_data[16] = compartment_map_offset;
+    meta_data[17] = compartment_names_offset;
+    meta_data[18] = molecules_text_offset; 
+    meta_data[19] = compartments_text_offset;
     /*
       Increment the state_offset_size offsets by meta_data_size;
     */
