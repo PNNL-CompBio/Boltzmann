@@ -127,6 +127,11 @@ int read_params (char *param_file_name, struct state_struct *state) {
     state->default_volume      = 1.0e-15;
     state->recip_default_volume = 1.0e15;
     state->ode_t_final         = 10.0;
+    /*
+    state->max_log_g0_sum      = 704.0;
+    */
+    state->max_log_g0_sum      = 100.0;
+    state->dg0_scale_factor    = .001;
     state->flux_scaling        = 0.0;
     /*
     state->min_conc            = 1.0e-52;
@@ -263,6 +268,8 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	} 
       } else if (strncmp(key,"ODE_T_FINAL",11) == 0) {
 	sscan_ok = sscanf(value,"%le",&(state->ode_t_final));
+      } else if (strncmp(key,"DG0_SCALE_FACTOR",16) == 0) {
+	sscan_ok = sscanf(value,"%le",&(state->dg0_scale_factor));
       } else if (strncmp(key,"MIN_CONC",8) == 0) {
 	sscan_ok = sscanf(value,"%le",&min_conc);
 	if (min_conc >= 0.0) {
