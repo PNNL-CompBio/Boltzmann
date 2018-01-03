@@ -19,7 +19,7 @@ int run_init(struct state_struct *state, struct state_struct **flattened_state) 
     Called by: boltzmann_init_core, 
     Calls:     vgrng_init,
                print_rxn_likelihoods_header,
-	       print_free_endrgy_header,
+	       print_free_energy_header,
                flatten_state,
 	       print_reactions_matrix
 	       free_boot_state2
