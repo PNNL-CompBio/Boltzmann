@@ -31,9 +31,6 @@ int print_molecules_dictionary(struct state_struct *state) {
     Called by: echo_inputs
     Calls:     fopen, fprintf, fclose (intrinsic)
   */
-  struct rxn_struct *reactions;
-  struct rxn_matrix_struct *rxns_matrix;
-  int64_t *column_indices;
   struct molecule_struct *cur_molecules;
   struct compartment_struct *cur_cmpts;
   struct compartment_struct *cur_cmpt;
@@ -42,17 +39,15 @@ int print_molecules_dictionary(struct state_struct *state) {
   char *molecules_text;
   char *cmpt_string;
   char *molecule;
-  int nzr;
+
   int i;
-
   int oi;
+
   int ci;
-
   int success;
-  int nu_molecules;
 
+  int nu_molecules;
   int solvent_pos;
-  int padi;
 
   FILE *dict_fp;
   FILE *counts_fp;
