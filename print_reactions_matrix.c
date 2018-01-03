@@ -22,6 +22,8 @@ specific language governing permissions and limitations under the License.
 ******************************************************************************/
 
 #include "boltzmann_structs.h"
+#include "recover_solvent_coefficients.h"
+#include "zero_solvent_coefficients.h"
 
 #include "print_reactions_matrix.h"
 int print_reactions_matrix(struct state_struct *state) {
@@ -30,6 +32,9 @@ int print_reactions_matrix(struct state_struct *state) {
     the reaction title and stoichiometric statement.
     Called by: boltzmann_init
     Calls:     fopen, fprintf, fclose (intrinsic)
+
+    As this routine is called after the solvent coefficients have been 
+    zeroed out, we need to restore them
   */
   struct rxn_struct *reaction;
   struct rxn_matrix_struct *rxns_matrix;
@@ -95,6 +100,12 @@ int print_reactions_matrix(struct state_struct *state) {
     fprintf(stderr,
 	    "print_reactions_matrix: Error could not open rxns.mat file.\n");
     success = 0;
+  }
+  if (success) {
+    /*
+      Recover the solvent coefficients.
+    */
+    success = recover_solvent_coefficients(state);
   }
   if (success) {
     reaction       	 = state->reactions;
@@ -190,6 +201,12 @@ int print_reactions_matrix(struct state_struct *state) {
       reaction += 1; /* Caution address arithmetic here.*/
     }
     fclose(rxn_mat_fp);
+    /*
+      Now we need to rezero the solvent coefficents.
+    */
+    if (success) {
+      success = zero_solvent_coefficients(state);
+    }
   }
   return(success);
 }
