@@ -67,7 +67,12 @@ int alloc0(struct state_struct **statep, int setup) {
 	    ask_for);
     fflush(stderr);
   }
-  if (setup) {
+  if (success) {
+    state->usage = usage;
+    success = alloc0_a(state);
+    usage = state->usage;
+  }
+  if (success && setup) {
     state->version_no = 4547; // Checkin revision of state_struct.h
     /*
       Allocate space for filename strings and solvent string
@@ -76,11 +81,6 @@ int alloc0(struct state_struct **statep, int setup) {
       This sets state->max_filename_len, the num_files parameter
       and allocates space for the filenames and the solvent string.
     */
-    if (success) {
-      state->usage = usage;
-      success = alloc0_a(state);
-      usage = state->usage;
-    }
     /*
       Allocate_space for reading the parameter file.
     */
