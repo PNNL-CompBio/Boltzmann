@@ -53,7 +53,9 @@ int read_initial_concentrations(struct state_struct *state) {
   double  avogadro;
   double  units_avo;
   double  recip_avogadro;
+  /*
   double  half;
+  */
   double  e_val;
   double  u_val;
   double  *bndry_flux_counts;
@@ -101,7 +103,9 @@ int read_initial_concentrations(struct state_struct *state) {
   FILE *counts_out_fp;
   avogadro            = state->avogadro;
   recip_avogadro      = state->recip_avogadro;
+  /*
   half                = 0.5;
+  */
   nu_molecules        = state->nunique_molecules;
   nu_compartments     = state->nunique_compartments;
   molecules_buff_len  = state->max_param_line_len;
