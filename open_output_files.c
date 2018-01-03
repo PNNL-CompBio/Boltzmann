@@ -56,8 +56,23 @@ int open_output_files(struct state_struct *state) {
       state->counts_out_fp = fopen(state->counts_out_file,"w");
       if (state->counts_out_fp == NULL) {
 	fprintf(stderr,
-		"output_output_files: unable to open counts_out_file, %s, quitting.\n",
+		"open_output_files: unable to open counts_out_file, %s, quitting.\n",
 		state->counts_out_file);
+	fflush(stderr);
+	success = 0;
+      }
+    }
+  }
+  if (success) {
+    if (state->concs_out_file) {
+      /*
+	Open the concs output file.
+      */
+      state->concs_out_fp = fopen(state->concs_out_file,"w");
+      if (state->concs_out_fp == NULL) {
+	fprintf(stderr,
+		"open_output_files: unable to open concs_out_file, %s, quitting.\n",
+		state->concs_out_file);
 	fflush(stderr);
 	success = 0;
       }
