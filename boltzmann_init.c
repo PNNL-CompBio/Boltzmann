@@ -26,6 +26,7 @@ specific language governing permissions and limitations under the License.
 #include "open_output_files.h"
 #include "vgrng_init.h"
 #include "echo_params.h"
+#include "sbml_to_boltzmann.h"
 #include "size_rxns_file.h"
 #include "size_pseudoisomer_file.h"
 #include "alloc2.h"
