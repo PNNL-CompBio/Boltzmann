@@ -24,4 +24,5 @@ extern int rxn_log_likelihoods(double *free_energy,
 			       double *concs, 
 			       double *rxn_ratio,
 			       double *log_rxn_ratio,
-			       struct state_struct *state);
+			       struct state_struct *state,
+			       int rxn_direction);
