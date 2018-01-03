@@ -206,7 +206,7 @@ SERIAL_OBJS7 = deq_run.o alloc7.o ode_solver.o ode23tb.o \
 	ode23tb_max_abs_ratio.o ode23tb_nonneg_err.o \
 	ode23tb_enforce_nonneg.o get_counts.o boltzmann_monitor_ode.o \
 	print_dense_jacobian.o
-SERIAL_OBJS8 = boltzmann_cvodes.o boltzmann_size_jacobian.o boltzmann_cvodes_rhs.o boltzmann_print_cvodeinit_errors.o boltzmann_cvodes_init.o boltzmann_check_cvodeset_errors.o boltzmann_check_tol_errors.o boltzmann_set_cvodes_linear_solver.o boltzmann_check_cvdls_errors.o boltzmann_check_cvspils_errors.o boltzmann_cvodes_psetup.o approximate_jacobian.o boltzmann_sparse_to_dense.o boltzmann_dense_to_sparse.o lr8_approximate_jacobian.o crs_column_sort_rows.o build_newton_matrix.o precondition_newton_matrix.o iluvf.o dcrsng_mag_sort.o dcrsng_mag_merge.o isort.o imerge.o boltzmann_cvodes_psolve.o boltzmann_cvodes_bsolve.o boltzmann_cvodes_fsolve.o boltzmann_cvodes_jtimes.o boltzmann_sparse_mvp.o boltzmann_print_cvode_error.o dgbtrf.o dgbtf2.o dger.o dgbtrs.o dswap.o dtbsv.o print_sparse_jacobian.o
+SERIAL_OBJS8 = boltzmann_cvodes.o boltzmann_size_jacobian.o boltzmann_cvodes_rhs.o boltzmann_print_cvodeinit_errors.o boltzmann_cvodes_init.o boltzmann_check_cvodeset_errors.o boltzmann_check_tol_errors.o boltzmann_set_cvodes_linear_solver.o boltzmann_check_cvdls_errors.o boltzmann_check_cvspils_errors.o boltzmann_check_cvodesens_errors.o approximate_ys0.o lr8_approximate_ys0.o boltzmann_cvodes_psetup.o approximate_jacobian.o boltzmann_sparse_to_dense.o boltzmann_dense_to_sparse.o lr8_approximate_jacobian.o crs_column_sort_rows.o build_newton_matrix.o precondition_newton_matrix.o iluvf.o dcrsng_mag_sort.o dcrsng_mag_merge.o isort.o imerge.o boltzmann_cvodes_psolve.o boltzmann_cvodes_bsolve.o boltzmann_cvodes_fsolve.o boltzmann_cvodes_jtimes.o boltzmann_sparse_mvp.o boltzmann_print_cvode_error.o dgbtrf.o dgbtf2.o dger.o dgbtrs.o dswap.o dtbsv.o print_sparse_jacobian.o boltzmann_print_sensitivities.o
 
 #SERIAL_OBJS9 = flatten_state.o free_boot_state2.o free_boot_state.o
 SBML_OBJS = sbml_to_boltzmann.o size_ms2js_file.o size_kg2js_file.o sbml_alloc0.o sbml_set_file_names.o sbml_alloc2.o read_ms2js.o read_kg2js.o sort_json_ids.o merge_sorted_strings.o sbml_count_cmpts.o sbml_count_species.o sbml_alloc1.o parse_sbml.o sbml_find_section.o sbml_process_list_of_compartments.o sbml_read_key_value.o sbml_lookup_compartment_attribute.o sbml_volume_units_conversion.o sbml_process_list_of_species.o sbml_start_species_def.o sbml_parse_species_key_value.o sbml_lookup_species_attribute.o sbml_process_substanceunits.o sbml_generate_init_conc_line.o boltzmannize_string.o sbml_find_string.o sbml_sort_species_trans.o sbml_merge_species_trans.o sbml_process_list_of_reactions.o sbml_look_for_in_reaction_tag.o sbml_process_reaction_tag.o sbml_lookup_reaction_attribute.o sbml_process_list_of_reactants_tag.o  sbml_process_list_of_products_tag.o sbml_process_species_reference_tag.o sbml_lookup_speciesref_attribute.o count_ntb.o
@@ -780,6 +780,9 @@ libboltzmann.a: $(SERIAL_OBJS1)  $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SERIAL_OBJS4)
 	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_set_cvodes_linear_solver.o
 	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_check_cvdls_errors.o 
 	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_check_cvspils_errors.o
+	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_check_cvodesens_errors.o
+	$(AR) $(ARFLAGS) libboltzmann.a approximate_ys0.o
+	$(AR) $(ARFLAGS) libboltzmann.a lr8_approximate_ys0.o
 	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_cvodes_psetup.o
 	$(AR) $(ARFLAGS) libboltzmann.a approximate_jacobian.o
 	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_sparse_to_dense.o
@@ -801,6 +804,7 @@ libboltzmann.a: $(SERIAL_OBJS1)  $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SERIAL_OBJS4)
 	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_print_cvode_error.o
 	$(AR) $(ARFLAGS) libboltzmann.a init_base_reactants.o
 	$(AR) $(ARFLAGS) libboltzmann.a init_relative_rates.o
+	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_print_sensitivities.o
 	$(AR) $(ARFLAGS) libboltzmann.a blas.o
 	$(AR) $(ARFLAGS) libboltzmann.a lsame.o
 	$(AR) $(ARFLAGS) libboltzmann.a dtrsm.o
@@ -1652,7 +1656,7 @@ update_rxn_likelihoods.o: update_rxn_likelihoods.c update_rxn_likelihoods.h rxn_
 print_concs_dconcs.o: print_concs_dconcs.c print_concs_dconcs.h update_rxn_likelihoods.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c print_concs_dconcs.c 
 
-boltzmann_cvodes.o: boltzmann_cvodes.c boltzmann_cvodes.h $(SERIAL_INCS) boltzmann_size_jacobian.h boltzmann_cvodes_rhs.h boltzmann_print_cvodeinit_errors.h boltzmann_cvodes_init.h boltzmann_print_cvode_error.h boltzmann_monitor_ode.h
+boltzmann_cvodes.o: boltzmann_cvodes.c boltzmann_cvodes.h $(SERIAL_INCS) boltzmann_size_jacobian.h boltzmann_cvodes_rhs.h boltzmann_print_cvodeinit_errors.h boltzmann_cvodes_init.h boltzmann_print_cvode_error.h boltzmann_monitor_ode.h boltzmann_print_sensitivities.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_cvodes.c
 
 boltzmann_size_jacobian.o: boltzmann_size_jacobian.c boltzmann_size_jacobian.h $(SERIAL_INCS)
@@ -1664,7 +1668,7 @@ boltzmann_cvodes_rhs.o: boltzmann_cvodes_rhs.c boltzmann_cvodes_rhs.h $(SERIAL_I
 boltzmann_print_cvodeinit_errors.o: boltzmann_print_cvodeinit_errors.c boltzmann_print_cvodeinit_errors.h $(SERIAL_INCS) 
 	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_print_cvodeinit_errors.c
 
-boltzmann_cvodes_init.o: boltzmann_cvodes_init.c boltzmann_cvodes_init.h $(SERIAL_INCS) boltzmann_check_cvodeset_errors.h boltzmann_check_tol_errors.h boltzmann_set_cvodes_linear_solver.h boltzmann_check_cvspils_errors.h boltzmann_cvodes_psetup.h boltzmann_cvodes_psolve.h boltzmann_cvodes_jtimes.h
+boltzmann_cvodes_init.o: boltzmann_cvodes_init.c boltzmann_cvodes_init.h $(SERIAL_INCS) boltzmann_check_cvodeset_errors.h boltzmann_check_tol_errors.h boltzmann_set_cvodes_linear_solver.h boltzmann_check_cvspils_errors.h boltzmann_cvodes_psetup.h boltzmann_cvodes_psolve.h boltzmann_cvodes_jtimes.h boltzmann_check_cvodesens_errors.h approximate_ys0.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_cvodes_init.c
 
 boltzmann_check_cvodeset_errors.o: boltzmann_check_cvodeset_errors.c boltzmann_check_cvodeset_errors.h $(SERIAL_INCS)
@@ -1685,6 +1689,15 @@ boltzmann_check_cvdls_errors.o: boltzmann_check_cvdls_errors.c boltzmann_check_c
 
 boltzmann_check_cvspils_errors.o: boltzmann_check_cvspils_errors.c boltzmann_check_cvspils_errors.h $(SERIAL_INCS) 
 	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_check_cvspils_errors.c
+
+boltzmann_check_cvodesens_errors.o: boltzmann_check_cvodesens_errors.c boltzmann_check_cvodesens_errors.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_check_cvodesens_errors.c
+
+approximate_ys0.o: approximate_ys0.c approximate_ys0.h lr8_approximate_ys0.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c approximate_ys0.c
+
+lr8_approximate_ys0.o: lr8_approximate_ys0.c lr8_approximate_ys0.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c lr8_approximate_ys0.c
 
 boltzmann_cvodes_psetup.o: boltzmann_cvodes_psetup.c boltzmann_cvodes_psetup.h $(SERIAL_INCS) approximate_jacobian.h build_newton_matrix.h precondition_newton_matrix.h 
 	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_cvodes_psetup.c
@@ -1739,6 +1752,9 @@ boltzmann_cvodes_jtimes.o: boltzmann_cvodes_jtimes.c boltzmann_cvodes_jtimes.h $
 
 boltzmann_sparse_mvp.o: boltzmann_sparse_mvp.c boltzmann_sparse_mvp.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_sparse_mvp.c
+
+boltzmann_print_sensitivities.o: boltzmann_print_sensitivities.c boltzmann_print_sensitivities.h boltzmann_check_cvodesens_errors.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_print_sensitivities.c
 
 lapack_test: lapack_test.o blas.o lsame.o dgemm.o dtrsm.o dgetrf.o dgetrs.o dgetrf2.o dlaswp.o
 	     $(CLINKER) $(LFLAGS) -o lapack_test lapack_test.o blas.o lsame.o dgemm.o dtrsm.o dgetrf.o dgetrs.o dgetrf2.o dlaswp.o -lm $(LIBS) libboltzmann.a
