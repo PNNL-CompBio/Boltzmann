@@ -36,7 +36,7 @@ int boot_alloc1(struct boot_state_struct *boot_state) {
   boot_log_file = (char *)calloc(one_l,ask_for);
   if (boot_log_file == NULL) {
     fprintf(stderr,"boot_alloc1: Error, could not allocate "
-	    "%ld bytes for boot_log_file name\n",ask_for);
+	    "%lld bytes for boot_log_file name\n",ask_for);
     fflush(stderr);
     success = 0;
   }
@@ -48,7 +48,7 @@ int boot_alloc1(struct boot_state_struct *boot_state) {
     rxn_list_file = (char *)calloc(one_l,ask_for);
     if (rxn_list_file == NULL) {
       fprintf(stderr,"boot_alloc1: Error, could not allocate "
-	      "%ld bytes for rxn_list_file name\n",ask_for);
+	      "%lld bytes for rxn_list_file name\n",ask_for);
       fflush(stderr);
       success = 0;
     }
@@ -61,7 +61,7 @@ int boot_alloc1(struct boot_state_struct *boot_state) {
     global_state_file = (char *)calloc(one_l,ask_for);
     if (global_state_file == NULL) {
       fprintf(stderr,"boot_alloc1: Error, could not allocate "
-	      "%ld bytes for global_state_file name\n",ask_for);
+	      "%lld bytes for global_state_file name\n",ask_for);
       fflush(stderr);
       success = 0;
     }
@@ -74,7 +74,7 @@ int boot_alloc1(struct boot_state_struct *boot_state) {
     boot_work_file = (char *)calloc(one_l,ask_for);
     if (boot_work_file == NULL) {
       fprintf(stderr,"boot_alloc1: Error, could not allocate "
-	      "%ld bytes for booto_work_file name\n",ask_for);
+	      "%lld bytes for booto_work_file name\n",ask_for);
       fflush(stderr);
       success = 0;
     }
@@ -88,7 +88,7 @@ int boot_alloc1(struct boot_state_struct *boot_state) {
     rxn_list_buffer = (char*)calloc(one_l,ask_for);
     if (rxn_list_buffer == NULL) {
       fprintf(stderr,"boot_alloc1: Error, could not allocate "
-	      "%ld bytes for rxn_list_buffer\n",ask_for);
+	      "%lld bytes for rxn_list_buffer\n",ask_for);
       fflush(stderr);
       success = 0;
     }
@@ -102,7 +102,7 @@ int boot_alloc1(struct boot_state_struct *boot_state) {
     page_fill = (int64_t*)calloc(one_l,ask_for);
     if (page_fill == NULL) {
       fprintf(stderr,"boot_alloc1: Error, could not allocate "
-	      "%ld bytes for page_fill\n",ask_for);
+	      "%lld bytes for page_fill\n",ask_for);
       fflush(stderr);
       success = 0;
     }
@@ -113,7 +113,7 @@ int boot_alloc1(struct boot_state_struct *boot_state) {
     solvent_string = (char*)calloc(one_l,ask_for);
     if (solvent_string == NULL) {
       fprintf(stderr,"boot_alloc1: Error, could not allocate "
-	      "%ld bytes for solvent_string\n",ask_for);
+	      "%lld bytes for solvent_string\n",ask_for);
       fflush(stderr);
       success = 0;
     }
