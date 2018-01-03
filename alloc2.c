@@ -28,8 +28,8 @@ specific language governing permissions and limitations under the License.
 int alloc2(struct state_struct *state, int setup) {
   /*
     Allocate space for the text strings to store all of the
-    information within the reactions file. Also allocate space
-    for the reaction structure and meta data, and random number generation.
+    information within the reactions file. 
+    Also allocate space for the reaction structure and meta data. 
     Sets the following fields of state, allocating space for those that
     are pointers: if setup = 1.
 
