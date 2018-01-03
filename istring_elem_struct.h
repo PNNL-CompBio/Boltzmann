@@ -52,7 +52,7 @@ struct istring_elem_struct {
        The padi field is just a padding field to make the length a multiple
        of 8.
   */
-  char *string;
+  int64_t string;
   int  m_index;
   int  c_index;
   int  variable;
