@@ -147,7 +147,7 @@ int compute_molecule_dg0tf(double ph,
     pseudoisomer += 1; /* Caution address arithmetic */
   }
   if (dgt1 != dgtmin) {
-    sum *= exp(dgt1 - dgtmin);
+    sum *= exp((dgt1 - dgtmin)*m_r_rt);
   }
   if (check) {
     /*
