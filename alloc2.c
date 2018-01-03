@@ -36,11 +36,11 @@ int alloc2(struct state_struct *state) {
   struct rxn_struct *reactions;
   struct rxn_matrix_struct rms;
   struct rxn_matrix_struct *reactions_matrix;
-  struct istring_elem_struct ises;
-  struct istring_elem_struct *sorted_molecules;
-  struct istring_elem_struct *unsorted_molecules;
-  struct istring_elem_struct *sorted_cmpts;
-  struct istring_elem_struct *unsorted_cmpts;
+  struct molecule_struct ises;
+  struct molecule_struct *sorted_molecules;
+  struct molecule_struct *unsorted_molecules;
+  struct molecule_struct *sorted_cmpts;
+  struct molecule_struct *unsorted_cmpts;
   int64_t usage;
   int64_t rxn_title_space;
   int64_t pathway_space;
@@ -209,7 +209,7 @@ int alloc2(struct state_struct *state) {
     ask_for = ((int64_t)num_molecules) * ((int64_t)sizeof(ises));
     ask_for = ask_for << 1;
     usage += ask_for;
-    state->unsorted_molecules = (struct istring_elem_struct *)calloc(one_l,ask_for);
+    state->unsorted_molecules = (struct molecule_struct *)calloc(one_l,ask_for);
     if (state->unsorted_molecules) {
       /*
 	Caution address arithmetic follows.
@@ -227,7 +227,7 @@ int alloc2(struct state_struct *state) {
     ask_for = ((int64_t)num_cmpts) * ((int64_t)sizeof(ises));
     ask_for = ask_for << 1;
     usage += ask_for;
-    state->unsorted_cmpts = (struct istring_elem_struct *)calloc(one_l,ask_for);
+    state->unsorted_cmpts = (struct molecule_struct *)calloc(one_l,ask_for);
     if (state->unsorted_molecules) {
       /*
 	Caution address arithmetic follows.
