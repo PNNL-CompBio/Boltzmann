@@ -151,9 +151,9 @@ int lr9_approximate_delta_concs(struct state_struct *state,
     rfc   = k_f * product of reactants^stoichiometric_coef -
             k_r * product of products*stoichiometric_coef,
 
-	 where k_f = k_eq/ thermo_product of products.
+	 where k_f = forward rate constant
 
-	 and   k_r  = k_eq^(-1)/thermo_product of reactants,
+	 and   k_r  = reverse rate constant.
 
 	 and thermo_product = 
 	 product( species_conc + |stoichiometric_coef|/volume)^|stoichiometric coef|.
