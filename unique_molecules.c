@@ -37,9 +37,9 @@ int unique_molecules(struct state_struct *state) {
   struct rxn_matrix_struct *rxns_matrix;
   int64_t *molecules_indices;
   int64_t *compartment_indices;
-  struct istring_elem_struct *sorted_molecules;
-  struct istring_elem_struct *cur_molecule;
-  struct istring_elem_struct *umolecules_next;
+  struct molecule_struct *sorted_molecules;
+  struct molecule_struct *cur_molecule;
+  struct molecule_struct *umolecules_next;
   char *molecules_text;
   char *cstring;
   char *sstring;
