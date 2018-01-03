@@ -1,5 +1,6 @@
 #include "boltzmann_structs.h"
 #include "get_counts.h"
+#include "update_regulations.h"
 #include "lr9_approximate_delta_concs.h"
 
 int lr9_approximate_delta_concs(struct state_struct *state, 
@@ -9,12 +10,13 @@ int lr9_approximate_delta_concs(struct state_struct *state,
   /*
     Compute approximations to concentration changes wrt time, 
     Based on thermodynamics formulation for concentraion rate
-    changes, but also scaled by reaction activity coefficents.
+    changes
     using counts to compute tr, tp, pt, rt instead of concs.
 
     Get reference from Bill Cannon
     Called by: approximate_delta_concs
-    Calls:     update_rxn_likelihoods
+    Calls:     get_counts,
+               update_regulations,
 
                                 TMF
     state                       *SI   Boltzmant state structure.
@@ -50,8 +52,10 @@ int lr9_approximate_delta_concs(struct state_struct *state,
   double  *rfc;
   double  *ke;
   double  *rke;
+  /*
   double  *counts;
   double  *conc_to_count;
+  */
   double  flux_scaling;
   double  pt;
   double  rt;
@@ -64,7 +68,6 @@ int lr9_approximate_delta_concs(struct state_struct *state,
   double  recip_avogadro;
   */
   double  fluxi;
-  double  count_mi;
   int64_t *molecules_ptrs;
   int64_t *rxn_indices;
   int64_t *coefficients;
@@ -85,6 +88,9 @@ int lr9_approximate_delta_concs(struct state_struct *state,
 
   int k;
   int klim;
+
+  int use_regulation;
+  int count_or_conc;
 
   FILE *lfp;
   FILE *efp;
@@ -113,17 +119,28 @@ int lr9_approximate_delta_concs(struct state_struct *state,
   ke               = state->ke;
   rke              = state->rke;
   rfc              = state->product_term;
+  /*
   counts           = state->ode_counts;
   conc_to_count    = state->conc_to_count;
+  */
+  use_regulation   = state->use_regulation;
   /*
   recip_avogadro   = state->recip_avogadro;
   */
   /*
   flux_scaling     = compute_flux_scaling(state,concs);
-  */
   get_counts(num_species,concs,conc_to_count,counts);
+  */
   flux_scaling     = 1.0;
   lfp      = state->lfp;
+  /*
+    As per discusion with Bill Cannon, we want to update the activities
+    if reguation is in play. So do that here.
+  */
+  if (use_regulation) {
+    count_or_conc = 0;
+    update_regulations(state,concs,count_or_conc);
+  }
   /*
     Compute the reaction flux contributions for each reaction:
 
@@ -158,37 +175,37 @@ int lr9_approximate_delta_concs(struct state_struct *state,
       recip_volume       = compartment->recip_volume;
       */
       klim = rcoefficients[j];
-      count_mi = counts[mi];
+      conc_mi = concs[mi];
       if (klim < 0) {
 	for (k=0;k<(-klim);k++) {
-	  rt = rt * count_mi;
-	  tr = tr * (count_mi - klim);
+	  rt = rt * conc_mi;
 	}
       } else {
 	if (klim > 0) {
 	  for (k=0;k<klim;k++) {
-	    pt = pt * count_mi;
-	    tp = tp * (count_mi + klim);
+	    pt = pt * conc_mi;
 	  }
 	}
       }
     }
     /*
-      NB. tp and tr will always be > 0 as |klim| > 0 and concs_mi >= 0;
-      but now the reaction contribution is in counts per time, if we
-      want it in moles/liter/time we need to divide by volume and
-      avogadro's number - wonder if we really need these two multiplies??
-    rfc[i] = (ke[i] * (rt/tp)) - (rke[i] * (pt/tr)) * recip_volume * recip_avogadro;
-    */
-    /*
       Save likelihoods for printing.
     */
-    forward_lklhd[i] = ke[i] * (rt/tp);
-    reverse_lklhd[i] = rke[i] * (pt/tr);
-    rfc[i] = (forward_lklhd[i] - reverse_lklhd[i]) * activities[i];
+    if (pt != 0.0) {
+      forward_lklhd[i] = ke[i] * (rt/pt);
+    } else {
+      forward_lklhd[i] = 1.0;
+    }
+    if (rt != 0.0) {  
+      reverse_lklhd[i] = rke[i] * (pt/rt);
+    } else {
+      reverse_lklhd[i] = 1.0;
+    }
     /*
-    rfc[i] = activities[i]*(ke[i] * (rt/tp)) - (rke[i] * (pt/tr));
+    rfc[i] = (ke[i] * (rt/tp)) - (rke[i] * (pt/tr));
+    NB if use_activities is not set activities[i] will be 1.0 for all i.
     */
+    rfc[i] = (ke[i] * rt - rke[i] * pt) * activities[i];
   }
   if (success) {
     molecule = molecules;
