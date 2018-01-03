@@ -35,7 +35,7 @@ int parse_side_line(char *rctnts_p,
 		    int64_t *compartment_pos_p,
 		    int *molecules_p,
 		    int *cmpts_p,
-		    struct rxn_struct *reaction,
+		    struct reaction_struct *reaction,
 		    struct state_struct *state,
 		    int side) {
   /*
@@ -81,7 +81,7 @@ int parse_side_line(char *rctnts_p,
   */
   struct molecule_struct *unsorted_molecules;
   struct compartment_struct *unsorted_cmpts;
-  struct rxn_matrix_struct *rxns_matrix;
+  struct reactions_matrix_struct *rxns_matrix;
   int64_t *molecules_indices;
   int64_t *coefficients;
   int64_t *matrix_text;
