@@ -139,7 +139,15 @@ int compute_reaction_dg0(struct formation_energy_struct *fes){
     } /* end for(j...) */
     if (sum == 0) {
       reaction->delta_g0 = rxn_dg0_tf;
-    } 
+      if (print_output) {
+	fprintf(lfp,"Computed reaction delta_g0 = %le\n",rxn_dg0_tf);
+      }
+    } else {
+      if (print_output) {
+	fprintf(lfp,"Using input reaction delta_g0 = %le\n",
+		reaction->delta_g0);
+      }
+    }
     reaction += 1; /* Caution address arithmetic */
   } /* end for (rxns...) */
   if (print_output) {
