@@ -31,7 +31,13 @@ int alloc4(struct state_struct *state,
   /*
     Allocate space for the molecules_matrix structure and its
     subfields and for the transpose_work space needed to form it.
-    Called by: rxn_map_init, deq_run
+    Allocates and sets:
+     molecules_matrix
+     molecules_matrix->molecules_ptrs,
+     molecules_matrix->reaction_indices,
+     molecules_matrix->coefficients
+     workspace_transpose
+    Called by: boltzmann_init_core, rxn_map_init
     Calls:     calloc, fprintf, fflush,
   */
 
@@ -82,10 +88,10 @@ int alloc4(struct state_struct *state,
   if (success) {
     ask_for = ((int64_t)(nzr)) * ((int64_t)sizeof(int64_t));
     usage += ask_for;
-    molecules_matrix->rxn_indices = (int64_t*)calloc(one_l,ask_for);
-    if (molecules_matrix->rxn_indices == NULL) {
+    molecules_matrix->reaction_indices = (int64_t*)calloc(one_l,ask_for);
+    if (molecules_matrix->reaction_indices == NULL) {
       fprintf(stderr,"alloc4: Error unable to allocate %lld bytes for "
-	      "rxn_indices field in molecules_matrix\n",ask_for);
+	      "reaction_indices field in molecules_matrix\n",ask_for);
       fflush(stderr);
       success = 0;
     } 
@@ -105,7 +111,7 @@ int alloc4(struct state_struct *state,
     ask_for = ((int64_t)(nu_molecules+1)) * ((int64_t)sizeof(int64_t));
     usage += ask_for;
     transpose_work = (int64_t*)calloc(one_l,ask_for);
-    if (molecules_matrix->coefficients == NULL) {
+    if (transpose_work == NULL) {
       fprintf(stderr,"alloc4: Error unable to allocate %lld bytes for "
 	      "transpose_work vector.\n",ask_for);
       fflush(stderr);
