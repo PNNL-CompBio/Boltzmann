@@ -40,6 +40,7 @@ int candidate_rxn(struct state_struct *state, double *scalingp,
 		rxn_count_update
   */
   struct vgrng_state_struct *vgrng_state;
+  double base_rxn_likelihood;
   double *rxn_likelihood_ps;
   double *forward_rxn_likelihood;
   double *reverse_rxn_likelihood;
@@ -80,6 +81,23 @@ int candidate_rxn(struct state_struct *state, double *scalingp,
     update_regulations(state);
   }
   /*
+    Modify the thermodynamic likelihoods according to coupled reaction theory:
+  base_rxn_likelihood = forward_rxn_likelihood[0];
+  for (j=0;j<num_rxns;j++) {
+    forward_rxn_likelihood[j] = forward_rxn_likelihood[j]/base_rxn_likelihood;
+  }
+  for(j=0;j<num_rxns;j++) {
+    reverse_rxn_likelihood[j] = forward_rxn_likelihood[j] * reverse_rxn_likelihood[j]; 
+  }
+  */
+  base_rxn_likelihood = forward_rxn_likelihood[0];
+  for (j=0;j<num_rxns;j++) {
+    forward_rxn_likelihood[j] = forward_rxn_likelihood[j]/base_rxn_likelihood;
+  }
+  for(j=0;j<num_rxns;j++) {
+    reverse_rxn_likelihood[j] = forward_rxn_likelihood[j]*reverse_rxn_likelihood[j];
+  }
+  /*
     Compute the partial sums of the reaction likelihoods.
   */
   rxn_likelihood_ps[0] = forward_rxn_likelihood[0]*activities[0];
@@ -94,8 +112,9 @@ int candidate_rxn(struct state_struct *state, double *scalingp,
   /*
     1.0 is added to the likelihoods to account for the 
     likeilhood that the state does not change.
-  */
   vall = 1.0 + rxn_likelihood_ps[num_rxns+num_rxns-1];
+  */
+  vall = rxn_likelihood_ps[num_rxns+num_rxns-1];
   if (vall > 0.0) {
     r_sum_likelihood = 1.0/vall;
   } else {
@@ -115,8 +134,9 @@ int candidate_rxn(struct state_struct *state, double *scalingp,
   dchoice = ((double)choice)*scaling;
   /*
     Find index of smallest dg_ps entry that is >= choice.
-  */
   rxn_choice = binary_search_l_u_b(rxn_likelihood_ps,dchoice,num_rxns_t2_p1);
+  */
+  rxn_choice = binary_search_l_u_b(rxn_likelihood_ps,dchoice,num_rxns_t2);
   if (rxn_choice < num_rxns) {
     direction = 1;
     success = rxn_count_update(rxn_choice,direction,state);
