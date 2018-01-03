@@ -43,8 +43,6 @@ void compute_net_lklhd_bndry_flux(struct state_struct *state,
   struct  molecules_matrix_struct *molecules_matrix;
   struct  molecule_struct *sorted_molecules;
   struct  molecule_struct *molecule;
-  struct  compartment_struct *sorted_cmpts;
-  struct  compartment_struct *cur_cmpt;
   double  bndry_flux;
   int64_t *molecules_ptrs;
   int64_t *rxn_indices;
