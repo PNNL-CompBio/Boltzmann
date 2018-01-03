@@ -22,4 +22,4 @@ specific language governing permissions and limitations under the License.
 ******************************************************************************/
 extern int boltzmann_mmap_superstate(char *global_state_filename,
 				     int64_t mmap_file_len,
-				     int64_t **super_statep);
+				     struct super_state_struct **super_statep);
