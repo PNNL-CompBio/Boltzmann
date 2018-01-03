@@ -77,10 +77,16 @@ int boltzmann_flatten_external(struct state_struct *state,
   } else {
     state->z_coord = dflattened[word_pos];
   }
+  word_pos += 1;
+  if (direction == 0) {
+    lflattened[word_pos] = state->agent_data_length;
+  } else {
+    state->agent_data_length = lflattened[word_pos];
+  }
   /*
-    Skip 2 words reserved for future external variables.
+    Skip 1 word reserved for future external variables.
   */
-  word_pos += 2;
+  word_pos += 1;
   *word_pos_p = word_pos;
   return(success);
 }
