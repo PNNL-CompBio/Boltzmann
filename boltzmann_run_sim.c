@@ -57,6 +57,8 @@ int boltzmann_run_sim(struct state_struct *state) {
   struct vgrng_state_struct *vgrng_state;
   struct istring_elem_struct *molecule;
   struct istring_elem_struct *sorted_molecules;
+  struct istring_elem_struct *cur_cmpts;
+  struct istring_elem_struct *cur_cmpt;
 
   int64_t choice;
   double dchoice;
@@ -83,6 +85,7 @@ int boltzmann_run_sim(struct state_struct *state) {
   double *rrxn_view_p;
   double *bndry_flux_concs;
   double *activities;
+  double *no_op_likelihood;
   double cal_gm_per_joule;
   double delta;
   /*
@@ -90,6 +93,7 @@ int boltzmann_run_sim(struct state_struct *state) {
   */
   double m_rt;
   int    *rxn_fire;
+  char   *cmpt_string;
   int success;
   int num_state_files;
 
@@ -120,6 +124,9 @@ int boltzmann_run_sim(struct state_struct *state) {
   int conc_view_step;
   int conc_view_freq;
 
+  int ci;
+  int oi;
+
   FILE *lfp;
   FILE *concs_out_fp;
   FILE *rxn_lklhd_fp;
@@ -144,6 +151,7 @@ int boltzmann_run_sim(struct state_struct *state) {
   rrxn_view_data    = state->rev_rxn_view_likelihoods;
   cal_gm_per_joule  = state->cal_gm_per_joule;
   rxn_fire          = state->rxn_fire;
+  no_op_likelihood  = state->no_op_likelihood;
   /*
   lthermo        = state->l_thermo;
   */
@@ -155,6 +163,7 @@ int boltzmann_run_sim(struct state_struct *state) {
   rxn_lklhd_fp         	 = state->rxn_lklhd_fp;
   bndry_flux_fp        	 = state->bndry_flux_fp;
   sorted_molecules     	 = (struct istring_elem_struct *)state->sorted_molecules;
+  cur_cmpts              = (struct istring_elem_struct *)state->sorted_cmpts;
   rxn_view_freq        	 = state->rxn_view_freq;
   rxn_view_hist_lngth  	 = state->rxn_view_hist_lngth;
   lklhd_view_freq        = state->lklhd_view_freq;
@@ -194,7 +203,7 @@ int boltzmann_run_sim(struct state_struct *state) {
     dg_forward *= m_rt;
     entropy = 0.0;
     if (sum_likelihood <= 0.0) {
-      fprintf(stderr,"boltzmann_run_sim: Error, nonpositivity sum_likelihood\n");
+      fprintf(stderr,"boltzmann_run_sim: Error, nonpositivity sum_likelihood = %le in warmup loop iteration %d\n",sum_likelihood,i);
       fflush(stderr);
       success = 0;
       break;
@@ -234,7 +243,7 @@ int boltzmann_run_sim(struct state_struct *state) {
 
       rxn_choice = choose_rxn(state);
       if (rxn_choice < 0) break;
-      if (rxn_choice < num_rxns_t2) {
+      if (rxn_choice <= num_rxns_t2) {
 	rxn_fire[rxn_choice] += 1;
       }
 
@@ -258,12 +267,14 @@ int boltzmann_run_sim(struct state_struct *state) {
       dg_forward *= m_rt;
       entropy = 0.0;
       if (sum_likelihood <= 0.0) {
+	fprintf(stderr,"boltzmann_run_sim: Error, nonpositivity sum_likelihood = %le in recording loop iteration %d\n",sum_likelihood,i);
 	fprintf(stderr,
 		"boltzmann_run_sim: Error, nonpositivity sum_likelihood\n");
 	fflush(stderr);
 	success = 0;
 	break;
       }
+      r_sum_likelihood = 0.0;
       if (success) {
 	r_sum_likelihood = 1.0/sum_likelihood;
 	for (j=0;j<num_rxns;j++) {
@@ -318,6 +329,7 @@ int boltzmann_run_sim(struct state_struct *state) {
 	  Save the likelihoods on a per reaction basis.
 	*/
 	if ((rxn_view_step <= 0) || (i == (n_record_steps-1))) {
+	  no_op_likelihood[rxn_view_pos] = r_sum_likelihood;
 	  rxn_view_p = (double *)&rxn_view_data[rxn_view_pos];
 	  rrxn_view_p = (double *)&rrxn_view_data[rxn_view_pos];
 	  for (j = 0; j < num_rxns;j++) {
@@ -363,15 +375,32 @@ int boltzmann_run_sim(struct state_struct *state) {
     } /* end for(i...) */
     if (state->num_fixed_concs > 0) {
       if (bndry_flux_fp) {
-	fprintf(bndry_flux_fp,"  final flux  ");
-	molecule = sorted_molecules;
+	fprintf(bndry_flux_fp,"final flux\n");
+	molecule    = sorted_molecules;
+	cmpt_string = NULL;
+	oi = -1;
 	for (j=0;j<nu;j++) {
+	  ci = molecule->c_index;
+	  if (ci != oi) {
+	    oi = ci;
+	    if (ci >= 0) {
+	      cur_cmpt = (struct istring_elem_struct *)&(cur_cmpts[ci]);
+	      cmpt_string = cur_cmpt->string;
+	    } else {
+	      cmpt_string = NULL;
+	    }
+	  }
 	  if (molecule->variable == 0) {
-	    fprintf(state->bndry_flux_fp,"\t%le",bndry_flux_concs[j]);
+	    if (ci >= 0) {
+	      fprintf(state->bndry_flux_fp,"%s:%s\t%le\n",molecule->string,
+		      cmpt_string,bndry_flux_concs[j]);
+	    } else {
+	      fprintf(state->bndry_flux_fp,"%s\t%le\n",molecule->string,
+		      bndry_flux_concs[j]);
+	    }
 	  }
 	  molecule += 1; /* Caution address arithmetic.*/
-	}
-	fprintf(state->bndry_flux_fp,"\n");
+	} /* end for (j...) */
 	/*
 	fprintf(bndry_flux_fp," flux - fixed ");
 	molecule = sorted_molecules;
@@ -384,8 +413,8 @@ int boltzmann_run_sim(struct state_struct *state) {
 	}
 	fprintf(state->bndry_flux_fp,"\n");
 	*/
-      }
-    }
+      } /* end if (bndry_flux_fp) */
+    } /* end if (state->num_fixed_concs ...) */
     if (success) {
       success = print_restart_file(state);
     }
