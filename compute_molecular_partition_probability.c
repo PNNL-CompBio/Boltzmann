@@ -122,7 +122,7 @@ int compute_molecular_partition_probability(struct formation_energy_struct *fes)
   }
   if (q <= 0.0) {
     fprintf(stderr,"compute_molecular_partition_probability: Error: "
-	    " non-positive sum of partitions, q = %ld\n",q);
+	    " non-positive sum of partitions, q = %le\n",q);
     success = 0;
   }
   if (success) {
