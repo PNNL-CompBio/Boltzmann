@@ -77,8 +77,8 @@ void save_likelihoods(struct state_struct *state, int rxn_view_pos) {
   int j;
   int padi;
 
-  number_reactions     	 = state->number_reactions;
-  rxn_view_hist_lngth  	 = state->rxn_view_hist_lngth;
+  number_reactions     	 = (int)state->number_reactions;
+  rxn_view_hist_lngth  	 = (int)state->rxn_view_hist_lngth;
   forward_rxn_likelihood = state->forward_rxn_likelihood;
   reverse_rxn_likelihood = state->reverse_rxn_likelihood;
   activities        	 = state->activities;
