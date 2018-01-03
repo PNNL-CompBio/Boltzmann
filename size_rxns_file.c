@@ -72,7 +72,10 @@ int size_rxns_file(struct state_struct *state) {
   int kl;
 
   int cmpts;
-  int pad1;
+  int had_a_compartment;
+
+  int no_cmpt_ct;
+  int padi;
 
   FILE *rxn_fp;
   FILE *lfp;
@@ -109,6 +112,8 @@ int size_rxns_file(struct state_struct *state) {
     pathway_len  = (int64_t)0;
     compartment_len = (int64_t)0;
     rxn_title_len  = (int64_t)0;
+    had_a_compartment = 0;
+    no_cmpt_ct = 0;
     fgp = fgets(rxn_buffer,rxn_buff_len,rxn_fp);
     while (fgp && (! feof(rxn_fp))) {
       line_len     =  strlen(rxn_buffer);
@@ -165,6 +170,7 @@ int size_rxns_file(struct state_struct *state) {
 	  */
 	  cmpts += 1;
 	  compartment_len += line_len - kl - ws_chars;
+	  had_a_compartment = 1;
 	  break;
 	case 5:
 	  /*
@@ -180,9 +186,14 @@ int size_rxns_file(struct state_struct *state) {
 	  prdcts = (char *)&rxn_buffer[kl];
 	  molecules += count_molecules(prdcts,&molecules_len);
 	  break;
-	case 7:
+        case 7:
 	case 8:
+	  break;
 	case 9:
+	  if (had_a_compartment == 0) {
+	    no_cmpt_ct += 1;
+	  }
+	  had_a_compartment = 0;
         default:
 	  break;
       }
@@ -192,6 +203,16 @@ int size_rxns_file(struct state_struct *state) {
   state->reaction_file_length = total_length;
   state->number_reactions = rxns;
   state->number_molecules   = molecules;
+  /*
+    Allow for no compartment specified reactions.
+  */
+  if (cmpts > 1) {
+    if (no_cmpt_ct > 0) {
+      cmpts += 1;
+    } 
+  } else {
+    cmpts = 1;
+  }
   state->number_compartments = cmpts;
   state->molecules_len = molecules_len;
   state->pathway_len = pathway_len;
