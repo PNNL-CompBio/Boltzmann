@@ -28,7 +28,7 @@ int count_nor(char *line) {
   /*
     Return the number of leading non-or characters ('|') 
     in the character string, line.
-    Called by: keg_from_modelseed.c 
+    Called by: kegg_from_modelseed.c 
     Calls      strlen(intrinsic).
   */
   int nor_chars;
