@@ -1,0 +1,16 @@
+state->params_file    	   = ./boltzmann.in
+state->reaction_file  	   = central_carbon_pwys_names_edited_dg_std.dat
+state->init_conc_file 	   = concs.in
+state->input_dir      	   = ./
+state->output_file    	   = test.out
+state->log_filet      	   = bz.log
+state->output_dir     	   = ./
+state->align_len          = 16
+state->max_filename_len   = 4096
+state->max_param_line_len = 4096
+state->rxn_buff_len       = 4194304
+state->ideal_gas_r        = 1.988588e-03
+state->temp_kelvin        = 2.981500e+02
+boltzmann: after startup, success = 1
+boltzmann: rxns = 29, cmpts = 0, species = 122, reaction_file_length = 4789
+boltzmann: species_len = 1451, reaction_title_len = 557, pathway_len = 401, compartment_len = 0

@@ -1,0 +1,6 @@
+MMAP_OBJS = mmap_fasta.o allocate_fasta_mmap.o
+MMAP_SDEP = mmap_fasta.h allocate_fasta_mmap.h
+
+# make mmap and shm mutually exclusive.
+SHM_OBJS =
+SHM_SDEP = 

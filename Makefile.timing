@@ -1,0 +1,42 @@
+TIMING_LIB = djb_timing.a 
+TIMING_DEP = timingi.h djb_timing.h
+
+TFLAGS = -DTIMING_ON 
+
+timingi.h: timingii.h
+		./build_timingi.pl
+
+
+djb_timing.a: djb_timing.a(djb_timing_init.o) \
+	      djb_timing.a(djb_timing_print.o) \
+	      djb_timing.a(djb_timing_start.o) \
+	      djb_timing.a(djb_timing_stop.o) \
+	      djb_timing.a(djb_timing_reset.o) \
+	      djb_timing.a(itc_clock.o) timingi.h timingii.h
+
+djb_timing.a(djb_timing_init.o): djb_timing_b.h djb_timing_init.c
+		$(CC) $(NO_OPT_CFLAGS) $(TFLAGS) -c djb_timing_init.c
+	        $(AR) $(ARFLAGS) djb_timing.a djb_timing_init.o
+
+djb_timing.a(djb_timing_print.o): djb_timing_b.h djb_timing_print.c
+		$(CC) $(NO_OPT_CFLAGS) $(TFLAGS) -c djb_timing_print.c
+	        $(AR) $(ARFLAGS) djb_timing.a djb_timing_print.o
+
+djb_timing.a(djb_timing_start.o): djb_timing_b.h djb_timing_start.c
+		$(CC) $(NO_OPT_CFLAGS) $(TFLAGS) -c djb_timing_start.c
+	        $(AR) $(ARFLAGS) djb_timing.a djb_timing_start.o
+
+djb_timing.a(djb_timing_stop.o): djb_timing_b.h djb_timing_stop.c
+		$(CC) $(NO_OPT_CFLAGS) $(TFLAGS) -c djb_timing_stop.c
+	        $(AR) $(ARFLAGS) djb_timing.a djb_timing_stop.o
+
+djb_timing.a(djb_timing_reset.o): djb_timing_b.h djb_timing_reset.c
+		$(CC) $(NO_OPT_CFLAGS) $(TFLAGS) -c djb_timing_reset.c
+	        $(AR) $(ARFLAGS) djb_timing.a djb_timing_reset.o
+
+djb_timing.a(itc_clock.o): itc_clock.c itc_clock.h
+		$(CC) $(NO_OPT_CFLAGS) $(TFLAGS) -c itc_clock.c
+		$(AR) $(ARFLAGS) djb_timing.a itc_clock.o
+##	$(AS) $(ASFLSGS) itc_clock.s
+##	$(AR) $(ARFLAGS) djb_timing.a itc_clock.o
+

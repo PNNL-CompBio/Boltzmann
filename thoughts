@@ -1,0 +1,30 @@
+*.dat is the input file.
+REACTION <name>
+PATHWAY <name>
+LEFT    <reactant> [ + <reactant>]
+RIGHT   <product> [ + <product>]
+DGZERO  <float>
+DGZERO-UNITS kJ/mol or kCal/mole
+//
+
+reactant = product = \d+ a..Z[_a..Z0..9+-]
+
+
+need a sorted list of reactants and products
+sorted how, for fast look up?
+build a dictionary.
+
+use an fgrep for // to count reactions
+use an inquire or  wc to get the file size.
+
+
+need to be able to uppercase a string.
+
+First just read, align and store all of them with
+lengths in corresponding length array.
+
+Read in one giant array, count number of \n// occurences
+multiply by 2, count number of "\s + \s" occurences, and add these
+together for max possible reactants and products.
+
+Ask Bill about continuation lines, just assume for now there aren't any.

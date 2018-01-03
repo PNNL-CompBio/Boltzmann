@@ -1,0 +1,2 @@
+gcc -O0 -g  -DLINUX  -O0 -g  -DLINUX    -c boltzmann.c
+gcc -lm  -o boltzmann boltzmann.o alloc0.o read_params.o alloc1.o echo_params.o size_rxns_file.o init_rxn_file_keywords.o parse_rxn_file_keyword.o count_species.o count_ws.o count_nws.o is_a_coef.o  

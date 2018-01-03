@@ -1,0 +1,8 @@
+RXN_FILE central_carbon_pwys_names_edited_dg_std.dat
+INIT_FILE concs.in
+LOG_FILE  bz.log
+OUT_FILE  test.out
+ALIGN_LEN 16
+RXN_BUFF_LEN 4194304
+IDEAL_GAS_R 0.00198858775
+TEMP_KELVIN 298.15
