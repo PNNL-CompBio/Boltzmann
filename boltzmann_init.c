@@ -147,7 +147,20 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
       }
     }
   }
-	
+  if (success) {
+    if (state->free_energy_format > 0) {
+      if (state->free_energy_file) {
+	state->free_energy_fp = fopen(state->free_energy_file,"w");
+	if (state->free_energy_fp == NULL) {
+	  fprintf(stderr,
+		  "boltzman_init unable to open free_energy_file, %s, quitting.\n",
+		  state->free_energy_file);
+	  fflush(stderr);
+	  success = 0;
+	}
+      }
+    }
+  }
   if (success) {
     vgrng_state = state->vgrng_state;
     vgrng_start_steps = 1001;
@@ -266,6 +279,17 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
   }
   if (success) {
     fprintf(state->rxn_lklhd_fp,"iter entropy dg_forward forward_rxn_likelihoods\n");
+  }
+  if (success) {
+    if (state->free_energy_format > 0) {
+      if (state->free_energy_format == 1) {
+	fprintf(state->free_energy_fp,"iter negative_log_likelihoods\n");
+      } else if (state->free_energy_format == 2) {
+	fprintf(state->free_energy_fp,"iter free energy (KJ/mol)\n");
+      } else if (state->free_energy_format == 3) {
+	fprintf(state->free_energy_fp,"iter free energy (Kcal/mol)\n");
+      }
+    }
   }
   if (success) {
     dg0s = state->dg0s;
