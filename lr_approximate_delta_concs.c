@@ -10,7 +10,7 @@ int lr_approximate_delta_concs(struct state_struct *state, double *counts,
 			       double *flux, double multiplier,
 			       int base_rxn, int choice) {
   /*
-    Compute approximations to concentartion changes wrt time, 
+    Compute approximations to concentration changes wrt time, 
     Based on likelihood ratios and assumption that all
     reverse reaction likelihoods are the same as the base reaction.
     Get reference from Bill Cannon
