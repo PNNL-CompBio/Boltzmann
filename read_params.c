@@ -95,22 +95,24 @@ int read_params (char *param_file_name, struct state_struct *state) {
     /*
       Following 2 lines added by DGT on 4/15/2013
     */
-    state->ph               = 7.5;
-    state->ionic_strength   = 0.15;
-    state->joules_per_cal   = 4.184;
-    state->epsilon          = 0.0000001;
-    state->avogadro         = 6.02e23;
-    state->cals_per_joule   = 1.0/state->joules_per_cal;
-    state->warmup_steps     = (int64_t)1000;
-    state->record_steps     = (int64_t)1000;
-    state->free_energy_format = (int64_t)0;
-    state->rxn_view_freq      = (int64_t)0;
-    state->conc_view_freq     = (int64_t)0;
-    state->lklhd_view_freq    = (int64_t)0;
-    state->fe_view_freq       = (int64_t)0;
-    state->use_activities     = (int64_t)0;
-    state->print_output       = (int64_t)0;
-    state->use_pseudoisomers  = (int64_t)1;
+    state->ph                  = 7.5;
+    state->ionic_strength      = 0.15;
+    state->joules_per_cal      = 4.184;
+    state->epsilon             = 0.0000001;
+    state->avogadro            = 6.02e23;
+    state->cals_per_joule      = 1.0/state->joules_per_cal;
+    state->warmup_steps        = (int64_t)1000;
+    state->record_steps        = (int64_t)1000;
+    state->free_energy_format  = (int64_t)0;
+    state->rxn_view_freq       = (int64_t)0;
+    state->count_view_freq     = (int64_t)0;
+    state->lklhd_view_freq     = (int64_t)0;
+    state->fe_view_freq        = (int64_t)0;
+    state->use_activities      = (int64_t)0;
+    state->adjust_steady_state = (int64_t)0;
+    state->print_output        = (int64_t)0;
+    state->use_pseudoisomers   = (int64_t)1;
+    state->default_initial_count = (int64_t)0;
     param_buffer       = state->param_buffer;
     max_param_line_len = state->max_param_line_len;
     key                = param_buffer + max_param_line_len; /* address arithmetic */
@@ -196,10 +198,10 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	if (state->rxn_view_freq < 0) {
 	  state->rxn_view_freq = 0;
 	}
-      } else if (strncmp(key,"CONC_VIEW_FREQ",14) == 0) {
-	sscan_ok = sscanf(value,"%ld",&(state->conc_view_freq));
-	if (state->conc_view_freq < 0) {
-	  state->conc_view_freq = 1;
+      } else if (strncmp(key,"COUNT_VIEW_FREQ",15) == 0) {
+	sscan_ok = sscanf(value,"%ld",&(state->count_view_freq));
+	if (state->count_view_freq < 0) {
+	  state->count_view_freq = 1;
 	}
       } else if (strncmp(key,"LKLHD_VIEW_FREQ",15) == 0) {
 	sscan_ok = sscanf(value,"%ld",&(state->lklhd_view_freq));
@@ -215,6 +217,11 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	sscan_ok = sscanf(value,"%ld",&(state->use_activities));
 	if (state->use_activities < 0) {
 	  state->use_activities = 0;
+	}
+      } else if (strncmp(key,"ADJUST_STEADY_STATE",19) == 0) {
+	sscan_ok = sscanf(value,"%ld",&(state->adjust_steady_state));
+	if (state->adjust_steady_state < 0) {
+	  state->adjust_steady_state = 0;
 	}
       } else if (strncmp(key,"PRINT_OUTPUT",12) == 0) {
 	sscan_ok = sscanf(value,"%ld",&(state->print_output));
