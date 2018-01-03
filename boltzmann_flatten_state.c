@@ -29,7 +29,7 @@ int boltzmann_flatten_state (struct state_struct **state_p,
     Word_1 is >0 if the section has subsections (each also with its own 
     2 word  header) or if word_1 is < 0,
        the section is composed 8 * word_0 bytes of type indicated by
-n       word_1:  -1 doubles   (1 double/word)
+       word_1:  -1 doubles   (1 double/word)
                 -2 int64_t's (8 bytes/int64_t  = 1 int64_t/word)
 		-3 int's     (4 bytes/int  =  2 int's/word) 
 		-4 char's    (8 chars/word)
@@ -51,7 +51,6 @@ n       word_1:  -1 doubles   (1 double/word)
   struct  state_struct *state;
   void    *fstate;
   int64_t *lfstate;
-  int64_t num_top_elements;
   int64_t oneway_pos;
   int64_t twoway_pos;
 
