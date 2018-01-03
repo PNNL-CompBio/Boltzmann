@@ -151,6 +151,7 @@ struct state_struct {
   int64_t molecules_text_offset_in_bytes;
   int64_t compartments_text_offset_in_bytes;
   int64_t num_files;
+  int64_t solvent_pos;
 
   int64_t use_pseudoisomers;
 
@@ -232,6 +233,8 @@ struct state_struct {
   char *rxn_view_file;     /* max_filename_len */
   char *bndry_flux_file;   /* max_filename_len */
   char *pseudoisomer_file; /* max_filename_len */
+  char *solvent_string;    /* Length is 64. Allocated in alloc0 */
+
   char *rxn_title_text;    /* rxn_title_space. Allocated in alloc2  */
   char *pathway_text;      /* pathway_space. Allocated in alloc2    */
   char *compartment_text;  /* compartment_space Allocated in alloc2 */
