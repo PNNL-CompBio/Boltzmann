@@ -100,7 +100,6 @@ double rxn_likelihood(double *counts,
 
   left_counts = 1.0;
   right_counts = 1.0;
-
   success           = 1;
   nrxns             = (int)state->number_reactions;
   rxns_matrix       = state->reactions_matrix;
@@ -144,6 +143,5 @@ double rxn_likelihood(double *counts,
     }
   }
   likelihood = eq_k * (left_counts/ right_counts);
-
   return(likelihood);
 }
