@@ -22,6 +22,8 @@ int boltzmann_init_core(struct state_struct *boot_state, struct state_struct **f
 	       rxns_init,
 	       alloc3,
 	       species_init
+	       alloc4
+	       form_molecules_matrix
 	       energy_init
 	       echo_inputs
 	       run_init
