@@ -55,8 +55,8 @@ int set_compartment_ptrs(struct state_struct *state) {
   int padi;
 
   success = 1;
-  nzc            = state->unique_compartments;
-  nzm            = state->unique_molecules;
+  nzc            = state->nunique_compartments;
+  nzm            = state->nunique_molecules;
   cmpt_ptrs      = state->compartment_ptrs;
   sorted_molecules = state->sorted_molecules;
   cur_molecule     = sorted_molecules;
