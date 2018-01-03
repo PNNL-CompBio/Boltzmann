@@ -70,7 +70,9 @@ int ode_num_jac(struct state_struct *state,
   double infnormdfdy_colj;
   double infnormdfdy_tmp;
   double absfdiffmax_tmp;
+  double absfdelrm_tmp;
   double tmpfac;
+  double tmpval;
   double *dblptr;
   int64_t eps_hex;
   int64_t sqrt_eps_hex;
@@ -83,9 +85,16 @@ int ode_num_jac(struct state_struct *state,
   
   int nfc;
   int nrxns;
+
+  int rowmax;
+  int i;
+
+  FILE *lfp;
+  FILE *efp;
   
   success = 1;
   index1  = 1;
+  lfp              = state->lfp;
   ny               = state->nunique_molecules;
   nrxns            = state->number_reactions;
   conc_to_count    = state->conc_to_count;
@@ -112,7 +121,13 @@ int ode_num_jac(struct state_struct *state,
   dfdy_tmp      = (double*)&fdiff[ny];
   forward_rxn_likelihoods = (double*)&dfdy_tmp[ny];
   reverse_rxn_likelihoods = (double*)&forward_rxn_likelihoods[nrxns];
-  
+#define DBG 1
+#ifdef DBG
+  if (lfp) {
+    fprintf(lfp,"ode_num_jac_top ------------------------------------\n");
+    fflush(lfp);
+  }
+#endif  
   if (first_time == 1) {
     for (j=0;j<ny;j++) {
       fac[j] = sqrt_eps;
@@ -135,7 +150,15 @@ int ode_num_jac(struct state_struct *state,
       yscalej = threshj;
     }
     delj      = (yj + (facj*yscalej)) - yj;
-
+#ifdef DBG
+    fprintf(lfp,"y[%d]      = %le\n",j,yj);
+    fprintf(lfp,"f[%d]      = %le\n",j,fj);
+    fprintf(lfp,"thresh[%d] = %le\n",j,threshj);
+    fprintf(lfp,"yscale[%d] = %le\n",j,yscalej);
+    fprintf(lfp,"fac[%d]    = %le\n",j,facj);
+    fprintf(lfp,"del[%d]    = %le\n",j,delj);
+    fflush(lfp);
+#endif
     while (delj == 0.0) {
       if (facj < facmax) {
 	/*
@@ -155,15 +178,43 @@ int ode_num_jac(struct state_struct *state,
     } else {
       delj = - fabs(delj);
     }
-    num_jac_col(state,ny,j,y,f,&delj,threshj,
+#ifdef DBG
+    fprintf(lfp,"fac[%d]    = %le\n",j,facj);
+    fprintf(lfp,"del[%d]    = %le\n",j,delj);
+    fflush(lfp);
+#endif
+    num_jac_col(state,ny,j,&rowmax,y,f,&delj,threshj,
 		y_counts,fdel,fdiff,
 		forward_rxn_likelihoods,
 		reverse_rxn_likelihoods,
 		dfdy_colj,
-		&absfdiffmax,
-		&absfdelrm,
 		&absfvaluerm,
+		&absfdelrm,
+		&absfdiffmax,
 		&infnormdfdy_colj);
+#ifdef DBG
+    if (lfp) {
+      fprintf(lfp,"\n");
+      for (i=0;i<ny;i++) {
+	fprintf(lfp,"fdel[%d,%d] = %le\n",i,j,fdel[i]);
+      }
+      fprintf(lfp,"\n");
+      for (i=0;i<ny;i++) {
+	fprintf(lfp,"fdiff[%d,%d] = %le\n",i,j,fdiff[i]);
+      }
+      fprintf(lfp,"\n");
+      for (i=0;i<ny;i++) {
+	fprintf(lfp,"dfdy[%d,%d] = %le\n",i,j,dfdy_colj[i]);
+      }
+      fprintf(lfp,"\n");
+      fprintf(lfp,"rowmax[%d]        = %d\n",j,rowmax);
+      fprintf(lfp,"abs(f(rowmax))    = %le\n",absfvaluerm);
+      fprintf(lfp,"abs(fdel(rowmax)) = %le\n",absfdelrm);
+      fprintf(lfp,"abs(fdiff(rowmax)) = %le\n",absfdiffmax);
+      fprintf(lfp,"inf_norm(dfdy[%d]) = %le\n",j,infnormdfdy_colj);
+      fflush(lfp);
+    }
+#endif
     nfc += 1;
     /*
     fscalej = max(absfvaluerm,absfdelrm);
@@ -172,8 +223,33 @@ int ode_num_jac(struct state_struct *state,
     if (absfdelrm > fscalej) {
       fscalej = absfdelrm;
     }
+#ifdef DBG
+    if (lfp) {
+      fprintf(lfp,"fscale[%d] = %le\n",j,fscalej);
+      fflush(lfp);
+    }
+#endif    
+    /*
+      if (j)
+    */
     if ((absfdiffmax == 0.0) || ((absfdelrm > 0.0) && (absfvaluerm > 0.0))) {
-      if (absfdiffmax < (br * fscalej)) {
+#ifdef DBG
+      if (lfp) {
+	fprintf(lfp," j select true for j = %d\n",j);
+	fflush(lfp);
+      }
+#endif      
+      /*
+	if (k1)
+      */
+      if (absfdiffmax <= (br * fscalej)) {
+#ifdef DBG
+	if (lfp) {
+	  fprintf(lfp," k1 select true for j = %d\n",j);
+	  fflush(lfp);
+	}
+#endif
+	
 	/*
 	tmpfac = min(sqrt(facj),facmax);
 	*/
@@ -182,30 +258,74 @@ int ode_num_jac(struct state_struct *state,
 	  tmpfac = facmax;
 	}
 	delj   = (yj + (tmpfac * yscalej)) - yj;
+#ifdef DBG
+	if (lfp) {
+	  fprintf(lfp," tmpfac[%d]  = %le \n",j,tmpfac);
+	  fprintf(lfp," new del[%d] = %le \n",j,delj);
+	  fflush(lfp);
+	}
+#endif	
 	if ((tmpfac != facj) && (delj != 0.0)) {
 	  if (fj >= 0.0) {
 	    delj = fabs(delj);
 	  } else {
 	    delj = - fabs(delj);
 	  }
-	  num_jac_col(state,ny,j,y,f,&delj,threshj,
+#ifdef DBG
+	  if (lfp) {
+	    fprintf(lfp," Before second num_jac_col\n");
+	    fprintf(lfp," del[%d] = %le \n",j,delj);
+	    fflush(lfp);
+	  }
+ #endif	
+	  num_jac_col(state,ny,j,&rowmax,y,f,&delj,threshj,
 		      y_counts,fdel,fdiff,
 		      forward_rxn_likelihoods,
 		      reverse_rxn_likelihoods,
 		      dfdy_tmp,
-		      &absfdiffmax_tmp,
-		      &absfdelrm,
 		      &absfvaluerm,
+		      &absfdelrm_tmp,
+		      &absfdiffmax_tmp,
 		      &infnormdfdy_tmp);
 	  nfc += 1;
+#ifdef DBG
+	  if (lfp) {
+	    fprintf(lfp,"\n");
+	    for (i=0;i<ny;i++) {
+	      fprintf(lfp,"fdel2[%d,%d]    = %le\n",i,j,fdel[i]);
+	    }
+	    fprintf(lfp,"\n");
+	    for (i=0;i<ny;i++) {
+	      fprintf(lfp,"fdiff2[%d,%d]   = %le\n",i,j,fdiff[i]);
+	    }
+	    fprintf(lfp,"\n");
+	    for (i=0;i<ny;i++) {
+	      fprintf(lfp,"dfdy_tmp[%d,%d] = %le\n",i,j,dfdy_tmp[i]);
+	    }
+	    fprintf(lfp,"\n");
+	    fprintf(lfp,"rowmax2[%d]       = %d\n",j,rowmax);
+	    fprintf(lfp,"abs(f(rowmax))    = %le\n",absfvaluerm);
+	    fprintf(lfp,"abs(fdel(rowmax)) = %le\n",absfdelrm_tmp);
+	    fprintf(lfp,"abs(fdiff(rowmax)) = %le\n",absfdiffmax_tmp);
+	    fprintf(lfp,"inf_norm(dfdy[%d]) = %le\n",j,infnormdfdy_tmp);
+	    fflush(lfp);
+	  }
+#endif
+
 	  if ((tmpfac * infnormdfdy_tmp) > infnormdfdy_colj) {
+#ifdef DBG
+	    if (lfp) {
+	      fprintf(lfp," New difference more significant.\n");
+	      fflush(lfp);
+	    }
+#endif
 	    dcopy(&ny,dfdy_tmp,&index1,dfdy_colj,&index1);
 	    /*
-	    fscaletmp = max(absfvaluerm,absfdelrm);
+	    fscaletmp = max(absfvaluerm,absfdelrm_tmp);
 	    */
 	    fscaletmp = absfvaluerm;
-	    if (absfdelrm > fscaletmp) {
-	      fscaletmp = absfdelrm;
+	    if (absfdelrm_tmp > fscaletmp) {
+	      fscaletmp = absfdelrm_tmp;
 	    }
 	    if (absfdiffmax_tmp <= (bl * fscaletmp)) {
 	      /*
@@ -229,20 +349,51 @@ int ode_num_jac(struct state_struct *state,
 	      }
 	    }
 	    fac[j] = facj;
+#ifdef DBG
+	    if (lfp) {
+	      fprintf(lfp," After new diff more significant fac[%d] = %le\n",
+		      j,facj);
+	      fflush(lfp);
+	    }
+	    
+#endif	 
 	  } /*end if  ((tmpfac * infnormdfdy_tmp) > infnormdfdy_colj) */
 	} /* end if ((tmpfac != facj) && (delj > 0.0)) */
-      } /* end if (absfdiffmax < (br * fscalej)) */
-      if (absfdiffmax <= bl * fscalej) {
-	/*
-	fac[j] = min((10*facj),facmax);
-	*/
-	facj = 10*facj;
-	if (facj > facmax) {
-	  facj = facmax;
+	/* end if (absfdiffmax < (br * fscalej)) (k1) */
+      } else {
+#ifdef DBG
+	if (lfp) {
+	  tmpval = bl *fscalej;
+	  fprintf(lfp," j select and ~k1 for %d, absfdiffmax = %le, bl*fscalej = %le\n",j,absfdiffmax,tmpval);
+	  fflush(lfp);
 	}
-	fac[j] = facj;
+#endif
+	if (absfdiffmax <= (bl * fscalej)) {
+	  /*
+	    fac[j] = min((10*facj),facmax);
+	  */
+	  facj = 10*facj;
+	  if (facj > facmax) {
+	    facj = facmax;
+	  }
+	  fac[j] = facj;
+#ifdef DBG
+	  if (lfp) {
+	    fprintf(lfp," Multiplying fac[%d] by 10 fac[%d] = %le\n",
+		    j,j,facj);
+	    fflush(lfp);
+	  }
+#endif	  
+	}
+      } /* end else j select and ~k1 */
+#ifdef DBG
+      if (lfp) {
+	tmpval = bu * fscalej;
+	fprintf(lfp," jselect true for %d and absfdiffmax = %le, bu * fscalej = %le\n", j,absfdiffmax,tmpval);
+	fflush(lfp);
       }
-      if (absfdiffmax > bu *fscalej) {
+#endif
+      if (absfdiffmax > (bu *fscalej)) {
 	/*
 	fac[j] = max(0.1*facj,facmin);
 	*/
@@ -251,10 +402,18 @@ int ode_num_jac(struct state_struct *state,
 	  facj = facmin;
 	}
 	fac[j] = facj;
+#ifdef DBG
+	if (lfp) {
+	  fprintf(lfp," Dividing fac[%d] by 10 fac[%d] = %le\n",
+		  j,j,facj);
+	  fflush(lfp);
+	}
+ #endif
       }
-    } /* end if ((absfdiffmax == 0.0) || ((absfdelrm > 0.0) && (absfvaluerm > 0.0))) */
+    } /* end if ((absfdiffmax == 0.0) || ((absfdelrm > 0.0) && (absfvaluerm > 0.0))) (j select clause)*/
+    dfdy_colj = dfdy_colj + ny; /* Caution Address arithmetic */
   } /* end for j */
   *nfcalls = nfc;
   return (success);
-} 
+}
 
