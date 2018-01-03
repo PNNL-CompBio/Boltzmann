@@ -53,18 +53,43 @@ double rxn_likelihood(double *concs,
 
     Called by: rxn_likelihoods
     Calls      fprintf, fflush, log (intrinsic)
+
+    Arguments:
+     Name           TMF          Descripton  
+
+     concs          D*I          double precision vector of length number-
+                                 unique-molecules with the molecule
+				 concentrations to be use in the reaction
+				 likelihood computation.
+				 
+     state          G*I		 The boltzmann state structure. No fields
+                                 of this structure are modified by this
+				 routine. The number_reactions, and
+				 reactions fields are used as inputs,
+				 and within the reactions field,
+				 the rxns_ptrs, coefficients, and 
+				 molecules_indices fields are used.
+
+     rxn_direction  ISI          Scalar integer. -1 for compute the likelihood
+                                 of the reverse reaction, +1 for compute the
+				 likelihood of the forward reaction.
+
+     rxn            ISI          Index of reaction for which the likelihood
+                                 ratio is desired.
+
+    Return value:
+     liklehood      DSO          The reaction likelihood ratio, a double 
+                                 precision scalar, for the specified reaction
+				 in the specified direction given the molecule
+				 concentrations in the concs vector.
+
   */
   struct rxn_matrix_struct *rxns_matrix;
-  /*
-  struct species_matrix_struct species_matrix;
-  */
-  double rxn_likelihood;
+  double likelihood;
   double *ke;
-  double small_nonzero;
   double  conc;
   double  left_concs;
   double  right_concs;
-  double  t_concs;
   double  eq_k;
   int64_t coeff;
   int64_t *rcoef;
@@ -73,30 +98,26 @@ double rxn_likelihood(double *concs,
   int success;
   int nrxns;
 
-  int i;
   int j;
-
   int k;
-  int padi;
+
   left_concs = 1.0;
   right_concs = 1.0;
 
   success           = 1;
   nrxns             = state->number_reactions;
-  small_nonzero     = state->small_nonzero;
   rxns_matrix       = state->reactions_matrix;
   rxn_ptrs          = rxns_matrix->rxn_ptrs;
   rcoef             = rxns_matrix->coefficients;
   molecules_indices = rxns_matrix->molecules_indices;
   ke                = state->ke;
-  i = rxn;
   left_concs        = 1.0;
   right_concs       = 1.0;
-  eq_k = ke[i];
+  eq_k = ke[rxn];
   if (rxn_direction < 0) {
     eq_k = 1/eq_k;
   }
-  for (j=rxn_ptrs[i];j<rxn_ptrs[i+1];j++) {
+  for (j=rxn_ptrs[rxn];j<rxn_ptrs[rxn+1];j++) {
     coeff = rcoef[j];
     conc  = concs[molecules_indices[j]];
     if (rxn_direction < 0) {
@@ -116,7 +137,7 @@ double rxn_likelihood(double *concs,
       } 
     }
   }
-  rxn_likelihood = eq_k * (left_concs/ right_concs);
+  likelihood = eq_k * (left_concs/ right_concs);
 
-  return(rxn_likelihood);
+  return(likelihood);
 }
