@@ -153,7 +153,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
       } else if (strncmp(key,"PSEUDOISOMER_FILE",17) == 0) {
 	sscan_ok = sscanf(value,"%s",state->pseudoisomer_file);
       } else if (strncmp(key,"USE_PSEUDOISOMERS",17) == 0) {
-	sscan_ok = sscanf(value,"%d",&state->use_pseudoisomers);
+	sscan_ok = sscanf(value,"%ld",&state->use_pseudoisomers);
       } else if (strncmp(key,"LOG_FILE",8) == 0) {
 	sscan_ok = sscanf(value,"%s",state->log_file);
       } else if (strncmp(key,"ALIGN_LEN",9) == 0) {
