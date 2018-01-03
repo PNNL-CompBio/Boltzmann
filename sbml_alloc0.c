@@ -21,7 +21,7 @@ CONDITIONS OF ANY KIND, either express or implied. See the License for the
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
 
-#include "sbml2bo_structs.h"
+#include "boltzmann_structs.h"
 
 #include "sbml_alloc0.h"
 
@@ -33,19 +33,25 @@ int sbml_alloc0(struct sbml2bo_struct **state_p) {
   */
   struct sbml2bo_struct state_instance;
   struct sbml2bo_struct *state;
+  struct ms2js_struct ms2js_instance;
+  struct ms2js_struct *ms2js_data;
   int64_t ask_for;
   int64_t one_l;
+  int64_t *ms_ids;
+  int64_t *js_ids;
   char *sbml_file;
   char *concs_in_file;
   char *rxns_dat_file;
   char *cmpts_dat_file;
+  char *ms2js_file;
   char *log_file;
+  char *ms2js_strings;
   int     max_file_name_len;
   int     success;
   int     num_files;
   int     padi;
   success = 1;
-  num_files = 5;
+  num_files = 6;
   one_l   = (int64_t)1;
   max_file_name_len = 1024;
   ask_for = (int64_t)sizeof(state_instance);
@@ -59,7 +65,6 @@ int sbml_alloc0(struct sbml2bo_struct **state_p) {
   }
   if (success) {
     *state_p = state;
-    
     state->num_files = num_files;
     state->file_name_len = max_file_name_len - 1;
     ask_for = num_files * max_file_name_len;
@@ -76,12 +81,14 @@ int sbml_alloc0(struct sbml2bo_struct **state_p) {
     concs_in_file  = (char*)&sbml_file[max_file_name_len];
     rxns_dat_file  = (char*)&concs_in_file[max_file_name_len];
     cmpts_dat_file = (char*)&rxns_dat_file[max_file_name_len];
-    log_file       = (char*)&cmpts_dat_file[max_file_name_len];
+    ms2js_file     = (char*)&cmpts_dat_file[max_file_name_len];
+    log_file       = (char*)&ms2js_file[max_file_name_len];
     state->sbml_file      = sbml_file;
     state->concs_in_file  = concs_in_file;
     state->rxns_dat_file  = rxns_dat_file;
     state->cmpts_dat_file = cmpts_dat_file;
     state->log_file       = log_file;
+    state->sbml_file      = ms2js_file;
     state->num_reactions  = 0;
     state->num_species    = 0;
     state->num_cmpts      = 0;
