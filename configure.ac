@@ -20,7 +20,7 @@ case "$CC" in
 	MPI_EXECS=
 	TIMING_CONFIG="no_"
 	MMAP_CONFIG="no_"
-	CFLAGS="-O0 -g $CFLAGS -DLINUX"
+	CFLAGS="-O0 -g -DLINUX"
 	;;
 esac
 
