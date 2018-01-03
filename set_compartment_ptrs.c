@@ -29,7 +29,7 @@ int set_compartment_ptrs(struct state_struct *state) {
     Remove duplicates from the sorted_molecules list
     and set the column_indices fields in the
     reactions_matrix appropriately.
-    Called by: boltzmann_init
+    Called by: species_init
     Calls:     
   */
   int64_t *cmpt_ptrs;
