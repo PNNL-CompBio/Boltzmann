@@ -479,6 +479,7 @@ int flatten_state(struct state_struct *boot_state,
       move_size = number_reactions*sizeof(double);
       memcpy(new_state->dg0s,boot_state->dg0s,move_size);
       memcpy(new_state->ke,boot_state->ke,move_size);
+      move_size = kss_size * sizeof(double);
       memcpy(new_state->kss,boot_state->kss,move_size);
       move_size = unique_molecules * sizeof(double);
       memcpy(new_state->kss_e_val,boot_state->kss_e_val,move_size);
