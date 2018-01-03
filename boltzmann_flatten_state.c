@@ -65,6 +65,9 @@ n       word_1:  -1 doubles   (1 double/word)
     Allocate flattened_state (fstate)  or state depending on direction
     being 0 or 1.
   */
+  state   = NULL;
+  fstate  = NULL;
+  lfstate = NULL;
   success = boltzmann_flatten_alloc(state_p,
 				    fstate_p,
 				    direction, &word_pos, lfp);
@@ -120,6 +123,7 @@ n       word_1:  -1 doubles   (1 double/word)
   }
   if (success) {
     total_size = word_pos + 1;
+    state->flattened_size = total_size << 3;
     if (direction == 0) {
       lfstate[0] = total_size;
     } else {
@@ -131,9 +135,7 @@ n       word_1:  -1 doubles   (1 double/word)
 		  lfstate[0],total_size);
 	  fflush(lfp);
 	}
-      } else {
-	state->flattened_size = total_size << 3;
-      }
+      } 
     }
   }
   return(success);
