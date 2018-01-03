@@ -105,7 +105,7 @@ double rxn_likelihood(double *concs,
   right_concs = 1.0;
 
   success           = 1;
-  nrxns             = state->number_reactions;
+  nrxns             = (int)state->number_reactions;
   rxns_matrix       = state->reactions_matrix;
   rxn_ptrs          = rxns_matrix->rxn_ptrs;
   rcoef             = rxns_matrix->coefficients;
