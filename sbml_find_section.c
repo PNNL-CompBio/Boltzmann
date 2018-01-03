@@ -33,7 +33,7 @@ int sbml_find_section(FILE *sbml_fp,char *sbml_buffer,int sbml_buffer_len,
     Advance the file pointer sbml_fp to the first line after the section_name
     string exists. Returns a 1 if the section is found, 0 if not.
     modifies the file pointer for sbml_fp.
-    Called by: parse_sbml.
+    Called by: parse_sbml, sbml_count_cmpts, sbml_count_species
     Calls:     feof,fgets,strlen,strncmp,count_ws
   */
   char *line;
