@@ -69,7 +69,11 @@ int alloc0(struct state_struct **state) {
     fflush(stderr);
   }
   if (success) {
-    statep->num_files = (int64_t)24;
+    /*
+      Right now we only have 24 file_names 
+      but we leave space for additional ones.
+    */
+    statep->num_files = (int64_t)32;
     num_state_files   = statep->num_files;
     statep->max_filename_len = max_file_name_len;
     ask_for = ((int64_t)num_state_files) * max_file_name_len;
@@ -94,7 +98,8 @@ int alloc0(struct state_struct **state) {
     statep->log_file           = statep->output_file + max_file_name_len;
     statep->output_dir         = statep->log_file + max_file_name_len;
     statep->counts_out_file    = statep->output_dir + max_file_name_len;
-    statep->rxn_lklhd_file     = statep->counts_out_file + max_file_name_len;
+    statep->ode_concs_file     = statep->counts_out_file + max_file_name_len;
+    statep->rxn_lklhd_file     = statep->ode_concs_file + max_file_name_len;
     statep->free_energy_file   = statep->rxn_lklhd_file + max_file_name_len;
     statep->restart_file       = statep->free_energy_file + max_file_name_len;
     statep->rxn_view_file      = statep->restart_file + max_file_name_len;
