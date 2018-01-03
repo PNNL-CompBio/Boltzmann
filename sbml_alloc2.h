@@ -21,6 +21,8 @@ CONDITIONS OF ANY KIND, either express or implied. See the License for the
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
 
-int sbml_alloc2(struct sbml2bo_struct *state,
-		int64_t num_modelseed_ids,
-		int64_t length_ms2js_strings);
+extern int sbml_alloc2(struct sbml2bo_struct *state,
+		       int64_t num_modelseed_ids,
+		       int64_t length_ms2js_strings,
+		       int64_t num_kegg_ids,
+		       int64_t length_kg2js_strings);
