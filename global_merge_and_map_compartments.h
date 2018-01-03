@@ -1,0 +1,4 @@
+#ifndef _GLOBAL_MERGE_AND_MAP_COMPARTMENTS_H_
+#define _GLOBAL_MERGE_AND_MAP_COMPARTMENTS_H_ 1
+extern int global_merge_and_map_compartments(struct boot_state_struct *boot_state);
+#endif
