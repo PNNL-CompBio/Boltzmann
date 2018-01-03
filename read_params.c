@@ -222,10 +222,22 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	if (state->use_activities < 0) {
 	  state->use_activities = 0;
 	}
+      } else if (strncmp(key,"USE_STEADY_STATE",19) == 0) {
+	sscan_ok = sscanf(value,"%ld",&(state->adjust_steady_state));
+	state->use_metropolis = state->adjust_steady_state;
+	if (state->adjust_steady_state < 0) {
+	  state->adjust_steady_state = 0;
+	}
+	if (state->adjust_steady_state) {
+	  state->use_metropolis = 1;
+	}
       } else if (strncmp(key,"ADJUST_STEADY_STATE",19) == 0) {
 	sscan_ok = sscanf(value,"%ld",&(state->adjust_steady_state));
 	if (state->adjust_steady_state < 0) {
 	  state->adjust_steady_state = 0;
+	}
+	if (state->adjust_steady_state) {
+	  state->use_metropolis = 1;
 	}
       } else if (strncmp(key,"PRINT_OUTPUT",12) == 0) {
 	sscan_ok = sscanf(value,"%ld",&(state->print_output));
