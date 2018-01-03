@@ -36,13 +36,14 @@ int alloc7(struct state_struct *state) {
     Called by: deq_run
     Calls:     calloc, fprintf, fflush,
   */
-  double *flux_vector;
-  double *flux_jacobian;
   double *reactant_term;
   double *product_term;
   double *p_over_r;
   double *r_over_p;
-  double *concs;
+  double *ode_forward_lklhds;
+  double *ode_reverse_lklhds;
+  double *ode_counts;
+  double *ode_concs;
   int64_t ask_for;
   int64_t one_l;
   int64_t usage;
@@ -57,36 +58,34 @@ int alloc7(struct state_struct *state) {
   num_species   = (int)state->nunique_molecules;
   num_rxns      = (int)state->number_reactions;
   success       = 1;
-  /*  
-    Allocate space for the flux vector.
+  /*
+    Allocate space for the ode_counts vector to be computed
+    from the molecule concentrations and compartment sizes.
   */
   if (success) {
     ask_for = num_species * sizeof(double);
     usage += ask_for;
-    flux_vector  = (double *)calloc(one_l,ask_for);
-    if (flux_vector == NULL) {
+    ode_counts = (double *)calloc(one_l,ask_for);
+    if (ode_counts == NULL) {
       fprintf(stderr,"alloc7: Error unable to allocate %lld bytes for "
-	      "flux_vector\n",ask_for);
+	      "ode_counts\n",ask_for);
       fflush(stderr);
       success = 0;
     } else {
-      state->flux_vector = flux_vector;
+      state->ode_counts = ode_counts;
     }
   }
-  /*
-    Allocate space for the flux jacobian.
-  */
   if (success) {
-    ask_for *= num_species;
+    ask_for = num_species * sizeof(double);
     usage += ask_for;
-    flux_jacobian = (double *)calloc(one_l,ask_for); 
-    if (flux_jacobian == NULL) {
+    ode_concs = (double *)calloc(one_l,ask_for);
+    if (ode_concs == NULL) {
       fprintf(stderr,"alloc7: Error unable to allocate %lld bytes for "
-	      "flux_jacobiann",ask_for);
+	      "ode_concs\n",ask_for);
       fflush(stderr);
       success = 0;
     } else {
-      state->flux_jacobian = flux_jacobian;
+      state->ode_concs = ode_concs;
     }
   }
   /*
@@ -153,21 +152,30 @@ int alloc7(struct state_struct *state) {
       state->r_over_p = r_over_p;
     }
   }
-  /*
-    Allocate space for the concs vector to be computed
-    from the molecule counts and compartment sizes.
-  */
   if (success) {
-    ask_for = num_species * sizeof(double);
+    ask_for = num_rxns * sizeof(double);
     usage += ask_for;
-    concs = (double *)calloc(one_l,ask_for);
-    if (concs == NULL) {
+    ode_forward_lklhds = (double *)calloc(one_l,ask_for);
+    if (ode_forward_lklhds == NULL) {
       fprintf(stderr,"alloc7: Error unable to allocate %lld bytes for "
-	      "concs\n",ask_for);
+	      "ode_forward_lklhds\n",ask_for);
       fflush(stderr);
       success = 0;
     } else {
-      state->concs = concs;
+      state->ode_forward_lklhds = ode_forward_lklhds;
+    }
+  }
+  if (success) {
+    ask_for = num_rxns * sizeof(double);
+    usage += ask_for;
+    ode_reverse_lklhds = (double *)calloc(one_l,ask_for);
+    if (ode_reverse_lklhds == NULL) {
+      fprintf(stderr,"alloc7: Error unable to allocate %lld bytes for "
+	      "ode_reverse_lklhds\n",ask_for);
+      fflush(stderr);
+      success = 0;
+    } else {
+      state->ode_reverse_lklhds = ode_reverse_lklhds;
     }
   }
   /*
