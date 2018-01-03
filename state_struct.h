@@ -57,7 +57,7 @@ specific language governing permissions and limitations under the License.
 
   4. for work space arrays and structs.
      unsorted_molecules,
-     unsorted_compartments.
+     unsorted_cmpts.
      future_concentrations,
      rxn_fire,
      no_op_likelihood,
@@ -136,8 +136,6 @@ struct state_struct {
   int64_t align_len;
   int64_t align_mask;
   int64_t max_filename_len;
-  int64_t max_param_line_len;
-  int64_t num_rxn_file_keywords;
   int64_t free_energy_format;
   int64_t rxn_view_freq;
   int64_t rxn_view_hist_length;
@@ -146,11 +144,6 @@ struct state_struct {
   int64_t count_view_freq;
   int64_t fe_view_freq;
   int64_t reaction_file_length;
-  int64_t rxn_title_text_length;
-  int64_t pathway_text_length;
-  int64_t compartment_text_length;
-  int64_t molecule_text_length;
-  int64_t regulation_text_length;
   int64_t num_fixed_concs;
   int64_t usage;
   int64_t max_molecule_len;
@@ -159,13 +152,6 @@ struct state_struct {
   int64_t min_compartment_len;
   int64_t sum_molecule_len;
   int64_t sum_compartment_len;
-  int64_t sorted_molecules_offset_in_bytes;
-  int64_t sorted_compartments_offset_in_bytes;
-  int64_t molecules_text_offset_in_bytes;
-  int64_t compartments_text_offset_in_bytes;
-  /*
-  int64_t regulation_text_offset_in_bytes;
-  */
   int64_t num_files;
   int64_t solvent_pos;
   int64_t use_pseudoisomers;
@@ -177,16 +163,126 @@ struct state_struct {
   int64_t number_base_reaction_reactants;
   int64_t print_ode_concs;
 
+  /*
+    sizes used to self-describe this state vector.
+    only needed for parallel version multiple instantiations
+    when using boltzmann_boot and boltzmann_load, with flatten_state.
+  */
+  int64_t keyword_buffer_length;
+  int64_t num_rxn_file_keywords;
+  int64_t rxn_file_keyword_len;
+  int64_t per_keyword_pointer_size;
+  int64_t max_param_line_len;
+  int64_t reaction_titles_length;
+  int64_t pathway_text_length;
+  int64_t compartment_text_length;
+  int64_t molecule_text_length;
+  int64_t regulation_text_length;
+  int64_t per_molecule_double_size;
+  int64_t per_reaction_double_size;
+  int64_t per_compartment_double_size;
+  int64_t vgrng_state_size;
+  int64_t reaction_data_size;
+  int64_t molecule_data_size;
+  int64_t compartment_data_size;
+  int64_t reactions_matrix_size;
+  int64_t molecules_matrix_size;
+  int64_t reactions_ptrs_size;
+  int64_t molecules_ptrs_size;
+  int64_t reactions_matrix_field_size;
+  int64_t molecules_matrix_field_size;
+  int64_t file_names_size;
+  int64_t solvent_string_size;
+  /*
+    offsets used to self-describe this state vector.
+    only needed for parallel version multiple instantiations
+    when using boltzmann_boot and boltzmann_load, with flatten_state.
+  */
+  int64_t state_offset;
+  int64_t current_counts_offset;
+  int64_t bndry_flux_counts_offset;
+  int64_t net_lklhd_bndry_flux_offset;
+  int64_t net_likelihood_offset;
+  int64_t vgrng_offset;
+  int64_t vgrng2_offset;
+
+  int64_t dg0s_offset;
+  int64_t ke_offset;
+  int64_t rke_offset;
+  int64_t kss_offset;
+  int64_t kssr_offset;
+  int64_t kss_e_val_offset;
+  int64_t kss_u_val_offset;
+  int64_t molecule_dg0tfs_offset;
+  int64_t molecule_probabilities_offset;
+  int64_t molecule_chemical_potentials_offset;
+  int64_t count_to_conc_offset;
+  int64_t conc_to_count_offset;
+  int64_t activites_offset;
+  int64_t reg_constant_offset;
+  int64_t reg_exponent_offset;
+  int64_t reg_direction_offset;
+  int64_t reg_species_offset;
+  
+  int64_t reactions_offset;
+  int64_t sorted_molecules_offset;
+  int64_t sorted_compartments_offset;
+  int64_t reactions_matrix_offset;
+  int64_t molecules_matrix_offset;
+  int64_t reactions_ptrs_offset;
+  int64_t molecules_indices_offset;
+  int64_t compartment_indices_offset;
+  int64_t reactions_coefficients_offset;
+  int64_t text_indices_offset;
+  int64_t solvent_coefficients_offset;
+  int64_t molecules_ptrs_offset;
+  int64_t reaction_indices_offset;
+  int64_t molecules_coefficients_offset;
+
+  int64_t file_names_offset;
+  int64_t solvent_string_offset;
+  int64_t reaction_titles_offset;
+  int64_t pathway_text_offset;
+  int64_t compartment_text_offset;
+  int64_t molecules_text_offset;
+  int64_t regulation_text_offset;
+
+  int64_t unsorted_molecules_offset;
+  int64_t unsorted_compartments_offset;
+  int64_t keyword_buff_offset;
+  int64_t keyword_lengths_offset;
+  int64_t keywords_offset;
+  int64_t raw_molecules_text_offset;
+  int64_t transpose_workspace_offset;
+  int64_t future_counts_offset;
+  int64_t free_energy_offset;
+  int64_t forward_rxn_likelihood_offset;
+  int64_t reverse_rxn_likelihood_offset;
+  int64_t forward_rxn_log_likelihood_ratio_offset;
+  int64_t reverse_rxn_log_likelihood_ratio_offset;
+  int64_t rxn_likelihood_ps_offset;
+  int64_t reactant_term_offset;
+  int64_t product_term_offset;
+  int64_t rxn_q_offset;
+  int64_t recip_rxn_q_offset;
+  int64_t log_kf_rel_offset;
+  int64_t log_kr_rel_offset;
+  int64_t ode_counts_offset;
+  int64_t ode_concs_offset;
+  int64_t ode_forward_lklhds_offset;
+  int64_t ode_reverse_lklhds_offset;
+  int64_t base_reactant_indicator_offset;
+  int64_t base_reactants_offset;
+  int64_t rxn_has_flux_offset;
+  /*
+    Floating point scalars
+  */
   double  ideal_gas_r;
   double  temp_kelvin;
   double  avogadro;
   double  recip_avogadro;
   double  min_count;
   double  min_conc;
-  /*
-  double  conc_to_count;
-  double  count_to_conc;
-  */
   double  ph;
   double  ionic_strength;
   double  rt;
@@ -226,11 +322,13 @@ struct state_struct {
     compute_moleculear_partition_probability.
   */
   double  min_molecule_dg0tf;
+  /*
+    The following two fields are not input fields, but are scalars and
+    hence included here..
+  */
   int64_t *workspace_base;
 
   /* two way data (modified) */
-  double  *dg_forward_p; /* scalar */        /* 8 */             
-  double  *entropy_p;    /* scalar */        /* 8 */             
   double  *current_counts; /* len = unique_molecules */
   double  *bndry_flux_counts;       /* len = unique_molecules */
   double  *net_lklhd_bndry_flux;    /* len = unique_molecules */
@@ -267,28 +365,31 @@ struct state_struct {
   double  *reg_drctn;    /* len = number_reactions * max_regs_per_rxn */
   int64_t *reg_species;  /* len = number_reactions * max_regs_per_rxn */
   /* 
-     sizeof(rxn_struct) * number of reactions. 
+     sizeof(reaction_struct) * number of reactions. 
      Allocated in alloc2 
   */
-  struct rxn_struct *reactions; 
-  /* 
-     ((number_reactions + 1) * sizeof(int64_t)) +
-     number_molecules * (4*sizeof(int64_t)) 
-     allocated in alloc2 
-  */
-  struct rxn_matrix_struct *reactions_matrix; /* */
-
-  struct molecules_matrix_struct *molecules_matrix;
+  struct reaction_struct *reactions; 
   /* 
     sizeof(molecule_struct) * unique_molecules 
     allocated in alloc2 
   */
   struct molecule_struct *sorted_molecules;  
   /* 
-     sizeof(molecule_struct) * unique_compartments 
+     sizeof(compartment_struct) * unique_compartments 
      allocated in alloc2 
   */ 
-  struct compartment_struct *sorted_cmpts; 
+  struct compartment_struct *sorted_compartments; 
+  /* 
+     reactions_matrix size is ((number_reactions + 1) * sizeof(int64_t)) +
+     number_molecules * (4*sizeof(int64_t)) 
+     allocated in alloc2 
+  */
+  struct reactions_matrix_struct *reactions_matrix; /* */
+
+  /*
+    molecules_matrix is allocated in alloc4.
+  */
+  struct molecules_matrix_struct *molecules_matrix;
   /*
     Auxilliary data read in by boltzmann_init, not needed by
     boltzman_run unless printing is enabled.
@@ -335,12 +436,17 @@ struct state_struct {
   */
   struct molecule_struct *unsorted_molecules; /* allocated in alloc2 */
   struct compartment_struct *unsorted_cmpts; /* allocated in alloc2 */
-  int64_t *compartment_ptrs;
+  int64_t *compartment_ptrs;                 /* allocated in alloc3 */
+  int64_t *transpose_workspace;  /* used in forming molecules_matrix. */
+                                 /* allocated in alloc4 */
   int64_t *rxn_file_keyword_lengths /* allocated in alloc0 */;
   char    **rxn_file_keywords; /* 12, allocated in alloc0 */
   char    *rxn_file_keyword_buffer; /* 144, allocated in alloc0  */
   char    *param_buffer; /*  2* max_param_line_len, allocated in alloc0 */ 
   char    *raw_molecules_text; /* molecule_text_length Allocated in alloc2 */
+  /* 
+    Allocated in alloc8.
+  */
   double  *future_counts;      /* unique_molecules */
   double  *free_energy;            /* number_reactions */
   double  *forward_rxn_likelihood; /* number_reactions */
@@ -348,8 +454,8 @@ struct state_struct {
   double  *forward_rxn_log_likelihood_ratio; /* number_reactions */
   double  *reverse_rxn_log_likelihood_ratio; /* number_reactions */
   double  *rxn_likelihood_ps;      /* number_reactions + 1 */
-  /* Allocated in alloc7 */
-  double *flux_vector;   /* flux vector of length number_unique_molecules */
+
+  /* Workspace used by ode routines. Allocated in alloc7 */
   double *reactant_term; /* product of reaction reactant concentrations, length number_reactions */
   double *product_term;  /* product of reaction product concentrations, length number_reactions */
   double *rxn_q; /* Ratio  product_term to reactant_term.  */
@@ -362,23 +468,23 @@ struct state_struct {
   double *ode_reverse_lklhds;
   int *rxn_has_flux; /* Indicator as to whether a reaction contributes to 
 		       species flux  length is number_reactions */
+  int  *base_reactants;            /* List of reactant species (by number)
+				      in the base reaction */
+  int  *base_reactant_indicator;   /* vector of length nunique_molecules
+				      elment i 1 for species i in
+				      base_reactants list, 0 otherwise. */
   /*
     Workspace only if printing. (debugging);
+    allocated in alloc9.
   */
   double  *no_op_likelihood;       /* rxn_view_hist_length */
   /* rxn_view_hist_length * number_reactions */
   double  *rxn_view_likelihoods;    
   /* rxn_view_hist_length * number_reactions */
   double  *rev_rxn_view_likelihoods; 
-  int64_t *transpose_workspace;  /* used in forming molecules_matrix. */
-  int  *rxn_fire;                  /* (number_reactions * 2) + 2*/
+  int64_t *rxn_fire;                  /* (number_reactions * 2) + 2*/
   int  *rxn_mat_row;               /* (nunique_molecules) */
 
-  int  *base_reactants;            /* List of reactant species (by number)
-				      in the base reaction */
-  int  *base_reactant_indicator;   /* vector of length nunique_molecules
-				      elment i 1 for in species i in
-				      base_reactants list, 0 otherwise. */
 
 
   FILE *rxn_fp;
