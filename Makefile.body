@@ -13,7 +13,7 @@ boltzmann: $(SERIAL_OBJS) $(MMAP_OBJS) $(TIMING_LIB)
 boltzmann_drv.o: $(SERIAL_INCS) boltzmann_drv.c boltzmann_init.h 
 	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_drv.c
 
-boltzmann_init.o: $(SERIAL_INCS) boltzmann_init.c boltzmanb_init.h alloc0.h read_params.h vgrng_init.o vgrng.o echo_params.h size_rxns_file.h alloc1.h alloc2.h parse_reactions_file.h echo_reactions_file.h sort_istrings.h unique_molecules.h print_molecules_dictionary.h alloc3.h read_initial_concentrations.h form_molecules_matrix.h vgrng_init.h vgrng.h compute_ke.h
+boltzmann_init.o: $(SERIAL_INCS) boltzmann_init.c boltzmann_init.h alloc0.h read_params.h vgrng_init.o vgrng.o echo_params.h size_rxns_file.h alloc1.h alloc2.h parse_reactions_file.h echo_reactions_file.h sort_istrings.h unique_molecules.h print_molecules_dictionary.h alloc3.h read_initial_concentrations.h form_molecules_matrix.h vgrng_init.h vgrng.h compute_ke.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_init.c
 
 alloc0.o: $(SERIAL_INCS) alloc0.c alloc0.h
