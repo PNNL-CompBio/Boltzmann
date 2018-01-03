@@ -25,6 +25,7 @@ specific language governing permissions and limitations under the License.
 struct state_struct {
   struct rxn_struct *reactions;
   struct rxn_matrix_struct *reactions_matrix;
+  struct species_matrix_struct *species_matrix;
   struct istring_elem_struct *unsorted_species;
   struct istring_elem_struct *sorted_species;
   struct istring_elem_struct *unsorted_cmpts;
@@ -37,6 +38,7 @@ struct state_struct {
   char *log_file;
   char *output_dir;
   char *rxn_buffer;
+  char *conc_buffer;
   char *param_buffer;
   char *param_key;
   char *param_value;
@@ -45,9 +47,11 @@ struct state_struct {
   char *pathway_text;
   char *compartment_text;
   char *species_text;
+  char *species_name;
   char *raw_species_text;
   char **rxn_file_keywords;
   int64_t *rxn_file_keyword_lengths;
+  int64_t *transpose_work;
   int64_t reaction_file_length;
   int64_t align_len;
   int64_t align_mask;
@@ -72,6 +76,8 @@ struct state_struct {
   double  temp_kelvin;
   double  cal_gm_per_joule;
   double  joule_per_cal_gm;
+  double  default_initial_conc;
+  double  *concentrations;
   int  *cmpts_map;
   int  number_reactions;
   int  number_compartments;
