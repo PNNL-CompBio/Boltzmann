@@ -22,7 +22,6 @@ specific language governing permissions and limitations under the License.
 ******************************************************************************/
 
 #include "boltzmann_structs.h"
-#include "sbml2bo_structs.h"
 
 #include "count_ws.h"
 #include "count_nws.h"
