@@ -154,9 +154,10 @@ int parse_reactions_file(struct state_struct *state,
   seek_offset = (int64_t)0;
   rxn_buff_len = state->max_param_line_len<<1;
   lfp          = state->lfp;
-  rxn_fp       = fopen(reaction_file,"r");
   align_len    = state->align_len;
   align_mask   = state->align_mask;
+  strcpy(state->reaction_file,reaction_file);
+  rxn_fp       = fopen(reaction_file,"r");
   if (rxn_fp == NULL) {
     success = 0;
     fprintf(stderr,"parse_reactions_file: reaction file not open, %s\n",
@@ -227,7 +228,7 @@ int parse_reactions_file(struct state_struct *state,
 	line_len -= 1;
       } else {
 	fprintf(stderr,"parse_reactions_file: Error input line longer than"
-		" %d characters\n",rxn_buff_len);
+		" %ld characters\n",rxn_buff_len);
 	fflush(stderr);
 	success = 0;
 	break;
@@ -430,10 +431,11 @@ int parse_reactions_file(struct state_struct *state,
 	  ns = sscanf ((char*)&rxn_buffer[ws_chars+kl],"%le",
 		       &reaction->delta_g0);
 	  if (ns < 1) {
+	    title  = (char *)&rxn_title_text[reaction->title];
 	    fprintf(stderr,
 		    "parse_reactions_file: Error: malformed DGZERO line"
 		    " for reaction %s was\n%s\n",
-		    reaction->title,rxn_buffer);
+		    title,rxn_buffer);
 	    fflush(stderr);
 	    success = 0;
 	    break;
@@ -445,10 +447,11 @@ int parse_reactions_file(struct state_struct *state,
 	  */
 	  sl = count_nws((char*)&rxn_buffer[ws_chars+kl]);
 	  if (sl < 1) {
+	    title  = (char *)&rxn_title_text[reaction->title];
 	    fprintf(stderr,
 		    "parse_reactions_file: Error: malformed DGZERO-UNITS line,"
 		    " for reaction %s, was %s, using KCAL/MOL\n",
-		    reaction->title,rxn_buffer);
+		    title,rxn_buffer);
 	    fflush(stderr);
 	    reaction->unit_i = 0;
 	  } else {
