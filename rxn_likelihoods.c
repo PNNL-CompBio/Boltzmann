@@ -46,12 +46,12 @@ int rxn_likelihoods(double *counts,
     to sort reactant and product counts and take the product of 
     successive quotients which we would expect to be well scaled.
 
-    Called by: rxn_log_likelihoods
+    Called by: rxn_log_likelihoods, update_rxn_likelihoods
     Calls      rxn_likelihood
     Arguments:
      Name           TMF          Descripton  
 
-     counts          D*I         double precision vector of length number-
+     counts         D*I          double precision vector of length number-
                                  unique-molecules with the molecule
 				 counts to be use in the reaction
 				 likelihood computation.
