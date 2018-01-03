@@ -107,11 +107,6 @@ int free_boot_state(struct state_struct **statep) {
     if (state->current_concentrations) {
       free(state->current_concentrations);
     }
-    /*
-    if (state->future_concentrations) {
-      free(state->future_concentrations);
-    }
-    */
     if (state->bndry_flux_concs) {
       free(state->bndry_flux_concs);
     }
@@ -121,38 +116,6 @@ int free_boot_state(struct state_struct **statep) {
     if (state->ke) {
       free(state->ke);
     }
-    /*
-    if (state->free_energy) {
-      free(state->free_energy);
-    }
-    if (state->forward_rxn_likelihood) {
-      free(state->forward_rxn_likelihood);
-    }
-    if (state->reverse_rxn_likelihood) {
-      free(state->reverse_rxn_likelihood);
-    }
-    if (state->forward_rxn_log_likelihood_ratio) {
-      free(state->forward_rxn_log_likelihood_ratio);
-    }
-    if (state->reverse_rxn_log_likelihood_ratio) {
-      free(state->reverse_rxn_log_likelihood_ratio);
-    }
-    if (state->rxn_likelihood_ps) {
-      free(state->rxn_likelihood_ps);
-    }
-    if (state->rxn_view_likelihoods) {
-      free(state->rxn_view_likelihoods);
-    }
-    if (state->rev_rxn_view_likelihoods) {
-      free(state->rev_rxn_view_likelihoods);
-    }
-    if (state->no_op_likelihood) {
-      free(state->no_op_likelihood);
-    }
-    if (state->rxn_fire) {
-      free(state->rxn_fire);
-    }
-    */
     if (state->workspace_base) {
       free(state->workspace_base);
     }
