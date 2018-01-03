@@ -34,8 +34,8 @@ int rxn_conc_update(int rxn_no, int direction,
   */
   struct molecule_struct *sorted_molecules;
   struct molecule_struct *molecule;
-  double *current_concs;
-  double *future_concs;
+  double *current_counts;
+  double *future_counts;
   int64_t *rxn_ptrs;
   int64_t *molecules_indices;
   int64_t *coefficients;
@@ -52,8 +52,8 @@ int rxn_conc_update(int rxn_no, int direction,
   struct rxn_matrix_struct *rxns_matrix;
 
   success           = 1;
-  current_concs     = state->current_concentrations;
-  future_concs      = state->future_concentrations;
+  current_counts    = state->current_counts;
+  future_counts     = state->future_counts;
   nu_molecules      = state->nunique_molecules;
   sorted_molecules  = state->sorted_molecules;
   rxns_matrix       = state->reactions_matrix;
@@ -63,15 +63,15 @@ int rxn_conc_update(int rxn_no, int direction,
   /*
     The following could be done with an memmove
   */
-  if (future_concs != current_concs) {
+  if (future_counts != current_counts) {
     for (i=0;i<nu_molecules;i++) {
-      future_concs[i] = current_concs[i];
+      future_counts[i] = current_counts[i];
     }
   }
   /*
     Note that for solvent molcule the coefficients vector has
     had its corresponding solvent molecule coefficients set to 0 and hence
-    its concentration will not be changed. This comment added with
+    its count will not be changed. This comment added with
     the implementation of the solvent concept. 8/19/2013 DJB.
   */
   if (direction > 0) {
@@ -79,10 +79,10 @@ int rxn_conc_update(int rxn_no, int direction,
       k = molecules_indices[j];
       molecule = (struct molecule_struct *) &sorted_molecules[k];
       if (molecule->variable) {
-        future_concs[k] += (double)coefficients[j];
+        future_counts[k] += (double)coefficients[j];
       }
-      if (future_concs[k] < 0.0) {
-        future_concs[k] = 0.0;
+      if (future_counts[k] < 0.0) {
+        future_counts[k] = 0.0;
       }
     } 
   } else {
@@ -90,10 +90,10 @@ int rxn_conc_update(int rxn_no, int direction,
       k = molecules_indices[j];
       molecule = (struct molecule_struct *) &sorted_molecules[k];
       if (molecule->variable) {
-        future_concs[k] -= (double)coefficients[j];
+        future_counts[k] -= (double)coefficients[j];
       }
-      if (future_concs[k] < 0.0) {
-        future_concs[k] = 0.0;
+      if (future_counts[k] < 0.0) {
+        future_counts[k] = 0.0;
       }
     }
   }
