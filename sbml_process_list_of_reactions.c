@@ -307,7 +307,7 @@ int sbml_process_list_of_reactions(FILE *sbml_fp,
       case 256:
 	enclosing_tag = not_in_tag;
 	in_reaction = 0;
-	fprintf(rxns_fp,"DGZERO\t%le\n",delta_g0);
+	fprintf(rxns_fp,"\nDGZERO\t%le\n",delta_g0);
 	fprintf(rxns_fp,"DGZERO_UNITS\t%s\n",units);
 	/*
 	  Reset the default delta_g0 and delta_g0_units.
