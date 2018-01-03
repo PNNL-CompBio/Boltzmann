@@ -27,7 +27,7 @@ specific language governing permissions and limitations under the License.
 int print_molecules_dictionary(struct state_struct *state) {
   /*
     Print the  unique molecules in sorted order and the 
-    header line for the counts.out file.
+    header line for the counts.out and the concs.out file
     Called by: echo_inputs
     Calls:     fopen, fprintf, fclose (intrinsic)
   */
@@ -113,6 +113,9 @@ int print_molecules_dictionary(struct state_struct *state) {
     }
     if (counts_fp) {
       fprintf(counts_fp,"\n");
+    }
+    if (concs_fp) {
+      fprintf(concs_fp,"\n");
     }
     fclose(dict_fp);
   }
