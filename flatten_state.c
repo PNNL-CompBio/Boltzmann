@@ -134,6 +134,8 @@ int flatten_state(struct state_struct *boot_state,
   int64_t compartment_indices_size;
   int64_t coefficients_offset;
   int64_t coefficients_size;
+  int64_t solvent_coefficients_offset;
+  int64_t solvent_coefficients_size;
   int64_t text_offset;
   int64_t text_size;
   int64_t sorted_molecules_offset;
@@ -261,7 +263,9 @@ int flatten_state(struct state_struct *boot_state,
   compartment_indices_size = molecules_indices_size;
   coefficients_offset      = compartment_indices_offset + compartment_indices_size;
   coefficients_size      = molecules_indices_size;
-  text_offset            = coefficients_offset + coefficients_size;
+  solvent_coefficients_offset = coefficients_offset + coefficients_size;
+  solvent_coefficients_size   = number_reactions + (number_reactions & 1);
+  text_offset            = solvent_coefficients_offset + solvent_coefficients_size;
   text_size              = molecules_indices_size;
   sorted_molecules_offset = text_offset + text_size;
   sorted_molecules_offset_in_bytes = sorted_molecules_offset << log2_word_len;
@@ -430,6 +434,7 @@ int flatten_state(struct state_struct *boot_state,
     reactions_matrix->molecules_indices = (int64_t *)&new_state_l[molecules_indices_offset];
     reactions_matrix->compartment_indices = (int64_t *)&new_state_l[compartment_indices_offset];
     reactions_matrix->coefficients = (int64_t *)&new_state_l[coefficients_offset];
+    reactions_matrix->solvent_coefficients = (int64_t *)&new_state_l[solvent_coefficients_offset];
     reactions_matrix->text = (int64_t*)&new_state_l[text_offset];
     new_state->sorted_molecules = (struct molecule_struct*)&new_state_l[sorted_molecules_offset];
     new_state->sorted_cmpts = (struct compartment_struct*)&new_state_l[sorted_cmpts_offset];
@@ -504,6 +509,9 @@ int flatten_state(struct state_struct *boot_state,
 	     boot_state->reactions_matrix->coefficients,move_size);
       memcpy(new_state->reactions_matrix->text,
 	     boot_state->reactions_matrix->text,move_size);
+      move_size = number_reactions * sizeof(int64_t);
+      memcpy(new_state->reactions_matrix->solvent_coefficients,
+	     boot_state->reactions_matrix->solvent_coefficients,move_size);
       move_size = unique_molecules * sizeof(ies);
       memcpy(new_state->sorted_molecules,
 	     boot_state->sorted_molecules,move_size);
