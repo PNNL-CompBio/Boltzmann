@@ -8,6 +8,7 @@ int ode_solver (struct state_struct *state, double *concs,
   /*
     Called by: deq_run
     Calls:     ode23tb
+               boltzmann_cvodes,
                
                concs is the vector of molecule concentrations, 
 	       the concs_to_counts field in state can be used
