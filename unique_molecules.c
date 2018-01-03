@@ -29,6 +29,7 @@ specific language governing permissions and limitations under the License.
 #include <unistd.h>
 
 #include "boltzmann_structs.h"
+#include "unique_molecules_core.h"
 
 #include "unique_molecules.h"
 int unique_molecules(struct state_struct *state) {
@@ -50,25 +51,42 @@ int unique_molecules(struct state_struct *state) {
   char *cstring;
   char *sstring;
   int64_t sum_molecule_len;
-  
-  int nzr;
-  int i;
+  int64_t nunique_molecules;
+  int64_t align_len;
+  int64_t align_mask;
 
   int success;
+  int nzr;
+
+  /*
+  int i;
   int nu_molecules;
 
   int ni;
   int cni;
-
+  */
   success = 1;
   nzr                 = state->number_molecules;
   sorted_molecules    = state->sorted_molecules;
   molecules_text      = state->molecules_text;
   rxns_matrix         = state->reactions_matrix;
   molecules_indices   = rxns_matrix->molecules_indices;
+  align_len           = state->align_len;
+  align_mask          = state->align_mask;
+  success = unique_molecules_core(nzr,
+				  sorted_molecules,
+				  molecules_indices,
+				  molecules_text,
+				  &nunique_molecules,
+				  &sum_molecule_len,
+				  align_len,
+				  align_mask);
+  /*
   compartment_indices = rxns_matrix->compartment_indices;
+  */
+  /*
   sum_molecule_len = (int64_t)0;
-  /* loop over sorted molecules. */
+  //* loop over sorted molecules. 
   nu_molecules = 0;
   molecules_indices[sorted_molecules->m_index] = nu_molecules;
   sorted_molecules->m_index = 0;
@@ -78,12 +96,12 @@ int unique_molecules(struct state_struct *state) {
     cstring = (char *)&molecules_text[cur_molecule->string];
     sum_molecule_len += ((int64_t)strlen(cstring));
   }
-  /*
+  //*
     This translation has already been done in translate_compartments.
   cur_molecule->c_index = compartment_indices[cur_molecule->c_index];
-  */
+  //
   cni = sorted_molecules->c_index;
-  sorted_molecules += 1; /* Caution address arithmetic. */
+  sorted_molecules += 1; //* Caution address arithmetic. 
   umolecules_next  = sorted_molecules;
   for (i=1;i<nzr;i++) {
     ni = sorted_molecules->c_index;
@@ -101,13 +119,15 @@ int unique_molecules(struct state_struct *state) {
       umolecules_next->m_index = nu_molecules;
       umolecules_next->c_index = ni;
       cni = ni;
-      umolecules_next += 1; /* Caution address arithmetic. */
+      umolecules_next += 1; //* Caution address arithmetic. 
     }
     molecules_indices[sorted_molecules->m_index] = nu_molecules;
-    sorted_molecules += 1; /* Caution address arithmetic. */
+    sorted_molecules += 1; //* Caution address arithmetic. 
   }
-  state->unique_molecules = nu_molecules + 1;
+  state->nunique_molecules = nu_molecules + 1;
   state->sum_molecule_len = sum_molecule_len;
-
+  */
+  state->nunique_molecules = nunique_molecules;
+  state->sum_molecule_len  = sum_molecule_len;
   return(success);
 }
