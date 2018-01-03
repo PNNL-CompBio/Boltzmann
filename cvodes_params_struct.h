@@ -5,11 +5,13 @@ struct cvodes_params_struct {
     Workspace created by CVodeCreate call.
   */
   void *cvode_mem;
-
   /*
     Pointer to workspace for jacobian setup, factorization and application
     routines.
   */
+  N_Vector y0;
+  N_Vector *ys0;
+  N_Vector *dys;
   double *drfc;
   double *dfdy_a;
   double *dfdy_at;
@@ -20,6 +22,10 @@ struct cvodes_params_struct {
   double *recip_diag_u;
   double *frow;
   double *srow;
+  double *p;
+  double *rp;
+  double *pbar;
+  double *ys0v;
   int    *dfdy_ia;
   int    *dfdy_ja;
   int    *dfdy_iat;
@@ -34,6 +40,7 @@ struct cvodes_params_struct {
   int    *uindex;
   int    *column_mask;
   int    *sindex;
+  int    *plist;
   /*
     Relative tolerance.
   */
@@ -215,6 +222,13 @@ struct cvodes_params_struct {
     Preconditioner fill level.
   */
   int prec_fill;
+
+  /*
+    Number of sensitivity parameters (=number reactions).
+  */
+  int ns;
+  int ism;
+
 }
 ;
 #endif
