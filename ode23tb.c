@@ -84,13 +84,17 @@ int ode23tb (struct state_struct *state, double *counts,
   double *wti; /* length nunique_molecules */
   double *pivot; /* length nunique_molecules */
   double *net_lklhd_bndry_flux;    /* length unique_molecules.*/
-  double *ode_num_jac_scratch; /* length 10*unique_molecules */
+  double *ode_num_jac_scratch; /* length 4*unique_molecules */
+  double *ode_num_jac_y_counts; /* length unique_molecules */
+  double *fdel; /* length unique_molecules */                
+  double *fdiff; /* length unique_molecules */
+  double *dfdy_tmp; /* length unique_molecules */
   double *forward_rxn_likelihoods; /* length nrxns */
   double *reverse_rxn_likelihoods; /* length nrxns */
   double *net_likelihoods;          /* length nrxns */
 
-  double *count_to_conc;
-  double *conc_to_count;
+  double *count_to_conc; /* length unique_molecules */
+  double *conc_to_count; /* length unique_molecules */
   double *dbl_ptr;
   double t0;
   double t;
@@ -156,8 +160,7 @@ int ode23tb (struct state_struct *state, double *counts,
   double norm_delfdelt_o_wti;
   double dzero;
   double mdh;
-  double delta_t;
-  double recip_delta_t;
+
   int64_t ask_for;
   int64_t one_l;
   int64_t zero_l;
@@ -174,9 +177,9 @@ int ode23tb (struct state_struct *state, double *counts,
   int64_t ode_rxn_view_step;
 
 
+  int *base_reactant_indicator; /* length nunique_molecules */
+  int *base_reactants;          /* length nunique_molecules */
   int *ipivot;                  /* overlaid on pivot space */
-
-  char  *trans;
 
   int ny;
   int first_time;
@@ -197,36 +200,38 @@ int ode23tb (struct state_struct *state, double *counts,
   int mcurrent;
 
 
+  int one;
   int nrhs;
+
   int nrxns;
-
   int nofailed;
+
   int itfail1;
-
   int itfail2;
+
   int unsuccessful_step;
-
   int tolerance_met;
-  int iter_count;
 
+  int iter_count;
   int nnrejectstep;
+
+  int number_base_reaction_reactants;
   int nnreset_znew;
 
+  int origin;
   int done;
-  int nysq;
 
+  int nysq;
   int info;
+
+  int ode_solver_choice;
   int delta_concs_choice;
 
   int nl_success;
-
-#ifdef DBG
-  int origin;
-#lse 
   int padi;
-#endif
 
   char  trans_chars[8];
+  char  *trans;
 
   FILE *lfp;
   FILE *efp;
@@ -309,8 +314,15 @@ int ode23tb (struct state_struct *state, double *counts,
     pivot       = &wti[ny];
     ipivot      = (int*)pivot;
     net_lklhd_bndry_flux = &pivot[ny];
+    /*
     ode_num_jac_scratch  = &net_lklhd_bndry_flux[ny];
     forward_rxn_likelihoods = &ode_num_jac_scratch[5*ny];
+    */
+    ode_num_jac_y_counts  = &net_lklhd_bndry_flux[ny];
+    fdel                  = &ode_num_jac_y_counts[ny];
+    fdiff                 = &fdel[ny];
+    dfdy_tmp              = &fdiff[ny];
+    forward_rxn_likelihoods = &dfdy_tmp[ny];
     reverse_rxn_likelihoods = &forward_rxn_likelihoods[nrxns];
     net_likelihoods         = &reverse_rxn_likelihoods[nrxns];
     /*
@@ -364,9 +376,20 @@ int ode23tb (struct state_struct *state, double *counts,
     first_time = 1;
     /*
     ode_num_jac(state,dfdy,t0,y0,f0,fac,thresh,&nf,first_time);
-    */
     ode_num_jac(state,first_time,
 		dfdy,t0,y,f0,fac,thresh,ode_num_jac_scratch, &nf);
+
+    */
+    ode_num_jac(state,first_time,
+		dfdy,t0,y,f0,fac,thresh,
+		ode_num_jac_y_counts,
+		fdel,
+		fdiff,
+		dfdy_tmp,
+		forward_rxn_likelihoods,
+		reverse_rxn_likelihoods,
+		&nf);
+
 
     first_time = 0;
     nfevals += nf;
@@ -656,9 +679,17 @@ int ode23tb (struct state_struct *state, double *counts,
 	  }
 	  /*
 	    Compute new Jacobian, dfdy.
-	  */
 	  ode_num_jac(state,first_time,dfdy,t,y,f0,fac,thresh,
 		      ode_num_jac_scratch, &nf);
+	  */
+	  ode_num_jac(state,first_time,dfdy,t,y,f0,fac,thresh,
+		      ode_num_jac_y_counts,
+		      fdel,
+		      fdiff,
+		      dfdy_tmp,
+		      forward_rxn_likelihoods,
+		      reverse_rxn_likelihoods,
+		      &nf);
 	  nfevals += (nf + 1);
 	  npds += 1;
 	  jcurrent = 1;
@@ -1039,15 +1070,8 @@ int ode23tb (struct state_struct *state, double *counts,
 	  znew[i] = z3[i];
 	}
       }
-      delta_t = tnew - t;
-      if (delta_t != 0.0) {
-	recip_delta_t = 1.0/delta_t;
-      } else {
-	recip_delta_t = 0.0;
-      }
       t = tnew;
       for (i=0;i<ny;i++) {
-	f0[i] = (ynew[i] - y[i])*recip_delta_t;
 	y[i] = ynew[i];
 	z[i] = znew[i];
 	if (y[i] < min_conc) {
@@ -1077,10 +1101,15 @@ int ode23tb (struct state_struct *state, double *counts,
 	    print_net_lklhd_bndry_flux(state,net_lklhd_bndry_flux,t);
 	  }
 	  ode_print_concs(state,t,y);
-	  ode_print_fluxes(state,t,f0);
 	  ode_print_lklhds(state,t,forward_rxn_likelihoods,
 			   reverse_rxn_likelihoods);
 	  ode_rxn_view_step = ode_rxn_view_freq;
+	  flux_scaling = compute_flux_scaling(state,y);
+	  approximate_delta_concs(state,y_counts,
+			          forward_rxn_likelihoods,
+				  reverse_rxn_likelihoods,
+				  f0,flux_scaling,base_rxn,delta_concs_choice);
+	  ode_print_fluxes(state,t,f0);
 	}
       }
       if (not_done) {
