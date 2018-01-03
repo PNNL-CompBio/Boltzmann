@@ -69,6 +69,8 @@ int read_params (char *param_file_name, struct state_struct *state) {
     strcpy(state->init_conc_file,"./concs.in");
     strcpy(state->log_file,"./boltzmann.log");
     strcpy(state->output_file,"./boltzmann.out");
+    strcpy(state->concs_out_file,"./concs.out");
+    strcpy(state->rxn_lklhd_file,"./rxns.lklhd");
     strcpy(state->input_dir,"./");
     strcpy(state->output_dir,"./");
     state->align_len        = (int64_t)16;
@@ -105,6 +107,10 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	sscan_ok = sscanf(value,"%s",state->output_dir);
       } else if (strncmp(key,"OUT_FILE",8) == 0) {
 	sscan_ok = sscanf(value,"%s",state->output_file);
+      } else if (strncmp(key,"CONCS_OUT_FILE",13) == 0) {
+	sscan_ok = sscanf(value,"%s",state->concs_out_file);
+      } else if (strncmp(key,"RXN_LKLHD_FILE",13) == 0) {
+	sscan_ok = sscanf(value,"%s",state->rxn_lklhd_file);
       } else if (strncmp(key,"LOG_FILE",8) == 0) {
 	sscan_ok = sscanf(value,"%s",state->log_file);
       } else if (strncmp(key,"ALIGN_LEN",9) == 0) {
