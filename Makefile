@@ -1489,7 +1489,7 @@ lr6_approximate_delta_concs.o: lr6_approximate_delta_concs.c lr6_approximate_del
 lr7_approximate_delta_concs.o: lr7_approximate_delta_concs.c lr7_approximate_delta_concs.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c lr7_approximate_delta_concs.c 
 
-lr8_approximate_delta_concs.o: lr8_approximate_delta_concs.c lr8_approximate_delta_concs.h get_counts.h $(SERIAL_INCS)
+lr8_approximate_delta_concs.o: lr8_approximate_delta_concs.c lr8_approximate_delta_concs.h get_counts.h update_regulations.h $(SERIAL_INCS) 
 	$(CC) $(DCFLAGS) $(TFLAGS) -c lr8_approximate_delta_concs.c 
 
 lr9_approximate_delta_concs.o: lr9_approximate_delta_concs.c lr9_approximate_delta_concs.h get_counts.h $(SERIAL_INCS)
