@@ -20,5 +20,7 @@ under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
-extern int alloc6(struct formation_energy_struct *formation_energies,
-		  int64_t *usage);
+extern int alloc6(int nu_molecules,
+		  void **pointers,
+		  int64_t *usage,
+		  FILE *lfp);
