@@ -72,8 +72,8 @@ int catenate_compartments_and_molecules(struct boot_state_struct *boot_state) {
     if (nr != state_size) {
       success =0;
       if (lfp) {
-	fprintf(lfp,"catenate_compartments_and_molecules: Error i = %ld, could not read "
-		"%ld bytes for a local_state, errno= %d, %s\n",i,state_size,
+	fprintf(lfp,"catenate_compartments_and_molecules: Error i = %lld, could not read "
+		"%lld bytes for a local_state, errno= %d, %s\n",i,state_size,
 		save_errno,strerror(save_errno));
 	fflush(lfp);
 	/*print some error message.*/
@@ -95,8 +95,8 @@ int catenate_compartments_and_molecules(struct boot_state_struct *boot_state) {
 	success = 0;
 	if (lfp) {
 	  fprintf(lfp,"catenate_compartments_and_molecules: "
-		  "Error i = %ld, could not read "
-		  "%ld bytes for compartment text, errno = %d,%s\n",
+		  "Error i = %lld, could not read "
+		  "%lld bytes for compartment text, errno = %d,%s\n",
 		  i,compartment_text_length,save_errno,strerror(save_errno));
 	  fflush(lfp);
 	}
@@ -117,8 +117,8 @@ int catenate_compartments_and_molecules(struct boot_state_struct *boot_state) {
       if (nr != molecule_text_length) {
 	success = 0;
 	if (lfp) {
-	  fprintf(lfp,"catenate_compartments_and_molecules: Error i = %ld,"
-		  " could not read %ld bytes for molecules text, "
+	  fprintf(lfp,"catenate_compartments_and_molecules: Error i = %lld,"
+		  " could not read %lld bytes for molecules text, "
 		  "errno = %d,%s\n",i,molecule_text_length,save_errno,
 		  strerror(save_errno));
 	  fflush(lfp);
@@ -142,8 +142,8 @@ int catenate_compartments_and_molecules(struct boot_state_struct *boot_state) {
       if (nr != compartment_text_length) {
 	success = 0;
 	if (lfp) {
-	  fprintf(lfp,"catenate_compartments_and_molecules: Error rxn, i = %ld,"
-		  " could not read %ld bytes for sorted compartments meta "
+	  fprintf(lfp,"catenate_compartments_and_molecules: Error rxn, i = %lld,"
+		  " could not read %lld bytes for sorted compartments meta "
 		  "data, errno = %d,%s\n",i,compartment_text_length,
 		  save_errno,strerror(save_errno));
 	  fflush(lfp);
@@ -180,8 +180,8 @@ int catenate_compartments_and_molecules(struct boot_state_struct *boot_state) {
       if (nr != molecule_text_length) {
 	success = 0;
 	if (lfp) {
-	  fprintf(lfp,"catenate_compartments_and_molecules: Error i = %ld,"
-		  " could not read %ld bytes for sorted molecules meta data, "
+	  fprintf(lfp,"catenate_compartments_and_molecules: Error i = %lld,"
+		  " could not read %lld bytes for sorted molecules meta data, "
 		  " errno = %d, %s\n",i,molecule_text_length,
 		  save_errno,strerror(save_errno));
 	  fflush(lfp);
