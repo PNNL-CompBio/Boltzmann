@@ -366,7 +366,23 @@ int alloc3(struct state_struct *state) {
     }
   }
   if (success) {
-    ask_for = (((int64_t)nrxns) << 1) * ((int64_t)sizeof(int));
+    if (rxn_view_freq > 0) {
+      rxn_view_hist_lngth = state->rxn_view_hist_lngth;
+      ask_for = ((int64_t)sizeof(double))*((int64_t)rxn_view_hist_lngth);
+      usage += ask_for;
+      state->no_op_likelihood = (double *)calloc(one_l,ask_for);
+      if (state->no_op_likelihood == NULL) {
+	fprintf(stderr,"alloc3: Error unable to allocate %ld bytes for "
+		"state->no_op_likelihood field.\n",ask_for);
+	fflush(stderr);
+	success = 0;
+      }
+    } else {
+      state->no_op_likelihood = NULL;
+    }
+  }
+  if (success) {
+    ask_for = ((((int64_t)nrxns) << 1) + one_l) * ((int64_t)sizeof(int));
     usage += ask_for;
     state->rxn_fire = (int*)calloc(one_l,ask_for);
     if (state->rxn_fire == NULL) {
