@@ -47,7 +47,7 @@ void save_likelihoods(struct state_struct *state, int rxn_view_pos) {
 
     state         G*B      state structure :
                            input fields are number_reactions,
-			                    rxn_view_hist_lngth,
+			                    rxn_view_hist_length,
 					    forward_rxn_likelihood,
 					    reverse_rxn_likelihood,
 					    activities,
@@ -72,13 +72,13 @@ void save_likelihoods(struct state_struct *state, int rxn_view_pos) {
   double *reverse_rxn_likelihood;
   double *activities;
 
-  int rxn_view_hist_lngth;
+  int rxn_view_hist_length;
   int number_reactions;
   int j;
   int padi;
 
   number_reactions     	 = (int)state->number_reactions;
-  rxn_view_hist_lngth  	 = (int)state->rxn_view_hist_lngth;
+  rxn_view_hist_length 	 = (int)state->rxn_view_hist_length;
   forward_rxn_likelihood = state->forward_rxn_likelihood;
   reverse_rxn_likelihood = state->reverse_rxn_likelihood;
   activities        	 = state->activities;
@@ -94,8 +94,8 @@ void save_likelihoods(struct state_struct *state, int rxn_view_pos) {
     */
     *rxn_view_p  = forward_rxn_likelihood[j]*activities[j];
     *rrxn_view_p = reverse_rxn_likelihood[j]*activities[j];
-    rxn_view_p   += rxn_view_hist_lngth; /* Caution address arithmetic here. */
-    rrxn_view_p  += rxn_view_hist_lngth; /* Caution address arithmetic here. */
+    rxn_view_p   += rxn_view_hist_length; /* Caution address arithmetic here. */
+    rrxn_view_p  += rxn_view_hist_length; /* Caution address arithmetic here. */
   }
   return;
 }
