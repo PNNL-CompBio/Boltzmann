@@ -104,6 +104,7 @@ struct state_struct {
   int64_t agent_type;
   int64_t state_length;         	
   int64_t thread_id;
+  int64_t version_no;
   double  x_coord;
   double  y_coord;
   double  z_coord;
