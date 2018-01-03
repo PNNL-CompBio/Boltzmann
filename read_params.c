@@ -124,7 +124,10 @@ int read_params (char *param_file_name, struct state_struct *state) {
     state->cals_per_joule      = 1.0/state->joules_per_cal;
     state->default_volume      = 1.0e-15;
     state->recip_default_volume = 1.0e15;
+    /*
     state->min_conc            = 1.0e-52;
+    */
+    state->min_conc            = 0.0;
     state->warmup_steps        = (int64_t)1000;
     state->record_steps        = (int64_t)1000;
     state->free_energy_format  = (int64_t)0;
