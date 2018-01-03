@@ -155,15 +155,15 @@ int boltzmann_boot(char *param_file_name,
   struct vgrng_state_struct *vgrng_state;
   struct vgrng_state_struct *vgrng2_state;
   struct molecule_struct mes;
-  struct molecule_struct ces;
+  struct compartment_struct ces;
   struct molecule_struct *molecules;
   struct molecule_struct *molecule_sort_ws;
   struct molecule_struct *sorted_molecules;
   struct molecule_struct *unsorted_molecules;
-  struct molecule_struct *compartments;
-  struct molecule_struct *compartment_sort_ws;
-  struct molecule_struct *sorted_compartments;
-  struct molecule_struct *unsorted_compartments;
+  struct compartment_struct *compartments;
+  struct compartment_struct *compartment_sort_ws;
+  struct compartment_struct *sorted_compartments;
+  struct compartment_struct *unsorted_compartments;
   struct formation_energy_struct *formation_energies;
 
   double *dg0s;
@@ -588,6 +588,14 @@ int boltzmann_boot(char *param_file_name,
 	  success = set_compartment_ptrs(state);
 	}
 	/*
+	  If we are going to read in a list of compartment sizes that should
+	  happen here after the compartments have been set, and before
+	  the initinal concentrations are read in.
+	if (success) {
+	  success = read_compartment_sizes(state);
+	}
+	*/
+	/*
 	  Read initial concentrations, convert them to counts,
 	  and print them to the counts output file.
 	*/
@@ -813,7 +821,7 @@ int boltzmann_boot(char *param_file_name,
   if (success) {
     ask_for = (int64_t)(2*sizeof(ces)) * 
       global_number_of_compartments;
-    compartment_sort_ws = (struct molecule_struct*)calloc(one_l,ask_for);
+    compartment_sort_ws = (struct compartment_struct*)calloc(one_l,ask_for);
     if (compartment_sort_ws == NULL) {
       fprintf(stderr,"boltzmann_boot: Error could not allocate %ld "
 	      "bytes for compartment_sort_ws\n",ask_for);
@@ -918,7 +926,7 @@ int boltzmann_boot(char *param_file_name,
 	lseek_pos = offset + local_state.sorted_compartments_offset_in_bytes;
 	lseek(tmp_state_fd,lseek_pos,whence);
 	ci_base = compartment_list_starts[i];
-	compartments = (struct molecule_struct *)&compartment_sort_ws[ci_base];
+	compartments = (struct compartment_struct *)&compartment_sort_ws[ci_base];
 	nr = read(tmp_state_fd,compartments,compartment_space);
 	if (nr != compartment_space) {
 	  fprintf(stderr,"boltzmann_boot: Error i = %ld, could not read "
@@ -977,7 +985,7 @@ int boltzmann_boot(char *param_file_name,
   }
   /*
     at this juncture 
-    compartment_sort_ws is a vector of molecule_struct's of length 
+    compartment_sort_ws is a vector of compartment_struct's of length 
     2*global_number_of_compartments, the first half is filled
     with compartments where the c_index field is the global index 
     of the compartment, the g_index field is the reaction file number
@@ -997,8 +1005,8 @@ int boltzmann_boot(char *param_file_name,
     are already sorted so its just a matter of merging these lists.
   */
   if (success) {
-    unsorted_compartments = (struct molecule_struct *)&compartment_sort_ws[0];
-    sorted_compartments   = (struct molecule_struct *)&compartment_sort_ws[global_number_of_compartments];
+    unsorted_compartments = (struct compartment_struct *)&(compartment_sort_ws[0]);
+    sorted_compartments   = (struct compartment_struct *)&(compartment_sort_ws[global_number_of_compartments]);
     success = sort_global_compartments(&unsorted_compartments,
 				       &sorted_compartments,
 				       compartment_list_starts,
