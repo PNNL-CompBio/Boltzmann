@@ -39,20 +39,29 @@ int parse_rxn_file_keyword(char *rxn_buffer,struct state_struct *state){
     Called by: size_rxns_file
   */
   char **keywords;
+  char *keyword;
   int64_t *keyword_len;
   int i;
   int num_rxn_file_keywords;
   int line_type;
-  int pad1;
+  int kl;
+  int skip;
+  int ki;
   FILE *lfp;
   line_type = -1;
   keywords = state->rxn_file_keywords;
   keyword_len = state->rxn_file_keyword_lengths;
   num_rxn_file_keywords = state->num_rxn_file_keywords;
+  skip = count_ws(rxn_buffer);
+  keyword = (char *)&rxn_buffer[skip];
+  kl   = count_nws(keyword);
   for (i=0;i<num_rxn_file_keywords;i++) {
-    if (strncmp(rxn_buffer,keywords[i],keyword_len[i]) == 0) {
-      line_type = i;
-      break;
+    ki = keyword_len[i];
+    if (ki == kl) {
+      if (strncmp(keyword,keywords[i],ki) == 0) {
+	line_type = i;
+	break;
+      }
     }
   }
   if (line_type < 0) {
