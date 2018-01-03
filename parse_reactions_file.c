@@ -213,9 +213,9 @@ int parse_reactions_file(struct state_struct *state) {
     activities[0]               = 1.0;
     rxn_ptrs[rxns]              = molecules;
     fgp = fgets(rxn_buffer,rxn_buff_len,rxn_fp);
-    state->max_molecule_len = 0;
+    state->max_molecule_len = (int64_t)0;
     state->min_molecule_len = rxn_buff_len;
-    state->max_compartment_len = 0;
+    state->max_compartment_len = (int64_t)0;
     state->min_compartment_len = rxn_buff_len;
     while ((fgp && success) && (! feof(rxn_fp))) {
       line_len = strlen(rxn_buffer);
@@ -292,11 +292,11 @@ int parse_reactions_file(struct state_struct *state) {
 	    Compartment line.
 	  */
 	  compartment_len = line_len - kl - ws_chars + 1;
-	  if (compartment_len > state->max_compartment_len) {
-	    state->max_compartment_len = compartment_len;
+	  if ((int64_t)compartment_len > state->max_compartment_len) {
+	    state->max_compartment_len = (int64_t)compartment_len;
 	  } else {
-	    if (compartment_len < state->min_compartment_len) {
-	      state->min_compartment_len = compartment_len;
+	    if ((int64_t)compartment_len < state->min_compartment_len) {
+	      state->min_compartment_len = (int64_t)compartment_len;
 	    }
 	  }
 	  reaction->lcompartment = (char *)&compartment_text[compartment_pos];
@@ -326,11 +326,11 @@ int parse_reactions_file(struct state_struct *state) {
 	    Left Compartment line.
 	  */
 	  compartment_len = line_len - kl - ws_chars + 1;
-	  if (compartment_len > state->max_compartment_len) {
-	    state->max_compartment_len = compartment_len;
+	  if ((int64_t)compartment_len > state->max_compartment_len) {
+	    state->max_compartment_len = (int64_t)compartment_len;
 	  } else {
-	    if (compartment_len < state->min_compartment_len) {
-	      state->min_compartment_len = compartment_len;
+	    if ((int64_t)compartment_len < state->min_compartment_len) {
+	      state->min_compartment_len = (int64_t)compartment_len;
 	    }
 	  }
 	  reaction->lcompartment = (char *)&compartment_text[compartment_pos];
@@ -350,11 +350,11 @@ int parse_reactions_file(struct state_struct *state) {
 	    Right Compartment line.
 	  */
 	  compartment_len = line_len - kl - ws_chars + 1;
-	  if (compartment_len > state->max_compartment_len) {
-	    state->max_compartment_len = compartment_len;
+	  if ((int64_t)compartment_len > state->max_compartment_len) {
+	    state->max_compartment_len = (int64_t)compartment_len;
 	  } else {
-	    if (compartment_len < state->min_compartment_len) {
-	      state->min_compartment_len = compartment_len;
+	    if ((int64_t)compartment_len < state->min_compartment_len) {
+	      state->min_compartment_len = (int64_t)compartment_len;
 	    }
 	  }
 	  reaction->rcompartment = (char *)&compartment_text[compartment_pos];
@@ -487,7 +487,7 @@ int parse_reactions_file(struct state_struct *state) {
 	    reaction = (struct rxn_struct*)&reactions[rxns];
 	  */
 	  reaction += 1;
-	  if (rxns < state->number_reactions) {
+	  if (rxns < (int)state->number_reactions) {
 	    reaction->lcompartment      = NULL;
 	    reaction->rcompartment      = NULL;
 	    reaction->pathway           = NULL;
@@ -510,7 +510,7 @@ int parse_reactions_file(struct state_struct *state) {
   /*
     Check that last line was a //.
   */
-  if (line_type != state->num_rxn_file_keywords - 1) {
+  if (line_type != (int)(state->num_rxn_file_keywords) - 1) {
     fprintf(stderr,
 	    "parse_reactions_file: Error reactions file did not end in //\n");
     fflush(stderr);
