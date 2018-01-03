@@ -3,7 +3,7 @@
   dlaswp.c addapted from lapack dlaswp.f
 */
 #include "dlaswp.h"
-void dlaswp( int *n_p,
+void dlaswp_( int *n_p,
 	     double *a,
 	     int *lda_p,
 	     int *k1_p,
@@ -56,7 +56,6 @@ void dlaswp( int *n_p,
   int n32;
   int ii;
 
-
   n    = *n_p;
   lda  = *lda_p;
   k1   = *k1_p;
@@ -74,8 +73,12 @@ void dlaswp( int *n_p,
     if (incx < 0) {
       /*
       ix0 = 1 + ( 1-k2 )*incx
+	The above line is is what is in the dlaswap.f, but if what you wanted
+	was to do the pivots IPIV(k1), IPIV(k1+inc), IPIV(k1+2*inc), ..
+	IPIV(k1 + (k2-k1)*inc)) in reverse order the formula below
+	is correct.
       */
-      ix0 = -k2*incx;
+      ix0 = k1 + (k1-k2)*incx;
       i1 = k2;
       i2 = k1;
       inc = -1;
@@ -92,9 +95,8 @@ void dlaswp( int *n_p,
     if (n32 > 0) {
       for (j=0;j<n32;j+=32) {
 	ix = ix0;
-	i = i1;
-	for (ii=k1;ii<=k2;ii+=1) {
-	  ip = ipiv[ix];
+	for (i=i1;i != (i2 + inc); i += inc) {
+	  ip = ipiv[ix] - 1;
 	  if (ip != i)  {
 	    /*
 	      a[i,j] is at a[i + j*lda]
@@ -110,7 +112,6 @@ void dlaswp( int *n_p,
 	    } /* end for (k...) */
 	  }  /* end if (ip != i) */
 	  ix += incx;
-	  i += inc;
 	} /* end for (i...) */
 	jlda =jlda + lda32;
       } /* end for (j...) */
@@ -120,9 +121,9 @@ void dlaswp( int *n_p,
     */
     if (n32 != n) {
       ix = ix0;
-      i  = i1;
-      for (ii=k1;ii<=k2;ii++) {
-	ip = ipiv[ix];
+      jlda = n32 * lda;
+      for (i=i1;i != (i2+inc);i += inc) {
+	ip = ipiv[ix] - 1;
 	if (ip != i) {
 	  ai = i + jlda;
 	  aip = ip + jlda;
@@ -135,7 +136,6 @@ void dlaswp( int *n_p,
 	  } /* end for (k ...) */
 	} /* end if (ip != i) */
 	ix += incx;
-	i += inc;
       } /* end for (i...) */
     } /* end if (n32 != n) */
   } /* end if (incx != 0) */
