@@ -100,6 +100,8 @@ int merge_compartments(struct istring_elem_struct *list1,
       p3->string = p1->string;
       p3->m_index  = p1->m_index;
       p3->c_index  = p1->c_index;
+      p3->variable = p1->variable;
+      p3->g_index  = p1->g_index;
       j1++;
       p1 += 1; /* Caution Address arithmetic here. */
       p3 += 1; /* Caution Address arithmetic here. */
@@ -111,6 +113,8 @@ int merge_compartments(struct istring_elem_struct *list1,
 	  p3->string = p2->string;
 	  p3->m_index  = p2->m_index;
 	  p3->c_index  = p2->c_index;
+	  p3->variable = p2->variable;
+	  p3->g_index  = p2->g_index;
 	  p2 += 1; /* Caution Address arithmetic here. */
 	  p3 += 1; /* Caution Address arithmetic here. */
 	}
@@ -129,6 +133,8 @@ int merge_compartments(struct istring_elem_struct *list1,
       p3->string = p2->string;
       p3->m_index  = p2->m_index;
       p3->c_index  = p2->c_index;
+      p3->variable = p2->variable;
+      p3->g_index  = p2->g_index;
       j2++;
       p2 += 1; /* Caution Address arithmetic here. */
       p3 += 1; /* Caution Address arithmetic here. */
@@ -137,9 +143,11 @@ int merge_compartments(struct istring_elem_struct *list1,
       */
       if (j2 == l2) {
 	for (j = j1;j<l1;j++) {
-	  p3->string = p1->string;
+	  p3->string   = p1->string;
 	  p3->m_index  = p1->m_index;
 	  p3->c_index  = p1->c_index;
+	  p3->variable = p1->variable;
+	  p3->g_index  = p1->g_index;
 	  p1 += 1; /* Caution Address arithmetic here. */
 	  p3 += 1; /* Caution Address arithmetic here. */
 	}
