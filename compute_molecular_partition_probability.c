@@ -55,7 +55,9 @@ int compute_molecular_partition_probability(struct formation_energy_struct *fes)
 
   double* molecule_dg0tfs;
   
-  /*double  *partition_funcs; /*len = unique_molecules*/
+  /*
+    double  *partition_funcs; //len = unique_molecules
+  */
   double  *probabilities; /* len = unique_molecules */
   
   double min_molecule_dg0tf;
