@@ -57,31 +57,33 @@ int molecules_lookup(char *molecule_name, int compartment_index,
   compartment_ptrs = state->compartment_ptrs;
   left_end  = compartment_ptrs[compartment_index+1];
   right_end = compartment_ptrs[compartment_index+2];
-  crslt = strcmp(molecule_name,sorted_molecules[left_end].string);
-  if (crslt >= 0) {
-    if (crslt == 0) {
-      index = left_end;
-    } else {
-      left = left_end;
-      crslt = strcmp(molecule_name,sorted_molecules[right_end-1].string);
-      if (crslt <= 0) {
-	if (crslt == 0) {
-	  index = right_end-1;
-	} else {
-	  right = right_end-1;
-	  mid = (left + right) >> 1;
-	  while (mid != left) {
-	    crslt = strcmp(molecule_name,sorted_molecules[mid].string);
-	    if (crslt == 0) {
-	      index = mid;
-	      break;
-	    } else {
-	      if (crslt  < 0) {
-		right = mid;
+  if (right_end > left_end) {
+    crslt = strcmp(molecule_name,sorted_molecules[left_end].string);
+    if (crslt >= 0) {
+      if (crslt == 0) {
+	index = left_end;
+      } else {
+	left = left_end;
+	crslt = strcmp(molecule_name,sorted_molecules[right_end-1].string);
+	if (crslt <= 0) {
+	  if (crslt == 0) {
+	    index = right_end-1;
+	  } else {
+	    right = right_end-1;
+	    mid = (left + right) >> 1;
+	    while (mid != left) {
+	      crslt = strcmp(molecule_name,sorted_molecules[mid].string);
+	      if (crslt == 0) {
+		index = mid;
+		break;
 	      } else {
-		left  = mid;
+		if (crslt  < 0) {
+		  right = mid;
+		} else {
+		  left  = mid;
+		}
+		mid = (left + right) >> 1;
 	      }
-	      mid = (left + right) >> 1;
 	    }
 	  }
 	}
