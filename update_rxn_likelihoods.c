@@ -27,7 +27,6 @@ int update_rxn_likelihoods(struct state_struct *state, double *counts,
                 D*O       Vector of length number_reactions of the
 		          reverse reaction likelihoods
   */
-  double *current_counts;
   int success;
   int forward;
 
