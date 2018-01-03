@@ -46,9 +46,9 @@ int compute_reaction_dg0(struct state_struct *state){
   /*
   struct pseudoisomer_struct *pseudoisomers;
   */
-  struct rxn_struct *reactions;
-  struct rxn_struct *reaction;
-  struct rxn_matrix_struct *rxns_matrix;
+  struct reaction_struct *reactions;
+  struct reaction_struct *reaction;
+  struct reactions_matrix_struct *rxns_matrix;
   int64_t *rxn_ptrs;
   int64_t *molecules_indices;
   int64_t *coefficients;
