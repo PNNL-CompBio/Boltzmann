@@ -64,4 +64,5 @@ void boltzmann_set_filename_ptrs(struct state_struct *statep) {
   statep->ode_lklhd_file     = statep->ode_dconcs_file + max_file_name_len;
   statep->ode_bflux_file     = statep->ode_lklhd_file + max_file_name_len;
   statep->concs_out_file     = statep->ode_bflux_file + max_file_name_len;
+  statep->aux_data_file      = statep->concs_out_file + max_file_name_len;
 }
