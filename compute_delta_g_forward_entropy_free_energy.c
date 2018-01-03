@@ -119,7 +119,7 @@ int compute_delta_g_forward_entropy_free_energy(struct state_struct *state,
     }
     dg_forward *= m_rt;
     if (sum_likelihood <= 0.0) {
-      fprintf(stderr,"boltzmann_run: Error, nonpositivity sum_likelihood = %le in recording loop iteration %ld\n",sum_likelihood,step);
+      fprintf(stderr,"boltzmann_run: Error, nonpositivity sum_likelihood = %le in recording loop iteration %lld\n",sum_likelihood,step);
       success = 0;
     }
     r_sum_likelihood = 0.0;
