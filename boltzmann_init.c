@@ -39,10 +39,14 @@ specific language governing permissions and limitations under the License.
 #include "alloc2.h"
 #include "parse_reactions_file.h"
 #include "echo_reactions_file.h"
-#include "sort_istrings.h"
+#include "sort_compartments.h"
+#include "unique_compartments.h"
+#include "translate_compartments.h"
+#include "sort_molecules.h"
 #include "unique_molecules.h"
 #include "print_molecules_dictionary.h"
 #include "alloc3.h"
+#include "set_compartment_ptrs.h"
 #include "read_initial_concentrations.h"
 #include "form_molecules_matrix.h"
 #include "compute_ke.h"
@@ -203,10 +207,29 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
     success = echo_reactions_file(state);
   }
   /*
+    First we need to sort the compartments.
+  */
+  if (success) {
+    success = sort_compartments(&state->unsorted_cmpts,
+				&state->sorted_cmpts,
+				state->number_compartments);
+  }
+  if (success) {
+    success = unique_compartments(state);
+  }
+  /*
+    Now we need to assign the proper compartment numbers to the 
+    unsorted molecules, using the compartment_indices field
+    of the rxns_matrix.
+  */
+  if (success) {
+    success = translate_compartments(state);
+  }
+  /*
     Now we need to sort the molecules.
   */
   if (success) {
-    success = sort_istrings(&state->unsorted_molecules,
+    success = sort_molecules(&state->unsorted_molecules,
 			    &state->sorted_molecules,
 			    state->number_molecules);
   }
@@ -223,6 +246,14 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
   */
   if (success) {
     success = alloc3(state);
+  }
+  /*
+    Now in order to enable molecule/compartment lookup for
+    read_initial_concentrations we need to set the compartment 
+    pointers.
+  */
+  if (success) {
+    success = set_compartment_ptrs(state);
   }
   if (success) {
     success = read_initial_concentrations(state);
