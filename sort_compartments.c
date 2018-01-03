@@ -81,6 +81,7 @@ int sort_compartments(struct molecule_struct *unsorted_compartments,
 	  s_compartments[j].c_index  = u_compartments[j].c_index;
 	  s_compartments[j].g_index  = u_compartments[j].g_index;
 	  s_compartments[j].variable = u_compartments[j].variable;
+	  s_compartments[j].volume   = u_compartments[j].volume;
 	}
       }
       temp               = s_compartments;
