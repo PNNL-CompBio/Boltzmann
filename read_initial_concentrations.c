@@ -237,6 +237,23 @@ int read_initial_concentrations(struct state_struct *state) {
 	    Don't need to do anything yet as they are in e_val and u_val,
 	    or else e_val and u_val are 1.0
 	  */
+	  if ((e_val == 0.0) || (u_val == 0.0)) {
+	    /*
+	      Do we want to print and error message ?
+	      We would just set the 0 one to be the nonzero one,
+	      or if both zero set them to 1. Since what we are
+	      always interested in is their ratio, setting both
+	      to 1 if either is 0 accomplishes that effect.
+	    */
+	    e_val = 1.0;
+	    u_val = 1.0;
+	  }
+	} else {
+	  /*
+	    No modification of e_q is to happen.
+	  */
+	  u_val = 1.0;
+	  e_val = 1.0;
 	}
 	mol_len = strlen(molecule_name);
 	compartment_name = molecule_name;
