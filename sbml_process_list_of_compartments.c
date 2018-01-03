@@ -25,7 +25,7 @@ specific language governing permissions and limitations under the License.
 
 #include "count_ws.h"
 #include "count_nws.h"
-#include "sbml_key_value.h"
+#include "sbml_read_key_value.h"
 #include "sbml_lookup_compartment_attribute.h"
 #include "sbml_volume_units_conversion.h"
 #include "sort_compartments.h"
@@ -42,9 +42,9 @@ int sbml_process_list_of_compartments(FILE *sbml_fp,
     Called by: parse_sbml
     Calls:     fprintf, feof, fgets, fflush, strcpy, strcmp, strncmp,
                count_ws, count_nws,
-	       sbml_key_value,
+	       sbml_read_key_value,
                sbml_lookup_compartment_attribute
-    Notes, it works out that we need to build a list of compartments
+    Note, it works out that we need to build a list of compartments
     and their voluems/reciprocal volumes for use in the 
     sbml_process_list_of_species section as boltzmann needs intial amounts
     in concentrations and sbml only specifies initial amounts in quantities.
@@ -163,7 +163,7 @@ int sbml_process_list_of_compartments(FILE *sbml_fp,
           Need a routine to scan for keyword "=" "string" triples returning
           full length allowing whitespace before keyword, between any of the
           three tokens and replacing all whitespace in string with 
-          underscores, sbml_key_value.
+          underscores, sbml_read_key_value.
         */
         /*
           check for end tag.
@@ -178,7 +178,7 @@ int sbml_process_list_of_compartments(FILE *sbml_fp,
 	  if (n_cmpts == 0) {
 	    state->default_comp_size = size;
 	  } 
-	  fprintf(cmpts_fp,"%s\t%le\t%d\tliters\t%1s\n",
+	  fprintf(cmpts_fp,"%s\t%le\tliters\t%d\t%c\n",
 		  comp,size,spatial_dim,&vc[variable]);
 	  if (n_cmpts < state->num_cmpts) {
 	    cmpt_len = strlen(comp) + 1;
@@ -214,7 +214,7 @@ int sbml_process_list_of_compartments(FILE *sbml_fp,
           /*
   	      Not the end of compartment  tag.
           */
-          tl = sbml_key_value(line,key,value,max_key_len,max_val_len);
+          tl = sbml_read_key_value(line,key,value,max_key_len,max_val_len);
           if (tl <= 0) {
             ns = 0;
           } else {
@@ -259,9 +259,12 @@ int sbml_process_list_of_compartments(FILE *sbml_fp,
 		break;
 	      } /* end switch */  
 	    } else {
+	      /*
+		This generates too much output, we don't want to know.
 	      fprintf(error_fp,"sbml_process_list_of_compartments: "
 		      "Error found unexpected key :%s\n",key);
 	      fflush(error_fp);
+	      */
 	    }
           } /* end else we found a keyword=value triple. */
         } /* end else we did not find and end species tag */
