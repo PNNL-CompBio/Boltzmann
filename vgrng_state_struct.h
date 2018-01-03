@@ -34,7 +34,7 @@ specific language governing permissions and limitations under the License.
 struct vgrng_state_struct {
   /* 
      fib_history[1-cur_ptr] = (fib_history[cur_prtr] + fibhistory[1-curptr] + 
-                               fib_constant) & mask 
+                               fib_constant) & mask; cur_ptr = 1-cur_ptr;
      lcg_history = (lcg_history*69069 + lcg_constant) & mask
   */
   int64_t fib_history[2]; /* history for Fibonacci generator*/
@@ -48,7 +48,8 @@ struct vgrng_state_struct {
   int64_t xor_lcg_fib;
   double  uni_multiplier;
   int fib_cur_ptr;
-  int pad;
+  int padi;
+  int64_t padl;
 }
 ;
 #endif
