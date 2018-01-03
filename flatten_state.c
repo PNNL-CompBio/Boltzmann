@@ -95,14 +95,23 @@ int flatten_state(struct state_struct *boot_state,
   int64_t dg0s_size;
   int64_t ke_offset;
   int64_t ke_size;
+  int64_t molecule_dg0tfs_offset;
+  int64_t molecule_dg0tfs_size;
+  int64_t molecule_probabilities_offset;
+  int64_t molecule_probabilities_size;
+  int64_t molecule_chemical_potentials_offset;
+  int64_t molecule_chemical_potentials_size;
+  
   int64_t activities_offset;
   int64_t activities_size;
+
   int64_t reactions_offset;
   int64_t reactions_size;
   int64_t reactions_pad;
   int64_t reactions_matrix_offset;
   int64_t reactions_matrix_size;
   int64_t reactions_matrix_pad;
+
   int64_t rxn_ptrs_offset;
   int64_t rxn_ptrs_size;
   int64_t molecules_offset;
@@ -154,6 +163,8 @@ int flatten_state(struct state_struct *boot_state,
   int64_t rev_rxn_view_size;
   int64_t rxn_fire_offset;
   int64_t rxn_fire_size;
+  int64_t rxn_mat_offset;
+  int64_t rxn_mat_size;
   int64_t move_size;
   int64_t sorted_molecules_offset_in_bytes;
   int64_t sorted_compartments_offset_in_bytes;
@@ -196,15 +207,27 @@ int flatten_state(struct state_struct *boot_state,
   number_molecules     = boot_state->number_molecules;
   number_compartments  = boot_state->number_compartments;
   unique_compartments  = boot_state->nunique_compartments;
+  unique_molecules     = boot_state->nunique_molecules;
   max_filename_len     = boot_state->max_filename_len;
   num_files            = boot_state->num_files;
   dg0s_offset          = incoming_data_offset;
   dg0s_size            = number_reactions + (number_reactions & 1);
   ke_offset            = dg0s_offset + dg0s_size;
   ke_size              = dg0s_size;
-  activities_offset    = ke_offset + ke_size;
-  activities_size      = number_reactions + (number_reactions & 1);
-  reactions_offset     = activities_offset + activities_size;
+  molecule_dg0tfs_offset = ke_offset + ke_size;
+  molecule_dg0tfs_size = unique_molecules;
+  molecule_probabilities_offset =  molecule_dg0tfs_offset + molecule_dg0tfs_size;
+  molecule_probabilities_size   = unique_molecules;
+  molecule_chemical_potentials_offset = molecule_probabilities_offset +
+    molecule_probabilities_size;
+  molecule_chemical_potentials_size   = unique_molecules;
+  
+
+  activities_offset    = molecule_chemical_potentials_offset +
+    molecule_chemical_potentials_size;
+  activities_size      = current_concentrations_size;
+
+  reactions_offset     = activities_offset + current_concentrations_size;
   reactions_size       = (int64_t)sizeof(rs) * number_reactions; 
   reactions_pad        = (align_len - (reactions_size & align_mask)) & align_mask;
   reactions_size       = (reactions_size + reactions_pad) >> log2_word_len;
@@ -295,7 +318,9 @@ int flatten_state(struct state_struct *boot_state,
     rxn_fire_offset         = rev_rxn_view_offset + rev_rxn_view_size;
     rxn_fire_size           = number_reactions+1;
     rxn_fire_size           += (rxn_fire_size&1);
-    workspace_end           = rxn_fire_offset + rxn_fire_size;
+    rxn_mat_offset          = rxn_fire_offset + rxn_fire_size;
+    rxn_mat_size            = (unique_molecules + (unique_molecules & 1)) >> 1;
+    workspace_end           = rxn_mat_offset + rxn_mat_size;
   }
   workspace_length = workspace_end - workspace_offset;
   /*
@@ -345,18 +370,16 @@ int flatten_state(struct state_struct *boot_state,
       Allocate space for a workspace if on input it was null.
     */
     if (workspace_base == NULL) {
-      if (load_from_boot == 0) {
-	ask_for = workspace_length * sizeof(int64_t);
-	workspace_base_l = (int64_t*)calloc(one_l,ask_for);
-	if (workspace_base_l) {
-	  new_state->workspace_base = workspace_base_l;
-	} else {
-	  new_state->workspace_base = 0;
-	  success = 0;
-	  fprintf(stderr,"flatten_state: could not allocate %ld bytes "
-		  "for workspace\n",ask_for);
-	  fflush(stderr);
-	}
+      ask_for = workspace_length * sizeof(int64_t);
+      workspace_base_l = (int64_t*)calloc(one_l,ask_for);
+      if (workspace_base_l) {
+	new_state->workspace_base = workspace_base_l;
+      } else {
+	new_state->workspace_base = 0;
+	success = 0;
+	fprintf(stderr,"flatten_state: could not allocate %ld bytes "
+		"for workspace\n",ask_for);
+	fflush(stderr);
       }
     } else {
       workspace_base_l = workspace_base;
@@ -374,6 +397,9 @@ int flatten_state(struct state_struct *boot_state,
     new_state->vgrng2_state = (struct vgrng_state_struct *)&new_state_l[vgrng2_offset];
     new_state->dg0s = (double*)&new_state_l[dg0s_offset];
     new_state->ke   = (double*)&new_state_l[ke_offset];
+    new_state->molecule_dg0tfs   = (double*)&new_state_l[molecule_dg0tfs_offset];
+    new_state->molecule_probabilities   = (double*)&new_state_l[molecule_probabilities_offset];
+    new_state->molecule_chemical_potentials   = (double*)&new_state_l[molecule_chemical_potentials_offset];
     new_state->activities  = (double*)&new_state_l[activities_offset];
     new_state->reactions   = (struct rxn_struct *)&new_state_l[reactions_offset];
     new_state->reactions_matrix = (struct rxn_matrix_struct*)&new_state_l[reactions_matrix_offset];
@@ -418,6 +444,7 @@ int flatten_state(struct state_struct *boot_state,
       new_state->rxn_view_likelihoods = (double *)&workspace_base_l[rxn_view_offset];
       new_state->rev_rxn_view_likelihoods = (double *)&workspace_base_l[rev_rxn_view_offset];
       new_state->rxn_fire = (int *)&workspace_base_l[rxn_fire_offset];
+      new_state->rxn_mat_row  = (int *)&workspace_base_l[rxn_mat_offset];
     }
   }
   if (success) {
@@ -431,6 +458,11 @@ int flatten_state(struct state_struct *boot_state,
       memcpy(new_state->dg0s,boot_state->dg0s,move_size);
       memcpy(new_state->ke,boot_state->ke,move_size);
       move_size = unique_molecules * sizeof(double);
+      memcpy(new_state->molecule_dg0tfs,boot_state->molecule_dg0tfs,move_size);
+      memcpy(new_state->molecule_probabilities,
+	     boot_state->molecule_probabilities,move_size);
+      memcpy(new_state->molecule_chemical_potentials,
+	     boot_state->molecule_chemical_potentials,move_size);
       memcpy(new_state->activities,boot_state->activities,move_size);
       move_size = (int64_t)sizeof(rs) * number_reactions;
       memcpy(new_state->reactions,boot_state->reactions,move_size);
