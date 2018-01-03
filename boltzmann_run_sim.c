@@ -35,9 +35,14 @@ specific language governing permissions and limitations under the License.
 #define DBG_BOLTZMANN_RUN_SIM 1
 */
 
-#include "free_energy_changes.h"
+#include "update_rxn_log_likelihoods.h"
 #include "choose_rxn.h"
-#include "rxn_log_likelihoods.h"
+#include "compute_delta_g_forward_entropy_free_energy.h"
+#include "print_concentrations.h"
+#include "print_likelihoods.h"
+#include "save_likelihoods.h"
+#include "print_free_energy.h"
+#include "print_boundary_flux.h"
 #include "print_restart_file.h"
 #include "print_reactions_view.h"
 
@@ -48,18 +53,11 @@ int boltzmann_run_sim(struct state_struct *state) {
     boltzmann_init has been called.
 
     Called by: boltzmann_drv
-    Calls:     free_energy_changes,
+    Calls:     update_rxn_log_likelihoods,
 	       choose_rxn,
-	       rxn_log_likelihoods,
 	       print_restart_file
 	       print_reactions_view
   */
-  struct vgrng_state_struct *vgrng_state;
-  struct istring_elem_struct *molecule;
-  struct istring_elem_struct *sorted_molecules;
-  struct istring_elem_struct *cur_cmpts;
-  struct istring_elem_struct *cur_cmpt;
-
   int64_t choice;
   double dchoice;
   double uni_multiplier;
@@ -71,46 +69,32 @@ int boltzmann_run_sim(struct state_struct *state) {
   double r_sum_likelihood;
   double entropy;
   double scaled_likelihood;
-  double fe;
-  double *cconcs;
-  double *fconcs;
-  double *rxn_likelihood_ps;
-  double *free_energy;
-  double *c_loglr;
-  double *forward_rxn_likelihood;
-  double *reverse_rxn_likelihood;
-  double *rxn_view_data;
-  double *rxn_view_p;
-  double *rrxn_view_data;
-  double *rrxn_view_p;
+  double *current_concentrations;
+  double *future_concentrations;
   double *bndry_flux_concs;
   double *activities;
   double *no_op_likelihood;
-  double cal_gm_per_joule;
   double delta;
   /*
   double *lthermo;
   */
-  double m_rt;
   int    *rxn_fire;
   char   *cmpt_string;
+
   int success;
-  int num_state_files;
+  int number_reactions;
 
-  int num_rxns;
-  int num_rxns_t2;
+  int number_reactions_t2;
+  int number_reactions_t2_p1;
 
-  int num_rxns_t2_p1;
   int i;
+  int j;
 
   int n_warmup_steps;
   int n_record_steps;
 
   int rxn_choice;
-  int nu;
-
-  int j;
-  int forward;
+  int unique_molecules;
 
   int rxn_view_step;
   int rxn_view_pos;
@@ -124,46 +108,24 @@ int boltzmann_run_sim(struct state_struct *state) {
   int conc_view_step;
   int conc_view_freq;
 
-  int ci;
-  int oi;
-
   FILE *lfp;
-  FILE *concs_out_fp;
-  FILE *rxn_lklhd_fp;
-  FILE *bndry_flux_fp;
   success = 1;
-  forward = 1;
   
-  n_warmup_steps    = state->warmup_steps;
-  n_record_steps    = state->record_steps;
-  vgrng_state       = state->vgrng_state;
-  rxn_likelihood_ps = state->rxn_likelihood_ps;
-  free_energy       = state->free_energy;
-  c_loglr           = state->current_rxn_log_likelihood_ratio;
-  num_rxns          = state->number_reactions;
-  nu                = state->unique_molecules;
-  cconcs            = state->current_concentrations;
-  fconcs            = state->future_concentrations;
-  bndry_flux_concs  = state->bndry_flux_concs;
-  activities        = state->activities;
-  m_rt              = state->m_rt;
-  rxn_view_data     = state->rxn_view_likelihoods;
-  rrxn_view_data    = state->rev_rxn_view_likelihoods;
-  cal_gm_per_joule  = state->cal_gm_per_joule;
-  rxn_fire          = state->rxn_fire;
-  no_op_likelihood  = state->no_op_likelihood;
+  n_warmup_steps    	 = state->warmup_steps;
+  n_record_steps    	 = state->record_steps;
+  number_reactions       = state->number_reactions;
+  unique_molecules     	 = state->unique_molecules;
+  current_concentrations = state->current_concentrations;
+  future_concentrations  = state->future_concentrations;
+  bndry_flux_concs  	 = state->bndry_flux_concs;
+  activities        	 = state->activities;
+  rxn_fire          	 = state->rxn_fire;
+  no_op_likelihood  	 = state->no_op_likelihood;
   /*
   lthermo        = state->l_thermo;
   */
-  forward_rxn_likelihood = state->forward_rxn_likelihood;
-  reverse_rxn_likelihood = state->reverse_rxn_likelihood;
-  num_rxns_t2          	 = num_rxns << 1;
-  num_rxns_t2_p1       	 = num_rxns_t2 + 1;
-  concs_out_fp         	 = state->concs_out_fp;
-  rxn_lklhd_fp         	 = state->rxn_lklhd_fp;
-  bndry_flux_fp        	 = state->bndry_flux_fp;
-  sorted_molecules     	 = (struct istring_elem_struct *)state->sorted_molecules;
-  cur_cmpts              = (struct istring_elem_struct *)state->sorted_cmpts;
+  number_reactions_t2    = number_reactions << 1;
+  number_reactions_t2_p1 = number_reactions_t2 + 1;
   rxn_view_freq        	 = state->rxn_view_freq;
   rxn_view_hist_lngth  	 = state->rxn_view_hist_lngth;
   lklhd_view_freq        = state->lklhd_view_freq;
@@ -174,53 +136,39 @@ int boltzmann_run_sim(struct state_struct *state) {
   lklhd_view_step 	 = 1;
   for (i=0;i<n_warmup_steps;i++) {
     /*
-      Compute the reaction likelihoods - forward_rxn_likelihood, 
-      and reverse_rxn_likelihood.
+      Compute the reaction likelihoods: forward_rxn_likelihood, 
+      and reverse_rxn_likelihood fields of state..
     */
-    success = free_energy_changes(state);
+    success = update_rxn_log_likelihoods(state);
     /*
-      Compute the partial sums of the reaction likelihoods.
-      This call also updates the fconcs vector.
+      Choose a reaction by computing the partial sums of the reaction 
+      likelihoods and then using a uniform random number generator to pick one
+      with probability proportional to the relative size of the reaction
+      likelihood ratio. A second step called the metropolis method is 
+      employed to allow reactions that use the last reactant molecules or
+      produce the first product molecules to fire.
+      This call call also updates the future_concentrations vector.
     */
-    rxn_choice = choose_rxn(state);
+    rxn_choice = choose_rxn(state,&r_sum_likelihood);
     if (rxn_choice < 0) break;
-
-    for (j=0;j<nu;j++) {
-      cconcs[j] = fconcs[j];
+    /*
+      Copy the future concentrations, resulting from the reaction firing
+      to the current concentrations.
+    */
+    for (j=0;j<unique_molecules;j++) {
+      current_concentrations[j] = future_concentrations[j];
     }
     /*
-      Doug wonders here whether or not we ought to update free_energy based
-      on the new concentrations, Absolutely we should.
+      Doug thinks we can remove these calls.
+    success = update_rxn_log_likelihoods(state);
+    success = compute_delta_g_forward_entropy_free_energy(state,
+							  &dg_forward,
+							  &entropy);
     */
-    success = rxn_log_likelihoods(cconcs,
-				  c_loglr,
-				  c_loglr,
-				  state,
-				  forward);
-    dg_forward = 0.0;
-    sum_likelihood = 0.0;
-    for (j=0;j<num_rxns;j++) {
-      dg_forward += c_loglr[j];
-      sum_likelihood += activities[j]*forward_rxn_likelihood[j];
-    }
-    dg_forward *= m_rt;
-    entropy = 0.0;
-    if (sum_likelihood <= 0.0) {
-      fprintf(stderr,"boltzmann_run_sim: Error, nonpositivity sum_likelihood = %le in warmup loop iteration %d\n",sum_likelihood,i);
-      fflush(stderr);
-      success = 0;
-      break;
-    }
-    if (success) {
-      r_sum_likelihood = 1.0/sum_likelihood;
-      for (j=0;j<num_rxns;j++) {
-	scaled_likelihood = activities[j]*forward_rxn_likelihood[j] * r_sum_likelihood;
-	if (scaled_likelihood>0) {
-	  entropy -= (scaled_likelihood * log(scaled_likelihood));
-	}
-      }
-    }
   } /* end for(i...) */
+  if (success) {
+    success = update_rxn_log_likelihoods(state);
+  }
   /* 
     Data collection phase (recording).
   */
@@ -228,197 +176,88 @@ int boltzmann_run_sim(struct state_struct *state) {
     /*
       Set the rxn_fire counts to 0.
     */
-    for (i=0;i<num_rxns_t2;i++) {
+    for (i=0;i<number_reactions_t2;i++) {
       rxn_fire[i] = 0;
     }
     /*
-      Initialize the boundary fluxes 0.
+      Initialize the boundary fluxes to 0.
     */
-    for (i=0;i<nu;i++) {
+    for (i=0;i<unique_molecules;i++) {
       bndry_flux_concs[i] = 0.0;
     }
     for (i=0;i<n_record_steps;i++) {
       /*
-	Comput the reaction likelihoods - forward_rxn_likelihood, 
-	and reverse_free_energy.
+	Choose a reaction setting the future_concentrations field of
+	the state structure and counting the number of times this
+	reaction in this direction has fired.
       */
-      success = free_energy_changes(state);
-
-      rxn_choice = choose_rxn(state);
+      rxn_choice = choose_rxn(state,&r_sum_likelihood);
       if (rxn_choice < 0) break;
-      if (rxn_choice <= num_rxns_t2) {
+      if (rxn_choice <= number_reactions_t2) {
 	rxn_fire[rxn_choice] += 1;
       }
-
-      for (j=0;j<nu;j++) {
-	cconcs[j] = fconcs[j];
+      /*
+	Copy the future concentrations, the result of the reaction firing
+	to the current concentrations.
+      */
+      for (j=0;j<unique_molecules;j++) {
+	current_concentrations[j] = future_concentrations[j];
       }
       /*
-	Doug wonders here whether or not we ought to update free_energy based
-	on the new concentrations. Absolutely we should.
+	Compute the reaction likelihoods and their logarithms
+	in the forward_rxn_likelihood, reverse_rxn_likelihood 
+	forward_rxn_log_likelihood_ratio and 
+	reverse_rxn_log_likelihood_ratio fields
+	based on the current_concentrations field of state.
       */
-      success = rxn_log_likelihoods(cconcs,
-				    forward_rxn_likelihood,
-				    c_loglr,
-				    state,
-				    forward);
-      dg_forward = 0.0;
-      sum_likelihood = 0.0;
-      for (j=0;j<num_rxns;j++) {
-	free_energy[j] =  m_rt * c_loglr[j];
-	dg_forward     += c_loglr[j];
-	sum_likelihood += activities[j]*forward_rxn_likelihood[j];
-      }
-      dg_forward *= m_rt;
-      entropy = 0.0;
-      if (sum_likelihood <= 0.0) {
-	fprintf(stderr,"boltzmann_run_sim: Error, nonpositivity sum_likelihood = %le in recording loop iteration %d\n",sum_likelihood,i);
-	fprintf(stderr,
-		"boltzmann_run_sim: Error, nonpositivity sum_likelihood\n");
-	fflush(stderr);
-	success = 0;
-	break;
-      }
-      r_sum_likelihood = 0.0;
-      if (success) {
-	r_sum_likelihood = 1.0/sum_likelihood;
-	for (j=0;j<num_rxns;j++) {
-	  scaled_likelihood = activities[j]*forward_rxn_likelihood[j] * r_sum_likelihood;
-	  if (scaled_likelihood > 0) {
-	    entropy -= scaled_likelihood * log(scaled_likelihood);
-	  }
-	}
-      }
+      success = update_rxn_log_likelihoods(state);
       /*
-	Now we need to generate the relevant output.
-	We want one file for the reaction Likelihoods,
-	one file for the reaction concentrations.
-	We will include the 
+	Compute the dg_forward and entropy values and free_energy field of
+	the state structure at the current concentations, and 
+	rxn_likelihoods.
       */
+      success = compute_delta_g_forward_entropy_free_energy(state,
+							    &dg_forward,
+							    &entropy,
+							    i);
       /* 
 	 print the concentrations. 
       */
-      if (concs_out_fp) {
-	conc_view_step = conc_view_step - 1;
-	if ((conc_view_step <= 0) || (i == (n_record_steps-1))) {
-	  fprintf(concs_out_fp,"%d",i);
-	  for (j=0;j<nu;j++) {
-	    fprintf(state->concs_out_fp,"\t%le",cconcs[j]);
-	  }
-	  fprintf(state->concs_out_fp,"\n");
-	  conc_view_step = conc_view_freq;
-	}
+      conc_view_step = conc_view_step - 1;
+      if ((conc_view_step <= 0) || (i == (n_record_steps-1))) {
+	print_concentrations(state,i);
+	conc_view_step = conc_view_freq;
       }
       /* 
 	 print the entropy, dg_forward and the reaction likelihoods, 
       */
-      if (state->rxn_lklhd_fp) {
-	lklhd_view_step = lklhd_view_step - 1;
-	if ((lklhd_view_step <= 0) || (i == (n_record_steps-1))) {
-	  fprintf(state->rxn_lklhd_fp,"%d\t%le\t%le",i,entropy,dg_forward);
-	  for (j=0;j<num_rxns;j++) {
-	    /*
-	    fprintf(state->rxn_lklhd_fp,"\t%le",forward_rxn_likelihood[j]);
-	    fprintf(state->rxn_lklhd_fp,"\t%le",reverse_rxn_likelihood[j]);
-	    */
-	    fprintf(state->rxn_lklhd_fp,"\t%le",forward_rxn_likelihood[j]*activities[j]);
-	    fprintf(state->rxn_lklhd_fp,"\t%le",reverse_rxn_likelihood[j]*activities[j]);
-	  }
-	  fprintf(state->rxn_lklhd_fp,"\n");
-	  lklhd_view_step = lklhd_view_freq;
-	}
+      lklhd_view_step = lklhd_view_step - 1;
+      if ((lklhd_view_step <= 0) || (i == (n_record_steps-1))) {
+	print_likelihoods(state,entropy,dg_forward,i) ;
+	lklhd_view_step = lklhd_view_freq;
       }
       if (rxn_view_freq > 0) {
 	rxn_view_step = rxn_view_step - 1;
 	/*
-	  Save the likelihoods on a per reaction basis.
+	  Save the likelihoods on a per reaction basis for later 
+	  printing to the rxns.view file.
 	*/
 	if ((rxn_view_step <= 0) || (i == (n_record_steps-1))) {
 	  no_op_likelihood[rxn_view_pos] = r_sum_likelihood;
-	  rxn_view_p = (double *)&rxn_view_data[rxn_view_pos];
-	  rrxn_view_p = (double *)&rrxn_view_data[rxn_view_pos];
-	  for (j = 0; j < num_rxns;j++) {
-	    /*
-	    *rxn_view_p = forward_rxn_likelihood[j];
-	    *rrxn_view_p = reverse_rxn_likelihood[j];
-	    */
-	    *rxn_view_p  = forward_rxn_likelihood[j]*activities[j];
-	    *rrxn_view_p = reverse_rxn_likelihood[j]*activities[j];
-	    rxn_view_p   += rxn_view_hist_lngth; /* Caution address arithmetic here. */
-	    rrxn_view_p  += rxn_view_hist_lngth; /* Caution address arithmetic here. */
-	  }
+	  save_likelihoods(state,rxn_view_pos);
 	  rxn_view_step = rxn_view_freq;
 	  rxn_view_pos  += 1;
 	}
       }
       /*
-	If user has requested print out free energies as well.
+	If user has requested them, print out free energies as well.
       */
       if (state->free_energy_format > 0) {
-	fprintf(state->free_energy_fp,"%d",i);
-	if (state->free_energy_format == 1) {
-	  for (j=0;j<num_rxns;j++) {
-	    fprintf(state->free_energy_fp,"\t%le",
-		    -c_loglr[j]);
-	  }
-	  fprintf(state->free_energy_fp,"\n");
-	}
-	if (state->free_energy_format == 2) {
-	  for (j=0;j<num_rxns;j++) {
-	    fe = free_energy[j]*cal_gm_per_joule;
-	    fprintf(state->free_energy_fp,"\t%le",fe);
-	  }
-	  fprintf(state->free_energy_fp,"\n");
-	}
-	if (state->free_energy_format == 3) {
-	  for (j=0;j<num_rxns;j++) {
-	    fprintf(state->free_energy_fp,"\t%le",free_energy[j]);
-	  }
-	  fprintf(state->free_energy_fp,"\n");
-	}
+	print_free_energy(state,i);
       }
     } /* end for(i...) */
     if (state->num_fixed_concs > 0) {
-      if (bndry_flux_fp) {
-	fprintf(bndry_flux_fp,"final flux\n");
-	molecule    = sorted_molecules;
-	cmpt_string = NULL;
-	oi = -1;
-	for (j=0;j<nu;j++) {
-	  ci = molecule->c_index;
-	  if (ci != oi) {
-	    oi = ci;
-	    if (ci >= 0) {
-	      cur_cmpt = (struct istring_elem_struct *)&(cur_cmpts[ci]);
-	      cmpt_string = cur_cmpt->string;
-	    } else {
-	      cmpt_string = NULL;
-	    }
-	  }
-	  if (molecule->variable == 0) {
-	    if (ci >= 0) {
-	      fprintf(state->bndry_flux_fp,"%s:%s\t%le\n",molecule->string,
-		      cmpt_string,bndry_flux_concs[j]);
-	    } else {
-	      fprintf(state->bndry_flux_fp,"%s\t%le\n",molecule->string,
-		      bndry_flux_concs[j]);
-	    }
-	  }
-	  molecule += 1; /* Caution address arithmetic.*/
-	} /* end for (j...) */
-	/*
-	fprintf(bndry_flux_fp," flux - fixed ");
-	molecule = sorted_molecules;
-	for (j=0;j<nu;j++) {
-	  if (molecule->variable == 0) {
-	    delta = bndry_flux_concs[j]-cconcs[j];
-	    fprintf(state->bndry_flux_fp,"\t%le",delta);
-	  }
-	  molecule += 1; 
-	}
-	fprintf(state->bndry_flux_fp,"\n");
-	*/
-      } /* end if (bndry_flux_fp) */
+      print_boundary_flux(state);
     } /* end if (state->num_fixed_concs ...) */
     if (success) {
       success = print_restart_file(state);
