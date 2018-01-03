@@ -25,7 +25,7 @@ int lr13_approximate_delta_concs(struct state_struct *state,
     Get reference from Bill Cannon
     Called by: approximate_delta_concs
     Calls:     get_counts,
-               update_regulations,
+               update_regulations, fabs, log, exp
 
                                 TMF
     state                       *SI   Boltzmant state structure.
@@ -80,6 +80,7 @@ int lr13_approximate_delta_concs(struct state_struct *state,
   double  recip_avogadro;
   */
   double  fluxi;
+  double  coef;
   double  count_mi;
   int64_t *molecules_ptrs;
   int64_t *rxn_indices;
@@ -199,16 +200,20 @@ int lr13_approximate_delta_concs(struct state_struct *state,
     rfc[i] = (ke[i] * (rt/tp)) - (rke[i] * (pt/tr));
     NB if use_activities is not set activities[i] will be 1.0 for all i.
     */
+    /*
     if (pt != 0.0) {
       qii = rt/pt;
       rfc[i] = log(ke[i]*qii);    
     } else {
       rfc[i] = 0.0;
       if (lfp) {
-	fprintf(lfp,"lr13_approximate_delta_concs pt for reacion %d was 0.0. Setting rfc[%d] to 0.0\n",i);
+	fprintf(lfp,"lr13_approximate_delta_concs pt for reacion %d was 0.0. Setting rfc[%d] to 0.0\n",i,i);
 	fflush(lfp);
       }
     }
+    */
+    qii = rt/tp;
+    rfc[i] = log(ke[i]*qii);    
   }
   if (success) {
     molecule = molecules;
@@ -219,7 +224,7 @@ int lr13_approximate_delta_concs(struct state_struct *state,
 	if (count_mi <= 0.0) {
 	  count_mi = .00001;
 	  if (lfp) {
-	    fprintf(lfp,"lr13_approximate_delta_concs: 0 couint for molecule %d was set to .00001\n",i);
+	    fprintf(lfp,"lr13_approximate_delta_concs: 0 count for molecule %d was set to .00001\n",i);
 	    fflush(lfp);
 	  }
 	}
@@ -227,8 +232,9 @@ int lr13_approximate_delta_concs(struct state_struct *state,
 	flux_scaling = 1.0/log(count_mi/exp(dgi*m_r_rt));
 	for (j=molecules_ptrs[i];j<molecules_ptrs[i+1];j++) {
 	  rxn = rxn_indices[j];
-	  if (coefficients[j] != 0) {
-	    fluxi += rfc[rxn];
+	  coef = (double)coefficients[j];
+	  if (coef != 0.0) {
+	    fluxi += rfc[rxn]/coef;
 	  }
 	} /* end for(j...) */
 	flux[i] = flux_scaling * fluxi;
