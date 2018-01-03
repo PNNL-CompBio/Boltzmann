@@ -22,6 +22,8 @@ specific language governing permissions and limitations under the License.
 ******************************************************************************/
 
 #include "boltzmann_structs.h"
+#include "boltzmann_cvodes_headers.h"
+#include "cvodes_params_struct.h"
 #include "alloc0_a.h"
 
 #include "alloc0.h"
@@ -133,7 +135,7 @@ int alloc0(struct state_struct **statep, int setup) {
     usage = state->usage;
   }
   if (success && setup) {
-    state->version_no = 4971; // Checkin revision of state_struct.h
+    state->version_no = 4996; // Checkin revision of state_struct.h
     /*
       Allocate_space for reading the parameter file.
     */
