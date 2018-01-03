@@ -88,10 +88,8 @@ double rxn_likelihood(double *counts,
   double *kssr;
   */
   double  count;
-  /*
   double  left_counts;
   double  right_counts;
-  */
   double  left_concs;
   double  right_concs;
   double  eq_k;
@@ -120,9 +118,9 @@ double rxn_likelihood(double *counts,
   kss               = state->kss;
   /*
   kssr              = state->kssr;
+  */
   left_counts        = 1.0;
   right_counts       = 1.0;
-  */
   left_concs = 1.0;
   right_concs = 1.0;
   eq_k = ke[rxn] * kss[rxn];
@@ -140,7 +138,9 @@ double rxn_likelihood(double *counts,
     coeff = rcoef[j];
     m_index = molecules_indices[j];
     molecule = &molecules[m_index];
+    /*
     volume_recip = count_to_conc[m_index];
+    */
     count = counts[m_index];
     if (rxn_direction < 0) {
       coeff = -coeff;
@@ -148,17 +148,17 @@ double rxn_likelihood(double *counts,
     if (coeff < 0) {
       for (k=0;k<(0-coeff);k++) {
 	/*
-	left_counts = left_counts * (count-k);
-	*/
 	left_concs = left_concs * ((count-k) * volume_recip);
+	*/
+	left_counts = left_counts * (count-k);
       } 
     } else {
       if (coeff > 0) {
 	for (k=1;k<=coeff;k++) {
 	  /*
-	  right_counts = right_counts * (count+k)
-	  */
 	  right_concs = right_concs * (count+k) * volume_recip;
+	  */
+	  right_counts = right_counts * (count+k);
 	} 
       }
       /*
