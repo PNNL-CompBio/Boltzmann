@@ -156,7 +156,7 @@ int ode_num_jac(struct state_struct *state,
     } else {
       delj = - abs(delj);
     }
-    num_jac_col(state,ny,j,y,f,delj,threshj,
+    num_jac_col(state,ny,j,y,f,&delj,threshj,
 		y_counts,fdel,fdiff,
 		forward_rxn_likelihoods,
 		reverse_rxn_likelihoods,
@@ -184,7 +184,7 @@ int ode_num_jac(struct state_struct *state,
 	}
 	delj   = (yj + (tmpfac * yscalej)) - yj;
 	if ((tmpfac != facj) && (delj > 0.0)) {
-	  num_jac_col(state,ny,j,y,f,delj,threshj,
+	  num_jac_col(state,ny,j,y,f,&delj,threshj,
 		      y_counts,fdel,fdiff,
 		      forward_rxn_likelihoods,
 		      reverse_rxn_likelihoods,
