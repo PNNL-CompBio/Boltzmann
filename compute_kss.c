@@ -44,6 +44,7 @@ int compute_kss(struct state_struct *state) {
 
   double *kss;
   double *kssr;
+  double *ke;
 
   struct rxn_struct *reactions;
   struct rxn_struct *reaction;
@@ -58,6 +59,7 @@ int compute_kss(struct state_struct *state) {
   int64_t *matrix_text;
 
   double  rxn_kss;
+  double  rrxn_kss;
   double  kss_r_mod;
   double  kss_p_mod;
   double  ntotal_exp;
@@ -100,6 +102,7 @@ int compute_kss(struct state_struct *state) {
   kssr                     = state->kssr;
   kss_e_val                = state->kss_e_val;
   kss_u_val                = state->kss_u_val;
+  ke                       = state->ke;
   compartments             = state->sorted_cmpts;
   lfp                  = state->lfp;
   print_output         = print_output && lfp;
@@ -119,7 +122,7 @@ int compute_kss(struct state_struct *state) {
       /*
         Set the steady state adjustment value for the reaction.
       */
-      rxn_kss = 1.0;
+      rrxn_kss = 1.0;
       for (j=rxn_ptrs[rxns];j<rxn_ptrs[rxns+1];j++) {
         k = molecules_indices[j];
 	ci = compartment_indices[j];
@@ -130,9 +133,9 @@ int compute_kss(struct state_struct *state) {
         if (coeff < 0) {
 	  coeff = -coeff;
 	  if (kss_u_val[k] > 0.0) {
-	    kss_r_mod = (kss_e_val[k]/kss_u_val[k]) * (ntotal_opt/ntotal_exp);
+	    kss_r_mod = kss_e_val[k];
 	    for (i=0;i<coeff;i++) {
-	      rxn_kss = rxn_kss * kss_r_mod;
+	      rrxn_kss = rrxn_kss * kss_r_mod;
 	    }
 	  } else {
 	    /*
@@ -143,9 +146,9 @@ int compute_kss(struct state_struct *state) {
         } else {
 	  if (coeff > 0) {
 	    if (kss_e_val[k] > 0.0) {
-	      kss_p_mod = (kss_u_val[k]/kss_e_val[k]) * (ntotal_exp/ntotal_exp);
+	      kss_p_mod = 1.0/kss_e_val[k];
 	      for (i=0;i<coeff;i++) {
-		rxn_kss = rxn_kss * kss_p_mod;
+		rrxn_kss = rrxn_kss * kss_p_mod;
 	      }
 	    } else {
 	      /*
@@ -156,14 +159,16 @@ int compute_kss(struct state_struct *state) {
 	  }
 	}
       }
-      kss[rxns] = rxn_kss;
-      if (rxn_kss > 0) {
-	kssr[rxns] = 1.0/rxn_kss;
+      rrxn_kss = ke[rxns] * rrxn_kss;
+      kssr[rxns] = rrxn_kss;
+      if (rrxn_kss > 0.0) {
+	kss[rxns] = 1.0/rrxn_kss;
       } else {
+	kss[rxns] = 1.0;
 	kssr[rxns] = 1.0;
       }
       if (print_output) {
-        fprintf(lfp,"Computed kss = %le\n",rxn_kss);
+        fprintf(lfp,"Computed kss = %le\n",kss[rxns]);
       }
     } 
   } else {
