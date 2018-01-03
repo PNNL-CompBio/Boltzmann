@@ -249,6 +249,8 @@ struct state_struct {
   char *rxn_view_file;     /* max_filename_len */
   char *bndry_flux_file;   /* max_filename_len */
   char *pseudoisomer_file; /* max_filename_len */
+  char *compartment_file;  /* max_filename_len */
+  char *sbml_file;         /* max_filename_len */
   char *solvent_string;    /* Length is 64. Allocated in alloc0 */
 
   char *rxn_title_text;    /* rxn_title_space. Allocated in alloc2  */
@@ -283,16 +285,24 @@ struct state_struct {
   double  *rev_rxn_view_likelihoods; 
   int  *rxn_fire;                  /* (number_reactions * 2) + 2*/
   int  *rxn_mat_row;               /* (nunique_molecules) */
+
   FILE *rxn_fp;
   FILE *conc_fp;
+
   FILE *out_fp;
   FILE *counts_out_fp;
+
   FILE *rxn_lklhd_fp;
   FILE *free_energy_fp;
+
   FILE *restart_fp;
   FILE *rxn_view_fp;
+
   FILE *bndry_flux_fp;
+  FILE *cmpt_fp;
+
   FILE *lfp;
+  FILE *extrafp;
   /*
     Instrumentation.     
   */
