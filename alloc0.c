@@ -64,12 +64,12 @@ int alloc0(struct state_struct **state) {
   if (statep == NULL) {
     success = 0;
     fprintf(stderr,
-	      "boltzmann: unable to allocate %ld bytes for state structure.\n",
-	      ask_for);
+	    "boltzmann: unable to allocate %ld bytes for state structure.\n",
+	    ask_for);
     fflush(stderr);
   }
   if (success) {
-    statep->num_files = (int64_t)16;
+    statep->num_files = (int64_t)20;
     num_state_files   = statep->num_files;
     statep->max_filename_len = max_file_name_len;
     ask_for = ((int64_t)num_state_files) * max_file_name_len;
@@ -102,6 +102,7 @@ int alloc0(struct state_struct **state) {
     statep->pseudoisomer_file  = statep->bndry_flux_file + max_file_name_len;
     statep->compartment_file   = statep->pseudoisomer_file + max_file_name_len;
     statep->sbml_file          = statep->compartment_file + max_file_name_len;
+    statep->ms2js_file         = statep->sbml_file + max_file_name_len;
     */
 
     statep->max_param_line_len = max_param_line_len;
