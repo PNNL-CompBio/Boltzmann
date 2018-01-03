@@ -38,7 +38,7 @@ specific language governing permissions and limitations under the License.
      vgrng2_state
      and 2 scalars, dg_forward and entropy for the whole system
  
-  3. for arrays/structs that are strictly inputs (there are 12 of these
+  3. for arrays/structs that are strictly inputs (there are 13 of these
      not counting string pointers).
      reactions,
      reactions_matrix,
@@ -323,10 +323,6 @@ struct state_struct {
     compute_moleculear_partition_probability.
   */
   double  min_molecule_dg0tf;
-  /*
-    The following two fields are not input fields, but are scalars and
-    hence included here..
-  */
   int64_t *workspace_base;
 
   /* two way data (modified) */
@@ -334,8 +330,8 @@ struct state_struct {
   double  *bndry_flux_counts;       /* len = unique_molecules */
   double  *net_lklhd_bndry_flux;    /* len = unique_molecules */
   double  *net_likelihood;          /* len = number_reactions */
-  struct  vgrng_state_struct *vgrng_state; /* len = 13 */
-  struct  vgrng_state_struct *vgrng2_state;/* len = 13 */ 
+  struct  vgrng_state_struct *vgrng_state; /* len = 14 */
+  struct  vgrng_state_struct *vgrng2_state;/* len = 14 */ 
   /* 
     (2 + (3*unique_molecules)+ number_reactions) * sizeof(double) 
     + 2 * sizeof(vgrng_state_struct)
@@ -444,8 +440,8 @@ struct state_struct {
   int64_t *transpose_workspace;  /* used in forming molecules_matrix. */
                                  /* allocated in alloc4 */
   int64_t *rxn_file_keyword_lengths /* allocated in alloc0 */;
-  char    **rxn_file_keywords; /* 12, allocated in alloc0 */
-  char    *rxn_file_keyword_buffer; /* 144, allocated in alloc0  */
+  char    **rxn_file_keywords; /* 16, allocated in alloc0 */
+  char    *rxn_file_keyword_buffer; /* 256, allocated in alloc0  */
   char    *param_buffer; /*  2* max_param_line_len, allocated in alloc0 */ 
   char    *raw_molecules_text; /* molecule_text_length Allocated in alloc2 */
   /* 
