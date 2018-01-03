@@ -9,7 +9,8 @@
 int energy_init(struct state_struct *state) {
 /*
     Initialize the delta g0's, kinetic energies, and kinetic
-    steady state coefficients.
+    steady state coefficients, and zero out the solvent coefficients
+    in the reactiosn matrix.
     
     Called by: boltzmann_init_core
     Calls:     compute_standard_energies,
@@ -32,6 +33,9 @@ int energy_init(struct state_struct *state) {
   if (success) {
     success = compute_ke(state);
   }
+  /*
+    Zero out the solvent molecule coefficients in the reactions matrix.
+  */
   if (success) {
     success = zero_solvent_coefficients(state);
   }
