@@ -46,7 +46,7 @@ void ode_print_concs_header(struct state_struct *state) {
   FILE *lfp;
   nu_molecules     = state->nunique_molecules;
   cur_molecule     = state->sorted_molecules;
-  cur_cmpts        = state->sorted_cmpts;
+  cur_cmpts        = state->sorted_compartments;
   molecules_text   = state->molecules_text;
   compartment_text = state->compartment_text;
   ode_concs_file   = state->ode_concs_file;
