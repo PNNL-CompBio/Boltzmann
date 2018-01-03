@@ -1,0 +1,89 @@
+REACTION test_rxn
+PATHWAY test_pathway
+LEFT 2 NAD+ + O2
+RIGHT 2 NADH + H2O
+DGZERO 0.0
+DGZERO-UNITS Kcal/mol
+COMPARTMENT cytosol
+//
+REACTION Reaction 1
+# Test Comment
+PATHWAY Extended Schlogl 
+LEFT A0
+RIGHT A1
+DGZERO 0.0
+DGZERO-UNITS Kcal/mol
+COMPARTMENT cytosol
+//
+REACTION Reaction 2
+PATHWAY Extended Schlogl 
+LEFT A1
+RIGHT A2
+DGZERO 0.0
+DGZERO-UNITS Kcal/mol
+COMPARTMENT cytosol
+//
+REACTION Reaction 3
+PATHWAY Extended Schlogl 
+LEFT A2
+RIGHT A3
+DGZERO 0.0
+DGZERO-UNITS Kcal/mol
+COMPARTMENT cytosol
+//
+REACTION Reaction 4
+PATHWAY Extended Schlogl 
+LEFT A3
+RIGHT A4
+DGZERO 0.0
+DGZERO-UNITS Kcal/mol
+COMPARTMENT cytosol
+//
+REACTION Reaction 5
+PATHWAY Extended Schlogl 
+LEFT A4 
+RIGHT  X
+DGZERO -0.00
+DGZERO-UNITS Kcal/mol
+COMPARTMENT cytosol
+//
+REACTION Reaction 6
+PATHWAY Extended Schlogl 
+LEFT X
+RIGHT B4
+DGZERO 0.0
+DGZERO-UNITS Kcal/mol
+COMPARTMENT cytosol
+//
+REACTION Reaction 7
+PATHWAY Extended Schlogl 
+LEFT B4
+RIGHT B3
+DGZERO 0.0
+DGZERO-UNITS Kcal/mol
+COMPARTMENT cytosol
+//
+REACTION Reaction 8
+PATHWAY Extended Schlogl 
+LEFT B3
+RIGHT B2
+DGZERO 0.0
+DGZERO-UNITS Kcal/mol
+COMPARTMENT cytosol
+//
+REACTION Reaction 9
+PATHWAY Extended Schlogl 
+LEFT B2
+RIGHT B1
+DGZERO 0.0
+DGZERO-UNITS Kcal/mol
+COMPARTMENT cytosol
+//
+REACTION Reaction 10 
+PATHWAY Extended Schlogl 
+LEFT B1
+RIGHT B0
+DGZERO 0.0
+DGZERO-UNITS Kcal/mol
+COMPARTMENT cytosol
+//
