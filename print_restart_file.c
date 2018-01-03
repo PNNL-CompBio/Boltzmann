@@ -27,7 +27,7 @@ specific language governing permissions and limitations under the License.
 int print_restart_file(struct state_struct *state) {
   /*
     Print the  restart file concentrations.
-    Called by: boltzmann_run
+    Called by: boltzmann_run, deq
     Calls:     fopen, fprintf, fclose (intrinsic)
   */
   struct rxn_struct *reactions;
