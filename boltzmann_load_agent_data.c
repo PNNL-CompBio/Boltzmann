@@ -9,6 +9,8 @@ int boltzmann_load_agent_data(struct state_struct *state, void *agent_data) {
     Calls      boltzmann_flatten_vgrng_state
     
   */
+  struct vgrng_state_struct *vgrng_state;
+  struct vgrng_state_struct *vgrng2_state;
   double *dagent_data;
   double *input_counts;
   double *current_counts;
@@ -17,23 +19,39 @@ int boltzmann_load_agent_data(struct state_struct *state, void *agent_data) {
   int64_t *fvgrng2_state;
   int64_t nunique_molecules;
   int64_t i;
+  int64_t zero_l;
   int success;
   int direction;
   int vgrng_state_length;
   int padi;
 
   success           = 1;
+  zero_l            = (int64_t)0;
   nunique_molecules = state->nunique_molecules;
   lagent_data       = (int64_t*)agent_data;
   dagent_data       = (double*) agent_data;
   fvgrng_state      = lagent_data;
   fvgrng2_state     = (int64_t*)&fvgrng_state[16];
   direction = 1;
-  success = boltzmann_flatten_vgrng_state(fvgrng_state,state->vgrng_state,
-					  direction,&vgrng_state_length);
-  if (success) {
-    success = boltzmann_flatten_vgrng_state(fvgrng2_state,state->vgrng2_state,
-					    direction,&vgrng_state_length);
+  vgrng_state       = state->vgrng_state;
+  vgrng2_state      = state->vgrng2_state;
+  if (fvgrng_state[0] != zero_l) {
+    vgrng_state->fib_history[0] = fvgrng_state[0];
+  }
+  if (fvgrng_state[1] != zero_l) {
+    vgrng_state->fib_history[1] = fvgrng_state[1];
+  }
+  if (fvgrng_state[2] != zero_l) {
+    vgrng_state->lcg_history = fvgrng_state[2];
+  }
+  if (fvgrng2_state[0] != zero_l) {
+    vgrng2_state->fib_history[0] = fvgrng2_state[0];
+  }
+  if (fvgrng2_state[1] != zero_l) {
+    vgrng2_state->fib_history[1] = fvgrng2_state[1];
+  }
+  if (fvgrng2_state[2] != zero_l) {
+    vgrng2_state->lcg_history = fvgrng2_state[2];
   }
   if (success) {
     /*
