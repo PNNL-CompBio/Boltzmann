@@ -129,6 +129,7 @@ struct state_struct {
   int64_t warmup_steps;           
   int64_t record_steps;           
   int64_t print_output;
+  int64_t concs_or_counts;
   int64_t number_compartments;  	
   int64_t nunique_compartments;  	
   int64_t align_len;
@@ -317,9 +318,10 @@ struct state_struct {
   char *rxn_mat_file;      /* max_filename_len */
   char *dg0ke_file;        /* max_filename_len */
   char *dictionary_file;   /* max_filename_len */
-  char *ode_flux_file;     /* max_filename_len */
+  char *ode_dconcs_file;   /* max_filename_len */
   char *ode_lklhd_file;    /* max_filename_len */
   char *ode_bflux_file;    /* max_filename_len */
+  char *concs_out_file;    /* max_filename_len */
   char *solvent_string;    /* Length is 64. Allocated in alloc0 */
 
   char *rxn_title_text;    /* rxn_title_text_length. Allocated in alloc2  */
@@ -385,25 +387,25 @@ struct state_struct {
   FILE *lfp;
 
   FILE *counts_out_fp;
+  FILE *concs_out_fp;
+
   FILE *ode_concs_fp;
-
   FILE *net_lklhd_fp;
+
   FILE *nl_bndry_flx_fp;
-  
   FILE *rxn_lklhd_fp;
+
   FILE *free_energy_fp;
-
   FILE *restart_fp;
+
   FILE *rxn_view_fp;
-
   FILE *bndry_flux_fp;
-  FILE *cmpt_fp;
 
-  FILE *ode_flux_fp;
+  FILE *cmpt_fp;
+  FILE *ode_dconcs_fp;
+
   FILE *ode_lklhd_fp;
-  
   FILE *ode_bflux_fp;
-  FILE *efp;
   /*
     Instrumentation.     
   */
