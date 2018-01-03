@@ -78,6 +78,7 @@ int flatten_state(struct state_struct *boot_state,
   int64_t unique_compartments;
   int64_t max_filename_len;
   int64_t num_files;
+  int64_t solvent_pos;
   int64_t incoming_data_size;
   int64_t dg_forward_offset;
   int64_t dg_forward_size;
@@ -210,6 +211,7 @@ int flatten_state(struct state_struct *boot_state,
   unique_molecules     = boot_state->nunique_molecules;
   max_filename_len     = boot_state->max_filename_len;
   num_files            = boot_state->num_files;
+  solvent_pos          = boot_state->solvent_pos;
   dg0s_offset          = incoming_data_offset;
   dg0s_size            = number_reactions + (number_reactions & 1);
   ke_offset            = dg0s_offset + dg0s_size;
@@ -487,6 +489,8 @@ int flatten_state(struct state_struct *boot_state,
       move_size = num_files * max_filename_len;
       memcpy(new_state->params_file,
 	     boot_state->params_file,move_size);
+      move_size  = (int64_t)64;
+      memcpy(new_state->solvent_string,boot_state->solvent_string,move_size);
       move_size = boot_state->rxn_title_space;
       memcpy(new_state->rxn_title_text,
 	     boot_state->rxn_title_text,move_size);
