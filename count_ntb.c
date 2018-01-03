@@ -28,7 +28,7 @@ int count_ntb(char *line) {
   /*
     Return the number of leading non-tab characters ('\09') 
     in the character string, line.
-    Called by: keg_from_modelseed.c 
+    Called by: read_kg2js, read_ms2js
     Calls      strlen(intrinsic).
   */
   int ntb_chars;
