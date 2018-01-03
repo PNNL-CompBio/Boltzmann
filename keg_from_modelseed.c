@@ -25,6 +25,7 @@ specific language governing permissions and limitations under the License.
 #include "count_ws.h"
 #include "count_nlb.h"
 #include "count_ntb.h"
+#include "count_nor.h"
 #include "check_for_ws.h"
 #include "boltzmannize_json_id.h"
 
