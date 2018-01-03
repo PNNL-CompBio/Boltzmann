@@ -33,8 +33,6 @@ int sort_json_ids(struct sbml2bo_struct *state) {
     Calls:     merge_sorted_strings
   */
   struct t2js_struct *kg2js_data;
-  int success;
-  int padi;
   int64_t num_kegg_ids;
   int64_t n;
   int64_t i;
@@ -44,14 +42,14 @@ int sort_json_ids(struct sbml2bo_struct *state) {
   int64_t l1;
   int64_t l2;
   int64_t ln;
-  int64_t offset;
-  int64_t noffset;
   char **cur_list;
   char **next_list;
   char **tmp_list;
   char **kjs_ids;
   char **json_ids;
   char **sort_scratch;
+  int success;
+  int padi;
   success = 1;
   json_ids = state->json_ids;
   sort_scratch = state->sort_json_ids_scratch;
