@@ -103,6 +103,7 @@ int alloc0(struct state_struct **state) {
     statep->compartment_file   = statep->pseudoisomer_file + max_file_name_len;
     statep->sbml_file          = statep->compartment_file + max_file_name_len;
     statep->ms2js_file         = statep->sbml_file + max_file_name_len;
+    statep->kg2js_file         = statep->ms2js_file + max_file_name_len;
     */
 
     statep->max_param_line_len = max_param_line_len;
