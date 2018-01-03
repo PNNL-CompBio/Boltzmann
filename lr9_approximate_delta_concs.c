@@ -45,6 +45,8 @@ int lr9_approximate_delta_concs(struct state_struct *state,
   struct  molecules_matrix_struct *molecules_matrix;
   struct  reactions_matrix_struct *rxn_matrix;
   double  *activities;
+  double  *forward_lklhd;
+  double  *reverse_lklhd;
   double  *rfc;
   double  *ke;
   double  *rke;
@@ -98,6 +100,8 @@ int lr9_approximate_delta_concs(struct state_struct *state,
   molecules        = state->sorted_molecules;
   compartments     = state->sorted_compartments;
   activities       = state->activities;
+  forward_lklhd    = state->ode_forward_lklhds;
+  reverse_lklhd    = state->ode_reverse_lklhds;
   molecules_matrix = state->molecules_matrix;
   molecules_ptrs   = molecules_matrix->molecules_ptrs;
   rxn_indices      = molecules_matrix->reaction_indices;
@@ -176,7 +180,15 @@ int lr9_approximate_delta_concs(struct state_struct *state,
       avogadro's number - wonder if we really need these two multiplies??
     rfc[i] = (ke[i] * (rt/tp)) - (rke[i] * (pt/tr)) * recip_volume * recip_avogadro;
     */
+    /*
+      Save likelihoods for printing.
+    */
+    forward_lklhd[i] = ke[i] * (rt/tp);
+    reverse_lklhd[i] = rke[i] * (pt/tr);
+    rfc[i] = (forward_lklhd[i] - reverse_lklhd[i]) * activities[i];
+    /*
     rfc[i] = activities[i]*(ke[i] * (rt/tp)) - (rke[i] * (pt/tr));
+    */
   }
   if (success) {
     molecule = molecules;
