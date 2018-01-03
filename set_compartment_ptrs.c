@@ -26,9 +26,7 @@ specific language governing permissions and limitations under the License.
 #include "set_compartment_ptrs.h"
 int set_compartment_ptrs(struct state_struct *state) {
   /*
-    Remove duplicates from the sorted_molecules list
-    and set the column_indices fields in the
-    reactions_matrix appropriately.
+    Set pointers to the first molecule in each compartment
     Called by: species_init
     Calls:     
   */
