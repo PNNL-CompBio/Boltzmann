@@ -34,29 +34,29 @@ specific language governing permissions and limitations under the License.
 int boltzmann_init(char *param_file_name, struct state_struct **statep) {
   /*
     Initialize the reactions and data structures for boltzmann.
-    Called by: boltzmann
+    Called by: boltzmann, deq
     Calls:     alloc0,
                read_params,
 	       boltzmann_init_core
 	       free_boot_state
   */
-  struct state_struct *boot_state;
+  struct state_struct *state;
   int success;
   int padi;
   /*
     allocate space for the state struct.
     Allocate space for the reactions line buffer, and the rxn_file keywords.
   */
-  success = alloc0(&boot_state);
+  success = alloc0(statep);
   if (success) {
     /*
       Read the input parameters file.
     */
-    success = read_params(param_file_name,boot_state);
-  }
-  success = boltzmann_init_core(boot_state,statep);
+    state = *statep;
+    success = read_params(param_file_name,state);
+  } 
   if (success) {
-    success = free_boot_state(&boot_state);
+    success = boltzmann_init_core(state);
   }
   return(success);
 }
