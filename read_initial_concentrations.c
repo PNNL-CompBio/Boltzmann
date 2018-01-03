@@ -43,13 +43,18 @@ int read_initial_concentrations(struct state_struct *state) {
   double  volume;
   double  conc_units;
   double  conc;
+  double  count;
   double  conc_multiple;
   double  c_multiple;
   double  multiplier;
   double  avogadro;
   double  half;
-  double  *bndry_flux_concs;
-  double  *concs;
+  double  e_val;
+  double  u_val;
+  double  *bndry_flux_counts;
+  double  *counts;
+  double  *kss_e_val;
+  double  *kss_u_val;
   int64_t molecules_buff_len;
   int64_t one_l;
   char *molecules_buffer;
@@ -93,15 +98,17 @@ int read_initial_concentrations(struct state_struct *state) {
   molecule_name      = molecules_buffer + state->max_param_line_len;
   compartment_name   = molecule_name + (state->max_param_line_len>>1);
   sorted_molecules   = state->sorted_molecules;
-  concs              = state->current_concentrations;
-  bndry_flux_concs   = (double *)state->bndry_flux_concs;
+  counts             = state->current_counts;
+  kss_e_val          = state->kss_e_val; 
+  kss_u_val          = state->kss_u_val; 
+  bndry_flux_counts  = (double *)state->bndry_flux_counts;
   success = 1;
   one_l = (int64_t)1;
   variable_c = (char *)&vc[0];
   compute_c  = (char *)&cc[0];
   for (i=0;i<nu_molecules;i++) {
-    concs[i] = -1.0;
-    bndry_flux_concs[i] = -1;
+    counts[i] = -1.0;
+    bndry_flux_counts[i] = -1.0;
   }
   num_fixed_concs = 0;
   conc_fp = fopen(state->init_conc_file,"r");
@@ -179,9 +186,11 @@ int read_initial_concentrations(struct state_struct *state) {
     while (!feof(conc_fp)) {
       fgp = fgets(molecules_buffer,molecules_buff_len,conc_fp);
       if (fgp) {
-	nscan = sscanf(molecules_buffer,"%s %le %1s %1s %le",
+	e_val = 0.0;
+	u_val = 0.0;
+	nscan = sscanf(molecules_buffer,"%s %le %1s %1s %le %le",
 		       molecule_name, &conc, variable_c, compute_c, 
-		       &c_multiple);
+		       &e_val, &u_val);
 	variable = 1;
 	solvent  = 0;
 	if (nscan >= 3) {
@@ -201,7 +210,7 @@ int read_initial_concentrations(struct state_struct *state) {
 	    variable = 1;
 	  }
 	}
-	compute_conc = 1;
+	compute_conc = 0;
 	if (nscan >= 4) {
 	  /*
 	    A fixed or compute value was given for the initial concentration.
@@ -222,12 +231,12 @@ int read_initial_concentrations(struct state_struct *state) {
 	    }
 	  }
 	}
-        conc_multiple = 1.0;
-	if (nscan == 5) {
+	if (nscan >= 6) {
 	  /*
-	    A multiplicative factor was given for the initial concentration.
+	    An expermental and user intial values were supplied.
+	    Don't need to do anything yet as they are in e_val and u_val,
+	    or else e_val and u_val are 1.0
 	  */
-	  conc_multiple = c_multiple;
 	}
 	mol_len = strlen(molecule_name);
 	compartment_name = molecule_name;
@@ -252,14 +261,15 @@ int read_initial_concentrations(struct state_struct *state) {
 	  if ((si >=0) && si < nu_molecules) {
 	    /*
 	      The following uses the nearest integer to (conc*multiplier)
-	      for the count field stored in the concs array, where
+	      for the count field stored in the counts array, where
 	      multiplier is volume * units * Avogadro's number.
 	    */
-	    concs[si] = (double)((int64_t)((conc * multiplier) + half));
+	    counts[si] = (double)((int64_t)((conc * multiplier) + half));
+	    kss_e_val[si] = e_val;
+	    kss_u_val[si] = u_val;
 	    molecule = (struct molecule_struct *)&sorted_molecules[si];
 	    molecule->variable = variable;
 	    molecule->compute_init_conc = compute_conc;
-	    molecule->conc_multiple     = conc_multiple;
 	    molecule->solvent           = solvent;
 	  } else {
 	    fprintf(stderr,"read_initial_concentrations: Error "
@@ -286,14 +296,14 @@ int read_initial_concentrations(struct state_struct *state) {
     success = 0;
   }
   if (success) {
-    conc = state->default_initial_conc;
+    count = state->default_initial_count;
     for (i=0;i<nu_molecules;i++) {
-      if (concs[i] < 0.0) {
-	concs[i] = conc;
+      if (counts[i] < 0.0) {
+	counts[i] = count;
       }
     }
     for (i=0;i<nu_molecules;i++) {
-      bndry_flux_concs[i] = concs[i];
+      bndry_flux_counts[i] = counts[i];
     }
     state->num_fixed_concs = num_fixed_concs;
     /*
@@ -304,7 +314,7 @@ int read_initial_concentrations(struct state_struct *state) {
       if (counts_out_fp) {
 	fprintf(counts_out_fp,"init");
 	for (i=0;i<nu_molecules;i++) {
-	  fprintf(counts_out_fp,"\t%le",concs[i]);
+	  fprintf(counts_out_fp,"\t%le",counts[i]);
 	}
 	fprintf(counts_out_fp,"\n");
       } else {
