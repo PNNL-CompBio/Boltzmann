@@ -47,9 +47,10 @@ int boltzmann_boot_check(struct super_state_struct *super_statep, FILE *lfp) {
   char    *compartments_text;
   int64_t num_reaction_files;
   int64_t i;
-  int64_t loffset;
   int64_t lsize;
+  /*
   int64_t map_index;
+  */
   int64_t molecule;
   int64_t compartment;
   int64_t one_l;
@@ -94,6 +95,7 @@ int boltzmann_boot_check(struct super_state_struct *super_statep, FILE *lfp) {
 	lstate = NULL;
 	success = boltzmann_rep_state_i(super_statep,(int)i,&lstate);
 	if (success) {
+	  lsize = lstate->state_length;
 	  /*
 	    Print out the reactions in the i'th reaction file from
 	    its state structre.
