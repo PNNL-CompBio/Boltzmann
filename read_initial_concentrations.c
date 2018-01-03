@@ -36,8 +36,9 @@ int read_initial_concentrations(struct state_struct *state) {
   /*
     Read the concs.in file for initial concentrations, and
     set the concentrations array.
-    Called by: boltzmann
+    Called by: boltzmann_init
     Calls:     molecules_lookup
+               fopen, fgets, fclose, fprintf, fflush (intrinsic)
   */
   double  conc;
   double *concs;
@@ -93,6 +94,7 @@ int read_initial_concentrations(struct state_struct *state) {
 	  }
 	}
       }
+      fclose(conc_fp);
     }
   } else {
     fprintf(stderr,
