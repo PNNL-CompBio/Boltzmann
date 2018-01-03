@@ -67,7 +67,7 @@ int boltzmann_boot_check(struct super_state_struct *super_statep, FILE *lfp) {
   if (super_state_pointers != NULL) {
     success = flatten_super_state(super_statep,super_state_pointers);
   } else {
-    fprintf(stderr,"boltzmann_boot_check: Error, unable to allocate %ld "
+    fprintf(stderr,"boltzmann_boot_check: Error, unable to allocate %lld "
 	    "bytes for super_state_pointers\n",ask_for);
     fflush(stderr);
     success = 0;
@@ -98,7 +98,7 @@ int boltzmann_boot_check(struct super_state_struct *super_statep, FILE *lfp) {
 	    Print out the reactions in the i'th reaction file from
 	    its state structre.
 	  */
-	  fprintf (lfp,"reaction file: %s, state size = %ld\n",
+	  fprintf (lfp,"reaction file: %s, state size = %lld\n",
 		   lstate->reaction_file,lsize);
 	  lstate->lfp = lfp;
 	  success = echo_reactions_file(lstate);
