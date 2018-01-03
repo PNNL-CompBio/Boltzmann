@@ -61,7 +61,7 @@ int lr12_approximate_delta_concs(struct state_struct *state,
   double  *counts;
   double  *conc_to_count;
   double  *recip_coeffs;
-  double  rcoeff;
+  double  coeff;
   double  flux_scaling;
   double  pt;
   double  rt;
@@ -214,7 +214,7 @@ int lr12_approximate_delta_concs(struct state_struct *state,
       compartment = (struct compartment_struct *)&compartments[ci];
       recip_volume       = compartment->recip_volume;
       */
-      klim = rcoefficients[j];
+      klim = coefficients[j];
       count_mi = counts[mi];
       if (klim < 0) {
 	for (k=0;k<(-klim);k++) {
@@ -260,10 +260,10 @@ int lr12_approximate_delta_concs(struct state_struct *state,
 	for (j=molecules_ptrs[i];j<molecules_ptrs[i+1];j++) {
 	  rxn = rxn_indices[j];
 	  irfc = rxn + rxn;
-	  if (coefficients[j] != 0) {
-	    rcoeff          = recip_coeffs[j];
-	    deriv_acc[jj]   = rfc[irfc]*rcoeff;
-	    deriv_acc[jj+1] = rfc[irfc+1]*rcoeff;
+	  coeff = coefficients[j];
+	  if (coeff != 0) {
+	    deriv_acc[jj]   = rfc[irfc]*coeff;
+	    deriv_acc[jj+1] = rfc[irfc+1]*coeff;
 	    jj += 2;
 	    /*
 	    fluxi += (rfc[rxn]*recip_coeffs[j]));
