@@ -155,7 +155,7 @@ DLFLAGS = ${BLFLAGS}
 TIMING_DEPS = timingi.h djb_timing_b.h djb_timing.h
 LUNWIND_DEPS = luwtb.h luwtb1.h luwtb2.h
 SERIAL_INCS = boltzmann_structs.h super_state_struct.h super_state_pointers_struct.h state_struct.h rxn_struct.h rxn_matrix_struct.h molecules_matrix_struct.h vgrng_state_struct.h $(TIMING_DEPS) $(LUNWIND_DEPS)
-SERIAL_OBJS1 = boltzmann_boot.o boltzmann_mmap_superstate.o flatten_super_state.o boltzmann_boot_check.o boltzmann_rep_state_i.o boltzmann_init.o alloc0.o read_params.o open_output_files.o vgrng_init.o vgrng.o echo_params.o size_rxns_list.o size_rxns_file.o init_rxn_file_keywords.o parse_rxn_file_keyword.o count_molecules.o count_ws.o count_nws.o is_a_coef.o alloc2.o parse_reactions_file.o parse_side_line.o upcase.o find_colon.o echo_reactions_file.o sort_molecules.o merge_molecules.o unique_molecules.o unique_molecules_core.o sort_compartments.o merge_compartments.o unique_compartments.o unique_compartments_core.o translate_compartments.o print_molecules_dictionary.o alloc3.o set_compartment_ptrs.o read_initial_concentrations.o compartment_lookup.o molecules_lookup.o compute_ke.o print_rxn_likelihoods_header.o print_free_energy_header.o flatten_state.o free_boot_state.o free_boot_state2.o sort_global_compartments.o sort_global_molecules.o
+SERIAL_OBJS1 = boltzmann_boot.o boltzmann_mmap_superstate.o flatten_super_state.o boltzmann_boot_check.o boltzmann_rep_state_i.o boltzmann_init.o alloc0.o boltzmann_set_filename_ptrs.o read_params.o open_output_files.o vgrng_init.o vgrng.o echo_params.o size_rxns_list.o size_rxns_file.o init_rxn_file_keywords.o parse_rxn_file_keyword.o count_molecules.o count_ws.o count_nws.o is_a_coef.o alloc2.o parse_reactions_file.o parse_side_line.o upcase.o find_colon.o echo_reactions_file.o sort_molecules.o merge_molecules.o unique_molecules.o unique_molecules_core.o sort_compartments.o merge_compartments.o unique_compartments.o unique_compartments_core.o translate_compartments.o print_molecules_dictionary.o alloc3.o set_compartment_ptrs.o read_initial_concentrations.o compartment_lookup.o molecules_lookup.o compute_ke.o print_rxn_likelihoods_header.o print_free_energy_header.o flatten_state.o free_boot_state.o free_boot_state2.o sort_global_compartments.o sort_global_molecules.o
 SERIAL_OBJS2 = boltzmann_run.o update_rxn_log_likelihoods.o choose_rxn.o bndry_flux_update.o candidate_rxn.o rxn_likelihood.o rxn_likelihood_postselection.o rxn_log_likelihoods.o rxn_likelihoods.o binary_search_l_u_b.o rxn_conc_update.o compute_delta_g_forward_entropy_free_energy.o print_concentrations.o print_likelihoods.o save_likelihoods.o print_free_energy.o print_boundary_flux.o print_restart_file.o print_reactions_view.o
 
 #SERIAL_OBJS3 = 
@@ -437,6 +437,7 @@ libboltzmann.a: $(SERIAL_OBJS1) $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SERIAL_OBJS4)
 	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_rep_state_i.o
 	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_init.o
 	$(AR) $(ARFLAGS) libboltzmann.a alloc0.o
+	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_set_filename_ptrs.o
 	$(AR) $(ARFLAGS) libboltzmann.a read_params.o
 	$(AR) $(ARFLAGS) libboltzmann.a open_output_files.o
 	$(AR) $(ARFLAGS) libboltzmann.a vgrng_init.o
@@ -560,8 +561,11 @@ boltzmann.o: $(SERIAL_INCS) boltzmann.c boltzmann_init.h boltzmann_run.h
 boltzmann_init.o: $(SERIAL_INCS) boltzmann_init.c boltzmann_init.h alloc0.h read_params.h open_output_files.h vgrng_init.h vgrng.h echo_params.h size_rxns_file.h alloc2.h parse_reactions_file.h echo_reactions_file.h sort_compartments.h unique_compartments.h translate_compartments.h sort_molecules.h unique_molecules.h print_molecules_dictionary.h alloc3.h set_compartment_ptrs.h read_initial_concentrations.h vgrng_init.h vgrng.h compute_ke.h print_rxn_likelihoods_header.h print_free_energy_header.h flatten_state.h free_boot_state.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_init.c
 
-alloc0.o: $(SERIAL_INCS) alloc0.c alloc0.h
+alloc0.o: $(SERIAL_INCS) alloc0.c alloc0.h boltzmann_set_filename_ptrs.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c alloc0.c
+
+boltzmann_set_filenmae_ptrs.h: $(SERIAL_INCS) boltzmann_set_filenmae_ptrs.c boltzmann_set_filenmae_ptrs.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_set_filenmae_ptrs.c
 
 read_params.o: $(SERIAL_INCS) read_params.c read_params.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c read_params.c
@@ -680,7 +684,7 @@ print_rxn_likelihoods_header.o: $(SERIAL_INCS) print_rxn_likelihoods_header.c pr
 print_free_energy_header.o: $(SERIAL_INCS) print_free_energy_header.c print_free_energy_header.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c print_free_energy_header.c
 
-flatten_state.o: $(SERIAL_INCS) flatten_state.c flatten_state.h
+flatten_state.o: $(SERIAL_INCS) flatten_state.c flatten_state.h boltzmann_set_filename_ptrs.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c flatten_state.c
 
 flatten_super_state.o: $(SERIAL_INCS) flatten_super_state.c flatten_super_state.h
