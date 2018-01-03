@@ -28,6 +28,7 @@ int run_init(struct state_struct *state) {
   */
   struct vgrng_state_struct *vgrng_state;
   struct vgrng_state_struct *vgrng2_state;
+  void   *dummy_addr;
   double *activities;
   int64_t vgrng_start;
   int64_t i;
@@ -36,7 +37,7 @@ int run_init(struct state_struct *state) {
   int vgrng_start_steps;
 
   int print_output;
-  int padi;
+  int direction;
   
   success = 1;
   print_output = state->print_output;
@@ -80,10 +81,21 @@ int run_init(struct state_struct *state) {
     flatten state.
   */
   if (success) {
+    if (state->use_deq) {
+      direction = 0;
+      dummy_addr = NULL;
+      success = alloc7(state);
+    }
+  }
+  if (success) {
+    direction = 0;
+    dummy_addr = NULL;
     success = alloc8(state);
   }
   if (success) {
     if (state->print_output) {
+      direction = 0;
+      dummy_addr = NULL;
       success = alloc9(state);
       if (success) {
 	success = print_reactions_matrix(state);
