@@ -256,7 +256,7 @@ void sbml_generate_init_conc_line(struct sbml2bo_struct *state,
       */
       amt *= multiplier * recip_volume;
       fprintf(concs_fp,"%s:%s\t%le\t%c\n",
-	      translation,comp,amt,(char*)&vc[variable]);
+	      translation,comp,amt,vc[variable]);
     } else {
       /*
 	Compartment did not exist.
