@@ -54,7 +54,9 @@ int translate_compartments(struct state_struct *state) {
   /* loop over unsorted molecules. */
   for (i=0;i<nzr;i++) {
     c_indx = molecule->c_index;
-    molecule->c_index = compartment_indices[c_indx];
+    if (c_indx >= 0) {
+      molecule->c_index = compartment_indices[c_indx];
+    }
     molecule += 1; /* Caution Address arithmetic */
   }
   return(success);
