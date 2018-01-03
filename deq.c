@@ -53,7 +53,7 @@ int main(int argc, char **argv)
   if (success) {
     state->print_ode_concs = 1;
     success = deq_run(state);
-    j = 1;
+    j = -1;
     print_counts(state,j);
     print_restart_file(state);
   }
