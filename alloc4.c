@@ -61,7 +61,7 @@ int alloc4(struct state_struct *state, int setup) {
     usage += ask_for;
     molecules_matrix = (struct molecules_matrix_struct *)calloc(one_l,ask_for);
     if (molecules_matrix == NULL) {
-      fprintf(stderr,"alloc4: Error unable to allocate %lld bytes for "
+      fprintf(stderr,"alloc4: Error unable to allocate %ld bytes for "
 	      "molecules_matrix field\n",ask_for);
       fflush(stderr);
       success = 0;
@@ -77,7 +77,7 @@ int alloc4(struct state_struct *state, int setup) {
     usage += ask_for;
     molecules_matrix->molecules_ptrs = (int64_t*)calloc(one_l,ask_for);
     if (molecules_matrix->molecules_ptrs == NULL) {
-      fprintf(stderr,"alloc4: Error unable to allocate %lld bytes for "
+      fprintf(stderr,"alloc4: Error unable to allocate %ld bytes for "
 	      "molecules_ptrs field in molecules_matrix\n",ask_for);
       fflush(stderr);
       success = 0;
@@ -88,7 +88,7 @@ int alloc4(struct state_struct *state, int setup) {
     usage += ask_for;
     molecules_matrix->reaction_indices = (int64_t*)calloc(one_l,ask_for);
     if (molecules_matrix->reaction_indices == NULL) {
-      fprintf(stderr,"alloc4: Error unable to allocate %lld bytes for "
+      fprintf(stderr,"alloc4: Error unable to allocate %ld bytes for "
 	      "reaction_indices field in molecules_matrix\n",ask_for);
       fflush(stderr);
       success = 0;
@@ -99,8 +99,19 @@ int alloc4(struct state_struct *state, int setup) {
     usage += ask_for;
     molecules_matrix->coefficients = (int64_t*)calloc(one_l,ask_for);
     if (molecules_matrix->coefficients == NULL) {
-      fprintf(stderr,"alloc4: Error unable to allocate %lld bytes for "
+      fprintf(stderr,"alloc4: Error unable to allocate %ld bytes for "
 	      "coefficients field in molecules_matrix\n",ask_for);
+      fflush(stderr);
+      success = 0;
+    } 
+  }
+  if (success) {
+    ask_for = ((int64_t)(nzr)) * ((int64_t)sizeof(double));
+    usage += ask_for;
+    molecules_matrix->recip_coeffs = (double*)calloc(one_l,ask_for);
+    if (molecules_matrix->recip_coeffs == NULL) {
+      fprintf(stderr,"alloc4: Error unable to allocate %ld bytes for "
+	      "recip_coeffs field in molecules_matrix\n",ask_for);
       fflush(stderr);
       success = 0;
     } 
@@ -111,7 +122,7 @@ int alloc4(struct state_struct *state, int setup) {
       usage += ask_for;
       transpose_work = (int64_t*)calloc(one_l,ask_for);
       if (transpose_work == NULL) {
-	fprintf(stderr,"alloc4: Error unable to allocate %lld bytes for "
+	fprintf(stderr,"alloc4: Error unable to allocate %ld bytes for "
 		"transpose_work vector.\n",ask_for);
 	fflush(stderr);
 	success = 0;
