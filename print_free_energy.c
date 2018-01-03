@@ -28,7 +28,7 @@ void print_free_energy(struct state_struct *state, int64_t step) {
     For recording step, print the free energies to the free 
     energy file according to the free_energy_format field of state.
 
-    Called by: boltzmann_run
+    Called by: boltzmann_watch
     calls    : fprintf
 
     Arguments:
@@ -58,7 +58,7 @@ void print_free_energy(struct state_struct *state, int64_t step) {
   forward_rxn_log_likelihood_ratio = state->forward_rxn_log_likelihood_ratio;
   cals_per_joule  	           = state->cals_per_joule;
   if (free_energy_fp) {
-    fprintf(free_energy_fp,"%lld",step);
+    fprintf(free_energy_fp,"%ld",step);
     if (free_energy_format == 1) {
       for (j=0;j<number_reactions;j++) {
 	fprintf(free_energy_fp,"\t%le",
