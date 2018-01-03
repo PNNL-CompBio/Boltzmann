@@ -27,16 +27,21 @@ specific language governing permissions and limitations under the License.
 #include "free_boot_state2.h"
 int free_boot_state2(struct state_struct *state) {
   /*
-    Free space allocated to fields of teh state_struct by alloc2 and 
-    alloc3 calls.
+    Free space allocated to fields of the state_struct by alloc2, alloc3,
+    alloc4, and alloc5 calls.
     Called by: boltzmann_init_core
     Calls:     free.
   */
   struct rxn_matrix_struct *reactions_matrix; 
+  struct molecules_matrix_struct *molecules_matrix;
+  struct formation_energy_struct *formation_energies;
   int success;
   int padi;
   success = 1;
   if (state) {
+    /*
+      Free allocations made in alloc2
+    */
     if (state->rxn_title_text) {
       free(state->rxn_title_text);
     }
@@ -104,6 +109,9 @@ int free_boot_state2(struct state_struct *state) {
     if (state->vgrng2_state) {
       free(state->vgrng2_state);
     }
+    /*
+      Free fields allocated in alloc3
+    */
     if (state->compartment_ptrs) {
       free(state->compartment_ptrs);
     }
@@ -112,6 +120,12 @@ int free_boot_state2(struct state_struct *state) {
     }
     if (state->bndry_flux_counts) {
       free(state->bndry_flux_counts);
+    }
+    if (state->count_to_conc) {
+      free(state->count_to_conc);
+    }
+    if (state->conc_to_count) {
+      free(state->conc_to_count);
     }
     if (state->dg0s) {
       free(state->dg0s);
@@ -137,12 +151,38 @@ int free_boot_state2(struct state_struct *state) {
     if (state->molecule_chemical_potentials) {
       free(state->molecule_chemical_potentials);
     }
-    if (state->count_to_conc) {
-      free(state->count_to_conc);
+    /*
+      Free fields allocated in alloc4
+    */
+    molecules_matrix = state->molecules_matrix;
+    if (molecules_matrix) {
+      if (molecules_matrix->molecules_ptrs) {
+	free(molecules_matrix->molecules_ptrs);
+      }
+      if (molecules_matrix->rxn_indices) {
+	free(molecules_matrix->rxn_indices);
+      }
+      if (molecules_matrix->transpose_work) {
+	free(molecules_matrix->transpose_work);
+      }
+      free(state->molecules_matrix);
     }
-    if (state->conc_to_count) {
-      free(state->conc_to_count);
+    /*
+      Free variables allocated in alloc5
+    */
+    formation_energies = state->formation_energies;
+    if (formation_energies) {
+      if (formation_energies->pseudoisomers) {
+	free(formation_energies->pseudoisomers);
+      }
+      if (formation_energies->pseudoisomer_strings) {
+	free(formation_energies->pseudoisomer_strings);
+      }
+      free(state->formation_energies);
     }
+    /*
+      Free workspace if it existed
+    */
     if (state->workspace_base) {
       free(state->workspace_base);
     }
