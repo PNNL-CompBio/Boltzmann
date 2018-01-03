@@ -101,13 +101,17 @@ int print_restart_file(struct state_struct *state) {
 	  conc = 1.00;
 	  vbsp = vbsc;
 	} else {
-	  vbsp = vbsv;
+	  if (cur_molecules->variable) {
+	    vbsp = vbsv;
+	  } else {
+	    vbsp = vbsc;
+	  }
 	}
       } else {
 	if (cur_molecules->variable) {
-	  vbsp = vbsc;
-	} else {
 	  vbsp = vbsv;
+	} else {
+	  vbsp = vbsc;
 	}
       }
       molecule = (char*)&molecules_text[cur_molecules->string];
