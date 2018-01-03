@@ -26,6 +26,7 @@ specific language governing permissions and limitations under the License.
 #include "sbml_find_section.h"
 #include "sbml_process_list_of_compartments.h"
 #include "sbml_process_list_of_species.h"
+#include "sbml_sort_species_trans.h"
 #include "sbml_process_list_of_reactions.h"
 
 #include "parse_sbml.h"
@@ -42,6 +43,9 @@ int parse_sbml(struct sbml2bo_struct *state) {
   */
   char sbml_buffer_c[2048];
   char *sbml_buffer;
+  char **spec_ids;
+  char **translations;
+  char **sort_species_trans_scratch;
 
   int64_t ask_for;
   int64_t one_l;
@@ -54,6 +58,9 @@ int parse_sbml(struct sbml2bo_struct *state) {
 
   int in_species_tag;
   int sbml_buffer_len;
+
+  int num_species;
+  int padi;
 
   FILE *lfp;
   FILE *sbml_fp;
@@ -68,6 +75,7 @@ int parse_sbml(struct sbml2bo_struct *state) {
   */
   sbml_buffer = (char *)&(sbml_buffer_c[0]);
   sbml_buffer_len = 2048;
+  num_species = state->num_species;
   lfp         = state->log_fp;
   if (lfp == NULL) {
     error_fp = stderr;
@@ -143,6 +151,25 @@ int parse_sbml(struct sbml2bo_struct *state) {
   if (success) {
     success = sbml_process_list_of_species(sbml_fp,sbml_buffer,
 					  sbml_buffer_len,state);
+  }
+  if (success) {
+    /*
+      Now we need to sort the species id, carrying along their
+      json_ids with them.
+      sbml_process_list_of_species generated a list of pairs of 
+      string pointers in the species_trans array. The i'th species
+      id is pointed to by species_trans[i+i] and the i'th species
+      transaltion is pointed to by species_trans[i+i+1].
+      The strings themselves are stored in specid_2_json_strings array,
+      also set in sbml_process_list_of_species.
+    */
+    spec_ids = state->spec_ids;
+    translations = state->translations;
+    sort_species_trans_scratch = state->sort_species_trans_scratch;
+    success = sbml_sort_species_trans(num_species,
+				      spec_ids,translations,
+				      sort_species_trans_scratch);
+
   }
   if (success) {
     fclose(id_name_fp);
