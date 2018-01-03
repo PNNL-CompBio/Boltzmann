@@ -67,11 +67,13 @@ void djb_timing_print(FILE *fp) {
   /*
     Need to check that timing_data is a valid pointer.
   */
-  if (&timing_data == NULL) {
+  /*
+  if (timing_data == NULL) {
     fprintf(stderr," Error: in timing_print: timing_data pointer is NULL.\n");
     fprintf(stderr,
 	    " You need to include \"timing_init.h\" in your main program.\n");
   } else {
+  */
     if (timing_data.initialized != TIMING_INITIALIZED) {
       fprintf(stderr,
 	      " Error: in timing_print: timing_data was not initialized.\n");
@@ -101,11 +103,11 @@ void djb_timing_print(FILE *fp) {
 		"  Start/StopC  Act_Time\n");
 	rtime = (double)(timing_data.timings)[DJB_TIMING_START_STOP].acc_time*spc;
 	fprintf(fp,"%-35s %12.5e %10ld %10ld %12.5e\n",
-		"   DJB_TIME_START_STOP",rtime,(int64_t)1,
-		(int64_t)TIMING_ITERATES,tperstartstop);
+		"   DJB_TIME_START_STOP",rtime,(long)1,
+		(long)TIMING_ITERATES,tperstartstop);
 	fprintf(fp,"%-35s %12.5e %10ld %10ld %12.5e\n",
-		"   DJB_TIME_INIT",tinit,(int64_t)1,
-	      (int64_t)TIMING_ITERATES,tinit);
+		"   DJB_TIME_INIT",tinit,(long)1,
+	      (long)TIMING_ITERATES,tinit);
 	for (i=DJB_TIMING_MIN; i<=DJB_TIMING_MAX;i++) {
 	  tag    = (timing_data.timings)[i].tagcs;
 	  callc = (timing_data.timings)[i].call_count;
@@ -129,19 +131,22 @@ void djb_timing_print(FILE *fp) {
 	  if ((strlen(tag) != 0) && (atime > 0.0)) {
 	    if (startc != stopc) {
 	      fprintf(fp,
-		"unbalanced start/stop inside %s startc = %ld stopc = %ld\n",
+		"unbalanced start/stop inside %s startc = %lld stopc = %lld\n",
 		      tag,startc,stopc);
 	    }
-	    fprintf(fp,"%-35s %12.5e %10ld %10ld %12.5e\n",
+	    fprintf(fp,"%-35s %12.5e %10lld %10lld %12.5e\n",
 		    label,rtime,callc,startc,atime);
 
 	  }
 	}
 	stopt = itc_clock();
 	rtime = (double)(stopt-start)*spc;
-	fprintf(fp,"%-35s %12.5e %10ld %10ld %12.5e\n",
-		"   DJB_TIMING_PRINT",rtime,0L,0L,rtime);
+	fprintf(fp,"%-35s %12.5e %10lld %10lld %12.5e\n",
+		"   DJB_TIMING_PRINT",rtime,(int64_t)0,(int64_t)0,rtime);
       } /* end if (fp) */
     } /* end else Timing was initialized. */
-  } /* end else Non null timing_data pointer */
+  /*
+  } // end else Non null timing_data pointer 
+  */
+
 }
