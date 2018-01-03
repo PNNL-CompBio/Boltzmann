@@ -48,6 +48,7 @@ int read_initial_concentrations(struct state_struct *state) {
   struct istring_elem_struct *molecule;
   double  conc;
   double *concs;
+  double *bndry_flux_concs;
   int64_t molecules_buff_len;
   int64_t one_l;
   int success;
@@ -64,6 +65,9 @@ int read_initial_concentrations(struct state_struct *state) {
 
   int mol_len;
   int cmpt_len;
+
+  int num_fixed_concs;
+  int padi;
   
   char *molecules_buffer;
   char *molecule_name;
@@ -80,12 +84,15 @@ int read_initial_concentrations(struct state_struct *state) {
   compartment_name   = state->compartment_name;
   sorted_molecules   = state->sorted_molecules;
   concs              = state->current_concentrations;
+  bndry_flux_concs   = (double *)state->bndry_flux_concs;
   success = 1;
   one_l = (int64_t)1;
   variable_c = (char *)&vc[0];
   for (i=0;i<nu_molecules;i++) {
     concs[i] = -1.0;
+    bndry_flux_concs[i] = -1;
   }
+  num_fixed_concs = 0;
   conc_fp = fopen(state->init_conc_file,"r");
   if (conc_fp) {
     while (!feof(conc_fp)) {
@@ -101,6 +108,7 @@ int read_initial_concentrations(struct state_struct *state) {
 	  vc[0] = vc[0] & 95;
 	  if (strncmp(variable_c,"C",one_l) == 0) {
 	    variable = 0;
+	    num_fixed_concs += 1;
 	  }
 	}
 	mol_len = strlen(molecule_name);
@@ -162,6 +170,10 @@ int read_initial_concentrations(struct state_struct *state) {
   /*
     Print the initial concentrations to the concentrations output file.
   */
+  for (i=0;i<nu_molecules;i++) {
+    bndry_flux_concs[i] = concs[i];
+  }
+  state->num_fixed_concs = num_fixed_concs;
   if (state->concs_out_fp) {
     fprintf(state->concs_out_fp,"init ");
     for (i=0;i<nu_molecules;i++) {
