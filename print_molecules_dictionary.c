@@ -88,10 +88,10 @@ int print_molecules_dictionary(struct state_struct *state) {
       }
       if (ci != -1) {
 	fprintf(dict_fp,"%d %s %s\n",i,cur_molecules->string,cmpt_string);
-	fprintf(conc_fp," %s:%s",cur_molecules->string,cmpt_string);
+	fprintf(conc_fp,"\t%s:%s",cur_molecules->string,cmpt_string);
       } else {
 	fprintf(dict_fp,"%d %s\n",i,cur_molecules->string);
-	fprintf(conc_fp," %s",cur_molecules->string);
+	fprintf(conc_fp,"\t%s",cur_molecules->string);
       }
       cur_molecules += 1; /* Caution address arithmetic. */
     }
