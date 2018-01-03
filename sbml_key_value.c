@@ -67,7 +67,7 @@ int sbml_key_value(char *buffer, char *key, char *value, int max_key_len,
   */
   kl = count_nws(line);
   if (kl > eq_pos) {
-    kl = eq_pos - 1;
+    kl = eq_pos;
   }
   if (kl > 0) {
     /*
