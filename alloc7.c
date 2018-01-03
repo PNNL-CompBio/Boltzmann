@@ -44,8 +44,8 @@ int alloc7(struct state_struct *state) {
   double *product_term;
   double *rxn_q;
   double *recip_rxn_q;
-  double *kf_rel;
-  double *kr_rel;
+  double *log_kf_rel;
+  double *log_kr_rel;
   double *ode_forward_lklhds;
   double *ode_reverse_lklhds;
   double *ode_counts;
@@ -159,35 +159,35 @@ int alloc7(struct state_struct *state) {
     }
   }
   /*
-    Allocate space for the kf_rel vector
+    Allocate space for the log_kf_rel vector
   */
   if (success) {
     ask_for = num_rxns * sizeof(double);
     usage += ask_for;
-    kf_rel = (double *)calloc(one_l,ask_for);
-    if (kf_rel == NULL) {
+    log_kf_rel = (double *)calloc(one_l,ask_for);
+    if (log_kf_rel == NULL) {
       fprintf(stderr,"alloc7: Error unable to allocate %lld bytes for "
-	      "kf_rel\n",ask_for);
+	      "log_kf_rel\n",ask_for);
       fflush(stderr);
       success = 0;
     } else {
-      state->kf_rel = kf_rel;
+      state->log_kf_rel = log_kf_rel;
     }
   }
   /*
-    Allocate space for the kr_rel vector
+    Allocate space for the log_kr_rel vector
   */
   if (success) {
     ask_for = num_rxns * sizeof(double);
     usage += ask_for;
-    kr_rel = (double *)calloc(one_l,ask_for);
-    if (kr_rel == NULL) {
+    log_kr_rel = (double *)calloc(one_l,ask_for);
+    if (log_kr_rel == NULL) {
       fprintf(stderr,"alloc7: Error unable to allocate %lld bytes for "
-	      "kr_rel\n",ask_for);
+	      "log_kr_rel\n",ask_for);
       fflush(stderr);
       success = 0;
     } else {
-      state->kr_rel = kr_rel;
+      state->log_kr_rel = log_kr_rel;
     }
   }
   if (success) {
