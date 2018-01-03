@@ -27,7 +27,7 @@ int echo_params (FILE *lfp, struct state_struct *state) {
     Echo the state paramaters for the boltzmann code to determine equilbrium
     concentrations of a set of reactions via Monte Carlo methods.
     
-    Called by: boltzmann_init
+    Called by: echo_inputs
     Calls:     fprintf (intrinsic)
  */
   int success;
