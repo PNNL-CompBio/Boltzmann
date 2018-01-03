@@ -100,6 +100,7 @@ int boltzmann_flatten_alloc1(struct state_struct *state) {
     reactions_matrix->molecules_indices,
     reactions_matrix->compartment_indices,
     reactions_matrix->coefficients,
+    reactions_matrix->recip_coeffs,
     reactions_matrix->solvent_coefficients,
     reactions_matrix->text,
     sorted_molecules,
@@ -145,7 +146,8 @@ int boltzmann_flatten_alloc1(struct state_struct *state) {
   	molecules_matrix
   	molecules_matrix->molecules_ptrs,
   	molecules_matrix->reaction_indices,
-  	molecules_matrix->coefficients
+  	molecules_matrix->coefficients,
+	molecules_matrix->recip_coeffs
     */
     success = alloc4(state,setup);
   }
