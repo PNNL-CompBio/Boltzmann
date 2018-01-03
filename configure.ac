@@ -17,7 +17,7 @@ case "$CC" in
 	CFLAGS="$CFLAGS -DLINUX -DMPI"
 	;;
 	*)
-	SERIAL_EXECS="boltzmann boltzmann_boot_test libboltzmann.a"
+	SERIAL_EXECS="boltzmann boltzmann_boot_test rxn_map libboltzmann.a"
 	MPI_EXECS=
 	TIMING_CONFIG="no_"
 	MMAP_CONFIG="no_"
