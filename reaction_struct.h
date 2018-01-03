@@ -41,6 +41,7 @@ struct reaction_struct {
     partial activations, this is for later use.
   */
   double  activity;
+  double  enzyme_level;
   /*
     Lines added by DGT on April 17, 2013
     ph is the pH
