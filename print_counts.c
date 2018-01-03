@@ -41,20 +41,22 @@ void print_counts(struct state_struct *state, int64_t step) {
 					    counts_out_fp,
 					    concs_out_fp,
 					    concs_or_counts;
+					    sorted_molecules;
                            no fields of state are modified.
 
     step          JSI      eight byte integer step number, -1 for initial step.
                   
     
   */
+  struct molecule_struct *cur_molecule;
   double *current_counts;
   double *count_to_conc;
   double conc;
   
   int unique_molecules;
   int j;
-  int solvent_pos;
   int concs_or_counts;
+  int padi;
 
   FILE *counts_out_fp;
   FILE *concs_out_fp;
@@ -62,7 +64,7 @@ void print_counts(struct state_struct *state, int64_t step) {
   concs_out_fp           = state->concs_out_fp;
   unique_molecules       = state->nunique_molecules;
   current_counts         = state->current_counts;
-  solvent_pos            = (int)state->solvent_pos;
+  cur_molecule           = state->sorted_molecules;
   concs_or_counts        = (int)state->concs_or_counts;
   count_to_conc          = state->count_to_conc;
   if (concs_or_counts & 1) {
@@ -78,7 +80,7 @@ void print_counts(struct state_struct *state, int64_t step) {
 	fprintf(counts_out_fp,"adeq");
 	break;
       default:
-	fprintf(counts_out_fp,"%lld",step);
+	fprintf(counts_out_fp,"%ld",step);
       }
       for (j=0;j<unique_molecules;j++) {
 	if (j != solvent_pos) {
@@ -101,13 +103,14 @@ void print_counts(struct state_struct *state, int64_t step) {
 	fprintf(concs_out_fp,"adeq");
 	break;
       default:
-	fprintf(concs_out_fp,"%lld",step);
+	fprintf(concs_out_fp,"%ld",step);
       }
       for (j=0;j<unique_molecules;j++) {
-	if (j != solvent_pos) {
+	if ((cur_molecule->solvent == 0) || (cur_molecule->variable == 1)) {
 	  conc = current_counts[j] * count_to_conc[j];
 	  fprintf(state->concs_out_fp,"\t%le",conc);
 	}
+	cur_molecule += 1; /* caution address arithmetic.*/
       }
       fprintf(state->concs_out_fp,"\n");
     }
