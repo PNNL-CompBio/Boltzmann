@@ -88,7 +88,7 @@ int sbml_alloc0(struct sbml2bo_struct **state_p) {
     state->rxns_dat_file  = rxns_dat_file;
     state->cmpts_dat_file = cmpts_dat_file;
     state->log_file       = log_file;
-    state->sbml_file      = ms2js_file;
+    state->ms2js_file     = ms2js_file;
     state->num_reactions  = 0;
     state->num_species    = 0;
     state->num_cmpts      = 0;
