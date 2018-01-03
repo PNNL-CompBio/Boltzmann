@@ -21,7 +21,7 @@ CONDITIONS OF ANY KIND, either express or implied. See the License for the
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
 extern int unique_molecules_core(int nzr,
-				 struct istring_elem_struct *sorted_molecules,
+				 struct molecule_struct *sorted_molecules,
 				 char *molecules_text,
 				 int64_t *molecules_map,
 				 int64_t *nunique_molecules,
