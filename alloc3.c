@@ -81,7 +81,7 @@ int alloc3(struct state_struct *state) {
       ((int64_t)sizeof(int64_t));
     state->compartment_ptrs = (int64_t*)calloc(one_l,ask_for);
     if (state->compartment_ptrs == NULL) {
-      fprintf(stderr,"alloc3: Error unable to allocate %ld bytes for "
+      fprintf(stderr,"alloc3: Error unable to allocate %lld bytes for "
 	      "compartment_ptrs field\n",ask_for);
       fflush(stderr);
       success = 0;
@@ -96,7 +96,7 @@ int alloc3(struct state_struct *state) {
     usage += ask_for;
     state->current_counts = (double *)calloc(one_l,ask_for);
     if (state->current_counts == NULL) {
-      fprintf(stderr,"alloc3: Error unable to allocate %ld bytes for "
+      fprintf(stderr,"alloc3: Error unable to allocate %lld bytes for "
 	      "current_counts field\n",ask_for);
       fflush(stderr);
       success = 0;
@@ -110,7 +110,7 @@ int alloc3(struct state_struct *state) {
     usage += ask_for;
     state->bndry_flux_counts = (double *)calloc(one_l,ask_for);
     if (state->bndry_flux_counts == NULL) {
-      fprintf(stderr,"alloc3: Error unable to allocate %ld bytes for "
+      fprintf(stderr,"alloc3: Error unable to allocate %lld bytes for "
 	      "bndry_flux_counts field\n",ask_for);
       fflush(stderr);
       success = 0;
@@ -124,7 +124,7 @@ int alloc3(struct state_struct *state) {
     usage += ask_for;
     state->count_to_conc = (double *)calloc(one_l,ask_for);
     if (state->count_to_conc == NULL) {
-      fprintf(stderr,"alloc3: Error unable to allocate %ld bytes for "
+      fprintf(stderr,"alloc3: Error unable to allocate %lld bytes for "
 	      "count_to_conc field\n",ask_for);
       fflush(stderr);
       success = 0;
@@ -138,7 +138,7 @@ int alloc3(struct state_struct *state) {
     usage += ask_for;
     state->conc_to_count = (double *)calloc(one_l,ask_for);
     if (state->conc_to_count == NULL) {
-      fprintf(stderr,"alloc3: Error unable to allocate %ld bytes for "
+      fprintf(stderr,"alloc3: Error unable to allocate %lld bytes for "
 	      "conc_to_count field\n",ask_for);
       fflush(stderr);
       success = 0;
@@ -153,7 +153,7 @@ int alloc3(struct state_struct *state) {
     usage += ask_for;
     state->dg0s = (double *)calloc(one_l,ask_for);
     if (state->dg0s == NULL) {
-      fprintf(stderr,"alloc3: Error unable to allocate %ld bytes for "
+      fprintf(stderr,"alloc3: Error unable to allocate %lld bytes for "
 	      "state->dg0s field.\n",ask_for);
       fflush(stderr);
       success = 0;
@@ -167,7 +167,7 @@ int alloc3(struct state_struct *state) {
     usage += ask_for;
     state->ke = (double *)calloc(one_l,ask_for);
     if (state->ke == NULL) {
-      fprintf(stderr,"alloc3: Error unable to allocate %ld bytes for "
+      fprintf(stderr,"alloc3: Error unable to allocate %lld bytes for "
 	      "state->ke field.\n",ask_for);
       fflush(stderr);
       success = 0;
@@ -187,7 +187,7 @@ int alloc3(struct state_struct *state) {
     usage += ask_for;
     state->kss = (double *)calloc(one_l,ask_for);
     if (state->kss == NULL) {
-      fprintf(stderr,"alloc3: Error unable to allocate %ld bytes for "
+      fprintf(stderr,"alloc3: Error unable to allocate %lld bytes for "
 	      "state->kss field.\n",ask_for);
       fflush(stderr);
       success = 0;
@@ -203,7 +203,7 @@ int alloc3(struct state_struct *state) {
     usage += ask_for;
     state->kss_e_val = (double *)calloc(one_l,ask_for);
     if (state->kss_e_val == NULL) {
-      fprintf(stderr,"alloc3: Error unable to allocate %ld bytes for "
+      fprintf(stderr,"alloc3: Error unable to allocate %lld bytes for "
 	      "state->kss_e_val field.\n",ask_for);
       fflush(stderr);
       success = 0;
@@ -217,7 +217,7 @@ int alloc3(struct state_struct *state) {
     usage += ask_for;
     state->kss_u_val = (double *)calloc(one_l,ask_for);
     if (state->kss_u_val == NULL) {
-      fprintf(stderr,"alloc3: Error unable to allocate %ld bytes for "
+      fprintf(stderr,"alloc3: Error unable to allocate %lld bytes for "
 	      "state->kss_u_val field.\n",ask_for);
       fflush(stderr);
       success = 0;
@@ -231,7 +231,7 @@ int alloc3(struct state_struct *state) {
     usage += ask_for;
     state->molecule_dg0tfs = (double *)calloc(one_l,ask_for);
     if (state->molecule_dg0tfs == NULL) {
-      fprintf(stderr,"alloc3: Error unable to allocate %ld bytes for "
+      fprintf(stderr,"alloc3: Error unable to allocate %lld bytes for "
 	      "state->molecule_dg0tfs field.\n",ask_for);
       fflush(stderr);
       success = 0;
@@ -245,7 +245,7 @@ int alloc3(struct state_struct *state) {
     usage += ask_for;
     state->molecule_probabilities = (double *)calloc(one_l,ask_for);
     if (state->molecule_probabilities == NULL) {
-      fprintf(stderr,"alloc3: Error unable to allocate %ld bytes for "
+      fprintf(stderr,"alloc3: Error unable to allocate %lld bytes for "
 	      "state->molecule_probabilities field.\n",ask_for);
       fflush(stderr);
       success = 0;
@@ -259,7 +259,7 @@ int alloc3(struct state_struct *state) {
     usage += ask_for;
     state->molecule_chemical_potentials = (double *)calloc(one_l,ask_for);
     if (state->molecule_chemical_potentials == NULL) {
-      fprintf(stderr,"alloc3: Error unable to allocate %ld bytes for "
+      fprintf(stderr,"alloc3: Error unable to allocate %lld bytes for "
 	      "state->molecule_chemical_potentials field.\n",ask_for);
       fflush(stderr);
       success = 0;
