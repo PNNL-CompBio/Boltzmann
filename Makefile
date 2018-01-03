@@ -66,7 +66,8 @@ AUTOMAKE = ${SHELL} /home/dbaxter/boltzmann/trunk/missing --run automake-1.11
 AWK = gawk
 CC = gcc
 CCDEPMODE = depmode=none
-CFLAGS = ${OPT_FLAGS} ${DBG_FLAGS}
+#CFLAGS = ${OPT_FLAGS} ${DBG_FLAGS}
+CFLAGS = ${DBG_FLAGS}
 CPP = gcc -E
 CPPFLAGS = 
 CYGPATH_W = echo
@@ -155,7 +156,7 @@ FLIBS = @FLIBS@
 EXECS =  boltzmann boltzmann_boot_test sbml2bo rxn_map libboltzmann.a
 FFLAGS = @FFLAGS@
 ASFLAGS = @ASFLAGS@
-DBG_FLAGS = 
+DBG_FLAGS = -O0 -g
 OPT_FLAGS = -O2 -g -DLINUX
 NO_OPT_FLAGS = -O2 -g -DLINUX
 BLFLAGS =  
@@ -194,10 +195,30 @@ SERIAL_OBJS2 = boltzmann_run.o update_rxn_log_likelihoods.o choose_rxn.o bndry_f
 #SERIAL_OBJS3 = 
 SERIAL_OBJS3 = rxn_map_init.o rxn_map_parse_start_stop_line.o rxn_map_run.o alloc4.o form_molecules_matrix.o
 SERIAL_OBJS4 = boltzmann_global_to_local_counts.o boltzmann_global_to_local_fluxes.o boltzmann_local_to_global_counts.o boltzmann_local_to_global_fluxes.o size_file.o boltzmann_load.o boltzmann_number_of_reaction_files.o boltzmann_global_molecule_count.o boltzmann_length_state_i.o boltzmann_max_local_state_size.o boltzmann_size_superstate.o
-SBML_OBJS = sbml_to_boltzmann.o size_ms2js_file.o sbml_alloc0.o sbml_alloc2.o sbml_set_file_names.o sbml_alloc2.o read_ms2js.o sbml_count_cmpts.o sbml_alloc1.o parse_sbml.o sbml_find_section.o sbml_process_list_of_compartments.o count_ws.o count_nws.o sbml_key_value.o sbml_lookup_compartment_attribute.o sbml_process_list_of_reactions.o sbml_look_for_in_reaction_tag.o sbml_lookup_reaction_attribute.o sbml_lookup_speciesref_attribute.o sbml_process_list_of_species.o sbml_lookup_species_attribute.o sort_compartments.o merge_compartments.o sbml_volume_units_conversion.o compartment_lookup.o sbml_count_cmpts.o translate_ms_2_js.o count_ntb.o count_nor.o check_for_ws.o
+SBML_OBJS = sbml_to_boltzmann.o size_ms2js_file.o size_kg2js_file.o \
+	sbml_alloc0.o sbml_set_file_names.o sbml_alloc2.o read_ms2js.o \
+	read_kg2js.o sort_json_ids.o merge_sorted_strings.o \
+	sbml_count_cmpts.o sbml_count_species.o sbml_alloc1.o \
+	parse_sbml.o sbml_find_section.o \
+	sbml_process_list_of_compartments.o count_ws.o count_nws.o \
+	sbml_read_key_value.o sbml_lookup_compartment_attribute.o \
+	sbml_volume_units_conversion.o sort_compartments.o \
+	merge_compartments.o sbml_process_list_of_species.o \
+	sbml_start_species_def.o sbml_parse_species_key_value.o \
+	sbml_lookup_species_attribute.o sbml_process_substanceunits.o \
+	sbml_generate_init_conc_line.o boltzmannize_string.o \
+	sbml_find_string.o sbml_sort_species_trans.o \
+	sbml_merge_species_trans.o sbml_process_list_of_reactions.o \
+	sbml_look_for_in_reaction_tag.o sbml_process_reaction_tag.o \
+	sbml_lookup_reaction_attribute.o \
+	sbml_process_list_of_reactants_tag.o \
+	sbml_process_list_of_products_tag.o \
+	sbml_process_species_reference_tag.o \
+	sbml_lookup_speciesref_attribute.o compartment_lookup.o \
+	count_ntb.o
 KFP_OBJS = keg_from_pseudoisomer.o count_ws.o count_nlb.o check_for_ws.o boltzmannize_json_id.o
 KFM_OBJS = keg_from_modelseed.o count_ws.o count_ntb.o count_nor.o check_for_ws.o boltzmannize_json_id.o
-KPM_OBJS = modelseed_2_json.o count_ws.o count_ntb.o count_nws.o
+KPM_OBJS = modelseed_2_json.o count_ws.o count_ntb.o count_nws.o 
 all: all-am
 
 .SUFFIXES:
@@ -545,7 +566,7 @@ count_nor.o: count_nor.c count_nor.h $(SERIAL_INCS)
 check_for_ws.o: check_for_ws.c check_for_ws.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c check_for_ws.c
 
-libboltzmann.a: $(SERIAL_OBJS1) $(SERIAL_OBJS1_5) $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SERIAL_OBJS4) ${SBML_OBJS}
+libboltzmann.a: $(SERIAL_OBJS1) $(SERIAL_OBJS1_5) $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SERIAL_OBJS4) ${SBML_OBJS} $(KFM_OBJS) $(KFP_OBJS) $(KPM_OBJS)
 	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_boot.o
 	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_mmap_superstate.o
 	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_boot_check.o
@@ -658,25 +679,41 @@ libboltzmann.a: $(SERIAL_OBJS1) $(SERIAL_OBJS1_5) $(SERIAL_OBJS2) $(SERIAL_OBJS3
 	$(AR) $(ARFLAGS) libboltzmann.a rxn_map_run.o
 	$(AR) $(ARFLAGS) libboltzmann.a sbml_to_boltzmann.o 
 	$(AR) $(ARFLAGS) libboltzmann.a size_ms2js_file.o
+	$(AR) $(ARFLAGS) libboltzmann.a size_kg2js_file.o
 	$(AR) $(ARFLAGS) libboltzmann.a sbml_alloc0.o 
 	$(AR) $(ARFLAGS) libboltzmann.a sbml_alloc2.o 
 	$(AR) $(ARFLAGS) libboltzmann.a read_ms2js.o
+	$(AR) $(ARFLAGS) libboltzmann.a read_kg2js.o
+	$(AR) $(ARFLAGS) libboltzmann.a sort_json_ids.o
+	$(AR) $(ARFLAGS) libboltzmann.a merge_sorted_strings.o
 	$(AR) $(ARFLAGS) libboltzmann.a sbml_set_file_names.o 
 	$(AR) $(ARFLAGS) libboltzmann.a sbml_count_cmpts.o 
+	$(AR) $(ARFLAGS) libboltzmann.a sbml_count_species.o 
 	$(AR) $(ARFLAGS) libboltzmann.a sbml_alloc1.o 
 	$(AR) $(ARFLAGS) libboltzmann.a parse_sbml.o 
 	$(AR) $(ARFLAGS) libboltzmann.a sbml_find_section.o
 	$(AR) $(ARFLAGS) libboltzmann.a sbml_process_list_of_compartments.o 
-	$(AR) $(ARFLAGS) libboltzmann.a sbml_key_value.o 
+	$(AR) $(ARFLAGS) libboltzmann.a sbml_read_key_value.o 
 	$(AR) $(ARFLAGS) libboltzmann.a sbml_lookup_compartment_attribute.o 
 	$(AR) $(ARFLAGS) libboltzmann.a sbml_volume_units_conversion.o 
+	$(AR) $(ARFLAGS) libboltzmann.a sbml_process_list_of_species.o 
+	$(AR) $(ARFLAGS) libboltzmann.a sbml_start_species_def.o 
+	$(AR) $(ARFLAGS) libboltzmann.a sbml_parse_species_key_value.o 
+	$(AR) $(ARFLAGS) libboltzmann.a sbml_lookup_species_attribute.o
+	$(AR) $(ARFLAGS) libboltzmann.a sbml_process_substanceunits.o
+	$(AR) $(ARFLAGS) libboltzmann.a sbml_generate_init_conc_line.o
+	$(AR) $(ARFLAGS) libboltzmann.a boltzmannize_string.o
+	$(AR) $(ARFLAGS) libboltzmann.a sbml_find_string.o
+	$(AR) $(ARFLAGS) libboltzmann.a sbml_sort_species_trans.o
+	$(AR) $(ARFLAGS) libboltzmann.a sbml_merge_species_trans.o
 	$(AR) $(ARFLAGS) libboltzmann.a sbml_process_list_of_reactions.o 
 	$(AR) $(ARFLAGS) libboltzmann.a sbml_look_for_in_reaction_tag.o 
+	$(AR) $(ARFLAGS) libboltzmann.a sbml_process_reaction_tag.o 
 	$(AR) $(ARFLAGS) libboltzmann.a sbml_lookup_reaction_attribute.o 
+	$(AR) $(ARFLAGS) libboltzmann.a sbml_process_list_of_reactants_tag.o
+	$(AR) $(ARFLAGS) libboltzmann.a sbml_process_list_of_products_tag.o
+	$(AR) $(ARFLAGS) libboltzmann.a sbml_process_species_reference_tag.o
 	$(AR) $(ARFLAGS) libboltzmann.a sbml_lookup_speciesref_attribute.o 
-	$(AR) $(ARFLAGS) libboltzmann.a sbml_process_list_of_species.o 
-	$(AR) $(ARFLAGS) libboltzmann.a sbml_lookup_species_attribute.o
-	$(AR) $(ARFLAGS) libboltzmann.a translate_ms_2_js.o
 
 boltzmann_boot_test: boltzmann_boot_test.o libboltzmann.a
 	$(CLINKER) $(LFLAGS) -o boltzmann_boot_test boltzmann_boot_test.o $(TIMING_LIB) $(LIBS)
@@ -1014,14 +1051,17 @@ boltzmann_size_superstate.o: boltzmann_size_superstate.c boltzmann_size_supersta
 sbml2bo: sbml2bo.o libboltzmann.a
 	$(CLINKER) $(LFLAGS) -o sbml2bo sbml2bo.o $(TIMING_LIB) $(LIBS)
 
-sbml2bo.o: sbml2bo.c size_ms2js_file.h sbml_alloc0.h sbml_alloc2.h read_ms2js.h sbml_set_file_names.h sbml_count_cmpts.h sbml_alloc1.h parse_sbml.h $(SERIAL_INCS)
+sbml2bo.o: sbml2bo.c alloc0.h size_ms2js_file.h size_kg2js_file.h sbml_alloc0.h sbml_alloc2.h read_ms2js.h read_kg2js.h sort_json_ids.h sbml_set_file_names.h sbml_count_cmpts.h sbml_count_species.h sbml_alloc1.h parse_sbml.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c sbml2bo.c
 
-sbml_to_boltzmann.o: sbml_to_boltzmann.c sbml_to_boltzmann.h size_ms2js_file.h sbml_alloc0.h sbml_alloc2.h read_ms2js.h sbml_set_file_names.h sbml_count_cmpts.h sbml_alloc1.h parse_sbml.h $(SERIAL_INCS)
+sbml_to_boltzmann.o: sbml_to_boltzmann.c sbml_to_boltzmann.h size_ms2js_file.h size_kg2js_file.h sbml_alloc0.h sbml_alloc2.h read_ms2js.h read_kg2js.h sort_json_ids.h sbml_set_file_names.h sbml_count_cmpts.h sbml_count_species.h sbml_alloc1.h parse_sbml.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c sbml_to_boltzmann.c
 
 size_ms2js_file.o: size_ms2js_file.c size_ms2js_file.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c size_ms2js_file.c
+
+size_kg2js_file.o: size_kg2js_file.c size_kg2js_file.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c size_kg2js_file.c
 
 sbml_alloc0.o: sbml_alloc0.c sbml_alloc0.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c sbml_alloc0.c
@@ -1029,8 +1069,17 @@ sbml_alloc0.o: sbml_alloc0.c sbml_alloc0.h $(SERIAL_INCS)
 sbml_alloc2.o: sbml_alloc2.c sbml_alloc2.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c sbml_alloc2.c
 
-read_ms2js.o: read_ms2js.c read_ms2js.h $(SERIAL_INCS)
+read_ms2js.o: read_ms2js.c read_ms2js.h count_ntb.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c read_ms2js.c
+
+read_kg2js.o: read_kg2js.c read_kg2js.h count_ntb.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c read_kg2js.c
+
+sort_json_ids.o: sort_json_ids.c sort_json_ids.h merge_sorted_strings.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c sort_json_ids.c
+
+merge_sorted_strings.o: merge_sorted_strings.c merge_sorted_strings.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c merge_sorted_strings.c
 
 sbml_set_file_names.o: sbml_set_file_names.c sbml_set_file_names.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c sbml_set_file_names.c 
@@ -1038,20 +1087,23 @@ sbml_set_file_names.o: sbml_set_file_names.c sbml_set_file_names.h $(SERIAL_INCS
 sbml_count_cmpts.o: sbml_count_cmpts.c sbml_count_cmpts.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c sbml_count_cmpts.c 
 
+sbml_count_species.o: sbml_count_species.c sbml_count_species.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c sbml_count_species.c 
+
 sbml_alloc1.o: sbml_alloc1.c sbml_alloc1.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c sbml_alloc1.c
 
-parse_sbml.o: parse_sbml.c parse_sbml.h sbml_find_section.h sbml_process_list_of_compartments.h sbml_process_list_of_species.h sbml_process_list_of_reactions.h $(SERIAL_INCS)
+parse_sbml.o: parse_sbml.c parse_sbml.h sbml_find_section.h sbml_process_list_of_compartments.h sbml_process_list_of_species.h sbml_sort_species_trans.h sbml_process_list_of_reactions.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c parse_sbml.c 
 
 sbml_find_section.o: sbml_find_section.c sbml_find_section.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c sbml_find_section.c
 
-sbml_process_list_of_compartments.o: sbml_process_list_of_compartments.c sbml_process_list_of_compartments.h count_ws.h count_nws.h sbml_key_value.h sbml_lookup_compartment_attribute.h sort_compartments.h sbml_volume_units_conversion.h $(SERIAL_INCS)
+sbml_process_list_of_compartments.o: sbml_process_list_of_compartments.c sbml_process_list_of_compartments.h count_ws.h count_nws.h sbml_read_key_value.h sbml_lookup_compartment_attribute.h sort_compartments.h sbml_volume_units_conversion.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c sbml_process_list_of_compartments.c
 
-sbml_key_value.o: sbml_key_value.c sbml_key_value.h $(SERIAL_INCS)
-	$(CC) $(DCFLAGS) $(TFLAGS) -c sbml_key_value.c
+sbml_read_key_value.o: sbml_read_key_value.c sbml_read_key_value.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c sbml_read_key_value.c
 
 sbml_lookup_compartment_attribute.o: sbml_lookup_compartment_attribute.c sbml_lookup_compartment_attribute.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c sbml_lookup_compartment_attribute.c
@@ -1059,26 +1111,59 @@ sbml_lookup_compartment_attribute.o: sbml_lookup_compartment_attribute.c sbml_lo
 sbml_volume_units_conversion.o: sbml_volume_units_conversion.c sbml_volume_units_conversion.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c sbml_volume_units_conversion.c
 
-sbml_process_list_of_reactions.o: sbml_process_list_of_reactions.c sbml_process_list_of_reactions.h count_ws.h count_nws.h sbml_look_for_in_reaction_tag.h sbml_key_value.h sbml_lookup_reaction_attribute.h sbml_lookup_speciesref_attribute.h translate_ms_2_js.h $(SERIAL_INCS)
+sbml_process_list_of_species.o: sbml_process_list_of_species.c sbml_process_list_of_species.h count_ws.h count_nws.h sbml_start_species_def.h sbml_parse_species_key_value.h sbml_generate_init_conc_line.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c sbml_process_list_of_species.c
+
+sbml_start_species_def.o: sbml_start_species_def.c sbml_start_species_def.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c sbml_start_species_def.c
+
+sbml_parse_species_key_value.o: sbml_parse_species_key_value.c sbml_parse_species_key_value.h sbml_read_key_value.h  sbml_lookup_species_attribute.h compartment_lookup.h sbml_process_substanceunits.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c sbml_parse_species_key_value.c
+
+sbml_lookup_species_attribute.o: sbml_lookup_species_attribute.c sbml_lookup_species_attribute.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c sbml_lookup_species_attribute.c
+
+sbml_process_substanceunits.o: sbml_process_substanceunits.c sbml_process_substanceunits.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c sbml_process_substanceunits.c
+
+sbml_generate_init_conc_line.o: sbml_generate_init_conc_line.c sbml_generate_init_conc_line.h boltzmannize_string.h sbml_find_string.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c sbml_generate_init_conc_line.c
+
+boltzmannize_string.o: boltzmannize_string.c boltzmannize_string.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmannize_string.c
+
+sbml_find_string.o: sbml_find_string.c sbml_find_string.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c sbml_find_string.c
+
+sbml_sort_species_trans.o: sbml_sort_species_trans.c sbml_sort_species_trans.h sbml_merge_species_trans.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c sbml_sort_species_trans.c
+
+sbml_merge_species_trans.o: sbml_merge_species_trans.c sbml_merge_species_trans.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c sbml_merge_species_trans.c
+
+sbml_process_list_of_reactions.o: sbml_process_list_of_reactions.c sbml_process_list_of_reactions.h count_ws.h count_nws.h sbml_look_for_in_reaction_tag.h sbml_process_reaction_tag.h sbml_process_list_of_reactants_tag.h sbml_process_list_of_products_tag.h sbml_process_species_reference_tag.h sbml_lookup_speciesref_attribute.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c sbml_process_list_of_reactions.c
 
 sbml_look_for_in_reaction_tag.o: sbml_look_for_in_reaction_tag.c sbml_look_for_in_reaction_tag.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c sbml_look_for_in_reaction_tag.c
 
+sbml_process_reaction_tag.o: sbml_process_reaction_tag.c sbml_process_reaction_tag.h sbml_lookup_reaction_attribute.h sbml_read_key_value.h count_ws.h count_nws.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c sbml_process_reaction_tag.c
+
 sbml_lookup_reaction_attribute.o: sbml_lookup_reaction_attribute.c sbml_lookup_reaction_attribute.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c sbml_lookup_reaction_attribute.c
 
+sbml_process_list_of_reactants_tag.o: sbml_process_list_of_reactants_tag.c sbml_process_list_of_reactants_tag.h count_ws.h count_nws.h sbml_read_key_value.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c sbml_process_list_of_reactants_tag.c
+
+sbml_process_list_of_products_tag.o: sbml_process_list_of_products_tag.c sbml_process_list_of_products_tag.h count_ws.h count_nws.h sbml_read_key_value.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c sbml_process_list_of_products_tag.c
+
+sbml_process_species_reference_tag.o: sbml_process_species_reference_tag.c sbml_process_species_reference_tag.h count_ws.h count_nws.h sbml_read_key_value.h sbml_lookup_speciesref_attribute.h sbml_find_string.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c sbml_process_species_reference_tag.c
+
 sbml_lookup_speciesref_attribute.o: sbml_lookup_speciesref_attribute.c sbml_lookup_speciesref_attribute.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c sbml_lookup_speciesref_attribute.c
-
-sbml_process_list_of_species.o: sbml_process_list_of_species.c sbml_process_list_of_species.h count_ws.h count_nws.h sbml_key_value.h sbml_lookup_species_attribute.h compartment_lookup.h translate_ms_2_js.h $(SERIAL_INCS)
-	$(CC) $(DCFLAGS) $(TFLAGS) -c sbml_process_list_of_species.c
-
-sbml_lookup_species_attribute.o: sbml_lookup_species_attribute.c sbml_lookup_species_attribute.h $(SERIAL_INCS)
-	$(CC) $(DCFLAGS) $(TFLAGS) -c sbml_lookup_species_attribute.c
-
-translate_ms_2_js.o: translate_ms_2_js.c translate_ms_2_js.h $(SERIAL_INCS)
-	$(CC) $(DCFLAGS) $(TFLAGS) -c translate_ms_2_js.c
 
 clean:
 	-/bin/rm -f *.o *.a *~ $(EXECS)
