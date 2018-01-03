@@ -23,13 +23,17 @@ specific language governing permissions and limitations under the License.
 
 #include "boltzmann_structs.h"
 
+#include "count_ws.h"
+#include "count_nws.h"
+#include "compartment_lookup.h"
 #include "read_compartment_sizes.h"
 
 int read_compartment_sizes(struct state_struct *state) {
   /*
     Read in the sizes of compartments.
     Called by: species_init
-    Calls:     fopen, fprintf, fflush, fgets, fclose
+    Calls:     compartment_lookup, count_ws, count_nws, 
+               fopen, fprintf, fflush, fgets, fclose
   */
   struct compartment_struct *compartments;
   struct compartment_struct *compartment;
@@ -69,7 +73,7 @@ int read_compartment_sizes(struct state_struct *state) {
   }
   cmpt_fp = fopen(compartment_file,"r");
   if (cmpt_fp == NULL) {
-    fprintf(error_fp,"read_compartment_sizes: Error, unable to open file %d\n",
+   fprintf(error_fp,"read_compartment_sizes: Error, unable to open file %s\n",
 	    compartment_file);
     fflush(error_fp);
     success = 0;
