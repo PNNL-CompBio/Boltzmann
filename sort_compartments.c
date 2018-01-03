@@ -30,7 +30,7 @@ int sort_compartments(struct compartment_struct *unsorted_compartments,
 		      int n) {
   /*
     Sort the uppercase compartment names.
-    Called by: boltzmann_init, boltzmann_boot, rxn_map_init
+    Called by: rxns_init, rxn_map_init
     Calls    : merge_compartments, memmove
 
     for now we use a simple merge sort, with strcmp as the
