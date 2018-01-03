@@ -40,8 +40,11 @@ int deq_run(struct state_struct *state) {
   /*
     Run the boltzmann simulations, to be called after
     boltzmann_init has been called.
+    Alters the current_counts field of state with an
+    estimate of the steady state concentrations.
+  
 
-    Called by: deq
+    Called by: deq, boltzmann_run
     Calls:     flatten_state,
                alloc4,
 	       form_molelcules_matrix,
@@ -243,6 +246,8 @@ int deq_run(struct state_struct *state) {
     success = ode23tb(state,counts,htry,nonnegative);
   }
   j = 1;
+  /*
   print_counts(state,j);
+  */
   return(success);
 }
