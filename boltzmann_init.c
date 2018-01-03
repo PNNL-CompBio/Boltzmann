@@ -339,7 +339,7 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
       if (bndry_flux_fp) {
 	cur_molecules = state->sorted_molecules;
 	cur_cmpts     = state->sorted_cmpts;
-	fprintf(bndry_flux_fp,"iter");
+	fprintf(bndry_flux_fp,"       iter       ");
 	cmpt_string = NULL;
 	oi          = -1;
 	for (i=0;i<nu_molecules;i++) {
