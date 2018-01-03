@@ -171,8 +171,29 @@ SERIAL_OBJS4 = rxn_map_init.o rxn_map_parse_start_stop_line.o rxn_map_run.o allo
 SERIAL_OBJS5 = boltzmann_boot.o boot_init.o boot_alloc0.o boot_alloc1.o boot_io_init.o size_rxns_list.o boot_alloc2.o parse_rxn_list_line.o save_and_count_local_state.o boot_alloc3.o catenate_compartments_and_molecules.o global_merge_and_map_compartments.o sort_global_compartments.o global_merge_molecules.o sort_global_molecules.o boot_alloc4.o condense_strings.o fill_meta_data.o write_super_state.o copy_local_states.o boltzmann_mmap_superstate.o boltzmann_boot_check.o flatten_super_state.o boltzmann_rep_state_i.o
 SERIAL_OBJS6 = boltzmann_global_to_local_counts.o boltzmann_global_to_local_fluxes.o boltzmann_local_to_global_counts.o boltzmann_local_to_global_fluxes.o size_file.o boltzmann_load.o boltzmann_number_of_reaction_files.o boltzmann_global_molecule_count.o boltzmann_length_state_i.o boltzmann_max_local_state_size.o boltzmann_size_superstate.o
 
-#SERIAL_OBJS7 = deq_run.o alloc7.o fill_flux_pieces.o ode_solver.o ode23tb.o init_base_reactants.o init_relative_rates.o ode_num_jac.o num_jac_col.o blas.o ode_it_solve.o compute_flux_scaling.o approximate_delta_concs.o vec_abs.o vec_div.o vec_max.o vec_mul.o ce_approximate_delta_concs.o update_rxn_likelihoods.o print_concs_dconcs.o ode_print_concs_header.o ode_print_concs.o ode_print_dconcs.o ode_print_dconcs_header.o
-SERIAL_OBJS7 = deq_run.o alloc7.o ode_solver.o ode23tb.o init_base_reactants.o init_relative_rates.o ode_num_jac.o num_jac_col.o blas.o ode_it_solve.o compute_flux_scaling.o approximate_delta_concs.o compute_net_likelihoods.o compute_net_lklhd_bndry_flux.o print_net_likelihood_header.o print_net_likelihoods.o print_net_lklhd_bndry_flux_header.o print_net_lklhd_bndry_flux.o vec_abs.o vec_div.o vec_max.o vec_mul.o lr_approximate_delta_concs.o lr1_approximate_delta_concs.o lr2_approximate_delta_concs.o lr3_approximate_delta_concs.o lr4_approximate_delta_concs.o lr5_approximate_delta_concs.o lr6_approximate_delta_concs.o lr7_approximate_delta_concs.o ce_approximate_delta_concs.o update_rxn_likelihoods.o print_concs_dconcs.o lsame.o dtrsm.o dlaswp.o dgetrf2.o dgetrf.o dgetrs.o dgemm.o ode_print_concs_header.o ode_print_concs.o ode_print_dconcs_header.o ode_print_dconcs.o ode_print_lklhd_header.o ode_print_lklhds.o ode_print_bflux_header.o
+#SERIAL_OBJS7 = deq_run.o alloc7.o fill_flux_pieces.o ode_solver.o ode23tb.o init_base_reactants.o init_relative_rates.o ode_num_jac.o num_jac_col.o blas.o ode_it_solve.o compute_flux_scaling.o approximate_delta_concs.o vec_abs.o vec_div.o vec_max.o vec_mul.o ce_approximate_delta_concs.o update_rxn_likelihoods.o print_concs_dconcs.o ode_print_concs_header.o ode_print_concs.o ode_print_dconcs.o ode_print_dconcs_header.o 
+SERIAL_OBJS7 = deq_run.o alloc7.o ode_solver.o ode23tb.o \
+	init_base_reactants.o init_relative_rates.o ode_num_jac.o \
+	num_jac_col.o blas.o ode_it_solve.o compute_flux_scaling.o \
+	approximate_delta_concs.o compute_net_likelihoods.o \
+	compute_net_lklhd_bndry_flux.o print_net_likelihood_header.o \
+	print_net_likelihoods.o print_net_lklhd_bndry_flux_header.o \
+	print_net_lklhd_bndry_flux.o vec_abs.o vec_div.o vec_max.o \
+	vec_mul.o lr_approximate_delta_concs.o \
+	lr1_approximate_delta_concs.o lr2_approximate_delta_concs.o \
+	lr3_approximate_delta_concs.o lr4_approximate_delta_concs.o \
+	lr5_approximate_delta_concs.o lr6_approximate_delta_concs.o \
+	lr7_approximate_delta_concs.o ce_approximate_delta_concs.o \
+	update_rxn_likelihoods.o print_concs_dconcs.o lsame.o dtrsm.o \
+	dlaswp.o dgetrf2.o dgetrf.o dgetrs.o dgemm.o \
+	ode_print_concs_header.o ode_print_concs.o \
+	ode_print_dconcs_header.o ode_print_dconcs.o \
+	ode_print_lklhd_header.o ode_print_lklhds.o \
+	ode_print_bflux_header.o ode23tb_normyp_o_wt.o \
+	ode23tb_limit_h.o ode23tb_init_wt.o ode23tb_update_wt.o \
+	vec_set_constant.o ode23tb_build_factor_miter.o \
+	ode23tb_max_abs_ratio.o ode23tb_nonneg_err.o \
+	ode23tb_enforce_nonneg.o
 SERIAL_OBJS8 = flatten_state.o free_boot_state2.o free_boot_state.o
 SBML_OBJS = sbml_to_boltzmann.o size_ms2js_file.o size_kg2js_file.o \
 	sbml_alloc0.o sbml_set_file_names.o sbml_alloc2.o read_ms2js.o \
@@ -760,6 +781,15 @@ libboltzmann.a: $(SERIAL_OBJS1)  $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SERIAL_OBJS4)
 	$(AR) $(ARFLAGS) libboltzmann.a ode_print_bflux_header.o
 	$(AR) $(ARFLAGS) libboltzmann.a ode_solver.o
 	$(AR) $(ARFLAGS) libboltzmann.a ode23tb.o
+	$(AR) $(ARFLAGS) libboltzmann.a ode23tb_normyp_o_wt.o
+	$(AR) $(ARFLAGS) libboltzmann.a ode23tb_limit_h.o
+	$(AR) $(ARFLAGS) libboltzmann.a ode23tb_init_wt.o
+	$(AR) $(ARFLAGS) libboltzmann.a ode23tb_update_wt.o
+	$(AR) $(ARFLAGS) libboltzmann.a vec_set_constant.o
+	$(AR) $(ARFLAGS) libboltzmann.a ode23tb_build_factor_miter.o
+	$(AR) $(ARFLAGS) libboltzmann.a ode23tb_max_abs_ratio.o
+	$(AR) $(ARFLAGS) libboltzmann.a ode23tb_nonneg_err.o
+	$(AR) $(ARFLAGS) libboltzmann.a ode23tb_enforce_nonneg.o
 	$(AR) $(ARFLAGS) libboltzmann.a ode_print_concs.o
 	$(AR) $(ARFLAGS) libboltzmann.a ode_print_dconcs.o
 	$(AR) $(ARFLAGS) libboltzmann.a ode_print_lklhds.o
@@ -1370,8 +1400,35 @@ ode_print_lklhd_header.o: ode_print_lklhd_header.c ode_print_lklhd_header.h $(SE
 ode_solver.o: ode_solver.c ode_solver.h ode23tb.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c ode_solver.c
 
-ode23tb.o: ode23tb.c ode23tb.h $(SERIAL_INCS) compute_flux_scaling.h approximate_delta_concs.h ode_num_jac.h ode_it_solve.h print_concs_fluxes.h blas.h ode_print_concs.h compute_net_likelihoods.h compute_net_lklhd_bndry_flux.h print_net_likelihood_header.h print_net_lklhd_bndry_flux_header.h print_net_likelihoods.h print_net_lklhd_bndry_flux.h
+ode23tb.o: ode23tb.c ode23tb.h $(SERIAL_INCS) compute_flux_scaling.h approximate_delta_concs.h ode_num_jac.h ode_it_solve.h print_concs_fluxes.h blas.h ode_print_concs.h compute_net_likelihoods.h compute_net_lklhd_bndry_flux.h print_net_likelihood_header.h print_net_lklhd_bndry_flux_header.h print_net_likelihoods.h print_net_lklhd_bndry_flux.h ode23tb_normyp_o_wt.h ode23tb_limit_h.h ode23tb_init_wt.h ode23tb_update_wt.h vec_set_constant.h ode23tb_build_factor_miter.h ode23tb_max_abs_ratio.h ode23tb_nonneg_err.h ode23tb_enforce_nonneg.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c ode23tb.c 
+
+ode23tb_normyp_o_wt.o: ode23tb_normyp_o_wt.c ode23tb_normyp_o_wt.h ${SERIAL_INCS}
+	$(CC) $(DCFLAGS) $(TFLAGS) -c ode23tb_normyp_o_wt.c
+
+ode23tb_limit_h.o: ode23tb_limit_h.c ode23tb_limit_h.h ${SERIAL_INCS}
+	$(CC) $(DCFLAGS) $(TFLAGS) -c ode23tb_limit_h.c
+
+ode23tb_init_wt.o: ode23tb_init_wt.c ode23tb_init_wt.h vec_set_constant.h ${SERIAL_INCS}
+	$(CC) $(DCFLAGS) $(TFLAGS) -c ode23tb_init_wt.c
+
+ode23tb_update_wt.o: ode23tb_update_wt.c ode23tb_update_wt.h vec_set_constant.h ${SERIAL_INCS}
+	$(CC) $(DCFLAGS) $(TFLAGS) -c ode23tb_update_wt.c
+
+vec_set_constant.o: vec_set_constant.c vec_set_constant.h ${SERIAL_INCS}
+	$(CC) $(DCFLAGS) $(TFLAGS) -c vec_set_constant.c
+
+ode23tb_build_factor_miter.o: ode23tb_build_factor_miter.c ode23tb_build_factor_miter.h ${SERIAL_INCS}
+	$(CC) $(DCFLAGS) $(TFLAGS) -c ode23tb_build_factor_miter.c
+
+ode23tb_max_abs_ratio.o: ode23tb_max_abs_ratio.c ode23tb_max_abs_ratio.h ${SERIAL_INCS}
+	$(CC) $(DCFLAGS) $(TFLAGS) -c ode23tb_max_abs_ratio.c
+
+ode23tb_nonneg_err.o: ode23tb_nonneg_err.c ode23tb_nonneg_err.h ${SERIAL_INCS}
+	$(CC) $(DCFLAGS) $(TFLAGS) -c ode23tb_nonneg_err.c
+
+ode23tb_enforce_nonneg.o: ode23tb_enforce_nonneg.c ode23tb_enforce_nonneg.h ${SERIAL_INCS}
+	$(CC) $(DCFLAGS) $(TFLAGS) -c ode23tb_enforce_nonneg.c
 
 ode_print_concs.o: ode_print_concs.c ode_print_concs.h $(SERIAL_INCS) 
 	$(CC) $(DCFLAGS) $(TFLAGS) -c ode_print_concs.c
