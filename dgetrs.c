@@ -3,7 +3,7 @@
 #include "dlaswp.h"
 #include "dtrsm.h"
 #include "dgetrs.h"
-void dgetrs(char *trans_p, 
+void dgetrs_(char *trans_p, 
 	    int *n_p, 
 	    int *nrhs_p, 
 	    double *a,
@@ -19,7 +19,7 @@ void dgetrs(char *trans_p,
        a x = b or a^t x = b with 
        n by n matrix a using the lu factorization computed by dgetrf.
 
-    Calls: lsame, dlaswp, dtrsm, fprintf, fflush
+    Calls: lsame_, dlaswp_, dtrsm_, fprintf, fflush
     
   */
   /*
@@ -69,8 +69,8 @@ void dgetrs(char *trans_p,
   izero = 0;
   inc1  = 1;
   incm1 = -1;
-  notran = lsame(&trans,&n_char);
-  if ((notran == 0) && ((lsame(&trans,&t_char) + lsame(&trans,&c_char)) == 0)) {
+  notran = lsame_(&trans,&n_char);
+  if ((notran == 0) && ((lsame_(&trans,&t_char) + lsame_(&trans,&c_char)) == 0)) {
     info = -1;
   } else {
     if (n < 0) {
@@ -90,7 +90,7 @@ void dgetrs(char *trans_p,
     }
   }
   if (info != 0) {
-    fprintf (stderr,"dgetrs: Error in arguments info = %d\n",info);
+    fprintf (stderr,"dgetrs_: Error in arguments info = %d\n",info);
     fflush(stderr);
   } else {
     if ((n > 0) && (nrhs > 0)) {
@@ -101,16 +101,16 @@ void dgetrs(char *trans_p,
 	/*
 	  Apply row interchanges to the right hand sidse.
 	*/
-	dlaswp(&nrhs, b, &ldb, &izero, &nm1, ipiv, &inc1);
+	dlaswp_(&nrhs, b, &ldb, &izero, &nm1, ipiv, &inc1);
 	/*
 	  Solve L x = b overwriting B with X
 	*/
-	dtrsm(&l_char,&l_char,&n_char,&u_char,&n,&nrhs,
+	dtrsm_(&l_char,&l_char,&n_char,&u_char,&n,&nrhs,
 	      &one, a, &lda, b, &ldb);
 	/*
 	  Solve U x = b overwriting b with x.
 	*/
-	dtrsm(&l_char,&u_char,&n_char,&n_char,&n,&nrhs,
+	dtrsm_(&l_char,&u_char,&n_char,&n_char,&n,&nrhs,
 	      &one,a, &lda, b, &ldb);
       }
     } else {
@@ -120,17 +120,17 @@ void dgetrs(char *trans_p,
       /* 
 	 solve u^t *x = b overwriting b with x
       */
-      dtrsm(&l_char,&u_char,&t_char,&n_char,&n,&nrhs,
+      dtrsm_(&l_char,&u_char,&t_char,&n_char,&n,&nrhs,
 	    &one,a,&lda,b,&ldb);
       /*
 	solve l^t * x = b overwriting b with x
       */
-      dtrsm(&l_char,&l_char,&t_char,&u_char,&n,&nrhs,
+      dtrsm_(&l_char,&l_char,&t_char,&u_char,&n,&nrhs,
 	    &one, a,&lda,b,&ldb);
       /*
 	Apply row interchanges to solution vectors.
       */
-      dlaswp(&nrhs, b, &ldb, &izero, &nm1, ipiv, &incm1);
+      dlaswp_(&nrhs, b, &ldb, &izero, &nm1, ipiv, &incm1);
     } /* end else notran == 0 */
   } /* end else info == 0 */
   *info_p = info;
