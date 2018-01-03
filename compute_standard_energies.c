@@ -85,7 +85,7 @@ int compute_standard_energies(struct state_struct *state) {
     /*
       Read in formation energies from pseudoisomer file.
     */
-    pseudoisomers = (struct pseudoimser_struct *)pointers[0];
+    pseudoisomers = (struct pseudoisomer_struct *)pointers[0];
     pseudoisomer_strings = (char *)pointers[1];
     success = parse_pseudoisomer_dg0f_file(pseudoisomers,
 					   pseudoisomer_strings,
