@@ -87,7 +87,7 @@ double rxn_likelihood_postselection(double *concs,
   right_concs       = 1.0;
   eq_k = ke[i];
   if (rxn_direction < 0) {
-    eq_k = 1/eq_k;
+    eq_k = 1.0/eq_k;
   }
   for (j=rxn_ptrs[i];j<rxn_ptrs[i+1];j++) {
     coeff = rcoef[j];
