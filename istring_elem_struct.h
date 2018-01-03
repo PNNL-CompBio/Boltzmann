@@ -24,7 +24,10 @@ specific language governing permissions and limitations under the License.
 #define __ISTRING_ELEM_STRUCT__
 struct istring_elem_struct {
   char *string;
-  int64_t index;
+  int  m_index;
+  int  c_index;
+  int  variable;
+  int  padi;
 }
 ;
 #endif
