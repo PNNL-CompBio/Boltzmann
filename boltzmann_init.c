@@ -36,6 +36,7 @@ specific language governing permissions and limitations under the License.
 #include "translate_compartments.h"
 #include "sort_molecules.h"
 #include "unique_molecules.h"
+#include "zero_solvent_coefficients.h"
 #include "print_molecules_dictionary.h"
 #include "alloc3.h"
 #include "set_compartment_ptrs.h"
@@ -223,9 +224,20 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
   /*
     Then we extract the unique molecules and set the
     molecules_indices field of the rxn_matrix struct.
+    Also set the solvent_pos field of state.
   */
   if (success) {
     success = unique_molecules(state);
+  }
+  /*
+    At this juncture we have echoed the reactions file if requested and
+    need to zero out the coefficients in the reaction matrix that
+    correspond to the solvent molecule (by default H2O) so as not to
+    have it influence the computation of likelihoods, nor change
+    concentration (see rxn_likelihood.c and comment in rxn_conc_update.c)
+  */
+  if (success) {
+    success = zero_solvent_coefficients(state);
   }
   /*
     Now we need to allocate space for the concentrations,
