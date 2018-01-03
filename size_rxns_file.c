@@ -36,7 +36,8 @@ specific language governing permissions and limitations under the License.
 #include "count_ws.h"
 
 #include "size_rxns_file.h"
-int size_rxns_file(struct state_struct *state) {
+int size_rxns_file(struct state_struct *state,
+		   char *reaction_file) {
   /*
     Determine the number of reactions,
     Total length of molecules names, and
@@ -82,15 +83,17 @@ int size_rxns_file(struct state_struct *state) {
   success = 1;
   rxn_buff_len = state->max_param_line_len << 1;
   lfp          = state->lfp;
-  rxn_fp       = fopen(state->reaction_file,"r");
+  rxn_fp       = fopen(reaction_file,"r");
   if (rxn_fp == NULL) {
     success = 0;
     fprintf(stderr,"size_rxn_file: unable to open reaction file, %s\n",
-	    state->reaction_file);
+	    reaction_file);
     fflush(stderr);
   }
   if (success) {
+    /*
     state->rxn_fp = rxn_fp;
+    */
     rxn_buffer = state->param_buffer;
     init_rxn_file_keywords(state);
     keywords   = state->rxn_file_keywords;
@@ -199,24 +202,25 @@ int size_rxns_file(struct state_struct *state) {
       }
       fgp = fgets(rxn_buffer,rxn_buff_len,rxn_fp);
     } /* end while(fgp...) */
-  } /* end if (success) */
-  state->reaction_file_length = total_length;
-  state->number_reactions = rxns;
-  state->number_molecules   = molecules;
-  /*
-    Allow for no compartment specified reactions.
-  */
-  if (cmpts > 1) {
-    if (no_cmpt_ct > 0) {
-      cmpts += 1;
-    } 
-  } else {
-    cmpts = 1;
+    state->reaction_file_length = total_length;
+    state->number_reactions = rxns;
+    state->number_molecules   = molecules;
+    /*
+      Allow for no compartment specified reactions.
+    */
+    if (cmpts > 1) {
+      if (no_cmpt_ct > 0) {
+	cmpts += 1;
+      } 
+    } else {
+      cmpts = 1;
+    }
+    state->number_compartments = cmpts;
+    state->molecules_space = molecules_len;
+    state->pathway_space = pathway_len;
+    state->compartment_space = compartment_len;
+    state->rxn_title_space = rxn_title_len;
+    fclose(rxn_fp);
   }
-  state->number_compartments = cmpts;
-  state->molecules_space = molecules_len;
-  state->pathway_space = pathway_len;
-  state->compartment_space = compartment_len;
-  state->rxn_title_space = rxn_title_len;
   return(success);
 }
