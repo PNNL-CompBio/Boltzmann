@@ -867,7 +867,7 @@ deq.o : deq.c $(SERIAL_INCS) boltzmann_init.h deq_run.h print_counts.h print_res
 bwarmup.o : bwarmup.c $(SERIAL_INCS) boltzmann_init.h bwarmup_run.h 
 	$(CC) $(DCFLAGS) $(TFLAGS) -c bwarmup.c
 
-deq_run.o: deq_run.c deq_run.h $(SERIAL_INCS) alloc7.h init_base_reactants.h init_relative_rates.h ode_solver.h ode_print_concs_header.h ode_print_dconcs_header.h ode_print_lklhd_header.h ode_print_bflux_header.h print_net_lklhd_bndry_flux_header.h print_net_likelihood_header.h
+deq_run.o: deq_run.c deq_run.h $(SERIAL_INCS) alloc7.h init_base_reactants.h init_relative_rates.h ode_solver.h ode_print_concs_header.h ode_print_dconcs_header.h ode_print_lklhd_header.h ode_print_bflux_header.h print_net_lklhd_bndry_flux_header.h print_net_likelihood_header.h get_counts.h
 	   $(CC) $(DCFLAGS) $(TFLAGS) -c deq_run.c
 
 alloc7.o: alloc7.c alloc7.h $(SERIAL_INCS)
