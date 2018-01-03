@@ -46,6 +46,9 @@ int unique_molecules(struct state_struct *state) {
   struct istring_elem_struct *sorted_molecules;
   struct istring_elem_struct *cur_molecule;
   struct istring_elem_struct *umolecules_next;
+  char *molecules_text;
+  char *cstring;
+  char *sstring;
   int nzr;
   int i;
 
@@ -56,16 +59,21 @@ int unique_molecules(struct state_struct *state) {
   int cni;
 
   success = 1;
-  nzr            = state->number_molecules;
-  sorted_molecules = state->sorted_molecules;
-  rxns_matrix    = state->reactions_matrix;
-  molecules_indices = rxns_matrix->molecules_indices;
+  nzr                 = state->number_molecules;
+  sorted_molecules    = state->sorted_molecules;
+  molecules_text      = state->molecules_text;
+  rxns_matrix         = state->reactions_matrix;
+  molecules_indices   = rxns_matrix->molecules_indices;
   compartment_indices = rxns_matrix->compartment_indices;
   /* loop over sorted molecules. */
   nu_molecules = 0;
   molecules_indices[sorted_molecules->m_index] = nu_molecules;
   sorted_molecules->m_index = 0;
   cur_molecule = sorted_molecules;
+  cstring = NULL;
+  if (cur_molecule->string >= 0) {
+    cstring = (char *)&molecules_text[cur_molecule->string];
+  }
   /*
     This translation has already been done in translate_compartments.
   cur_molecule->c_index = compartment_indices[cur_molecule->c_index];
@@ -75,8 +83,13 @@ int unique_molecules(struct state_struct *state) {
   umolecules_next  = sorted_molecules;
   for (i=1;i<nzr;i++) {
     ni = sorted_molecules->c_index;
+    sstring = NULL;
+    if (sorted_molecules->string >= 0) {
+      sstring = (char *)&molecules_text[sorted_molecules->string];
+    }
     if ((ni != cni)  ||
-	(strcmp(sorted_molecules->string,cur_molecule->string) != 0)) {
+	(strcmp(sstring,cstring) != 0)) {
+      cstring = sstring;
       nu_molecules += 1;
       cur_molecule = sorted_molecules;
       umolecules_next->string = cur_molecule->string;
