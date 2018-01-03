@@ -66,6 +66,7 @@ int compute_delta_g_forward_entropy_free_energy(struct state_struct *state,
   */
   double *free_energy;
   double *activities;
+  double *counts_or_concs;
   double dg_forward;
   double entropy;
   double m_rt;
@@ -77,6 +78,7 @@ int compute_delta_g_forward_entropy_free_energy(struct state_struct *state,
   int    number_reactions;
   int    success;
   int    use_regulation;
+  int    count_or_conc;
   /*
     Input fields.
   */
@@ -106,7 +108,9 @@ int compute_delta_g_forward_entropy_free_energy(struct state_struct *state,
 				  forward);
   */
   if (use_regulation) {
-    update_regulations(state);
+    counts_or_concs = state->current_counts;
+    count_or_conc = 1;
+    update_regulations(state,counts_or_concs,count_or_conc);
   }
   dg_forward = 0.0;
   entropy = 0.0;
