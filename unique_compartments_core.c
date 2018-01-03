@@ -78,27 +78,27 @@ int unique_compartments_core(int nzr,
     cur_cmpt = srtd_cmpts;
     srtd_cmpts += 1; /* Caution address arithmetic. */
     ucmpts_next  = srtd_cmpts;
-  }
-  for (i=1;i<nzr;i++) {
-    if (srtd_cmpts->string>=0) {
-      sstring = (char*)&compartment_text[srtd_cmpts->string];
-      if ((cur_cmpt->string < 0) ||
-	  (strcmp(sstring,cstring) != 0)) {
-	nu_cmpts += 1;
-	cur_cmpt = srtd_cmpts;
-	cstring  = sstring;
-	cmpt_size = strlen(cstring) + 1;
-	pad_size = (align_len  - (cmpt_size & align_mask)) & align_mask;
-	compartment_len += (int64_t)(pad_size + cmpt_size);
-	ucmpts_next->string = cur_cmpt->string;
-	ucmpts_next += 1; /* Caution address arithmetic. */
+    for (i=1;i<nzr;i++) {
+      if (srtd_cmpts->string>=0) {
+	sstring = (char*)&compartment_text[srtd_cmpts->string];
+	if ((cur_cmpt->string < 0) ||
+	    (strcmp(sstring,cstring) != 0)) {
+	  nu_cmpts += 1;
+	  cur_cmpt = srtd_cmpts;
+	  cstring  = sstring;
+	  cmpt_size = strlen(cstring) + 1;
+	  pad_size = (align_len  - (cmpt_size & align_mask)) & align_mask;
+	  compartment_len += (int64_t)(pad_size + cmpt_size);
+	  ucmpts_next->string = cur_cmpt->string;
+	  ucmpts_next += 1; /* Caution address arithmetic. */
+	}
+	compartment_indices[srtd_cmpts->c_index] = nu_cmpts;
+      } else {
+	compartment_indices[srtd_cmpts->c_index] = 0;
       }
-      compartment_indices[srtd_cmpts->c_index] = nu_cmpts;
-    } else {
-      compartment_indices[srtd_cmpts->c_index] = 0;
-    }
-    srtd_cmpts += 1; /* Caution address arithmetic. */
-  }
+      srtd_cmpts += 1; /* Caution address arithmetic. */
+    } /* end for (i...) */
+  } /* end if nzr > 1 */
   *nunique_compartments = nu_cmpts + 1;
   *sum_compartment_len = compartment_len;
   return(success);
