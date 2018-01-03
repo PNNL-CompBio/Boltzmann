@@ -39,6 +39,7 @@ int alloc3(struct state_struct *state) {
     net_likelihood                   (number_reactions)
     dg0s                   	     (number_reactions)  
     ke                     	     (number_reactions) 
+    rke                     	     (number_reactions) 
     kss                    	     (number_reactions)
     kssr                   	     (number_reactions)
     kss_eval               	     (nunique_molecules)
@@ -49,8 +50,6 @@ int alloc3(struct state_struct *state) {
     Called by: boltzmann_init
     Calls:     calloc, fprintf, fflush (intrinsic)
   */
-  struct molecules_matrix_struct sms;
-  struct molecules_matrix_struct *molecules_matrix;
   int64_t ask_for;
   int64_t one_l;
   int64_t usage;
@@ -191,10 +190,12 @@ int alloc3(struct state_struct *state) {
     } 
   }
   /*
-    Allocate space for the reaction equilibrium coefficients.
+    Allocate space for the reaction equilibrium coefficients,
+    and their reciprocals
   */
   if (success) {
     ask_for = ((int64_t)nrxns) * ((int64_t)sizeof(double));
+    ask_for = ask_for + ask_for;
     usage += ask_for;
     state->ke = (double *)calloc(one_l,ask_for);
     if (state->ke == NULL) {
@@ -202,7 +203,9 @@ int alloc3(struct state_struct *state) {
 	      "state->ke field.\n",ask_for);
       fflush(stderr);
       success = 0;
-    } 
+    } else {
+      state->rke = &(state->ke[nrxns]);
+    }
   }
   /*
     Allocate space for the steady state reaction equilibrium coefficients
