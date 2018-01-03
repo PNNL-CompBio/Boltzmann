@@ -33,7 +33,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.body $(srcdir)/Makefile.head \
-	$(srcdir)/Makefile.in $(srcdir)/Makefile.timing \
+	$(srcdir)/Makefile.in $(srcdir)/Makefile.notiming \
 	$(top_srcdir)/configure AUTHORS COPYING ChangeLog INSTALL NEWS \
 	install-sh missing
 subdir = .
@@ -157,10 +157,10 @@ EXECS = boltzmann boltzmann_boot_test deq lapack_test sbml2bo kegg_ms_ids ms2js_
 DBG_FLAGS = -O0 -g -Wall
 NO_OPT_FLAGS = -O0 -g -Wall
 DCFLAGS = ${CFLAGS}
-TFLAGS = -DTIMING_ON 
+TFLAGS = 
 LFLAGS = -g -lm
-TIMING_LIB = djb_timing.a 
-TIMING_DEP = timingi.h djb_timing.h
+TIMING_LIB = 
+TIMING_DEP = 
 TIMING_DEPS = timingi.h djb_timing_b.h djb_timing.h
 LUNWIND_DEPS = luwtb.h luwtb1.h luwtb2.h
 SERIAL_INCS = boltzmann_structs.h boot_state_struct.h super_state_struct.h super_state_pointers_struct.h state_struct.h reaction_struct.h reactions_matrix_struct.h molecules_matrix_struct.h molecule_struct.h compartment_struct.h vgrng_state_struct.h pseudoisomer_struct.h stack_level_elem_struct.h sbml2bo_struct.h t2js_struct.h $(TIMING_DEPS) $(LUNWIND_DEPS)
@@ -225,7 +225,7 @@ all: all-am
 .SUFFIXES: .c .f .f90 .o
 am--refresh:
 	@:
-$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(srcdir)/Makefile.head $(srcdir)/Makefile.timing $(srcdir)/Makefile.body $(am__configure_deps)
+$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(srcdir)/Makefile.head $(srcdir)/Makefile.notiming $(srcdir)/Makefile.body $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -524,40 +524,6 @@ uninstall-am:
 
 default: $(EXECS)
 all:  $(EXECS)
-
-timingi.h: timingii.h
-		./build_timingi.pl
-
-djb_timing.a: djb_timing.a(djb_timing_init.o) \
-	      djb_timing.a(djb_timing_print.o) \
-	      djb_timing.a(djb_timing_start.o) \
-	      djb_timing.a(djb_timing_stop.o) \
-	      djb_timing.a(djb_timing_reset.o) \
-	      djb_timing.a(itc_clock.o) timingi.h timingii.h
-
-djb_timing.a(djb_timing_init.o): djb_timing_b.h djb_timing_init.c
-		$(CC) $(NO_OPT_CFLAGS) $(TFLAGS) -c djb_timing_init.c
-	        $(AR) $(ARFLAGS) djb_timing.a djb_timing_init.o
-
-djb_timing.a(djb_timing_print.o): djb_timing_b.h djb_timing_print.c
-		$(CC) $(NO_OPT_CFLAGS) $(TFLAGS) -c djb_timing_print.c
-	        $(AR) $(ARFLAGS) djb_timing.a djb_timing_print.o
-
-djb_timing.a(djb_timing_start.o): djb_timing_b.h djb_timing_start.c
-		$(CC) $(NO_OPT_CFLAGS) $(TFLAGS) -c djb_timing_start.c
-	        $(AR) $(ARFLAGS) djb_timing.a djb_timing_start.o
-
-djb_timing.a(djb_timing_stop.o): djb_timing_b.h djb_timing_stop.c
-		$(CC) $(NO_OPT_CFLAGS) $(TFLAGS) -c djb_timing_stop.c
-	        $(AR) $(ARFLAGS) djb_timing.a djb_timing_stop.o
-
-djb_timing.a(djb_timing_reset.o): djb_timing_b.h djb_timing_reset.c
-		$(CC) $(NO_OPT_CFLAGS) $(TFLAGS) -c djb_timing_reset.c
-	        $(AR) $(ARFLAGS) djb_timing.a djb_timing_reset.o
-
-djb_timing.a(itc_clock.o): itc_clock.c itc_clock.h
-		$(CC) $(NO_OPT_CFLAGS) $(TFLAGS) -c itc_clock.c
-		$(AR) $(ARFLAGS) djb_timing.a itc_clock.o
 
 ms2js_ids: $(KPM_OBJS)
 	$(CLINKER) -O0 -o ms2js_ids $(KPM_OBJS)
