@@ -37,10 +37,10 @@ int size_pseudoisomer_file(struct state_struct *state,
     For each entry there are 4 string fields, and 4 numeric fields thus 
     for padding we need 4*align_len * num_pseudoisomers more characters in the
     pseudoisomers_strings field.
-    This routine also sets the sue_pseudoisomers field of state to 1 if it
+    This routine also sets the use_pseudoisomers field of state to 1 if it
     could do a word count (wc) command on the pseudoisomer_file and 0 otherwise.
 
-    Called by: compute_reaction_dg0fs_from_molecule_formation_energies.
+    Called by: compute_standard_energies
     Calls:     fpintf,fflush,fopen,fgets,sscanf,fclose,system
   */
   char *command;
