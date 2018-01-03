@@ -712,7 +712,7 @@ int parse_reactions_file(struct state_struct *state,
       }
     } else {
       if (lfp) {
-	fprintf(lfp,"parse_reactions_file: Error occured reading reactions file %s, see above.\n",);
+	fprintf(lfp,"parse_reactions_file: Error occured reading reactions file %s, see above.\n",reaction_file);
 	fflush(lfp);
       }
     }
