@@ -72,6 +72,9 @@ int boltzmann_run(struct state_struct *state) {
   char   *cmpt_string;
   double *dg0s;
   double *free_energy;
+  int64_t i;
+  int64_t n_warmup_steps;
+  int64_t n_record_steps;
 
   int success;
   int number_reactions;
@@ -79,11 +82,6 @@ int boltzmann_run(struct state_struct *state) {
   int number_reactions_t2;
   int number_reactions_t2_p1;
 
-  int i;
-  int j;
-
-  int n_warmup_steps;
-  int n_record_steps;
 
   int rxn_choice;
   int unique_molecules;
@@ -110,17 +108,15 @@ int boltzmann_run(struct state_struct *state) {
   int noop_rxn;
 
   int rxn_no;
-  int padi;
-
-
+  int j;
 
   FILE *lfp;
   success = 1;
   nstate = state;
   state->workspace_base = NULL;
   success = flatten_state(state,&nstate);
-  n_warmup_steps    	 = (int)state->warmup_steps;
-  n_record_steps    	 = (int)state->record_steps;
+  n_warmup_steps    	 = state->warmup_steps;
+  n_record_steps    	 = state->record_steps;
   number_reactions       = (int)state->number_reactions;
   unique_molecules     	 = (int)state->nunique_molecules;
   current_counts         = state->current_counts;
