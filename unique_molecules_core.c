@@ -33,8 +33,8 @@ specific language governing permissions and limitations under the License.
 #include "unique_molecules_core.h"
 int unique_molecules_core(int nzr,
 			  struct istring_elem_struct *sorted_molecules,
-			  int64_t *molecules_indices,
 			  char *molecules_text,
+			  int64_t *molecules_map,
 			  int64_t *nunique_molecules,
 			  int64_t *sum_molecule_len,
 			  int64_t align_len,
@@ -43,7 +43,7 @@ int unique_molecules_core(int nzr,
     Remove duplicates from the sorted_molecules list
     and set the column_indices fields in the
     reactions_matrix appropriately.
-    Called by: boltzmann_init
+    Called by: unique_molecules, boltzmann_boot
     Calls:     strcmp (intrinsic)
   */
   struct istring_elem_struct *cur_molecule;
@@ -67,8 +67,7 @@ int unique_molecules_core(int nzr,
   molecule_len = (int64_t)0;
   /* loop over sorted molecules. */
   nu_molecules = 0;
-  molecules_indices[sorted_molecules->m_index] = nu_molecules;
-  sorted_molecules->m_index = 0;
+  molecules_map[sorted_molecules->m_index] = nu_molecules;
   cur_molecule = sorted_molecules;
   cstring = NULL;
   if (cur_molecule->string >= 0) {
@@ -93,18 +92,20 @@ int unique_molecules_core(int nzr,
     if ((ni != cni)  ||
 	(strcmp(sstring,cstring) != 0)) {
       cstring = sstring;
-      m_size = strlen(cstring);
+      m_size = strlen(cstring) + 1;
       pad_size = (align_len - (m_size & align_mask)) & align_mask;
       molecule_len += (int64_t)(m_size + pad_size);
       nu_molecules += 1;
       cur_molecule = sorted_molecules;
+      molecules_map[sorted_molecules->m_index] = nu_molecules;
       umolecules_next->string = cur_molecule->string;
       umolecules_next->m_index = nu_molecules;
       umolecules_next->c_index = ni;
       cni = ni;
       umolecules_next += 1; /* Caution address arithmetic. */
+    } else {
+      molecules_map[sorted_molecules->m_index] = nu_molecules;
     }
-    molecules_indices[sorted_molecules->m_index] = nu_molecules;
     sorted_molecules += 1; /* Caution address arithmetic. */
   }
   *nunique_molecules = nu_molecules + 1;
