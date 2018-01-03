@@ -39,11 +39,8 @@ int count_nws(char *line) {
   */
   nws_chars = 0;
   for (i=0;i<strlen(line);i++) {
-    nws_chars = i;
     c  = (int)line[i];
     if (c <= 32) break;
-  }
-  if (line[nws_chars] > 32) {
     nws_chars += 1;
   }
   return (nws_chars);
