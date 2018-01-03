@@ -8,14 +8,12 @@ int init_base_reactants(struct state_struct *state) {
     and the number_base_reaction_reactants value.
     Called by: ode23tb
   */
-  struct rxn_struct *reactions; 
-  struct rxn_struct *reaction; 
-  struct rxn_matrix_struct *reactions_matrix; 
+  struct reaction_struct *reactions; 
+  struct reaction_struct *reaction; 
+  struct reactions_matrix_struct *reactions_matrix; 
   int64_t *molecules_indices;
   int64_t *coefficients;
   int64_t *rxn_ptrs;
-  int64_t ask_for;
-  int64_t one_l;
   int *base_reactant_indicator;
   int *base_reactants;
   int ny;
@@ -33,7 +31,6 @@ int init_base_reactants(struct state_struct *state) {
   FILE *lfp;
   FILE *efp;
   success = 1;
-  one_l   = (int64_t)1;
   lfp       = state->lfp;
   reactions = state->reactions;
   nrxns     = state->number_reactions;
@@ -48,32 +45,21 @@ int init_base_reactants(struct state_struct *state) {
     in the base reaction (list of the indices of base_reactant_indicator
     vector that are 1), 
   */
-  ask_for = (int64_t)(ny+ny)*sizeof(int);
   base_rxn = (int)state->base_reaction;
-  base_reactant_indicator = (int*)calloc(ask_for,one_l);
-  if (base_reactant_indicator == NULL) {
+  /* 
+    The following two vectors are allocated in alloc7.
+  */
+  base_reactant_indicator = state->base_reactant_indicator;
+  base_reactants          = state->base_reactants;
+  if ((base_rxn < 0) || (base_rxn >= nrxns) ) {
     success = 0;
     if (lfp) {
-      fprintf(lfp,"ode23tb: Error could not allocate %lld "
-	      "bytes for int scratch space.\n",ask_for);
+      fprintf(lfp,"init_base_reactants: Error base_rxn = %d, must be in [0, %d)\n",base_rxn,nrxns);
       fflush(lfp);
     }
   }
   if (success) {
-    base_reactants = (int*)&base_reactant_indicator[ny];
-    state->base_reactant_indicator = base_reactant_indicator;
-    state->base_reactants          = base_reactants;
-  
-    if ((base_rxn < 0) || (base_rxn >= nrxns) ) {
-      success = 0;
-      if (lfp) {
-	fprintf(lfp,"init_base_reactants: Error base_rxn = %d, must be in [0, %d)\n",base_rxn,nrxns);
-	fflush(lfp);
-      }
-    }
-  }
-  if (success) {
-    reaction  = (struct rxn_struct *)&reactions[base_rxn];
+    reaction  = (struct reaction_struct *)&reactions[base_rxn];
     number_base_reaction_reactants = reaction->num_reactants;
     reactions_matrix  = state->reactions_matrix;
     molecules_indices = reactions_matrix->molecules_indices;
