@@ -163,7 +163,7 @@ int boltzmann_boot(char *param_file_name,
       */
       success = parse_rxn_list_line(init_state,boot_state,i);
       if (success) {
-	success = boltzmann_init_core(init_state,&local_state);
+	success = boltzmann_init_core(init_state);
       }
       if (success) {
 	/*
@@ -171,7 +171,7 @@ int boltzmann_boot(char *param_file_name,
 	  tracking where we put it for global dictionary determination
 	  later.  This stuff needs to be in a routine.
 	*/
-	success = save_and_count_local_state(local_state,boot_state,i);
+	success = save_and_count_local_state(init_state,boot_state,i);
       } /* end if we could open and read reaction file */
     } /* end for (i...) */
   }
