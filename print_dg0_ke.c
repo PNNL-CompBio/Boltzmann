@@ -28,7 +28,7 @@ int print_dg0_ke(struct state_struct *state) {
   /*
     Print the reaction delta G_0's and equilibrium constants, k_e, along with
     the reaction title and stoichiometric statement.
-    Called by: boltzmann_init, boltzmann_boot
+    Called by: echo_inputs
     Calls:     fopen, fprintf, fclose (intrinsic)
   */
   struct rxn_struct *reactions;
@@ -66,10 +66,11 @@ int print_dg0_ke(struct state_struct *state) {
   molecules_text   = state->molecules_text;
   rxn_title_text   = state->rxn_title_text;
 
-  dg0_ke_fp = fopen("rxns_dg0_ke.txt","w+");
+  dg0_ke_fp = fopen(state->dg0ke_file,"w+");
   if (dg0_ke_fp == NULL) {
     fprintf(stderr,
-	    "print_dg0_ke.c: Error could not open rxns_dg0_ke.txt file.\n");
+	    "print_dg0_ke.c: Error could not open %s file.\n",
+	    state->dg0ke_file);
     success = 0;
   }
   if (success) {
