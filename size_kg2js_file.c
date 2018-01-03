@@ -81,7 +81,7 @@ int size_kg2js_file(struct state_struct *state,
       success = 0;
     } else {
       fgets(command,buff_len,kg2js_size_fp);
-      ns = sscanf(command,"%lld %lld %lld",&lc,&wc,&cc);
+      ns = sscanf(command,"%ld %ld %ld",&lc,&wc,&cc);
       if (ns !=3) {
 	if (lfp) {
 	  fprintf(lfp,
