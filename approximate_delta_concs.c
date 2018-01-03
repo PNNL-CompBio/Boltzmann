@@ -12,7 +12,7 @@
 int approximate_delta_concs(struct state_struct *state, double *counts,
 			    double *forward_rxn_likelihoods,
 			    double *reverse_rxn_likelihoods, 
-			    double *flux, double multiplier,
+			    double *flux, double flux_scaling,
 			    int base_rxn, int choice) {
   /*
     Compute approximations to concentartion changes wrt time
@@ -46,7 +46,7 @@ int approximate_delta_concs(struct state_struct *state, double *counts,
                                       of concentration change per unit time.
 				      Set by this routine.
 
-    multiplier                  D0I   forward rate constant for base
+    flux_scaling                  D0I   forward rate constant for base
                                       reaction multplied by base reaction
 				      reactant concentration prodeuct.
 				      
@@ -55,10 +55,11 @@ int approximate_delta_concs(struct state_struct *state, double *counts,
     choice                      I0I   0 for lr_approximate_delta_concs
                                       2 for ce_approximate_delta_concs
 
-    Note that multiplier is K_f(base_rxn_reaction)*(product of reactant 
+    Note that flux_scaling is K_f(base_rxn_reaction)*(product of reactant 
     concentrations in base reaction).
 	    molecule = (struct molecule_struct *)&sorted_molecules[si];
   */
+  double alt_flux_scaling;
   int success;
   int padi;
   FILE *lfp;
@@ -75,7 +76,7 @@ int approximate_delta_concs(struct state_struct *state, double *counts,
 					 forward_rxn_likelihoods,
 					 reverse_rxn_likelihoods, 
 					 flux, 
-					 multiplier,
+					 flux_scaling,
 					 base_rxn, 
 					 choice);
     break;
@@ -85,7 +86,7 @@ int approximate_delta_concs(struct state_struct *state, double *counts,
 					 forward_rxn_likelihoods,
 					 reverse_rxn_likelihoods, 
 					 flux, 
-					 multiplier,
+					 flux_scaling,
 					 base_rxn, 
 					 choice);
     break;
@@ -95,7 +96,7 @@ int approximate_delta_concs(struct state_struct *state, double *counts,
 					 forward_rxn_likelihoods,
 					 reverse_rxn_likelihoods, 
 					 flux, 
-					 multiplier,
+					 flux_scaling,
 					 base_rxn, 
 					 choice);
     break;
@@ -105,7 +106,7 @@ int approximate_delta_concs(struct state_struct *state, double *counts,
 					 forward_rxn_likelihoods,
 					 reverse_rxn_likelihoods, 
 					 flux, 
-					 multiplier,
+					 flux_scaling,
 					 base_rxn, 
 					 choice);
     break;
@@ -113,12 +114,17 @@ int approximate_delta_concs(struct state_struct *state, double *counts,
     /*
       Use debugging flavor with kinetic rate constants for coupledenzyme.in
     */
+    if (state->flux_scaling == 0.0) {
+      alt_flux_scaling = 1.0;
+    } else {
+      alt_flux_scaling = flux_scaling;
+    }
     success = ce_approximate_delta_concs(state, 
 					 counts,
 					 forward_rxn_likelihoods,
 					 reverse_rxn_likelihoods, 
 					 flux, 
-					 multiplier,
+					 alt_flux_scaling,
 					 base_rxn, 
 					 choice);
     break;
