@@ -34,7 +34,8 @@ specific language governing permissions and limitations under the License.
 int rxn_likelihoods(double *free_energy, 
 		    double *concs, 
 		    double *rxn_likelihood,
-		    struct state_struct *state) {
+		    struct state_struct *state,
+		    int rxn_direction) {
   /*
     Compute the reaction quotients Q_p as the ratio of reactant concentrations
     to product concentration with any concentration where the stoichiometric
@@ -66,6 +67,7 @@ int rxn_likelihoods(double *free_energy,
   double  conc;
   double  left_concs;
   double  right_concs;
+  double  t_concs;
   double  top;
   double  bot;
   double  eq_k;
@@ -115,6 +117,12 @@ int rxn_likelihoods(double *free_energy,
       }
     }
     eq_k = ke[i];
+    if (rxn_direction < 0) {
+      eq_k = 1/eq_k;
+      t_concs = right_concs;
+      right_concs = left_concs;
+      left_concs  = t_concs;
+    }
     /*
     if (free_energy[i] < 0) {
       top = right_concs;
@@ -140,13 +148,15 @@ int rxn_likelihoods(double *free_energy,
     }
     rxn_ratio[i] = eq_k * (top / bot);
     */
-    if (left_concs < 1.0) {
-      left_concs = 1.0;
+    if ((left_concs < 1.0) && (right_concs > 1.0)) {
+      left_concs = small_nonzero;
+      rxn_likelihood[i] = 0.0;
+    } else {
+      if (right_concs < 1.0) {
+	right_concs = small_nonzero;
+	rxn_likelihood[i] = eq_k * (left_concs/ right_concs);
+      }
     }
-    if (right_concs < 1.0) {
-      right_concs = 1.0;
-    }
-    rxn_likelihood[i] = eq_k * (left_concs/ right_concs);
   } /* end for(i...) */
   return(success);
 }
