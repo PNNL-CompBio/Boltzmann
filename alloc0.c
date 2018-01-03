@@ -69,7 +69,7 @@ int alloc0(struct state_struct **state) {
     fflush(stderr);
   }
   if (success) {
-    statep->num_files = (int64_t)20;
+    statep->num_files = (int64_t)24;
     num_state_files   = statep->num_files;
     statep->max_filename_len = max_file_name_len;
     ask_for = ((int64_t)num_state_files) * max_file_name_len;
@@ -125,7 +125,7 @@ int alloc0(struct state_struct **state) {
     if (solvent_string) {
       statep->solvent_string = solvent_string;
     } else {
-      fprintf(stderr,"alloc0: Error unable to allocatge %ld bytes of space "
+      fprintf(stderr,"alloc0: Error unable to allocate %ld bytes of space "
 	      "for solvent_string\n",ask_for);
       fflush(stderr);
       success = 0;
@@ -135,7 +135,7 @@ int alloc0(struct state_struct **state) {
     Allocate space for processing the reactions file.
   */
   if (success) {
-    rxn_file_keyword_len = 144;
+    rxn_file_keyword_len = 256;
     ask_for = rxn_file_keyword_len;
     usage   += ask_for;
     rxn_keyword_buff = (char *)calloc(one_l,ask_for);
@@ -143,7 +143,7 @@ int alloc0(struct state_struct **state) {
       statep->rxn_file_keyword_buffer = rxn_keyword_buff;
     } else {
       fprintf(stderr,
-	      "alloc1: Error, unable to allocate %ld bytes for "
+	      "alloc0: Error, unable to allocate %ld bytes for "
 	      "rxn_file_keyword_buffer\n",
 	      ask_for);
       fflush(stderr);
@@ -151,7 +151,7 @@ int alloc0(struct state_struct **state) {
     }
   }
   if (success) {
-    num_rxn_file_keywords = 11;
+    num_rxn_file_keywords = 13;
     statep->num_rxn_file_keywords = num_rxn_file_keywords;
     ask_for = ((int64_t)num_rxn_file_keywords) * ((int64_t)sizeof(char *));
     usage   += ask_for;
@@ -160,7 +160,7 @@ int alloc0(struct state_struct **state) {
       statep->rxn_file_keywords = rxn_keywords;
     } else {
       fprintf(stderr,
-	      "alloc1: Error, unable to allocate %ld bytes for "
+	      "alloc0: Error, unable to allocate %ld bytes for "
 	      "rxn_file_keywords\n",
 	      ask_for);
       fflush(stderr);
@@ -175,7 +175,7 @@ int alloc0(struct state_struct **state) {
       statep->rxn_file_keyword_lengths = rxn_file_keyword_lengths;
     } else {
       fprintf(stderr,
-	      "alloc1: Error, unable to allocate %ld bytes for "
+	      "alloc0: Error, unable to allocate %ld bytes for "
 	      "rxn_file_keyword_lengths\n",
 	      ask_for);
       fflush(stderr);
