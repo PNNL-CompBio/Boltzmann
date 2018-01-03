@@ -24,9 +24,8 @@ specific language governing permissions and limitations under the License.
 /*
 #define DBG_DEQ_RUN 1
 */
-
-#include "flatten_state.h"
 /*
+#include "flatten_state.h"
 #include "alloc4.h"
 #include "form_molecules_matrix.h"
 */
@@ -34,7 +33,7 @@ specific language governing permissions and limitations under the License.
 #include "init_base_reactants.h"
 #include "init_relative_rates.h"
 #include "ode_print_concs_header.h"
-#include "ode_print_flux_header.h"
+#include "ode_print_dconcs_header.h"
 #include "ode_print_bflux_header.h"
 #include "ode_print_lklhd_header.h"
 #include "print_net_likelihood_header.h"
@@ -55,13 +54,11 @@ int deq_run(struct state_struct *state) {
   
 
     Called by: deq, boltzmann_run
-    Calls:     flatten_state,
-	       alloc7,
+    Calls:     alloc7,
 	       init_base_reactants,
 	       init_relative_rates,
 	       ode_solver
   */ 
-  struct state_struct *nstate;
   struct molecule_struct *molecules;
   struct molecule_struct *molecule;
   struct compartment_struct *compartments;
@@ -70,21 +67,19 @@ int deq_run(struct state_struct *state) {
   double *reverse_rxn_likelihood;
   double *current_counts;
   double *counts;
-  double *future_counts;
   double *bndry_flux_counts;
   double *activities;
   double *no_op_likelihood;
-  double *flux_vector;
   double *reactant_term;
   double *product_term;
   double *concs;
   double *conc_to_count;
   double *count_to_conc;
-  int    *rxn_fire;
   double *dg0s;
   double *free_energy;
   double htry;
   double min_conc;
+  int64_t *rxn_fire;
   int64_t i;
   int64_t n_warmup_steps;
   int64_t n_record_steps;
@@ -132,17 +127,12 @@ int deq_run(struct state_struct *state) {
   success = 1;
   one_l   = (int64_t)1;
   zero_l  = (int64_t)0;
-  /*
-  nstate = state;
-  state->workspace_base = NULL;
-  success = flatten_state(state,&nstate);
-  */
+
   n_warmup_steps    	 = state->warmup_steps;
   n_record_steps    	 = state->record_steps;
   number_reactions       = (int)state->number_reactions;
   unique_molecules     	 = (int)state->nunique_molecules;
   current_counts         = state->current_counts;
-  future_counts          = state->future_counts;
   bndry_flux_counts  	 = state->bndry_flux_counts;
   activities        	 = state->activities;
   rxn_fire          	 = state->rxn_fire;
@@ -160,7 +150,7 @@ int deq_run(struct state_struct *state) {
   lklhd_view_freq        = state->lklhd_view_freq;
   count_view_freq        = state->count_view_freq;
   molecules              = state->sorted_molecules;
-  compartments           = state->sorted_cmpts;
+  compartments           = state->sorted_compartments;
   print_ode_concs        = state->print_ode_concs;
   ode_rxn_view_freq      = state->ode_rxn_view_freq;
   solver_choice          = (int)state->ode_solver_choice;
@@ -190,7 +180,6 @@ int deq_run(struct state_struct *state) {
     Initialize the free_energy to be the delta_g0.
   */
   if (success) {
-    flux_vector = state->flux_vector;
     reactant_term = state->reactant_term;
     product_term  = state->product_term;
     concs          = state->ode_concs;
@@ -245,7 +234,7 @@ int deq_run(struct state_struct *state) {
     if (ode_rxn_view_freq > 0) {
       ode_print_concs_header(state);
       ode_print_lklhd_header(state);
-      ode_print_flux_header(state);
+      ode_print_dconcs_header(state);
       ode_print_bflux_header(state);
       print_net_likelihood_header(state);
       print_net_lklhd_bndry_flux_header(state);
