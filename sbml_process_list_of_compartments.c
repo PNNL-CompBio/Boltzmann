@@ -179,7 +179,7 @@ int sbml_process_list_of_compartments(FILE *sbml_fp,
 	    state->default_comp_size = size;
 	  } 
 	  fprintf(cmpts_fp,"%s\t%le\tliters\t%d\t%c\n",
-		  comp,size,spatial_dim,&vc[variable]);
+		  comp,size,spatial_dim,vc[variable]);
 	  if (n_cmpts < state->num_cmpts) {
 	    cmpt_len = strlen(comp) + 1;
 	    cmpt_len += ((alignment - (cmpt_len & align_mask)) & align_mask);
