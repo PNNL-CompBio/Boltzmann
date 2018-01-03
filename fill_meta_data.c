@@ -40,7 +40,7 @@ int fill_meta_data(struct boot_state_struct *boot_state) {
   super_state                = boot_state->super_state;
   global_number_of_molecules = super_state->global_number_of_molecules;
   unique_global_molecules    = super_state->unique_global_molecules;
-  unique_global_molecules    = super_state->unique_global_compartments;
+  unique_global_compartments = super_state->unique_global_compartments;
   compartment_text_length    = boot_state->compartment_text_length;
   molecule_text_length       = boot_state->molecule_text_length;
   page_size                  = boot_state->page_size;
