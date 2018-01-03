@@ -26,8 +26,8 @@ int num_jac_col(struct state_struct *state,
 		double *infnormdfdy_colj_p) {
   /*
     Compute column j of the jacobian matrix dfdy,
-    given a delta for elemant j of y, delj, a 
-    theshhold for elemntj, the conc_to_count ratio for element j,
+    given a delta for element j of y, delj, a 
+    theshhold for elementj, the conc_to_count ratio for element j,
     the count vector, the flux vector  f and concetration vector y,
     two scractch
 
