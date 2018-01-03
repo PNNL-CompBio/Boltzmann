@@ -1,3 +1,5 @@
+#ifndef _SIZE_RXNS_LIST_H_
+#define _SIZE_RXNS_LIST_H_ 1
 /* size_rxns_list.h
 *******************************************************************************
 boltzmann
@@ -20,4 +22,5 @@ under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
-extern int size_rxns_list(struct state_struct *state);
+extern int size_rxns_list(struct boot_state_struct *boot_state);
+#endif
