@@ -3,6 +3,6 @@
 extern int lr3_approximate_delta_concs(struct state_struct *state, double *counts,
 				      double *forward_rxn_likelihoods,
 				      double *reverse_rxn_likelihoods, 
-				      double *flux, double multiplier,
+				      double *flux, double flux_scaling,
 				      int base_rxn, int choice);
 #endif
