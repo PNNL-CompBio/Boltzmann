@@ -55,15 +55,15 @@ void dgemv_(char *trans, int *m_p, int *n_p, double *alpha_p, double *a,
 	   double *y, int *incy_p) {
    /*
      Simplified version of dgemv that assumes trans = 0,
-     and the scalars alpha and beta are both 1.0 and 
      incx and incy are both 1.
      a is an m x n  matrix stored contiguously,
      x is a n x 1 vector, and y is an  m x 1 vector
-     We compute y = y + Ax using daxpy operations.
+     We compute y = beta * y + alpha *Ax using daxpy operations.
      Called by: ode23tb
      Calls:     daxpy
    */
   double *a_col;
+  double alpha;
   double xv;
   int m;
   int n;
@@ -77,18 +77,14 @@ void dgemv_(char *trans, int *m_p, int *n_p, double *alpha_p, double *a,
   incx = 1;
   incy = 1;
   lda  = *lda_p;
-  /*
-    if beta were not 1, we would want:
-    for (i=0;i<m;i++) {
-       y[i] = beta * y[i]
-    }       
-  */
+  alpha = *alpha_p;
+  dscal_(&m,beta_p,y,&incy);
   for (j=0;j<n;j++) {
     /*
-      if alpha wer not wone we would want 
-      xv = alpha * xj
+      if alpha were not one we would want 
+      xv = alpha * x[j]
     */
-    xv = x[j];
+    xv = alpha * x[j];
     daxpy_(&m,&xv,a_col,&incx,y,&incy);
     a_col += m; /* Caution address arithmetic here */
     /* in general we would replace the m above with lda. */
