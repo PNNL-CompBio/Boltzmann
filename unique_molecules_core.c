@@ -27,9 +27,11 @@ specific language governing permissions and limitations under the License.
 int unique_molecules_core(int nzr,
 			  struct molecule_struct *sorted_molecules,
 			  char *molecules_text,
+			  char *solvent_string,
 			  int64_t *molecules_map,
 			  int64_t *nunique_molecules,
 			  int64_t *sum_molecule_len,
+			  int     *solvent_pos,
 			  int64_t align_len,
 			  int64_t align_mask) {
   /*
@@ -60,6 +62,7 @@ int unique_molecules_core(int nzr,
   molecule_len = (int64_t)0;
   /* loop over sorted molecules. */
   nu_molecules = 0;
+  *solvent_pos  = -1;
   molecules_map[sorted_molecules->m_index] = nu_molecules;
   cur_molecule = sorted_molecules;
   cstring = NULL;
@@ -68,6 +71,10 @@ int unique_molecules_core(int nzr,
     m_size = strlen(cstring);
     pad_size = (align_len - (m_size & align_mask)) & align_mask;
     molecule_len += (m_size + pad_size);
+    if (strcmp(cstring,solvent_string) == 0) {
+      cur_molecule->solvent = 1;
+      *solvent_pos          = 0;
+    }
   }
   /*
     This translation has already been done in translate_compartments.
@@ -94,6 +101,12 @@ int unique_molecules_core(int nzr,
       umolecules_next->string = cur_molecule->string;
       umolecules_next->m_index = nu_molecules;
       umolecules_next->c_index = ni;
+      if (strcmp(solvent_string,sstring) == 0) {
+	umolecules_next->solvent = 1;
+	*solvent_pos = nu_molecules;
+      } else {
+	umolecules_next->solvent = 0;
+      }
       cni = ni;
       umolecules_next += 1; /* Caution address arithmetic. */
     } else {
