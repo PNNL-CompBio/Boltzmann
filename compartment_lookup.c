@@ -30,7 +30,7 @@ int compartment_lookup(char *compartment_name, struct state_struct *state) {
     sorted list or -1 if not found.
     Called by: read_initial_concentrations.
   */
-  struct istring_elem_struct *sorted_compartments;
+  struct molecule_struct *sorted_compartments;
   char *compartment_text;
   char *compartment;
   int index;
