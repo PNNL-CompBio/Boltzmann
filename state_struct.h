@@ -315,7 +315,7 @@ struct state_struct {
   double *flux_jacobian; /* number_unique_molecules * number_unique_molecules */
   double *reactant_term; /* product of reaction reactant concentrations, length number_reactions */
   double *product_term;  /* product of reaction product concentrations, length number_reactions */
-  double *p_over_r; /* Ratio of product_term to reactant_term. */
+  double *p_over_r; /*  product of produced species concentrations.  */
   double *r_over_p;/* Ratio of reactant_term to product_term. */
   double *concs; /* concentrations from counts. */
   /*
