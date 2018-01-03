@@ -31,5 +31,5 @@ specific language governing permissions and limitations under the License.
 #ifndef _COMPUTE_MOLECULAR_PARTITION_PROBABILITY_H_
 #define _COMPUTE_MOLECULAR_PARTITION_PROBABILITY_H_
 
-extern int compute_molecular_partition_probability(struct formation_energy_struct *fes);
+extern int compute_molecular_partition_probability(struct state_struct *state);
 #endif /* _COMPUTE_MOLECULAR_PARTITION_PROBABILITY_H_ */
