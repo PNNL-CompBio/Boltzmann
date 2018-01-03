@@ -10,6 +10,8 @@ int boltzmann_flatten_twoway_data(struct state_struct *state,
     Calls:     boltzmann_flatten_vgrng_state,
                memcpy, fprintf, fflush
   */
+  struct cvodes_params_struct cps;
+  struct cvodes_params_struct *cvodes_params;
   int64_t *fvgrng_state;
   int64_t *lfstate;
   double  *dfstate;
@@ -27,6 +29,9 @@ int boltzmann_flatten_twoway_data(struct state_struct *state,
   int success;
 
   int number_reactions;
+  int cvodes_params_size;
+
+  int cvodes_words;
   int padi;
 
   success = 1;
@@ -36,7 +41,9 @@ int boltzmann_flatten_twoway_data(struct state_struct *state,
   dfstate = (double  *)fstate;
   word_pos = *word_pos_p;
   vgrng_state_size = 16;
-  two_way_len = 2 + 3*nunique_molecules + number_reactions + 32;
+  cvodes_params_size = sizeof(cps);
+  two_way_len = 2 + 3*nunique_molecules + number_reactions + 
+    2*vgrng_state_size + cvodes_params_size;
   word_pos += 1;
   if (direction == 0) {
     lfstate[word_pos] = two_way_len;
@@ -52,7 +59,7 @@ int boltzmann_flatten_twoway_data(struct state_struct *state,
   }
   if (success) {
     word_pos += 1;
-    lfstate[word_pos] = -5;
+    lfstate[word_pos] = -6;
     
     word_pos += 1;
 
@@ -64,6 +71,14 @@ int boltzmann_flatten_twoway_data(struct state_struct *state,
     boltzmann_flatten_vgrng_state(fvgrng_state,state->vgrng2_state,direction,&vgrng_state_size);
     word_pos += vgrng_state_size;
 
+    cvodes_params   = (void *)&lfstate[word_pos];
+    cvodes_words    = (cvodes_params_size + 7) >> 3;
+    if (direction == 0) {
+      memcpy(cvodes_params, (void*)state->cvodes_params,cvodes_params_size);
+    } else {
+      memcpy((void*)state->cvodes_params,cvodes_params,cvodes_params_size);
+    }
+    word_pos += cvodes_words;
     current_counts = (double*)&dfstate[word_pos];
     if (direction == 0) {
       /*
