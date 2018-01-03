@@ -1,0 +1,4 @@
+#ifndef _CATENATE_COMPARTMENTS_AND_MOLECULES_H_
+#define _CATENATE_COMPARTMENTS_AND_MOLECULES_H_ 1
+extern int catenate_compartments_and_molecules(struct boot_state_struct *boot_state);
+#endif
