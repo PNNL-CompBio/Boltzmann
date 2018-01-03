@@ -79,6 +79,11 @@ int print_restart_file(struct state_struct *state) {
   cmpt_string = NULL;
   oi          = -1;
   if (success) {
+    /*
+      First print a volume, and then a CONC_UNITS line.
+    */
+    fprintf(restart_fp,"VOLUME          %le\n",state->volume);
+    fprintf(restart_fp,"CONC_UNITS      %le\n",state->conc_units);
     for (i=0;i<nu_molecules;i++) {
       ci = cur_molecules->c_index;
       if (ci != oi) {
