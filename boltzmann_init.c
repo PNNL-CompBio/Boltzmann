@@ -52,6 +52,8 @@ specific language governing permissions and limitations under the License.
 #include "compute_ke.h"
 #include "print_rxn_likelihoods_header.h"
 #include "print_free_energy_header.h"
+#include "flatten_state.h"
+#include "free_boot_state.h"
 /*
 #define DBG_BOLTZMANN_INIT  
 */
@@ -98,7 +100,8 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
 
   int print_output;
   int padi;
-
+  
+  FILE *rxn_echo_fp;
   FILE *bndry_flux_fp;
   FILE *lfp;
   /*
@@ -177,7 +180,17 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
       /*
 	Echo the reactions to the log file.
       */
-      success = echo_reactions_file(state);
+      rxn_echo_fp = fopen("rxns.echo","w+");
+      if (rxn_echo_fp == NULL) {
+	fprintf(stderr,
+		"echo_reactions_file: Error could not open rxns.echo file.\n");
+	success = 0;
+      }
+      if (success) {
+	success = echo_reactions_file(state,rxn_echo_fp);
+	fclose(rxn_echo_fp);
+      }
+
     }
   }
   /*
