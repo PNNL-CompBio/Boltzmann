@@ -93,17 +93,26 @@ int free_boot_state2(struct state_struct **statep) {
     if (state->compartment_ptrs) {
       free(state->compartment_ptrs);
     }
-    if (state->current_concentrations) {
-      free(state->current_concentrations);
+    if (state->current_counts) {
+      free(state->current_counts);
     }
-    if (state->bndry_flux_concs) {
-      free(state->bndry_flux_concs);
+    if (state->bndry_flux_counts) {
+      free(state->bndry_flux_counts);
     }
     if (state->dg0s) {
       free(state->dg0s);
     }
     if (state->ke) {
       free(state->ke);
+    }
+    if (state->kss) {
+      free(state->kss);
+    }
+    if (state->kss_e_val) {
+      free(state->kss_e_val);
+    }
+    if (state->kss_u_val) {
+      free(state->kss_u_val);
     }
     if (state->molecule_dg0tfs) {
       free(state->molecule_dg0tfs);
