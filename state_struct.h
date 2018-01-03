@@ -182,9 +182,9 @@ struct state_struct {
   int64_t ode23tb_params_size;
   int64_t ode_jacobian_choice;
   int64_t cvodes_prec_fill;
-  int64_t ode_stop_norm; /* 0 for infinity(max), 1 for 1(sum abs), 2 for 2 */
+  int64_t ode_stop_norm; /* 0 for infinity(max), 1 for 1(sum abs), 2 for Euclidian.*/
   int64_t ode_stop_rel;  /* 0 for absolute  1 for relative */
-  int64_t ode_stop_style; /*0 for off, 1 for vector, 2 for element_wise */
+  int64_t ode_stop_style; /*0 for termination time, 1 for adaptive */
   int64_t compute_sensitivities; 
   /* 0 for no, 1 for yes, only when ode_solver_choice == 1 */
   /*
