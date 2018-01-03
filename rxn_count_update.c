@@ -57,7 +57,10 @@ int rxn_count_update(int rxn_no, int direction,
   int     k;
 
   int     success;
+  int     padi;
+  /*
   int     cmpt;
+  */
 			 
   struct rxn_matrix_struct *rxns_matrix;
 
