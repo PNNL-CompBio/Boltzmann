@@ -91,10 +91,14 @@ int flatten_state(struct state_struct *boot_state,
   int64_t current_counts_size;
   int64_t bndry_flux_counts_offset;
   int64_t bndry_flux_counts_size;
+  int64_t net_lklhd_bndry_flux_offset;
+  int64_t net_lklhd_bndry_flux_size;
   int64_t vgrng_offset;
   int64_t vgrng_size;
   int64_t vgrng_pad;
   int64_t vgrng2_offset;
+  int64_t net_likelihood_offset;
+  int64_t net_likelihood_size;
   int64_t dg0s_offset;
   int64_t dg0s_size;
   int64_t ke_offset;
@@ -222,28 +226,8 @@ int flatten_state(struct state_struct *boot_state,
   meta_size    = (int64_t)sizeof(ss);
   meta_pad     = (align_len - (align_mask & meta_size)) & align_mask;
   two_way_data_offset = state_offset + ((meta_size + meta_pad) >> log2_word_len);
-  unique_molecules    = boot_state->nunique_molecules;
-  print_output        = boot_state->print_output;
-  max_regs_per_rxn    = boot_state->max_regs_per_rxn;
-
-  dg_forward_offset  = two_way_data_offset;
-  dg_forward_size    = 1;
-  entropy_offset     = dg_forward_offset + dg_forward_size;
-  entropy_size       = 1;
-  current_counts_offset = entropy_offset + entropy_size;
-  current_counts_size   = unique_molecules + (unique_molecules & 1);
-  bndry_flux_counts_offset       = current_counts_offset +
-    current_counts_size;
-  bndry_flux_counts_size         = current_counts_size;
-  vgrng_offset                  = bndry_flux_counts_offset + bndry_flux_counts_size;
-  vgrng_size                    = (int64_t)sizeof(vss);
-  vgrng_pad = ((align_len - (vgrng_size & align_mask)) & align_mask);
-  vgrng_size = (vgrng_size + vgrng_pad) >> log2_word_len;
-  vgrng2_offset = vgrng_offset + vgrng_size;
-  two_way_data_length  = vgrng2_offset + vgrng_size - two_way_data_offset;
-  two_way_data_length += two_way_data_length & 1;
-
-  incoming_data_offset = two_way_data_offset + two_way_data_length;
+  print_output         = boot_state->print_output;
+  max_regs_per_rxn     = boot_state->max_regs_per_rxn;
   number_reactions     = boot_state->number_reactions;
   number_molecules     = boot_state->number_molecules;
   number_compartments  = boot_state->number_compartments;
@@ -251,6 +235,30 @@ int flatten_state(struct state_struct *boot_state,
   unique_molecules     = boot_state->nunique_molecules;
   max_filename_len     = boot_state->max_filename_len;
   num_files            = boot_state->num_files;
+
+  dg_forward_offset  = two_way_data_offset;
+  dg_forward_size    = 1;
+  entropy_offset     = dg_forward_offset + dg_forward_size;
+  entropy_size       = 1;
+  current_counts_offset    = entropy_offset + entropy_size;
+  current_counts_size      = unique_molecules + (unique_molecules & 1);
+  bndry_flux_counts_offset = current_counts_offset + 
+    current_counts_size;
+  bndry_flux_counts_size   = current_counts_size;
+  net_lklhd_bndry_flux_offset = bndry_flux_counts_offset + bndry_flux_counts_size;
+  net_lklhd_bndry_flux_size   = current_counts_size;
+  number_reactions            = boot_state->number_reactions;
+  net_likelihood_offset       = net_lklhd_bndry_flux_offset + net_lklhd_bndry_flux_size;
+  net_likelihood_size         = number_reactions + (number_reactions & 1);
+  vgrng_offset                = net_likelihood_offset + net_likelihood_size;
+  vgrng_size                  = (int64_t)sizeof(vss);
+  vgrng_pad = ((align_len - (vgrng_size & align_mask)) & align_mask);
+  vgrng_size = (vgrng_size + vgrng_pad) >> log2_word_len;
+  vgrng2_offset = vgrng_offset + vgrng_size;
+  two_way_data_length  = vgrng2_offset + vgrng_size - two_way_data_offset;
+  two_way_data_length += two_way_data_length & 1;
+
+  incoming_data_offset = two_way_data_offset + two_way_data_length;
   solvent_pos          = boot_state->solvent_pos;
   dg0s_offset          = incoming_data_offset;
   dg0s_size            = number_reactions + (number_reactions & 1);
@@ -478,6 +486,8 @@ int flatten_state(struct state_struct *boot_state,
     new_state->entropy_p = (double*)&new_state_l[entropy_offset];
     new_state->current_counts = (double*)&new_state_l[current_counts_offset];
     new_state->bndry_flux_counts = (double *)&new_state_l[bndry_flux_counts_offset];
+    new_state->net_lklhd_bndry_flux = (double*)&new_state_l[net_lklhd_bndry_flux_offset];
+    new_state->net_likelihood = (double*)&new_state_l[net_likelihood_offset]; 
     new_state->vgrng_state = (struct vgrng_state_struct *)&new_state_l[vgrng_offset];
     new_state->vgrng2_state = (struct vgrng_state_struct *)&new_state_l[vgrng2_offset];
     new_state->dg0s = (double*)&new_state_l[dg0s_offset];
@@ -518,20 +528,6 @@ int flatten_state(struct state_struct *boot_state,
     new_state->params_file  = (char*)&new_state_l[file_names_offset];
     new_state->max_filename_len = max_filename_len;
     boltzmann_set_filename_ptrs(new_state);
-    /*
-    new_state->reaction_file = new_state->params_file + max_filename_len;
-    new_state->init_conc_file = new_state->reaction_file + max_filename_len;   
-    new_state->input_dir = new_state->init_conc_file + max_filename_len;
-    new_state->output_file = new_state->input_dir + max_filename_len;
-    new_state->log_file = new_state->output_file + max_filename_len;
-    new_state->output_dir = new_state->log_file + max_filename_len;
-    new_state->counts_out_file = new_state->output_dir + max_filename_len;
-    new_state->rxn_lklhd_file = new_state->counts_out_file + max_filename_len;
-    new_state->free_energy_file = new_state->rxn_lklhd_file + max_filename_len;
-    new_state->restart_file = new_state->free_energy_file + max_filename_len;
-    new_state->rxn_view_file = new_state->restart_file + max_filename_len;
-    new_state->bndry_flux_file = new_state->rxn_view_file + max_filename_len;
-    */
     new_state->rxn_title_text = (char *)&new_state_l[rxn_title_offset];
     new_state->pathway_text   = (char *)&new_state_l[pathway_offset];
     new_state->compartment_text   = (char *)&new_state_l[compartment_offset];
