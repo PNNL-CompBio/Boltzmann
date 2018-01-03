@@ -1,7 +1,7 @@
 #include "system_includes.h"
 
 #include "blas.h"
-void dscal(int *nx, double *a_p, double *x, int *inc) {
+void dscal_(int *nx, double *a_p, double *x, int *inc) {
   /*
     Dscal routine that ignores inc, assuming its 1.
     x <- a * x
@@ -16,7 +16,7 @@ void dscal(int *nx, double *a_p, double *x, int *inc) {
   }
 }
 
-void dcopy(int *nx, double *x, int *incx, double *y, int *incy) {
+void dcopy_(int *nx, double *x, int *incx, double *y, int *incy) {
   /*
     dcopy routine that ignores incx and incy assuming them both to be 1.
     y <- x
@@ -29,7 +29,7 @@ void dcopy(int *nx, double *x, int *incx, double *y, int *incy) {
   }
 }
 
-double dnrm2(int *nx, double *x, int *inc) {
+double dnrm2_(int *nx, double *x, int *inc) {
   /*
     Dnrm2 routine that ignores inc, assuming its 1.
     This still needs to be rewritten for stability and 
@@ -50,7 +50,7 @@ double dnrm2(int *nx, double *x, int *inc) {
 }
 
 
-void dgemv(char *trans, int *m_p, int *n_p, double *alpha_p, double *a, 
+void dgemv_(char *trans, int *m_p, int *n_p, double *alpha_p, double *a, 
 	   int *lda_p, double *x, int *incx_p, double *beta_p, 
 	   double *y, int *incy_p) {
    /*
@@ -88,16 +88,16 @@ void dgemv(char *trans, int *m_p, int *n_p, double *alpha_p, double *a,
       xv = alpha * xj
     */
     xv = x[j];
-    daxpy(&m,&xv,a_col,&incx,y,&incy);
+    daxpy_(&m,&xv,a_col,&incx,y,&incy);
     a_col += m; /* Caution address arithmetic here */
     /* in general we would replace the m above with lda. */
   }
 }
 
-void daxpy(int *n_p, double *alpha_p, double *x, int *incx_p, 
+void daxpy_(int *n_p, double *alpha_p, double *x, int *incx_p, 
 	   double *y, int *incy_p) {
   /*
-    Simplified daxpy routine where we assume incx and incy are both 1.
+    daxpy routine from lapack where we assume incx and incy are both 1.
     Called by dgemv.
   */
   double alpha;
@@ -110,7 +110,7 @@ void daxpy(int *n_p, double *alpha_p, double *x, int *incx_p,
   }
 }
 
-double ddot(int *n_p, double *x, int *incx_p, double *y, int *incy_p) {
+double ddot_(int *n_p, double *x, int *incx_p, double *y, int *incy_p) {
   double dtemp;
   double *xt;
   double *yt;
@@ -145,7 +145,7 @@ double ddot(int *n_p, double *x, int *incx_p, double *y, int *incy_p) {
   }
   return(dtemp);
 }
-int idamax(int *n_p, double *dx, int *incx_p) {
+int idamax_(int *n_p, double *dx, int *incx_p) {
   int n;
   int incx;
   int i;
@@ -177,5 +177,5 @@ int idamax(int *n_p, double *dx, int *incx_p) {
       }
     }
   }
-  return (max_loc);
+  return (max_loc+1);
 }
