@@ -324,6 +324,11 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
     vgrng_start= vgrng_init(vgrng2_state,vgrng_start_steps);
   }
   if (success) {
+    if (boot_state->print_output) {
+      boot_state->rxn_view_hist_length = ((int64_t)(boot_state->record_steps + boot_state->rxn_view_freq -1)/boot_state->rxn_view_freq) + (int64_t)1;
+    } else {
+      boot_state->rxn_view_hist_length = 0;
+    }
     /*
     *statep = boot_state;
     */
