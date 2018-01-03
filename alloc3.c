@@ -37,7 +37,8 @@ int alloc3(struct state_struct *state) {
     in intial concentrations, the concentrations vector,
     and the molecules matrix and its fields. The molecules 
     matrix is a transpose of the reactions matris.
-    Called by: boltzmann
+    Called by: boltzmann_init
+    Calls:     calloc, fprintf, fflush (intrinsic)
   */
   struct molecules_matrix_struct sms;
   struct molecules_matrix_struct *molecules_matrix;
@@ -192,22 +193,21 @@ int alloc3(struct state_struct *state) {
   if (success) {
     ask_for = ((int64_t)nrxns) * ((int64_t)sizeof(double));
     usage += ask_for;
-    state->q_r = (double *)calloc(one_l,ask_for);
-    if (state->q_r == NULL) {
+    state->ke = (double *)calloc(one_l,ask_for);
+    if (state->ke == NULL) {
       fprintf(stderr,"alloc3: Error unable to allocate %ld bytes for "
-	      "state->q_r field.\n",ask_for);
+	      "state->ke field.\n",ask_for);
       fflush(stderr);
       success = 0;
     } 
-    
   }
   if (success) {
     ask_for = ((int64_t)nrxns) * ((int64_t)sizeof(double));
     usage += ask_for;
-    state->ke = (double *)calloc(one_l,ask_for);
-    if (state->q_r == NULL) {
+    state->log_rxn_ratio = (double *)calloc(one_l,ask_for);
+    if (state->log_rxn_ratio == NULL) {
       fprintf(stderr,"alloc3: Error unable to allocate %ld bytes for "
-	      "state->ke field.\n",ask_for);
+	      "state->log_rxn_ratio field.\n",ask_for);
       fflush(stderr);
       success = 0;
     } 
