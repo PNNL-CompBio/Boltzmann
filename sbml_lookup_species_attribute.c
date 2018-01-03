@@ -42,15 +42,6 @@ int sbml_lookup_species_attribute(char *key) {
   Called by: sbml_parse_species_key_value
   Calls:     strcmp
 */
-  int cmp0;
-  int cmp1;
-  int cmp2;
-  int cmp3;
-  int cmp4;
-  int cmp5;
-  int cmp6;
-  int cmp7;
-  int cmp8;
   int tag;
   int fc;
   int bfc;
