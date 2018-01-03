@@ -39,6 +39,7 @@ specific language governing permissions and limitations under the License.
 #include "print_molecules_dictionary.h"
 #include "alloc3.h"
 #include "set_compartment_ptrs.h"
+#include "read_compartment_sizes.h"
 #include "read_initial_concentrations.h"
 #include "check_initial_concentrations.h"
 #include "compute_standard_energies.h"
@@ -241,10 +242,12 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
     If we are going to read in a list of compartment sizes that should
     happen here after the compartments have been set, and before
     the initinal concentrations are read in.
-  if (success) {
-     success = read_compartment_sizes(state);
-  }
   */
+  if (success) {
+    if (state->compartment_file[0] != '\0') {
+      success = read_compartment_sizes(state);
+    }
+  }
   /*
     Read initial concentrations, convert them to counts,
     and print them to the counts output file.
