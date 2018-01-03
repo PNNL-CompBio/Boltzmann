@@ -84,6 +84,9 @@ int read_kg2js(struct sbml2bo_struct *sbml_state) {
 	id_string += (nc+1);
 	kg2js_string += pads; /* Caution address arithmetic */
 	nc = count_ntb(id_string);
+	if (id_string[nc-1] == '\n') {
+	  nc = nc-1;
+	}
 	id_string[nc] = 0;
 	*js_ids = kg2js_string;
 	js_ids += 1;  /* Caution address arithmetic */
