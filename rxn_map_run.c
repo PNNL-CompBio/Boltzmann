@@ -37,7 +37,7 @@ struct timing_struct timing_data;
 int rxn_map_run(struct state_struct *state,
 		struct molecules_matrix_struct *molecules_matrix,
 		int mi, int mj) {
-  struct rxn_matrix_struct *rxn_matrix;
+  struct reactions_matrix_struct *rxn_matrix;
   struct molecule_struct *sorted_molecules;
   struct compartment_struct *sorted_compartments;
   struct molecule_struct *molecule_i;
@@ -110,7 +110,7 @@ int rxn_map_run(struct state_struct *state,
   */
   rxn_matrix          = state->reactions_matrix;
   sorted_molecules    = state->sorted_molecules;
-  sorted_compartments = state->sorted_cmpts;
+  sorted_compartments = state->sorted_compartments;
   nunique_molecules   = state->nunique_molecules;
   num_reactions       = state->number_reactions;
   nzr                 = state->number_molecules;
@@ -122,7 +122,7 @@ int rxn_map_run(struct state_struct *state,
   r_coefs             = rxn_matrix->coefficients;
 
   mol_ptrs            = molecules_matrix->molecules_ptrs;
-  r_indices           = molecules_matrix->rxn_indices;
+  r_indices           = molecules_matrix->reaction_indices;
   m_coefs             = molecules_matrix->coefficients;
 
   zero_l = (int64_t)0;
