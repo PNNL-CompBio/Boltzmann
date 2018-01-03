@@ -1,6 +1,6 @@
 /* state_struct.h 
 *******************************************************************************
-Boltsman
+Boltzmann
 
 Pacific Northwest National Laboratory, Richland, WA 99352.
 
@@ -149,7 +149,7 @@ struct state_struct {
   int64_t sorted_compartments_offset_in_bytes;
   int64_t molecules_text_offset_in_bytes;
   int64_t compartments_text_offset_in_bytes;
-
+  int64_t num_files;
 
 
   double  ideal_gas_r;
@@ -205,13 +205,13 @@ struct state_struct {
   char *input_dir;        /* max_filename_len */
   char *output_file;      /* max_filename_len */
   char *log_file;         /* max_filename_len */
+  char *output_dir;       /* max_filename_len */
   char *concs_out_file;   /* max_filename_len */
   char *rxn_lklhd_file;   /* max_filename_len */
   char *free_energy_file; /* max_filename_len */
   char *restart_file;     /* max_filename_len */
   char *rxn_view_file;    /* max_filename_len */
   char *bndry_flux_file;  /* max_filename_len */
-  char *output_dir;       /* max_filename_len */
   /* 2*sizeof(double) + 
      ((unique_molecules * 3) + 2*number_reactions) * sizeof(double)+
      2*sizeof(vgrng_struct)  + 
