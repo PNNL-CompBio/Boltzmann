@@ -187,7 +187,7 @@ int boltzmann_run_sim(struct state_struct *state) {
     dg_forward *= m_rt;
     entropy = 0.0;
     if (sum_likelihood <= 0.0) {
-      fprintf(stderr,"boltzmann_run_sim: Error, nonpositivy sum_likelihood\n");
+      fprintf(stderr,"boltzmann_run_sim: Error, nonpositivity sum_likelihood\n");
       fflush(stderr);
       success = 0;
       break;
@@ -269,7 +269,7 @@ int boltzmann_run_sim(struct state_struct *state) {
       entropy = 0.0;
       if (sum_likelihood <= 0.0) {
 	fprintf(stderr,
-		"boltzmann_run_sim: Error, nonpositivy sum_likelihood\n");
+		"boltzmann_run_sim: Error, nonpositivity sum_likelihood\n");
 	fflush(stderr);
 	success = 0;
 	break;
