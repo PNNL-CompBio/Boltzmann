@@ -123,14 +123,14 @@ int free_boot_state2(struct state_struct *state) {
     if (state->net_lklhd_bndry_flux) {
       free(state->net_lklhd_bndry_flux);
     }
-    if (state->net_likelihood) {
-      free(state->net_likelihood);
-    }
     if (state->count_to_conc) {
       free(state->count_to_conc);
     }
     if (state->conc_to_count) {
       free(state->conc_to_count);
+    }
+    if (state->net_likelihood) {
+      free(state->net_likelihood);
     }
     if (state->dg0s) {
       free(state->dg0s);
@@ -138,6 +138,11 @@ int free_boot_state2(struct state_struct *state) {
     if (state->ke) {
       free(state->ke);
     }
+    /*
+    if (state->rke) {
+      free(state->rke);
+    }
+    */
     if (state->kss) {
       free(state->kss);
     }
@@ -167,15 +172,14 @@ int free_boot_state2(struct state_struct *state) {
       if (molecules_matrix->rxn_indices) {
 	free(molecules_matrix->rxn_indices);
       }
-      /*
-      if (molecules_matrix->transpose_work) {
-	free(molecules_matrix->transpose_work);
+      if (molecules_matrix->coefficients) {
+	free(molecules_matrix->coefficients);
       }
-      */
       free(state->molecules_matrix);
     }
     /*
       Free variables allocated in alloc5
+      This is now done in a call to unalloc6 in compute_standard_energies.
     */
     /*
     formation_energies = state->formation_energies;
