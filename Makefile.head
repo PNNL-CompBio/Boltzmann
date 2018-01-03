@@ -1,3 +1,4 @@
+
 CC      = @CC@
 CLINKER = @CC@
 MPICC   = @CC@
