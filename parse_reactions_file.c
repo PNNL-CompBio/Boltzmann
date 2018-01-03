@@ -57,8 +57,8 @@ int parse_reactions_file(struct state_struct *state) {
   struct istring_elem_struct *unsorted_species;
   struct istring_elem_struct *unsorted_cmpts;
   int64_t *keyword_lens;
-  int64_t *row_ptrs;
-  int64_t *column_indices;
+  int64_t *rxn_ptrs;
+  int64_t *species_indices;
   int64_t *coefficients;
   int64_t rxn_buff_len;
   int64_t total_length;
@@ -154,8 +154,8 @@ int parse_reactions_file(struct state_struct *state) {
     raw_species_text            = state->raw_species_text;
     reactions                   = state->reactions;
     rxns_matrix                 = state->reactions_matrix;
-    row_ptrs                    = rxns_matrix->row_ptrs;
-    column_indices              = rxns_matrix->column_indices;
+    rxn_ptrs                    = rxns_matrix->rxn_ptrs;
+    species_indices              = rxns_matrix->species_indices;
     coefficients                = rxns_matrix->coefficients;
     matrix_text                 = rxns_matrix->text;
     reaction                    = reactions;
@@ -166,8 +166,10 @@ int parse_reactions_file(struct state_struct *state) {
     reaction->right_compartment = -1;
     reaction->num_reactants     = 0;
     reaction->num_products      = 0;
-    row_ptrs[rxns]              = species;
+    rxn_ptrs[rxns]              = species;
     fgp = fgets(rxn_buffer,rxn_buff_len,rxn_fp);
+    state->max_species_len = 0;
+    state->min_species_len = rxn_buff_len;
     while ((fgp && success) && (! feof(rxn_fp))) {
       line_len = strlen(rxn_buffer);
       /*
@@ -298,7 +300,7 @@ int parse_reactions_file(struct state_struct *state) {
 	  while (pos < len) {
 	    sl = (int64_t)count_nws(rctnts);
 	    if (sl > 0) {
-	      column_indices[species] = species;
+	      species_indices[species] = species;
 	      if (is_a_coef(sl,rctnts)) {
 		rctnts[sl] = '\0';
 		coefficients[species] = - atoi(rctnts);
@@ -315,6 +317,13 @@ int parse_reactions_file(struct state_struct *state) {
 		sl = count_nws(rctnts);
 	      } else {
 		coefficients[species] = -1;
+	      }
+	      if (sl > state->max_species_len) {
+		state->max_species_len = sl;
+	      } else {
+		if (sl < state->min_species_len) {
+		  state->min_species_len = sl;
+		}
 	      }
 	      matrix_text[species] = (char*)&raw_species_text[species_pos];
 	      rctnts[sl] = '\0';
@@ -371,7 +380,7 @@ int parse_reactions_file(struct state_struct *state) {
 	  while (pos < len) {
 	    sl = (int64_t)count_nws(prdcts);
 	    if (sl > 0) {
-	      column_indices[species] = species;
+	      species_indices[species] = species;
 	      if (is_a_coef(sl,prdcts)) {
 		prdcts[sl] = '\0';
 		coefficients[species] = atoi(prdcts);
@@ -388,6 +397,13 @@ int parse_reactions_file(struct state_struct *state) {
 		sl = count_nws(prdcts);
 	      } else {
 		coefficients[species] = 1;
+	      }
+	      if (sl > state->max_species_len) {
+		state->max_species_len = sl;
+	      } else {
+		if (sl < state->min_species_len) {
+		  state->min_species_len = sl;
+		}
 	      }
 	      matrix_text[species] = (char*)&raw_species_text[species_pos];
 	      prdcts[sl] = '\0';
@@ -474,7 +490,7 @@ int parse_reactions_file(struct state_struct *state) {
 	  reaction->right_compartment = -1;
 	  reaction->num_reactants     = 0;
 	  reaction->num_products      = 0;
-	  row_ptrs[rxns]              = species;
+	  rxn_ptrs[rxns]              = species;
 	  break;
         default:
 	break;
