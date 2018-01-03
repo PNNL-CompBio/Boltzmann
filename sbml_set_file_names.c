@@ -37,12 +37,14 @@ int sbml_set_file_names(struct sbml2bo_struct *state) {
   char *concs_in_file;
   char *rxns_dat_file;
   char *cmpts_dat_file;
+  char *id_name_file;
   char *log_file;
   char *tail;
   sbml_file      = state->sbml_file;
   concs_in_file  = state->concs_in_file;
   rxns_dat_file  = state->rxns_dat_file;
   cmpts_dat_file = state->cmpts_dat_file;
+  id_name_file   = state->id_name_file;
   log_file       = state->log_file;
   max_file_name_len = state->file_name_len;
   /* Determine the length of the base name - this is just the sbml file name
@@ -57,9 +59,10 @@ int sbml_set_file_names(struct sbml2bo_struct *state) {
       base_len = in_len;
     }
     /*
-      Use an _concs.in suffix for the concentrations input file
-      an _rxns.dat suffix for the reactions data file,
-      an _cmpts.dat suffix for the compartments data file.
+      Use a _concs.in suffix for the concentrations input file
+      a _rxns.dat suffix for the reactions data file,
+      a _cmpts.dat suffix for the compartments data file,
+      a _names.lis for the id_names file,
       and a .log suffix for the log file.
     */
     if (base_len + 10 > max_file_name_len) {
@@ -79,6 +82,9 @@ int sbml_set_file_names(struct sbml2bo_struct *state) {
     strncpy(cmpts_dat_file,sbml_file,base_len);
     tail = (char*)&cmpts_dat_file[base_len];
     strcpy (tail,"_cmpts.dat");
+    strncpy(id_name_file,sbml_file,base_len);
+    tail = (char*)&id_name_file[base_len];
+    strcpy (tail,"_names.lis");
     strncpy(log_file,sbml_file,base_len);
     tail = (char*)&log_file[base_len];
     strcpy (tail,".log");
