@@ -33,7 +33,8 @@ specific language governing permissions and limitations under the License.
 #include "print_molecules_dictionary.h"
 int print_molecules_dictionary(struct state_struct *state) {
   /*
-    Print the  unique molecules in sorted order.
+    Print the  unique molecules in sorted order and the 
+    header line for the concs.out file.
     Called by: boltzmann_init
     Calls:     fopen, fprintf, fclose (intrinsic)
   */
