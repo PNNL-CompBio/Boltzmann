@@ -171,8 +171,8 @@ SERIAL_OBJS4 = rxn_map_init.o rxn_map_parse_start_stop_line.o rxn_map_run.o allo
 SERIAL_OBJS5 = boltzmann_boot.o boot_init.o boot_alloc0.o boot_alloc1.o boot_io_init.o size_rxns_list.o boot_alloc2.o parse_rxn_list_line.o save_and_count_local_state.o boot_alloc3.o catenate_compartments_and_molecules.o global_merge_and_map_compartments.o sort_global_compartments.o global_merge_molecules.o sort_global_molecules.o boot_alloc4.o condense_strings.o fill_meta_data.o write_super_state.o copy_local_states.o boltzmann_mmap_superstate.o boltzmann_boot_check.o flatten_super_state.o boltzmann_rep_state_i.o
 SERIAL_OBJS6 = boltzmann_global_to_local_counts.o boltzmann_global_to_local_fluxes.o boltzmann_local_to_global_counts.o boltzmann_local_to_global_fluxes.o size_file.o boltzmann_load.o boltzmann_number_of_reaction_files.o boltzmann_global_molecule_count.o boltzmann_length_state_i.o boltzmann_max_local_state_size.o boltzmann_size_superstate.o
 
-#SERIAL_OBJS7 = deq_run.o alloc7.o fill_flux_pieces.o ode23tb.o init_base_reactants.o ode_num_jac.o num_jac_col.o blas.o ode_it_solve.o compute_flux_scaling.o approximate_fluxes.o ce_approximate_fluxes.o update_rxn_likelihoods.o print_concs_fluxes.o
-SERIAL_OBJS7 = deq_run.o alloc7.o ode23tb.o init_base_reactants.o ode_num_jac.o num_jac_col.o blas.o ode_it_solve.o compute_flux_scaling.o approximate_fluxes.o ce_approximate_fluxes.o update_rxn_likelihoods.o print_concs_fluxes.o lsame.o dtrsm.o dlaswp.o dgetrf2.o dgetrf.o dgetrs.o dgemm.o
+#SERIAL_OBJS7 = deq_run.o alloc7.o fill_flux_pieces.o ode23tb.o init_base_reactants.o ode_num_jac.o num_jac_col.o blas.o ode_it_solve.o compute_flux_scaling.o approximate_fluxes.o ce_approximate_fluxes.o update_rxn_likelihoods.o print_concs_fluxes.o ode_print_concs_header.o ode_print_concs.o
+SERIAL_OBJS7 = deq_run.o alloc7.o ode23tb.o init_base_reactants.o ode_num_jac.o num_jac_col.o blas.o ode_it_solve.o compute_flux_scaling.o approximate_fluxes.o ce_approximate_fluxes.o update_rxn_likelihoods.o print_concs_fluxes.o lsame.o dtrsm.o dlaswp.o dgetrf2.o dgetrf.o dgetrs.o dgemm.o ode_print_concs_header.o ode_print_concs.o
 SBML_OBJS = sbml_to_boltzmann.o size_ms2js_file.o size_kg2js_file.o \
 	sbml_alloc0.o sbml_set_file_names.o sbml_alloc2.o read_ms2js.o \
 	read_kg2js.o sort_json_ids.o merge_sorted_strings.o \
@@ -750,7 +750,9 @@ libboltzmann.a: $(SERIAL_OBJS1)  $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SERIAL_OBJS4)
 	$(AR) $(ARFLAGS) libboltzmann.a check_for_ws.o
 	$(AR) $(ARFLAGS) libboltzmann.a deq_run.o
 	$(AR) $(ARFLAGS) libboltzmann.a alloc7.o
+	$(AR) $(ARFLAGS) libboltzmann.a ode_print_concs_header.o
 	$(AR) $(ARFLAGS) libboltzmann.a ode23tb.o
+	$(AR) $(ARFLAGS) libboltzmann.a ode_print_concs.o
 	$(AR) $(ARFLAGS) libboltzmann.a init_base_reactants.o
 	$(AR) $(ARFLAGS) libboltzmann.a blas.o
 	$(AR) $(ARFLAGS) libboltzmann.a lsame.o
@@ -1299,7 +1301,7 @@ deq.o : deq.c $(SERIAL_INCS) boltzmann_init.h deq_run.h print_counts.h print_res
 
 #deq_run.o: deq_run.c deq_run.h $(SERIAL_INCS) flatten_state.h alloc4.h form_molecules_matrix.h alloc7.h update_rxn_log_likelihoods.h fill_flux_pieces.h ode23tb.h
 
-deq_run.o: deq_run.c deq_run.h $(SERIAL_INCS) flatten_state.h alloc4.h form_molecules_matrix.h alloc7.h update_rxn_log_likelihoods.h ode23tb.h	
+deq_run.o: deq_run.c deq_run.h $(SERIAL_INCS) flatten_state.h alloc4.h form_molecules_matrix.h alloc7.h update_rxn_log_likelihoods.h ode23tb.h ode_print_concs_header.h
 	   $(CC) $(DCFLAGS) $(TFLAGS) -c deq_run.c
 
 alloc7.o: alloc7.c alloc7.h $(SERIAL_INCS)
@@ -1308,8 +1310,14 @@ alloc7.o: alloc7.c alloc7.h $(SERIAL_INCS)
 #fill_flux_pieces.o: fill_flux_pieces.c fill_flux_pieces.h $(SERIAL_INCS)
 #	$(CC) $(DCFLAGS) $(TFLAGS) -c fill_flux_pieces.c 
 
-ode23tb.o: ode23tb.c ode23tb.h $(SERIAL_INCS) init_base_reactants.h compute_flux_scaling.h approximate_fluxes.h ode_num_jac.h ode_it_solve.h print_concs_fluxes.h blas.h ce_approximate_fluxes.h
+ode_print_concs_header.o: ode_print_concs_header.c ode_print_concs_header.h $(SERIAL_INCS) 
+	$(CC) $(DCFLAGS) $(TFLAGS) -c ode_print_concs_header.c
+
+ode23tb.o: ode23tb.c ode23tb.h $(SERIAL_INCS) init_base_reactants.h compute_flux_scaling.h approximate_fluxes.h ode_num_jac.h ode_it_solve.h print_concs_fluxes.h blas.h ce_approximate_fluxes.h ode_print_concs.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c ode23tb.c 
+
+ode_print_concs.o: ode_print_concs.c ode_print_concs.h $(SERIAL_INCS) 
+	$(CC) $(DCFLAGS) $(TFLAGS) -c ode_print_concs.c
 
 init_base_reactants.o: init_base_reactants.c init_base_reactants.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c init_base_reactants.c
