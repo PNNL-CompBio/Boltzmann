@@ -29,8 +29,8 @@ int ode23tb (struct state_struct *state, double *counts,
                compute_flux_scaling,
                approximate_fluxes, ode_num_jac, ode_it_solve,
                print_concs_fluxes,
-	       dnrm2, dgemv, dscal
-	       sizeof, calloc, sqrt, pow, fabs, dgetrf, dgetrs
+	       dnrm2_, dgemv_, dscal_, idamax_
+	       sizeof, calloc, sqrt, pow, fabs, dgetrf_, dgetrs_
 
   */
   double *dfdy; /* length nunique_molecules * nunique_molecules */
@@ -41,6 +41,7 @@ int ode23tb (struct state_struct *state, double *counts,
   double *y2; /* length nunique_molecules */
   double *ynew; /* length nunique_molecules */
   double *yp; /* length nunique_molecules */
+  double *absy; /* length nunique_molecules */
   double *y_counts;  /* length nunique_molecules */
   double *y1_counts;  /* length nunique_molecules */
   double *y2_counts; /* length nunique_molecules */
@@ -51,8 +52,9 @@ int ode23tb (struct state_struct *state, double *counts,
   double *z2; /* length nunique_molecules */
   double *z3; /* length nunique_molecules; */
   double *znew; /* length nunique_molecules; */
-  double *z_scratch; /* length nunique_molecules */
-  double *del_scratch; /* length nunique_molecules */
+  double *it_solve_rhs; /* length nunique_molecules */
+  double *it_solve_del; /* length nunique_molecules */
+  double *it_solve_scr; /* length nunique_molecules */
   double *est1; /* length nunique_molecules */
   double *est2; /* length nunique_molecules */
   double *fac; /* length nunique_molecules */
@@ -226,10 +228,10 @@ int ode23tb (struct state_struct *state, double *counts,
   trans = &trans_chars[0];
   /*
     Allocate double space needed for scratch vectors and matrices.
-    actually 31*ny but we'll throw in an extra ny for future needs.
+    actually 31*ny but we'll throw in an extra 9ny for future needs.
   */
   if (success) {
-    ask_for = ((ny * 32) + (2*ny*ny) + (2*nrxns)) * sizeof(double);
+    ask_for = ((ny * 40) + (2*ny*ny) + (2*nrxns)) * sizeof(double);
     dfdy = (double*)calloc(ask_for,one_l);
     if (dfdy == NULL) {
       success = 0;
@@ -241,14 +243,15 @@ int ode23tb (struct state_struct *state, double *counts,
     }
   }
   if (success) {
-    miter = &dfdy[nysq];
-    y0    = &miter[nysq];
-    y     = &y0[ny];
-    y1    = &y[ny];
-    y2    = &y1[ny];
-    ynew  = &y2[ny];
-    yp   = &ynew[ny];
-    y_counts = &yp[ny];
+    miter     = &dfdy[nysq];
+    y0        = &miter[nysq];
+    y         = &y0[ny];
+    y1        = &y[ny];
+    y2        = &y1[ny];
+    ynew      = &y2[ny];
+    yp        = &ynew[ny];
+    absy      = &yp[ny];
+    y_counts  = &absy[ny];
     y1_counts = &y_counts[ny];
     y2_counts = &y1_counts[ny];
     f         = &y2_counts[ny];
@@ -258,9 +261,10 @@ int ode23tb (struct state_struct *state, double *counts,
     z2        = &z[ny];
     z3        = &z2[ny];
     znew      = &z3[ny];
-    z_scratch = &znew[ny];
-    del_scratch = &z_scratch[ny];
-    est1        = &del_scratch[ny];
+    it_solve_rhs = &znew[ny];
+    it_solve_del = &it_solve_rhs[ny];
+    it_solve_scr = &it_solve_del[ny];
+    est1        = &it_solve_scr[ny];
     est2        = &est1[ny];
     fac         = &est2[ny];
     thresh      = &fac[ny];
@@ -282,6 +286,8 @@ int ode23tb (struct state_struct *state, double *counts,
     */
     threshold = 1.0e-3;
     njthreshold = 1.0e-6;
+    
+    
     for (i=0;i<ny;i++) {
       y0[i] = counts[i] * count_to_conc[i];
       y[i]  = y0[i];
@@ -378,17 +384,20 @@ int ode23tb (struct state_struct *state, double *counts,
     recip_cube_root_rtol = 1.0 / (pow(rtol,third));
     */
     recip_cube_root_rtol = 10.0; 
+    dcopy_(&ny,f0,&inc1,yp,&inc1);
+    /*
     for (i=0;i<ny;i++) {
       yp[i] = f0[i];
     }
+    */
     hmin      = 0;
     hmax      = 1;
     if (normcontrol) {
-      normy     = dnrm2(&ny,y,&inc1);
-      normyp    = dnrm2(&ny,yp,&inc1);
+      normy     = dnrm2_(&ny,y,&inc1);
+      normyp    = dnrm2_(&ny,yp,&inc1);
     } else {
-      normy     = fabs(y[idamax(&ny,y,&inc1)]);
-      normyp    = fabs(yp[idamax(&ny,yp,&inc1)]);
+      normy     = fabs(y[idamax_(&ny,y,&inc1)-1]);
+      normyp    = fabs(yp[idamax_(&ny,yp,&inc1)-1]);
     }
     jcurrent   = 1;
     need_new_j = 0;
@@ -539,10 +548,10 @@ int ode23tb (struct state_struct *state, double *counts,
 	delfdelt = dfdt + dfdy * yp
       */
       scalar = 1.0;
-      dgemv(trans,&ny,&ny,&scalar,dfdy,&ny,yp,&inc1,&scalar,delfdelt,&inc1);
+      dgemv_(trans,&ny,&ny,&scalar,dfdy,&ny,yp,&inc1,&scalar,delfdelt,&inc1);
   
       if (normcontrol) {
-	norm_delfdelt = dnrm2(&ny,delfdelt,&inc1);
+	norm_delfdelt = dnrm2_(&ny,delfdelt,&inc1);
 	norm_delfdelt_o_wt = norm_delfdelt/wt2;
       } else {
 	norm_delfdelt_o_wt = 0.0;
@@ -615,7 +624,7 @@ int ode23tb (struct state_struct *state, double *counts,
       }
       if (absh != abslasth) {
 	h_ratio = absh/abslasth;
-	dscal(&ny,&h_ratio,z,&inc1);
+	dscal_(&ny,&h_ratio,z,&inc1);
 	need_new_lu = 1;
       }
       nofailed = 1;
@@ -702,7 +711,7 @@ int ode23tb (struct state_struct *state, double *counts,
 	  /*
 	    Set miter to be all 0.
 	  */
-	  dscal(&nysq,&dzero,miter,&inc1);
+	  dscal_(&nysq,&dzero,miter,&inc1);
 	  /*
 	    Set miter to be the identity matrix.
 	  */
@@ -713,7 +722,7 @@ int ode23tb (struct state_struct *state, double *counts,
 	    set miter to be I - (d*h)*dfdy
 	  */
 	  mdh = 0.0 - (d*h);
-	  daxpy(&nysq,&mdh,dfdy,&inc1,miter,&inc1);
+	  daxpy_(&nysq,&mdh,dfdy,&inc1,miter,&inc1);
 	  /*
 	    Now we need to factor miter with say dgetrf (lapack routines)
 	    overwrites miter with its factorization, generating
@@ -721,10 +730,10 @@ int ode23tb (struct state_struct *state, double *counts,
 	    as arguments to ode_it_solve, 
 	  */
 	  info = 0;
-	  dgetrf(&ny,&ny,miter,&ny,ipivot,&info);
+	  dgetrf_(&ny,&ny,miter,&ny,ipivot,&info);
 	  if (info != 0) {
 	    if (lfp) {
-	      fprintf(lfp,"ode23tb: dgetrf call failed with info = %d\n",
+	      fprintf(lfp,"ode23tb: dgetrf_ call failed with info = %d\n",
 		      info);
 	      fflush(lfp);
 	    }
@@ -766,7 +775,7 @@ int ode23tb (struct state_struct *state, double *counts,
 	*/
 	iter_count = 0;
 	itfail1 = ode_it_solve(state,miter,ipivot,t2,y2,z2,
-			       del_scratch,z_scratch,
+			       it_solve_del,it_solve_rhs,it_solve_scr,
 			       y2_counts,forward_rxn_likelihoods,
 			       reverse_rxn_likelihoods,d,h,rtol,wti,
 			       &rate, &iter_count);
@@ -790,7 +799,7 @@ int ode23tb (struct state_struct *state, double *counts,
 	    ode_print_concs(state,t2,y2);
 	  }
 	  if (normcontrol) {
-	    normy2 = dnrm2(&ny,y2,&inc1);
+	    normy2 = dnrm2_(&ny,y2,&inc1);
 	    /*
 	      wt     = max(wt,normy2)
 	    */
@@ -843,7 +852,7 @@ int ode23tb (struct state_struct *state, double *counts,
 #endif
 	  */
 	  itfail2 = ode_it_solve(state,miter,ipivot,tnew,ynew,znew,
-				 del_scratch,z_scratch,
+				 it_solve_del,it_solve_rhs,it_solve_scr,
 				 ynew_counts,forward_rxn_likelihoods,
 				 reverse_rxn_likelihoods,d,h,rtol,wti,
 				 &rate, &iter_count);
@@ -886,7 +895,7 @@ int ode23tb (struct state_struct *state, double *counts,
 	      }
 	      h = tdir * absh;
 	      h_ratio = absh/abslasth;
-	      dscal(&ny,&h_ratio,z,&inc1);
+	      dscal_(&ny,&h_ratio,z,&inc1);
 	      need_new_lu = 1;
 	      not_done = 1;
 	      done = 0;
@@ -901,7 +910,7 @@ int ode23tb (struct state_struct *state, double *counts,
 	    ode_print_concs(state,tnew,ynew);
 	  }
 	  if (normcontrol) {
-	    normynew = dnrm2(&ny,ynew,&inc1);
+	    normynew = dnrm2_(&ny,ynew,&inc1);
 	  /*
 	  wt2 = max(wt,normynew);
 	  */
@@ -937,14 +946,14 @@ int ode23tb (struct state_struct *state, double *counts,
 	  }
 	  /*
 	    Here we need to solve miter * est2 = est1
-	    With calls to something like dgetrs
+	    With calls to something like dgetrs_
 	  */
 	  nrhs = 1;
-	  dcopy(&ny,est1,&inc1,est2,&inc1);
-	  dgetrs(trans,&ny,&nrhs,miter,&ny,ipivot,est2,&ny,&info);
+	  dcopy_(&ny,est1,&inc1,est2,&inc1);
+	  dgetrs_(trans,&ny,&nrhs,miter,&ny,ipivot,est2,&ny,&info);
 	  if (info != 0) {
 	    if (lfp) {
-	      fprintf(lfp,"ode23tb: dgetrs call failed with info = %d\n",
+	      fprintf(lfp,"ode23tb: dgetrs_ call failed with info = %d\n",
 		      info);
 	      fflush(lfp);
 	    }
@@ -1059,9 +1068,9 @@ int ode23tb (struct state_struct *state, double *counts,
 	    ode_print_concs(state,tnew,ynew);
 	  }
 	  if (normcontrol) {
-	    normynew = dnrm2(&ny,ynew,&inc1);
+	    normynew = dnrm2_(&ny,ynew,&inc1);
 	  } else {
-	    normynew = fabs(ynew[idamax(&ny,ynew,&inc1)]);
+	    normynew = fabs(ynew[idamax_(&ny,ynew,&inc1)-1]);
 	  }
 	}
       }
@@ -1114,7 +1123,7 @@ int ode23tb (struct state_struct *state, double *counts,
 	  }
 	  if (fabs(h_ratio - 1) > 0.2) {
 	    absh = h_ratio *absh;
-	    dscal(&ny,&h_ratio,z,&inc1);
+	    dscal_(&ny,&h_ratio,z,&inc1);
 	    need_new_lu = 1;
 	  }
 	}
