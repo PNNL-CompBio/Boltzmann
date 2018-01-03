@@ -99,6 +99,8 @@ int compute_molecule_dg0tf(double ph,
   pseudoisomer = pseudoisomers;
   sum = 0;
   found = 0;
+  dgt1 = 0.0;
+  dgtmin = 0.0;
   for(i=0;i<num_cpds;i++){
 
     json_cpd_name = (char*)&pseudoisomer_strings[pseudoisomer->json_cpd_name];
