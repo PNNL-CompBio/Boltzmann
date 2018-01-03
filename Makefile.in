@@ -196,7 +196,7 @@ SBML_OBJS = sbml_to_boltzmann.o size_ms2js_file.o size_kg2js_file.o \
 	count_ntb.o
 KFP_OBJS = kegg_from_pseudoisomer.o count_ws.o count_nlb.o check_for_ws.o boltzmannize_json_id.o
 KFM_OBJS = kegg_from_modelseed.o count_ws.o count_ntb.o count_nor.o check_for_ws.o boltzmannize_json_id.o
-KPM_OBJS = count_ws.o count_ntb.o count_nws.o 
+KPM_OBJS = modelseed_2_json.o count_ws.o count_ntb.o count_nws.o 
 all: all-am
 
 .SUFFIXES:
