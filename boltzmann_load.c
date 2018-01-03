@@ -41,7 +41,7 @@ specific language governing permissions and limitations under the License.
 #define DBG_BOLTZMANN_LOAD
 */
 #include "boltzmann_load.h"
-int boltzmann_load(const char *superstate_filename, 
+int boltzmann_load(char *superstate_filename, 
 		   struct super_state_struct **super_statep) {
   /*
     Create a pointer to the superstate of a memorymapped superstate file,
