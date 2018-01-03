@@ -89,10 +89,12 @@ int print_molecules_dictionary(struct state_struct *state) {
       molecule    = (char *)&molecules_text[cur_molecules->string];
       if (ci != oi) {
 	oi = ci;
-	cur_cmpt = (struct istring_elem_struct *)&(cur_cmpts[ci]);
-	cmpt_string = (char *)&compartment_text[cur_cmpt->string];
+	if (ci > 0) {
+	  cur_cmpt = (struct istring_elem_struct *)&(cur_cmpts[ci]);
+	  cmpt_string = (char *)&compartment_text[cur_cmpt->string];
+	}
       }
-      if (ci != -1) {
+      if (ci > 0) {
 	fprintf(dict_fp,"%d %s %s\n",i,molecule,cmpt_string);
 	fprintf(conc_fp,"\t%s:%s",molecule,cmpt_string);
       } else {
