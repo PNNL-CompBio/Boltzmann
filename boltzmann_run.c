@@ -53,7 +53,7 @@ int boltzmann_run(struct state_struct *state) {
     Run the boltzmann simulations, to be called after
     boltzmann_init has been called.
 
-    Called by: boltzmann_drv
+    Called by: boltzmann/client
     Calls:     update_rxn_log_likelihoods,
 	       choose_rxn,
 	       print_restart_file
