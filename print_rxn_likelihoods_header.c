@@ -30,22 +30,36 @@ void print_rxn_likelihoods_header(struct state_struct *state) {
     Calls    : fprintf,fflush.
   */
   struct rxn_struct *reactions;
+  double *kss;
+  double *kssr;
   char *rxn_title_text;
   char *title;
   int i;
-  int padi;
+  int nrxns;
+  FILE *rxn_lklhd_fp;
   rxn_title_text = state->rxn_title_text;
-  if (state->rxn_lklhd_fp) {
-    fprintf(state->rxn_lklhd_fp,"iter\tentropy\tdg_forward\tforward_rxn_likelihood\treverse_rxn_likelihood\n");
-    fprintf(state->rxn_lklhd_fp,"iter\tentropy\tdg_forward");
+  rxn_lklhd_fp   = state->rxn_lklhd_fp;
+  nrxns = state->number_reactions;
+  if (rxn_lklhd_fp) {
+    fprintf(rxn_lklhd_fp,"iter\tentropy\tdg_forward\tforward_rxn_likelihood\treverse_rxn_likelihood\n");
+    fprintf(rxn_lklhd_fp,"iter\tentropy\tdg_forward");
     reactions                   = state->reactions;
-    for (i=0;i<state->number_reactions;i++) {
+    for (i=0;i<nrxns;i++) {
       title = (char*)&rxn_title_text[reactions->title];
-      fprintf(state->rxn_lklhd_fp,"\tf_%s\tr_%s",title,title);
+      fprintf(rxn_lklhd_fp,"\tf_%s\tr_%s",title,title);
       reactions += 1; /* Caution address arithmetic */
     }
-    fprintf(state->rxn_lklhd_fp,"\n");
-    fflush(state->rxn_lklhd_fp);
+    fprintf(rxn_lklhd_fp,"\n");
+    if (state->adjust_steady_state) {
+      kss   = state->kss;
+      kssr  = state->kssr;
+      fprintf(rxn_lklhd_fp,"kss\t\t");
+      for (i=0;i<nrxns;i++) {
+	fprintf(rxn_lklhd_fp,"\t%le\t%le",kss[i],kssr[i]);
+      }
+      fprintf(rxn_lklhd_fp,"\n");
+    }
+    fflush(rxn_lklhd_fp);
   }
   return;
 }
