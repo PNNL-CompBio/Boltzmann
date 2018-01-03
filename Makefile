@@ -1519,7 +1519,7 @@ ode_print_lklhds.o: ode_print_lklhds.c ode_print_lklhds.h $(SERIAL_INCS)
 get_counts.o: get_counts.c get_counts.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c get_counts.c
 
-ode_test_steady_state.o: ode_test_steady_state.c ode_test_steady_state.h blas.h
+ode_test_steady_state.o: ode_test_steady_state.c ode_test_steady_state.h blas.h approximate_delta_concs.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c ode_test_steady_state.c
 
 boltzmann_monitor_ode.o: boltzmann_monitor_ode.c boltzmann_monitor_ode.h $(SERIAL_INCS) ode_print_concs.h get_counts.h update_rxn_likelihoods.h ode_print_lklhds.h approximate_delta_concs.h ode_print_dconcs.h
