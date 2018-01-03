@@ -116,6 +116,7 @@ int sbml_process_list_of_compartments(FILE *sbml_fp,
   unsorted_compartments = state->unsorted_compartments;
   sorted_compartments = state->sorted_compartments;
   compartment = unsorted_compartments;
+  compartment_text = state->compartment_text;
   n_cmpts     = 0;
   size        = state->default_comp_size;
   multiplier  = 1.0;
