@@ -44,7 +44,7 @@ int rxn_log_likelihoods(double *concs,
         any concentration where the stoichiometric coefficient is greater 
 	than 1 is raised to that power).
     In the process we may want the rxn_likelihood as well though frequently as
-    when called from free_energy_changes we only want the logs, so 
+    when called from update_rxn_log_likelihoods we only want the logs, so 
     rxn_likelihood_values and log_rxn_likelihood are allowed to be the same 
     vector in that case.
 
@@ -58,7 +58,7 @@ int rxn_log_likelihoods(double *concs,
     to sort reactant and product concentrations and take the product of 
     successive quotients which we would expect to be well scaled.
 
-    Called by: boltzmann_run_sim, free_energy_changes
+    Called by: update_rxn_log_likelihoods
     Calls:     rxn_likelihoods
                fprintf, fflush, log (intrinsic)
   */
@@ -67,7 +67,7 @@ int rxn_log_likelihoods(double *concs,
   int i;
   int padi;
 
-  nrxns         = state->number_reactions;
+  nrxns         = (int)state->number_reactions;
   success       = rxn_likelihoods(concs,rxn_likelihood_values,state,
 				  rxn_direction);
   if (success) {
