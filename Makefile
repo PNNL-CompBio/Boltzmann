@@ -67,10 +67,10 @@ AUTOCONF = ${SHELL} /home/dbaxter/boltzmann/trunk/missing --run autoconf
 AUTOHEADER = ${SHELL} /home/dbaxter/boltzmann/trunk/missing --run autoheader
 AUTOMAKE = ${SHELL} /home/dbaxter/boltzmann/trunk/missing --run automake-1.9
 AWK = gawk
-CC = gcc
+CC = icc
 CCDEPMODE = depmode=none
 CFLAGS = ${OPT_FLAGS} ${DBG_FLAGS}
-CPP = gcc -E
+CPP = icc -E
 CPPFLAGS = 
 CYGPATH_W = echo
 DEFS = -DPACKAGE_NAME=\"sss\" -DPACKAGE_TARNAME=\"sss\" -DPACKAGE_VERSION=\"0.1\" -DPACKAGE_STRING=\"sss\ 0.1\" -DPACKAGE_BUGREPORT=\"douglas.baxter@pnl.gov\" -DPACKAGE=\"sss\" -DVERSION=\"0.1\" 
@@ -104,7 +104,7 @@ SHELL = /bin/sh
 STRIP = 
 TIMING_CONFIG = no_
 VERSION = 0.1
-ac_ct_CC = gcc
+ac_ct_CC = icc
 ac_ct_STRIP = 
 am__fastdepCC_FALSE = 
 am__fastdepCC_TRUE = #
@@ -133,9 +133,9 @@ sbindir = ${exec_prefix}/sbin
 sharedstatedir = ${prefix}/com
 sysconfdir = ${prefix}/etc
 target_alias = 
-CLINKER = gcc
-MPICC = gcc
-MPICCLINKER = gcc
+CLINKER = icc
+MPICC = icc
+MPICCLINKER = icc
 AS = @AS@
 AR = ar
 ARFLAGS = -crv
@@ -176,7 +176,7 @@ SERIAL_OBJS1 = boltzmann_boot.o boltzmann_mmap_superstate.o \
 	print_reactions_matrix.o free_boot_state.o free_boot_state2.o \
 	sort_global_compartments.o sort_global_molecules.o
 SERIAL_OBJS1_5 = compute_standard_energies.o size_pseudoisomer_file.o alloc5.o parse_pseudoisomer_dg0f_file.o sharp_pos.o blank_to_dash.o alloc6.o compute_molecule_dg0tfs.o compute_molecule_dg0tf.o pseudoisomer_dg0tf.o compute_molecular_partition_probability.o compute_chemical_potential.o compute_reaction_dg0.o unalloc6.o
-SERIAL_OBJS2 = boltzmann_run.o update_rxn_log_likelihoods.o choose_rxn.o bndry_flux_update.o candidate_rxn.o rxn_likelihood.o rxn_likelihood_postselection.o rxn_log_likelihoods.o rxn_likelihoods.o binary_search_l_u_b.o rxn_conc_update.o compute_delta_g_forward_entropy_free_energy.o print_concentrations.o print_likelihoods.o save_likelihoods.o print_free_energy.o print_boundary_flux.o print_restart_file.o print_reactions_view.o
+SERIAL_OBJS2 = boltzmann_run.o update_rxn_log_likelihoods.o choose_rxn.o bndry_flux_update.o candidate_rxn.o rxn_likelihood.o rxn_likelihood_postselection.o rxn_log_likelihoods.o rxn_likelihoods.o binary_search_l_u_b.o rxn_conc_update.o compute_delta_g_forward_entropy_free_energy.o print_counts.o print_likelihoods.o save_likelihoods.o print_free_energy.o print_boundary_flux.o print_restart_file.o print_reactions_view.o
 
 #SERIAL_OBJS3 = 
 SERIAL_OBJS3 = rxn_map_init.o rxn_map_parse_start_stop_line.o rxn_map_run.o alloc4.o form_molecules_matrix.o
@@ -528,7 +528,7 @@ libboltzmann.a: $(SERIAL_OBJS1) $(SERIAL_OBJS1_5) $(SERIAL_OBJS2) $(SERIAL_OBJS3
 	$(AR) $(ARFLAGS) libboltzmann.a binary_search_l_u_b.o
 	$(AR) $(ARFLAGS) libboltzmann.a rxn_conc_update.o
 	$(AR) $(ARFLAGS) libboltzmann.a compute_delta_g_forward_entropy_free_energy.o
-	$(AR) $(ARFLAGS) libboltzmann.a print_concentrations.o
+	$(AR) $(ARFLAGS) libboltzmann.a print_counts.o
 	$(AR) $(ARFLAGS) libboltzmann.a print_likelihoods.o
 	$(AR) $(ARFLAGS) libboltzmann.a save_likelihoods.o
 	$(AR) $(ARFLAGS) libboltzmann.a print_free_energy.o
@@ -784,7 +784,7 @@ free_boot_state.o: $(SERIAL_INCS) free_boot_state.c free_boot_state.h
 free_boot_state2.o: $(SERIAL_INCS) free_boot_state2.c free_boot_state2.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c free_boot_state2.c
 
-boltzmann_run.o: $(SERIAL_INCS) boltzmann_run.c boltzmann_run.h update_rxn_log_likelihoods.h choose_rxn.h compute_delta_g_forward_entropy_free_energy.h print_concentrations.h print_likelihoods.h save_likelihoods.h print_free_energy.h print_boundary_flux.h print_restart_file.h print_reactions_view.h
+boltzmann_run.o: $(SERIAL_INCS) boltzmann_run.c boltzmann_run.h update_rxn_log_likelihoods.h choose_rxn.h compute_delta_g_forward_entropy_free_energy.h print_counts.h print_likelihoods.h save_likelihoods.h print_free_energy.h print_boundary_flux.h print_restart_file.h print_reactions_view.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_run.c
 
 update_rxn_log_likelihoods.o: $(SERIAL_INCS) update_rxn_log_likelihoods.c update_rxn_log_likelihoods.h rxn_log_likelihoods.h
@@ -820,8 +820,8 @@ bndry_flux_update.o: $(SERIAL_INCS) bndry_flux_update.c bndry_flux_update.h
 compute_delta_g_forward_entropy_free_energy.o: $(SERIAL_INCS) compute_delta_g_forward_entropy_free_energy.c compute_delta_g_forward_entropy_free_energy.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c compute_delta_g_forward_entropy_free_energy.c
 
-print_concentrations.o: $(SERIAL_INCS) print_concentrations.c print_concentrations.h
-	$(CC) $(DCFLAGS) $(TFLAGS) -c print_concentrations.c
+print_counts.o: $(SERIAL_INCS) print_counts.c print_counts.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c print_counts.c
 
 print_likelihoods.o: $(SERIAL_INCS) print_likelihoods.c print_likelihoods.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c print_likelihoods.c
