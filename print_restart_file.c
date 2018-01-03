@@ -36,6 +36,8 @@ int print_restart_file(struct state_struct *state) {
   struct molecule_struct *cur_cmpts;
   struct molecule_struct *cur_cmpt;
   double *cconcs;
+  double multiplier;
+  double conc;
   char   *restart_file;
   int64_t *column_indices;
   char *cmpt_string;
@@ -61,6 +63,8 @@ int print_restart_file(struct state_struct *state) {
   cur_molecules = state->sorted_molecules;
   cur_cmpts     = state->sorted_cmpts;
   cconcs        = state->current_concentrations;
+  multiplier    = state->count_to_conc;
+  
   molecules_text = state->molecules_text;
   compartment_text = state->compartment_text;
   vbs[0]        = 'F';
@@ -99,12 +103,13 @@ int print_restart_file(struct state_struct *state) {
 	vbsp = vbsc;
       }
       molecule = (char*)&molecules_text[cur_molecules->string];
+      conc = cconcs[i] * multiplier;
       if (ci > 0) {
 	fprintf(restart_fp," %s:%s\t%le\t%c\n",
-		molecule,cmpt_string,cconcs[i],vbsp[0]);
+		molecule,cmpt_string,conc,vbsp[0]);
       } else {
 	fprintf(restart_fp," %s\t%le\t%c\n",
-		molecule,cconcs[i],vbsp[0]);
+		molecule,conc,vbsp[0]);
       }
       cur_molecules += 1; /* Caution address arithmetic. */
     }
