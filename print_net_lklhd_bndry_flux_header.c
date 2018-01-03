@@ -26,7 +26,7 @@ void print_net_lklhd_bndry_flux_header(struct state_struct *state) {
 
   nunique_molecules = state->nunique_molecules;
   molecule          = state->sorted_molecules;
-  sorted_cmpts      = state->sorted_cmpts;
+  sorted_cmpts      = state->sorted_compartments;
   molecules_text    = state->molecules_text;
   compartment_text  = state->compartment_text;
   nl_bndry_flx_file = state->nl_bndry_flx_file;
