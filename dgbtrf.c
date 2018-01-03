@@ -663,7 +663,7 @@ v*> \author Univ. of California Berkeley
 	    */
 	    dtrsm_(&l_char, &l_char, &n_char, &u_char,
 		   &jb, &j2, &one, &ab[kv + 1 + j_ldab], &ldabm1,
-		   &ab[kv+1-jb + jpjb_ldab], &ldabm1 );
+		   &ab[kv+1-jb + jpjb_ldab], &ldabm1,1,1,1,1 );
 /*
                   IF( I2.GT.0 ) THEN
 *
@@ -682,7 +682,7 @@ v*> \author Univ. of California Berkeley
 	      dgemm_(&n_char,&n_char,&i2,&j2,&jb,&m_one, 
 		     &ab[j_ldab + kv +1 + jb],
 		     &ldabm1,&ab[jpjb_ldab + kv+1 - jb], &ldabm1,
-		     &one, &ab[jpjb_ldab + kv+1], &ldabm1);
+		     &one, &ab[jpjb_ldab + kv+1], &ldabm1,1,1);
 	    }
 	      /*
                   IF( I3.GT.0 ) THEN
@@ -698,7 +698,7 @@ v*> \author Univ. of California Berkeley
 	    if (i3 > 0){
 	      dgemm_(&n_char, &n_char,&i3, &i2, &jb, &m_one, work31, &ldwork,
 		     &ab[jpjb_ldab+kv+1-jb], &ldabm1, &one,
-		     &ab[jpjb_ldab+kv+1-jb+kl], &ldabm1);
+		     &ab[jpjb_ldab+kv+1-jb+kl], &ldabm1,1,1);
 
 	    }
 	    /*
@@ -737,7 +737,7 @@ v*> \author Univ. of California Berkeley
 	    */
 	    dtrsm_(&l_char, &l_char, &n_char, &u_char,
 		   &jb, &j3, &one, &ab[j_ldab + kv], 
-		   &ldabm1,work13_p,&ldwork);
+		   &ldabm1,work13_p,&ldwork,1,1,1,1);
 	    /*
 *
                   IF( I2.GT.0 ) THEN
@@ -757,7 +757,7 @@ v*> \author Univ. of California Berkeley
 	      */
 	      dgemm_(&n_char,&n_char,&i2,&j3,&jb,&m_one,
 		     &ab[j_ldab + kv +jb], &ldabm1, work13_p,
-		     &ldwork, &one, &ab[jpkv_ldab+jb],&ldabm1);
+		     &ldwork, &one, &ab[jpkv_ldab+jb],&ldabm1,1,1);
 	    } /* end if (i2 > 0) */
 	    /*
 
@@ -776,7 +776,7 @@ v*> \author Univ. of California Berkeley
 	      */
 	      dgemm_ (&n_char,&n_char,&i3,&j3, &jb, &m_one, &work31_p[0],
 		      &ldwork,work13_p,&ldwork,&one,
-		      &ab[jpkv_ldab + kl + 1],&ldabm1);
+		      &ab[jpkv_ldab + kl + 1],&ldabm1,1,1);
 	    }
 	    /*
 *                 Copy the lower triangle of A13 back into place
