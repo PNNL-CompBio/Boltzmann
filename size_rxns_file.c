@@ -195,6 +195,7 @@ int size_rxns_file(struct state_struct *state,
 	case 8:
 	  break;
 	case 9:
+        case 12:
 	  break;
         case 10:
         case 11:
