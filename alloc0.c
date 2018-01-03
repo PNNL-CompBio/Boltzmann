@@ -36,7 +36,8 @@ int alloc0(struct state_struct **state) {
     Allocate space for boltzmann_state data and the associated state
     file names. And the parameter file input buffer line, and
     the random number generator state.
-    Called by boltzmann main program.
+    Called by: boltzmann_init
+    Calls    : calloc, fprintf, fflush (intrinsic)
   */
   struct state_struct bltzs;
   struct state_struct *statep;
