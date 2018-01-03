@@ -320,10 +320,16 @@ int boltzmann_flatten_scalars(struct state_struct *state,
   } else {
     state->use_dgzero = lflattened[word_pos];
   }
+  word_pos += 1; /* 83 */
+  if (direction == 0) {
+    lflattened[word_pos] = state->use_bulk_water;
+  } else {
+    state->use_bulk_water = lflattened[word_pos];
+  }
   /*
     Leave a litle extra space, round up to 52 data words 
   */
-  word_pos += 5;
+  word_pos += 4;
   if (direction == 0) {
     lflattened[word_pos] = 40;
   }
