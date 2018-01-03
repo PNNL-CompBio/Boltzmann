@@ -123,6 +123,7 @@ struct state_struct {
   int64_t nunique_molecules;     	
   int64_t use_activities;       	
   int64_t use_deq;
+  int64_t no_round_from_deq;
   int64_t adjust_steady_state;
   int64_t molecules_or_conc;      
   int64_t ode_solver_choice;
