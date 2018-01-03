@@ -21,6 +21,9 @@ CONDITIONS OF ANY KIND, either express or implied. See the License for the
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
 #include "boltzmann_structs.h"
+
+#include "update_regulations.h"
+
 #include "compute_delta_g_forward_entropy_free_energy.h"
 int compute_delta_g_forward_entropy_free_energy(struct state_struct *state,
 						double *dg_forward_p,
@@ -69,9 +72,11 @@ int compute_delta_g_forward_entropy_free_energy(struct state_struct *state,
   double sum_likelihood;
   double r_sum_likelihood;
   double scaled_likelihood;
+
   int    j;
   int    number_reactions;
   int    success;
+  int    use_regulation;
   /*
     Input fields.
   */
@@ -88,6 +93,7 @@ int compute_delta_g_forward_entropy_free_energy(struct state_struct *state,
     Output fields.
   */
   free_energy                = state->free_energy;
+  use_regulation             = state->use_regulation;
   /*
     Recompute the forward reaction log likelihoods and 
     store the likelihoods in forward_rxn_likelihod 
@@ -99,6 +105,9 @@ int compute_delta_g_forward_entropy_free_energy(struct state_struct *state,
 				  state,
 				  forward);
   */
+  if (use_regulation) {
+    update_regulations(state);
+  }
   dg_forward = 0.0;
   entropy = 0.0;
   if (success) {
