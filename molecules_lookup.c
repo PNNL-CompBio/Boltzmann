@@ -31,7 +31,8 @@ specific language governing permissions and limitations under the License.
 
 #include "molecules_lookup.h"
 
-int molecules_lookup(char *molecule_name, struct state_struct *state) {
+int molecules_lookup(char *molecule_name, int compartment_index,
+		     struct state_struct *state) {
   /*
     Return the index of the molecule_name in the unique_molecules sorted list
     or -1 if not found.
@@ -39,8 +40,12 @@ int molecules_lookup(char *molecule_name, struct state_struct *state) {
   */
   struct istring_elem_struct *sorted_molecules;
   char *molecules;
+  int64_t *compartment_ptrs;
   int index;
   int n;
+
+  int left_end;
+  int right_end;
 
   int left;
   int right;
@@ -49,19 +54,21 @@ int molecules_lookup(char *molecule_name, struct state_struct *state) {
   int crslt;
   index = -1;
   sorted_molecules = state->sorted_molecules;
-  n     = state->unique_molecules;
-  crslt = strcmp(molecule_name,sorted_molecules[0].string);
+  compartment_ptrs = state->compartment_ptrs;
+  left_end  = compartment_ptrs[compartment_index+1];
+  right_end = compartment_ptrs[compartment_index+2];
+  crslt = strcmp(molecule_name,sorted_molecules[left_end].string);
   if (crslt >= 0) {
     if (crslt == 0) {
-      index = 0;
+      index = left_end;
     } else {
-      left = 0;
-      crslt = strcmp(molecule_name,sorted_molecules[n-1].string);
+      left = left_end;
+      crslt = strcmp(molecule_name,sorted_molecules[right_end-1].string);
       if (crslt <= 0) {
 	if (crslt == 0) {
-	  index = n-1;
+	  index = right_end-1;
 	} else {
-	  right = n-1;
+	  right = right_end-1;
 	  mid = (left + right) >> 1;
 	  while (mid != left) {
 	    crslt = strcmp(molecule_name,sorted_molecules[mid].string);
