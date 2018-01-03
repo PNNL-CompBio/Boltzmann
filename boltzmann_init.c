@@ -126,6 +126,9 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
   }
   if (success) {
     if (state->log_file) {
+      /*
+	Open the log file.
+      */
       state->lfp = fopen(state->log_file,"w");
       lfp = state->lfp;
       if (state->lfp == NULL) {
@@ -139,6 +142,9 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
   }
   if (success) {
     if (state->concs_out_file) {
+      /*
+	Open the concentrations output file.
+      */
       state->concs_out_fp = fopen(state->concs_out_file,"w");
       if (state->concs_out_fp == NULL) {
 	fprintf(stderr,
@@ -151,6 +157,9 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
   }
   if (success) {
     if (state->rxn_lklhd_file) {
+      /*
+	Open the likelihoods output file.
+      */
       state->rxn_lklhd_fp = fopen(state->rxn_lklhd_file,"w");
       if (state->rxn_lklhd_fp == NULL) {
 	fprintf(stderr,
@@ -163,6 +172,9 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
   }
   if (success) {
     if (state->free_energy_format > 0) {
+      /*
+	Open the free energy output file.
+      */
       if (state->free_energy_file) {
 	state->free_energy_fp = fopen(state->free_energy_file,"w");
 	if (state->free_energy_fp == NULL) {
@@ -177,6 +189,9 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
   }
   if (success) {
     if (state->bndry_flux_file) {
+      /*
+	Open the boundary flux output file.
+      */
       bndry_flux_fp = fopen(state->bndry_flux_file,"w");
       if (bndry_flux_fp == NULL) {
 	fprintf(stderr,
@@ -190,6 +205,9 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
     }
   }
   if (success) {
+    /*
+      Initialize the random number generator.
+    */
     vgrng_state = state->vgrng_state;
     vgrng_start_steps = 1001;
     vgrng_start= vgrng_init(vgrng_state,vgrng_start_steps);
@@ -204,6 +222,9 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
     success = alloc1(state);
   }
   if (success) {
+    /*
+      Echo the input parameters to the log file.
+    */
     success = echo_params(state->lfp,state);
   }
   /*
