@@ -71,6 +71,8 @@ int rxn_map_parse_start_stop_line(struct state_struct *state,
   success = 1;
   *first = -1;
   *last  = -1;
+  start_cmpt = "";
+  stop_cmpt  = "";
   buff_size = (int)state->max_param_line_len;
   if (start_stop_fp == NULL) {
     success = 0;
