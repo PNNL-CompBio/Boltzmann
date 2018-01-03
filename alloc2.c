@@ -94,6 +94,7 @@ int alloc2(struct state_struct *state, int setup) {
   int64_t max_regs_per_rxn;
   int64_t double_size;
   int64_t int64_t_size;
+  int64_t int_size;
   int success;
   success    	     = 1;
   usage      	     = state->usage;
@@ -107,6 +108,7 @@ int alloc2(struct state_struct *state, int setup) {
   num_regulations    = max_regs_per_rxn * num_rxns;
   double_size        = (int64_t)sizeof(double);
   int64_t_size       = (int64_t)sizeof(int64_t);
+  int_size           = (int64_t)sizeof(int);
 
   if (setup > 0) {
     /*
@@ -350,6 +352,17 @@ int alloc2(struct state_struct *state, int setup) {
     if (state->reg_species == NULL) {
       fprintf(stderr,"alloc2: Error unable to allocate %ld bytes for "
 	      "state->reg_species field.\n",ask_for);
+      fflush(stderr);
+      success = 0;
+    }
+  }
+  if (success) {
+    ask_for = (num_rxns + (num_rxns & 1)) * int_size;
+    usage+=ask_for;
+    state->coeff_sum = (int *)calloc(one_l,ask_for);
+    if (state->coeff_sum == NULL) {
+      fprintf(stderr,"alloc2: Error unable to allocate %ld bytes for "
+	      "state->coeff_sum field.\n",ask_for);
       fflush(stderr);
       success = 0;
     }
