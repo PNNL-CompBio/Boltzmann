@@ -30,7 +30,7 @@ int print_reactions_matrix(struct state_struct *state) {
   /*
     Print the reaction likelihoods per reaction to a file along with
     the reaction title and stoichiometric statement.
-    Called by: boltzmann_init
+    Called by: echo_inputs
     Calls:     fopen, fprintf, fclose (intrinsic)
 
     As this routine is called after the solvent coefficients have been 
@@ -47,7 +47,6 @@ int print_reactions_matrix(struct state_struct *state) {
   int64_t *matrix_text;
   double *rxn_view_data;
   double *rev_rxn_view_data;
-  double *activities;
   double *no_op_likelihood;
   int    *rxn_fire;
 
@@ -95,10 +94,11 @@ int print_reactions_matrix(struct state_struct *state) {
     success = 0;
   }
   */
-  rxn_mat_fp = fopen("rxns.mat","w+");
+  rxn_mat_fp = fopen(state->rxn_mat_file,"w+");
   if (rxn_mat_fp == NULL) {
     fprintf(stderr,
-	    "print_reactions_matrix: Error could not open rxns.mat file.\n");
+	    "print_reactions_matrix: Error could not open %s file.\n",
+	    state->rxn_mat_file);
     success = 0;
   }
   if (success) {
@@ -110,7 +110,6 @@ int print_reactions_matrix(struct state_struct *state) {
   if (success) {
     reaction       	 = state->reactions;
     rxns_matrix    	 = state->reactions_matrix;
-    activities           = state->activities;
     rxn_ptrs       	 = rxns_matrix->rxn_ptrs;
     molecules_indices    = rxns_matrix->molecules_indices;
     coefficients   	 = rxns_matrix->coefficients;
