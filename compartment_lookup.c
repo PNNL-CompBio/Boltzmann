@@ -38,7 +38,8 @@ int compartment_lookup(char *compartment_name, struct state_struct *state) {
     Called by: read_initial_concentrations.
   */
   struct istring_elem_struct *sorted_compartments;
-  char *compartments;
+  char *compartment_text;
+  char *compartment;
   int index;
   int n;
 
@@ -52,13 +53,16 @@ int compartment_lookup(char *compartment_name, struct state_struct *state) {
   if (compartment_name) {
     sorted_compartments = state->sorted_cmpts;
     n     = state->unique_compartments;
-    crslt = strcmp(compartment_name,sorted_compartments[0].string);
+    compartment_text = state->compartment_text;
+    compartment = (char *)&compartment_text[sorted_compartments[0].string];
+    crslt = strcmp(compartment_name,compartment);
     if (crslt >= 0) {
       if (crslt == 0) {
         index = 0;
       } else {
         left = 0;
-        crslt = strcmp(compartment_name,sorted_compartments[n-1].string);
+	compartment = (char *)&compartment_text[sorted_compartments[n-1].string];
+        crslt = strcmp(compartment_name,compartment);
         if (crslt <= 0) {
 	  if (crslt == 0) {
 	    index = n-1;
@@ -66,7 +70,8 @@ int compartment_lookup(char *compartment_name, struct state_struct *state) {
 	    right = n-1;
 	    mid = (left + right) >> 1;
 	    while (mid != left) {
-	      crslt = strcmp(compartment_name,sorted_compartments[mid].string);
+	      compartment = (char *)&compartment_text[sorted_compartments[mid].string];
+	      crslt = strcmp(compartment_name,compartment);
 	      if (crslt == 0) {
 		index = mid;
 		break;
