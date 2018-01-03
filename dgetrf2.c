@@ -4,7 +4,7 @@
 #include "dlaswp.h"
 #include "dtrsm.h"
 #include "dgetrf2.h"
-void dgetrf2(int *m_p, 
+void dgetrf2_(int *m_p, 
 	     int *n_p, 
 	     double *a, 
 	     int *lda_p, 
@@ -113,8 +113,9 @@ void dgetrf2(int *m_p,
 	/*
 	  Use unblocked code for one row case
 	  Just need to handle IPIV and INFO
+	  need to add 1 to ipiv elements to match fortran ipiv.
 	*/
-	ipiv[0] = 0;
+	ipiv[0] = 1;
 	if (a[0] == 0) {
 	  info = 1;
 	} 
@@ -123,8 +124,8 @@ void dgetrf2(int *m_p,
 	  /*
 	    Use unblocked code for one column case
 	  */
-	  i = idamax(&m,a,&inc1);
-	  ipiv[0] = i;
+	  i = idamax_(&m,a,&inc1) - 1;
+	  ipiv[0] = i + 1;
 	  if (a[i] != zero) {
 	    /*
 	      apply the interchange.
@@ -139,11 +140,11 @@ void dgetrf2(int *m_p,
 	    */
 	    temp = fabs(a[0]);
 	    if (temp > sfmin) {
-	      temp = one/temp;
-	      dscal(&mm1,&temp,&a[1],&inc1);
+	      temp = one/a[0];
+	      dscal_(&mm1,&temp,&a[1],&inc1);
 	    } else {
 	      for (i=1;i<m;i++) {
-		a[i] = a[i]/temp;
+		a[i] = a[i]/a[0];
 	      }
 	    }
 	  } else {
@@ -157,10 +158,7 @@ void dgetrf2(int *m_p,
 	    m > 1 and n > 1
 	    Use recursive mode.
 	  */
-	  min_m_n = m;
-	  if (n < m) {
-	    min_m_n = n;
-	  }
+	  min_m_n = (n<m) ? n : m;
 	  n1 = min_m_n >> 1;
 	  n2 = n - n1;
 	  /*
@@ -169,7 +167,7 @@ void dgetrf2(int *m_p,
 	           [ --- ]
 	           [ A21 ]
 	  */
-	  dgetrf2(&m,&n1,a,&lda,ipiv,&iinfo);
+	  dgetrf2_(&m,&n1,a,&lda,ipiv,&iinfo);
 	  if ((info == 0) && (iinfo > 0)) {
 	    info = iinfo;
 	  }
@@ -182,24 +180,24 @@ void dgetrf2(int *m_p,
 	  a12_start = n1 * lda;
 	  a22_start = a12_start + n1;
 	  a21_start = n1;
-	  dlaswp(&n2,&a[a12_start], &lda, &izero, &n1m1, ipiv, &inc1 );
+	  dlaswp_(&n2,&a[a12_start], &lda, &izero, &n1m1, ipiv, &inc1 );
 	  /*
 	    Solve A12
 	  */
-	  dtrsm(&l_char,&l_char, &n_char, &u_char,&n1,&n2,&one,a,&lda,
-		&a[a12_start],&lda);
+	  dtrsm_(&l_char,&l_char, &n_char, &u_char,&n1,&n2,&one,a,&lda,
+		 &a[a12_start],&lda);
 	  /*
 	    Update A22
 	  */
 	  mmn1 = m - n1;
 	  mone = -1.0;
-	  dgemm(&n_char, &n_char, &mmn1, &n2, &n1, &mone, &a[a21_start],
-		&lda, &a[a12_start], &lda, &one, &a[a22_start], &lda);
+	  dgemm_(&n_char, &n_char, &mmn1, &n2, &n1, &mone, &a[a21_start],
+		 &lda, &a[a12_start], &lda, &one, &a[a22_start], &lda);
 	  /*
 	    Factor A22
 	    Recursive Call.
 	  */
-	  dgetrf2(&mmn1, &n2, &a[a22_start], &lda, &ipiv[n1],&iinfo);
+	  dgetrf2_(&mmn1, &n2, &a[a22_start], &lda, &ipiv[n1],&iinfo);
 	  /*
 	    Adjust INFO and the pivot indices
 	  */
@@ -213,7 +211,7 @@ void dgetrf2(int *m_p,
 	    Apply interchanges to A21
 	  */
 	  min_m_n_m1 = min_m_n - 1;
-	  dlaswp(&n1, a, &lda, &n1, &min_m_n_m1, ipiv,&inc1);
+	  dlaswp_(&n1, a, &lda, &n1, &min_m_n_m1, ipiv,&inc1);
 	} /* end else (n > 1 and m > 1) */
       } /* end else m> 1 */
     } /* end if (m > 0 & n > 0) */
