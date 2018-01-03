@@ -102,7 +102,7 @@ int create_output_filenames(struct state_struct *state) {
       strncpy(rxn_lklhd_filename,rxn_filename,rxn_filename_base_length);
       strcpy((char*)&rxn_lklhd_filename[rxn_filename_base_length],".lklhd");
     }
-    if (free_energy_filename[0] = '\0') {
+    if (free_energy_filename[0] == '\0') {
       strncpy(free_energy_filename,rxn_filename,rxn_filename_base_length);
       strcpy((char*)&free_energy_filename[rxn_filename_base_length],".fe");
     }
