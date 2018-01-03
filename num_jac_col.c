@@ -107,9 +107,10 @@ int num_jac_col(struct state_struct *state,
   int    rowmax;
   FILE   *lfp;
   FILE   *efp;
+
 /*
-#define DBG 1 
 */
+#define DBG 1 
   success = 1;
   base_rxn      = state->base_reaction;
   conc_to_count = state->conc_to_count;
@@ -141,18 +142,30 @@ int num_jac_col(struct state_struct *state,
     */
     y[j] = ydelj;
     flux_scaling = compute_flux_scaling(state,y);
-    /*
-    approximate_fluxes(state,y_counts,
-		       forward_rxn_likelihoods,reverse_rxn_likelihoods,
-		       fdel,flux_scaling,base_rxn);
-    */
     ce_approximate_fluxes(state,y_counts,
 		       forward_rxn_likelihoods,reverse_rxn_likelihoods,
 		       fdel,flux_scaling,base_rxn);
 #ifdef DBG
     if (lfp) {
-      fprintf(lfp,"num_jac_col: after call to approximate_fluxes\n");
-      origin = j; 
+      fprintf(lfp,"num_jac_col: after call to ce_approximate_fluxes\n");
+      origin = 1000+j; 
+      t0 = 0.0;
+      h  = 0.0;
+      nsteps = 0;
+      print_concs_fluxes(state,ny,fdel,y,y_counts,
+			 forward_rxn_likelihoods,
+			 reverse_rxn_likelihoods,t0,h,nsteps,origin);
+    }
+#endif
+
+    approximate_fluxes(state,y_counts,
+		       forward_rxn_likelihoods,reverse_rxn_likelihoods,
+		       fdel,flux_scaling,base_rxn);
+
+#ifdef DBG
+    if (lfp) {
+      fprintf(lfp,"num_jac_col: after call to approximate_fluxes, flux_scaling = %le\n",flux_scaling);
+      origin = 1000+j; 
       t0 = 0.0;
       h  = 0.0;
       nsteps = 0;
