@@ -120,7 +120,7 @@ int lr8_approximate_delta_concs(struct state_struct *state,
   rcoefficients    = rxn_matrix->coefficients;
   ke               = state->ke;
   rke              = state->rke;
-  rfc              = state->product_term;
+  rfc              = state->rfc;
   counts           = state->ode_counts;
   conc_to_count    = state->conc_to_count;
   use_regulation   = state->use_regulation;
@@ -223,7 +223,7 @@ int lr8_approximate_delta_concs(struct state_struct *state,
       } else {
 	flux[i] = 0.0;
       }
-      molecule += 1; /* Caution address arithmetic hear. */
+      molecule += 1; /* Caution address arithmetic here. */
     } /* end for (i...) */
   } /* end if success */
 #ifdef DBG
