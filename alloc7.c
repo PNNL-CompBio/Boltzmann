@@ -39,6 +39,19 @@ int alloc7(struct state_struct *state) {
 
     Called by: deq_run
     Calls:     calloc, fprintf, fflush,
+    Sets the following fields of state:
+      ode_counts,
+      ode_concs,
+      reactant_term,
+      product_term,
+      rxn_q,
+      recip_rxn_q,
+      log_kf_rel,
+      log_kr_rel,
+      ode_forward_lklhds,
+      ode_reverse_lklhds,
+      rxn_has_flux,
+      base_reactant_indicator
   */
   double *reactant_term;
   double *product_term;
