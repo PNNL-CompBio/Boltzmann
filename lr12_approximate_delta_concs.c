@@ -275,7 +275,7 @@ int lr12_approximate_delta_concs(struct state_struct *state,
       } else {
 	flux[i] = 0.0;
       }
-      molecule += 1; /* Caution address arithmetic hear. */
+      molecule += 1; /* Caution address arithmetic here. */
     } /* end for (i...) */
   } /* end if success */
 #ifdef DBG
