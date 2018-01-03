@@ -113,8 +113,12 @@ int sbml_process_list_of_compartments(FILE *sbml_fp,
   align_mask  = (int64_t)state->align_mask;
   cmpt_pos    = (int64_t)0;
   cmpts_fp    = state->cmpts_fp;
-  compartment = state->unsorted_compartments;
+  unsorted_compartments = state->unsorted_compartments;
+  sorted_compartments = state->sorted_compartments;
+  compartment = unsorted_compartments;
   n_cmpts     = 0;
+  size        = state->default_comp_size;
+  multiplier  = 1.0;
   lfp         = state->log_fp;
   if (lfp == NULL) {
     error_fp = stderr;
@@ -141,9 +145,9 @@ int sbml_process_list_of_compartments(FILE *sbml_fp,
   	if (strncmp(line,"</listOfCompartments>",18) == 0) {
   	  in_list_of_cmpts = 0;
   	}  else {
-  	  if (strncmp(line,"<compartment",8) == 0) {
+  	  if (strncmp(line,"<compartment",12) == 0) {
   	    in_cmpt_tag = 1;
-  	    line +=8; /* Caution address arithmetic */
+  	    line +=12; /* Caution address arithmetic */
   	    /*
   	      Skip over white space.
   	    */
@@ -164,45 +168,48 @@ int sbml_process_list_of_compartments(FILE *sbml_fp,
         /*
           check for end tag.
         */
-        if (strncmp(line,"/>",2)==0) {
+        if ((strncmp(line,"/>",2)==0) || (line[0] == '>')) {
           ns = 0;
           in_cmpt_tag = 0;
           /*
   	      Generate line for cmpts.dat file.
           */
-  	    size = size * multiplier;
-	    if (n_cmpts == 0) {
-	      state->default_comp_size = size;
+	  size = size * multiplier;
+	  if (n_cmpts == 0) {
+	    state->default_comp_size = size;
+	  } 
+	  fprintf(cmpts_fp,"%s\t%le\t%d\tliters\t%1s\n",
+		  comp,size,spatial_dim,&vc[variable]);
+	  if (n_cmpts < state->num_cmpts) {
+	    cmpt_len = strlen(comp) + 1;
+	    cmpt_len += ((alignment - (cmpt_len & align_mask)) & align_mask);
+	    strcpy((char*)&compartment_text[cmpt_pos],comp);
+	    compartment->string = cmpt_pos;
+	    compartment->c_index = n_cmpts;
+	    compartment->volume = size;
+	    cmpt_pos += cmpt_len;
+	    n_cmpts += 1;
+	    if (size <= 0) {
+	      success = 0;
+	      ns = 0;
+	      fprintf(error_fp,"sbml_process_list_of_compartment: Error, "
+		      "0 or negative size for %s\n",comp);
+	      fflush(error_fp);
+	    } else {
+	      compartment->recip_volume = 1.0/size;
 	    }
-	    fprintf(cmpts_fp,"%s\t%le\t%d\tliters\t%1s",
-  		    comp,size,spatial_dim,vc[variable]);
-  	    if (n_cmpts < state->num_cmpts) {
-  	      cmpt_len = strlen(comp) + 1;
-  	      cmpt_len += ((alignment - (cmpt_len & align_mask)) & align_mask);
-  	      strcpy((char*)&compartment_text[cmpt_pos],comp);
-  	      compartment->string = cmpt_pos;
-  	      compartment->c_index = n_cmpts;
-  	      compartment->volume = size;
-  	      cmpt_pos += cmpt_len;
-  	      n_cmpts += 1;
-  	      if (size <= 0) {
-  		success = 0;
-  		ns = 0;
-  		fprintf(error_fp,"sbml_process_list_of_compartment: Error, "
-  			"0 or negative size for %s\n",comp);
-  		fflush(error_fp);
-  	      } else {
-  		compartment->recip_volume = 1.0/size;
-  	      }
-  	      compartment += 1; /* Caution address arithmetic here */
-  	    } else {
-  	      success = 0;
-  	      ns = 0;
-  	      fprintf(error_fp,"sbml_process_list_of_compartment: Error, "
-  		      "Too many compartments. "
-  		      "Look for bug in sbml_count_cmpts\n");
-  	      fflush(error_fp);
-  	    }
+	    compartment += 1; /* Caution address arithmetic here */
+	    /*
+	      Reset size to default size.
+	    */
+	  } else {
+	    success = 0;
+	    ns = 0;
+	    fprintf(error_fp,"sbml_process_list_of_compartment: Error, "
+		    "Too many compartments. "
+		    "Look for bug in sbml_count_cmpts\n");
+	    fflush(error_fp);
+	  }
         } else {
           /*
   	      Not the end of compartment  tag.
@@ -253,7 +260,7 @@ int sbml_process_list_of_compartments(FILE *sbml_fp,
 	      } /* end switch */  
 	    } else {
 	      fprintf(error_fp,"sbml_process_list_of_compartments: "
-		      "Error found unexpacted key :%s\n",key);
+		      "Error found unexpected key :%s\n",key);
 	      fflush(error_fp);
 	    }
           } /* end else we found a keyword=value triple. */
