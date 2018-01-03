@@ -33,7 +33,7 @@ specific language governing permissions and limitations under the License.
 
 #include "compute_molecular_partition_probability.h"
 
-int compute_molecular_partition_probability(struct formation_energy_struct *fes){
+int compute_molecular_partition_probability(struct state_struct *state){
   /*
     Compute the partition_funcs and probabilities arrays (length unique_molecules)
     Called by: compute_standard_energies
@@ -43,15 +43,6 @@ int compute_molecular_partition_probability(struct formation_energy_struct *fes)
   struct molecule_struct *cur_molecules;
   char *molecules_text;
   char *molecule;
-
-  int success;
-  int i;
-
-  int ci;
-  int nu_molecules;
-
-  int print_output;
-  int padi;
 
   double* molecule_dg0tfs;
   
@@ -67,28 +58,38 @@ int compute_molecular_partition_probability(struct formation_energy_struct *fes)
   double m_rt;
   double m_r_rt;
 
-  FILE* lfp;
+  int success;
+  int i;
+
+  int ci;
+  int nu_molecules;
+
+  int print_output;
+  int padi;
+
+  FILE *lfp;
+  FILE *efp;
 
   success = 1;
 
-  nu_molecules             = fes->nunique_molecules;
-  cur_molecules            = fes->sorted_molecules;
-  molecules_text           = fes->molecules_text;
+  nu_molecules             = state->nunique_molecules;
+  cur_molecules            = state->sorted_molecules;
+  molecules_text           = state->molecules_text;
 
-  min_molecule_dg0tf       = fes->min_molecule_dg0tf;
-  molecule_dg0tfs          = fes->molecule_dg0tfs;
+  min_molecule_dg0tf       = state->min_molecule_dg0tf;
+  molecule_dg0tfs          = state->molecule_dg0tfs;
   /*
-  partition_funcs          = fes->molecular_partition_funcs;
+  partition_funcs          = state->molecular_partition_funcs;
   */
-  probabilities            = fes->molecule_probabilities;
+  probabilities            = state->molecule_probabilities;
   
 
-  temp_kelvin              = fes->temp_kelvin;
-  m_rt                     = fes->m_rt;
-  m_r_rt                   = fes->m_r_rt;
+  temp_kelvin              = state->temp_kelvin;
+  m_rt                     = state->m_rt;
+  m_r_rt                   = state->m_r_rt;
 
-  print_output             = fes->print_output;
-  lfp                      = fes->log_fp;
+  print_output             = state->print_output;
+  lfp                      = state->lfp;
 
   q       		   = 0.0;
   scaling 		   = min_molecule_dg0tf * m_r_rt;
