@@ -28,6 +28,8 @@ int init_relative_rates(struct state_struct *state) {
   int success;
   int i;
   int padi;
+  FILE *lfp;
+  FILE *efp;
 
   nrxns             = (int)state->number_reactions;
   delta_g0_tfs      = state->molecule_dg0tfs;
@@ -56,6 +58,16 @@ int init_relative_rates(struct state_struct *state) {
     kf_rel[i] = exp(forward_g0_sum * recip_rt);
     kr_rel[i] = exp(reverse_g0_sum * recip_rt);
   }
+#ifdef DBG_INIT_RELATIVE_RATES
+  lfp = state->lfp;
+  if (lfp) {
+    for (i=0;i<nrxns;i++) {
+      fprintf(lfp,"rxn %d, kf_rel = %le, kr_rel = %le\n",
+	      i,kf_rel[i],kr_rel[i]);
+    }
+    fflush(lfp);
+  }
+#endif
   return(success);
 }
   
