@@ -37,6 +37,8 @@ struct state_struct {
   char *input_dir;
   char *output_file;
   char *log_file;
+  char *concs_out_file;
+  char *rxn_lklhd_file;
   char *output_dir;
   char *rxn_buffer;
   char *conc_buffer;
@@ -75,16 +77,24 @@ struct state_struct {
   int64_t usage;
   double  ideal_gas_r;
   double  temp_kelvin;
+  double  rt;
   double  m_r_rt;
+  double  m_rt;
   double  cal_gm_per_joule;
   double  joule_per_cal_gm;
   double  default_initial_conc;
   double  small_nonzero;
-  double  *concentrations;
+  double  *current_concentrations;
+  double  *future_concentrations;
   double  *dg0s;
-  double  *dgs;
+  double  *free_energy;
+  double  *forward_rxn_likelihood;
+  double  *reverse_rxn_likelihood;
+  double  *rxn_likelihood_ps;
   double  *ke;
-  double  *log_rxn_ratio;
+  double  *current_log_rxn_ratio;
+  double  *next_log_rxn_ratio;
+  double  *l_thermo;
   int  *cmpts_map;
 
   int  number_reactions;
@@ -108,6 +118,8 @@ struct state_struct {
   FILE *rxn_fp;
   FILE *conc_fp;
   FILE *out_fp;
+  FILE *concs_out_fp;
+  FILE *rxn_lklhd_fp;
   FILE *lfp;
 }
 ;
