@@ -22,23 +22,20 @@ specific language governing permissions and limitations under the License.
 ******************************************************************************/
 #include "boltzmann_structs.h"
 
-#include "alloc6.h"
-int unalloc6(struct formation_energy_struct *formation_energies) {
+#include "unalloc6.h"
+int unalloc6(int n, void **pointers) {
   /*
-    free space allocated by alloc6 routine.
+    free space allocated by alloc6 routine/ alloc5.
     Called by: compute_standard_energies
     Calls:     free
   */
-  int64_t one_l;
   int success;
+  int i;
   success = 1;
-  one_l   = (int64_t)1;
-  /*
-  free(formation_energies->molecule_dg0tfs);
-  free(formation_energies->molecule_probabilities);
-  free(formation_energies->molecule_chemical_potentials);
-  free(formation_energies->sorted_molecule_order);
-  free(formation_energies->order_scratch);
-  */
+  for (i=0;i<n;i++) {
+    if (pointers[i] != NULL) {
+      free(pointers[i]);
+    }
+  }
   return (success);
 }
