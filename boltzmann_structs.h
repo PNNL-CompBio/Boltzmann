@@ -54,7 +54,7 @@ specific language governing permissions and limitations under the License.
 #include "rxn_struct.h"
 #include "rxn_matrix_struct.h"
 #include "molecules_matrix_struct.h"
-#include "istring_elem_struct.h"
+#include "molecule_struct.h"
 #include "stack_level_elem_struct.h"
 #include "vgrng_state_struct.h"
 #include "pseudoisomer_struct.h"
