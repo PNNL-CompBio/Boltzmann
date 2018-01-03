@@ -26,20 +26,20 @@ specific language governing permissions and limitations under the License.
 
 #include "boltzmann_global_to_local_concs.h"
 int boltzmann_global_to_local_concs(struct super_state_struct *super_state,
-				    double *global_concentrations,
+				    double *global_counts,
 				    struct state_struct *local_state) {
   /*
     This routine takes a pointer to the superstate, a pointer to a vector
-    of global concentrations, and a pointer to a local_state_struct
-    and sets the concentration values in the local_state_struct from the
-    global concentrations vector, using the molecules map in the super_state 
+    of global counts, and a pointer to a local_state_struct
+    and sets the count values in the local_state_struct from the
+    global counts vector, using the molecules map in the super_state 
     struct.
     Called by: User (part of the API)
   */
   struct super_state_pointers_struct ssps;
   struct super_state_pointers_struct *super_state_pointers;
   struct state_struct *local_statep;
-  double *local_concs;
+  double *local_counts;
   int64_t *molecule_map_starts;
   int64_t *molecule_map;
   int64_t *molecule_maps;
@@ -58,13 +58,13 @@ int boltzmann_global_to_local_concs(struct super_state_struct *super_state,
   }
   if (success) {
     state_index         = local_state->agent_type;
-    local_concs         = local_state->current_concentrations;
+    local_counts        = local_state->current_counts;
     nunique_molecules   = local_state->nunique_molecules;
     molecule_map_starts = super_state_pointers->molecule_map_starts;
     molecule_maps       = super_state_pointers->molecule_map;
     molecule_map        = &molecule_maps[molecule_map_starts[state_index]];
     for (i=0;i<nunique_molecules;i++) {
-      local_concs[i] = global_concentrations[molecule_map[i]];
+      local_counts[i] = global_counts[molecule_map[i]];
     }
   }
   return (success);
