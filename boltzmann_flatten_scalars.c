@@ -316,9 +316,9 @@ int boltzmann_flatten_scalars(struct state_struct *state,
   }
   word_pos += 1; /* 82 */
   if (direction == 0) {
-    lflattened[word_pos] = state->use_deltag0;
+    lflattened[word_pos] = state->use_dgzero;
   } else {
-    state->use_deltag0 = lflattened[word_pos];
+    state->use_dgzero = lflattened[word_pos];
   }
   /*
     Leave a litle extra space, round up to 52 data words 
