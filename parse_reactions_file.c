@@ -56,6 +56,7 @@ int parse_reactions_file(struct state_struct *state) {
   struct rxn_struct *reaction;
   struct rxn_matrix_struct *rxns_matrix;
   struct istring_elem_struct *unsorted_molecules;
+  struct istring_elem_struct *rxn_molecules;
   struct istring_elem_struct *unsorted_cmpts;
   int64_t *keyword_lens;
   int64_t *rxn_ptrs;
@@ -105,7 +106,13 @@ int parse_reactions_file(struct state_struct *state) {
   int sl;
 
   int ns;
+  int j;
+
+  int mol_pos;
+  int mol_pos_lim;
+
   int padding;
+  int padi;
 
   FILE *rxn_fp;
   FILE *lfp;
@@ -171,6 +178,8 @@ int parse_reactions_file(struct state_struct *state) {
     fgp = fgets(rxn_buffer,rxn_buff_len,rxn_fp);
     state->max_molecule_len = 0;
     state->min_molecule_len = rxn_buff_len;
+    state->max_compartment_len = 0;
+    state->min_compartment_len = rxn_buff_len;
     while ((fgp && success) && (! feof(rxn_fp))) {
       line_len = strlen(rxn_buffer);
       /*
@@ -246,17 +255,33 @@ int parse_reactions_file(struct state_struct *state) {
 	    Compartment line.
 	  */
 	  compartment_len = line_len - kl - ws_chars + 1;
+	  if (compartment_len > state->max_compartment_len) {
+	    state->max_compartment_len = compartment_len;
+	  } else {
+	    if (compartment_len > state->min_compartment_len) {
+	      state->min_compartment_len = compartment_len;
+	    }
+	  }
 	  reaction->lcompartment = (char *)&compartment_text[compartment_pos];
 	  strcpy(reaction->lcompartment,(char*)&rxn_buffer[kl+ws_chars]);
 	  upcase(compartment_len,reaction->lcompartment,
 		 reaction->lcompartment);
+	  if ((strcmp(reaction->lcompartment,"V") == 0) ||
+	      (strcmp(reaction->lcompartment,"C") == 0)) {
+	    fprintf(stderr,"parse_reactions_file: Error compartments may not have single character names V or C\n");
+	    fflush(stderr);
+	    success = 0;
+	    break;
+	  }
 	  reaction->rcompartment = NULL;
 	  padding = (align_len - (compartment_len & align_mask)) & align_mask;
 	  compartment_pos += compartment_len + padding;
 	  reaction->left_compartment = cmpts;
 	  reaction->right_compartment = cmpts;
 	  unsorted_cmpts->string = reaction->lcompartment;
-	  unsorted_cmpts->index  = cmpts;
+	  unsorted_cmpts->m_index  = -1;
+	  unsorted_cmpts->c_index  = cmpts;
+	  unsorted_cmpts += 1; /* Caution address arithmetic */
 	  cmpts += 1;
 	  break;
 	case 3: 
@@ -264,6 +289,13 @@ int parse_reactions_file(struct state_struct *state) {
 	    Left Compartment line.
 	  */
 	  compartment_len = line_len - kl - ws_chars + 1;
+	  if (compartment_len > state->max_compartment_len) {
+	    state->max_compartment_len = compartment_len;
+	  } else {
+	    if (compartment_len > state->min_compartment_len) {
+	      state->min_compartment_len = compartment_len;
+	    }
+	  }
 	  reaction->lcompartment = (char *)&compartment_text[compartment_pos];
 	  strcpy(reaction->lcompartment,(char*)&rxn_buffer[kl+ws_chars]);
 	  upcase(compartment_len,reaction->lcompartment,
@@ -272,7 +304,8 @@ int parse_reactions_file(struct state_struct *state) {
 	  compartment_pos += compartment_len + padding;
 	  reaction->left_compartment = cmpts;
 	  unsorted_cmpts->string = reaction->lcompartment;
-	  unsorted_cmpts->index  = cmpts;
+	  unsorted_cmpts->c_index  = cmpts;
+	  unsorted_cmpts += 1; /* Caution address arithmetic */
 	  cmpts += 1;
 	  break;
 	case 4: 
@@ -280,6 +313,13 @@ int parse_reactions_file(struct state_struct *state) {
 	    Right Compartment line.
 	  */
 	  compartment_len = line_len - kl - ws_chars + 1;
+	  if (compartment_len > state->max_compartment_len) {
+	    state->max_compartment_len = compartment_len;
+	  } else {
+	    if (compartment_len > state->min_compartment_len) {
+	      state->min_compartment_len = compartment_len;
+	    }
+	  }
 	  reaction->rcompartment = (char *)&compartment_text[compartment_pos];
 	  strcpy(reaction->rcompartment,(char*)&rxn_buffer[kl+ws_chars]);
 	  upcase(compartment_len,reaction->rcompartment,
@@ -288,7 +328,8 @@ int parse_reactions_file(struct state_struct *state) {
 	  compartment_pos += compartment_len + padding;
 	  reaction->right_compartment = cmpts;
 	  unsorted_cmpts->string = reaction->rcompartment;
-	  unsorted_cmpts->index  = cmpts;
+	  unsorted_cmpts->c_index  = cmpts;
+	  unsorted_cmpts += 1; /* Caution address arithmetic */
 	  cmpts += 1;
 	  break;
 	case 5:
@@ -334,7 +375,8 @@ int parse_reactions_file(struct state_struct *state) {
 	      upcase(sl,(char *)&raw_molecules_text[molecules_pos],
 		     (char *)&molecules_text[molecules_pos]);
 	      unsorted_molecules->string = (char *)&molecules_text[molecules_pos];
-	      unsorted_molecules->index  = molecules;
+	      unsorted_molecules->m_index  = molecules;
+	      unsorted_molecules->c_index  = reaction->left_compartment;
 	      unsorted_molecules += 1; /* Caution address arithmetic. */
 
 	      molecules_pos += (int64_t)(sll + padding);
@@ -342,7 +384,6 @@ int parse_reactions_file(struct state_struct *state) {
 
 	      pos += sl; /* Caution address arithmetic. */
 	      rctnts += sl;
-
 	      molecules += 1;
 	      reaction->num_reactants += 1;
 	      skip = count_ws(rctnts);
@@ -414,7 +455,8 @@ int parse_reactions_file(struct state_struct *state) {
 	      upcase(sl,(char *)&raw_molecules_text[molecules_pos],
 		     (char *)&molecules_text[molecules_pos]);
 	      unsorted_molecules->string = (char *)&molecules_text[molecules_pos];
-	      unsorted_molecules->index  = molecules;
+	      unsorted_molecules->m_index  = molecules;
+	      unsorted_molecules->c_index  = reaction->right_compartment;
 	      unsorted_molecules += 1; /* Caution address arithmetic. */
 	      molecules_pos += (int64_t)(sll + padding);
 	      prdcts[sl] = ' ';
@@ -478,20 +520,42 @@ int parse_reactions_file(struct state_struct *state) {
 	  break;
 	case 9:
 	  reaction->self_id = rxns;
+	  /*
+	    Since a compartment line could have come any where in
+	    the reaction input lines, we need to go back
+	    and properly set the compartments for each of the
+	    molecules in the reaction. Reactants get the
+	    reaction->left_compartment value (for c_index) and
+	    products get the reaction->right_compartment value for c_index;
+	  */
+	  mol_pos = rxn_ptrs[rxns];
+	  rxn_molecules = (struct istring_elem_struct *)&state->unsorted_molecules[mol_pos];
+	  mol_pos_lim = mol_pos + reaction->num_reactants +
+	    reaction->num_products;
+	  for (j = mol_pos;j<mol_pos_lim;j++) {
+	    if (coefficients[j] < 0) {
+	      rxn_molecules->c_index = reaction->left_compartment;
+	    } else {
+	      rxn_molecules->c_index = reaction->right_compartment;
+	    }
+	    rxn_molecules += 1; /* Caution address arithmetic */
+	  }
 	  rxns += 1;
 	  /*
 	    Caution address arithmetic follows
 	    reaction = (struct rxn_struct*)&reactions[rxns];
 	  */
 	  reaction += 1;
-	  reaction->lcompartment      = NULL;
-	  reaction->rcompartment      = NULL;
-	  reaction->pathway           = NULL;
-	  reaction->left_compartment  = -1;
-	  reaction->right_compartment = -1;
-	  reaction->num_reactants     = 0;
-	  reaction->num_products      = 0;
-	  rxn_ptrs[rxns]              = molecules;
+	  if (rxns < state->number_reactions) {
+	    reaction->lcompartment      = NULL;
+	    reaction->rcompartment      = NULL;
+	    reaction->pathway           = NULL;
+	    reaction->left_compartment  = -1;
+	    reaction->right_compartment = -1;
+	    reaction->num_reactants     = 0;
+	    reaction->num_products      = 0;
+	    rxn_ptrs[rxns]              = molecules;
+	  }
 	  break;
         default:
 	break;
@@ -500,6 +564,18 @@ int parse_reactions_file(struct state_struct *state) {
       }/* end if (success) */
     } /* end while(fgp...) */
   } /* end if (success) */
+  rxn_ptrs[rxns] = molecules;
+  /*
+    Check that last line was a //.
+  */
+  if (line_type != state->num_rxn_file_keywords - 1) {
+    fprintf(stderr,
+	    "parse_reactions_file: Error reactions file did not end in //\n");
+    fflush(stderr);
+    success = 0;
+  }
+  /*
+    These are now set in size_rxns_file.
   state->reaction_file_length = total_length;
   state->number_reactions = rxns;
   state->number_molecules   = molecules;
@@ -508,5 +584,6 @@ int parse_reactions_file(struct state_struct *state) {
   state->pathway_len = pathway_len;
   state->compartment_len = compartment_len;
   state->rxn_title_len = rxn_title_len;
+  */
   return(success);
 }
