@@ -60,4 +60,7 @@ void boltzmann_set_filename_ptrs(struct state_struct *statep) {
   statep->rxn_mat_file       = statep->rxn_echo_file + max_file_name_len;
   statep->dg0ke_file         = statep->rxn_mat_file + max_file_name_len;
   statep->dictionary_file    = statep->dg0ke_file + max_file_name_len;
+  statep->ode_flux_file      = statep->dictionary_file + max_file_name_len;
+  statep->ode_lklhd_file     = statep->ode_flux_file + max_file_name_len;
+  statep->ode_bflux_file     = statep->ode_lklhd_file + max_file_name_len;
 }
