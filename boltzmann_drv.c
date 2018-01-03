@@ -55,30 +55,14 @@ int main(int argc, char **argv)
 {
   /*
     Calls:
-      alloc0
-      read_params
+      boltzmann_init
+      boltzmann_run_sim
   */
-  struct state_struct bltzs;
   struct state_struct *state;
-  struct vgrng_state_struct *vgrng_state;
-  int64_t align_len;
-  int64_t align_mask;
-  int64_t rxn_title_len;
-  int64_t pathway_len;
-  int64_t compartment_len;
-  int64_t molecules_len;
-  int64_t vgrng_start;
   char *param_file_name;
   int success;
-  int num_state_files;
-
-  int num_rxns;
-  int num_molecules;
-
-  int vgrng_start_steps;
   int padi;
 
-  FILE *lfp;
 #ifdef LIBUNWIND
 #include "luwtb1.h"
 #endif
