@@ -43,7 +43,7 @@ void print_free_energy(struct state_struct *state, int step) {
   */
   double *forward_rxn_log_likelihood_ratio;
   double *free_energy;
-  double cal_gm_per_joule;
+  double cals_per_joule;
   double fe;
   int free_energy_format;
   int number_reactions;
@@ -56,7 +56,7 @@ void print_free_energy(struct state_struct *state, int step) {
   number_reactions    		   = (int)state->number_reactions;
   free_energy                      = state->free_energy;
   forward_rxn_log_likelihood_ratio = state->forward_rxn_log_likelihood_ratio;
-  cal_gm_per_joule  	           = state->cal_gm_per_joule;
+  cals_per_joule  	           = state->cals_per_joule;
   if (free_energy_fp) {
     fprintf(free_energy_fp,"%d",step);
     if (free_energy_format == 1) {
@@ -67,7 +67,7 @@ void print_free_energy(struct state_struct *state, int step) {
     }
     if (free_energy_format == 2) {
       for (j=0;j<number_reactions;j++) {
-	fe = free_energy[j]*cal_gm_per_joule;
+	fe = free_energy[j]*cals_per_joule;
 	fprintf(state->free_energy_fp,"\t%le",fe);
       }
     }
