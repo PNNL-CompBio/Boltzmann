@@ -27,6 +27,7 @@ specific language governing permissions and limitations under the License.
 #include "vgrng_init.h"
 #include "echo_params.h"
 #include "size_rxns_file.h"
+#include "size_pseudoisomer_file.h"
 #include "alloc2.h"
 #include "parse_reactions_file.h"
 #include "echo_reactions_file.h"
@@ -39,6 +40,7 @@ specific language governing permissions and limitations under the License.
 #include "alloc3.h"
 #include "set_compartment_ptrs.h"
 #include "read_initial_concentrations.h"
+#include "formation_energy_rxn_dg0fs.h"
 #include "compute_ke.h"
 #include "print_rxn_likelihoods_header.h"
 #include "print_free_energy_header.h"
@@ -69,13 +71,14 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
 	       print_molecules_dictionary,
 	       alloc3,
 	       read_initial_concentrations,
-	       form_molecules_matrix,
-	       compute_ke
-	       print_rxn_likelihoods_header
+	       formation_energy_rxn_dg0fs,
+	       compute_ke,
+	       print_rxn_likelihoods_header,
 	       print_free_energy_header
   */
   struct state_struct *boot_state;
   struct state_struct *state;
+  struct formation_energy_struct *formation_energies;
   struct vgrng_state_struct *vgrng_state;
   struct vgrng_state_struct *vgrng2_state;
   double *dg0s;
@@ -265,6 +268,15 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
     success = form_molecules_matrix(state);
   }
   */
+  /*
+    Compute the reaction energies of formation if called for.
+  */
+  if (success) {
+    if (state->use_pseudoisomers) {
+      formation_energies = NULL;
+      success = formation_energy_rxn_dg0fs(state,&formation_energies);
+    }
+  }
   /*
     Compute the reaction ke's.
   */
