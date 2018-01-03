@@ -31,8 +31,8 @@ int print_reactions_view(struct state_struct *state) {
     Called by: boltzmann_run
     Calls:     fopen, fprintf, fclose (intrinsic)
   */
-  struct rxn_struct *reaction;
-  struct rxn_matrix_struct *rxns_matrix;
+  struct reaction_struct *reaction;
+  struct reactions_matrix_struct *rxns_matrix;
   int64_t *rxn_ptrs;
   int64_t *molecules_indices;
   int64_t *coefficients;
@@ -41,7 +41,8 @@ int print_reactions_view(struct state_struct *state) {
   double *rev_rxn_view_data;
   double *activities;
   double *no_op_likelihood;
-  int    *rxn_fire;
+  int64_t *rxn_fire;
+  int64_t net_fire;
 
   char *molecules_text;
   char *rxn_title_text;
@@ -61,7 +62,7 @@ int print_reactions_view(struct state_struct *state) {
   int rxn_view_hist_length;
 
   int nrxns;
-  int net_fire;
+  int padi;
 
   FILE *rxn_view_fp;
   FILE *lfp;
@@ -99,7 +100,7 @@ int print_reactions_view(struct state_struct *state) {
       Print out the number of times no reaction was chosen and its likelihoods.
       Skipping the net reaction fire and activities fields.
     */
-    fprintf(rxn_view_fp," No Reaction\t0<=>0\t%d\t\t",rxn_fire[nrxns+nrxns]);
+    fprintf(rxn_view_fp," No Reaction\t0<=>0\t%lld\t\t",rxn_fire[nrxns+nrxns]);
     for(k=0;k<rxn_view_hist_length;k++) {
       fprintf(rxn_view_fp,"\t1.0");
     }
@@ -153,7 +154,7 @@ int print_reactions_view(struct state_struct *state) {
 	Print out the rxn fire count.
       */
       net_fire = rxn_fire[rxns] - rxn_fire[rxns+nrxns];
-      fprintf(rxn_view_fp,"\t%d\t%d",rxn_fire[rxns],net_fire);
+      fprintf(rxn_view_fp,"\t%lld\t%lld",rxn_fire[rxns],net_fire);
       /*
 	Print out the rxn activity level.
       */
@@ -209,7 +210,7 @@ int print_reactions_view(struct state_struct *state) {
 	Print out the reverse rxn_fire count.
       */
       net_fire = -net_fire;
-      fprintf(rxn_view_fp,"\t%d\t%d",rxn_fire[nrxns+rxns],net_fire);
+      fprintf(rxn_view_fp,"\t%lld\t%lld",rxn_fire[nrxns+rxns],net_fire);
       /*
 	Print out the rxn activity level.
       */
