@@ -48,14 +48,12 @@ int merge_molecules(struct molecule_struct *list1,
   int success;
   int n;
 
-  int j;
+  int c;
   int j1;
 
   int j2;
   int j3;
 
-  int c;
-  int pad;
   success = 1;
   j1  = 0;
   j2  = 0;
