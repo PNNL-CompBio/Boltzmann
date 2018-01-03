@@ -1,6 +1,6 @@
 /* state_struct.h 
-  
-sss
+*******************************************************************************
+Boltsman
 
 Pacific Northwest National Laboratory, Richland, WA 99352.
 
@@ -19,10 +19,16 @@ Unless required by applicable law or agreed to in writing, software distributed
 under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
 CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 specific language governing permissions and limitations under the License.
-*/
+******************************************************************************/
 #ifndef __STATE_STRUCT__
 #define __STATE_STRUCT__ 1
 struct state_struct {
+  struct rxn_struct *reactions;
+  struct rxn_matrix_struct *reactions_matrix;
+  struct istring_elem_struct *unsorted_species;
+  struct istring_elem_struct *sorted_species;
+  struct istring_elem_struct *unsorted_cmpts;
+  struct istring_elem_struct *sorted_cmpts;
   char *params_file;
   char *reaction_file;
   char *init_conc_file;
@@ -35,36 +41,55 @@ struct state_struct {
   char *param_key;
   char *param_value;
   char *rxn_file_keyword_buffer;
+  char *rxn_title_text;
+  char *pathway_text;
+  char *compartment_text;
+  char *species_text;
+  char *raw_species_text;
   char **rxn_file_keywords;
   int64_t *rxn_file_keyword_lengths;
   int64_t reaction_file_length;
   int64_t align_len;
+  int64_t align_mask;
   int64_t max_filename_len;
   int64_t max_param_line_len;
-  int64_t align_mask;
   int64_t rxn_buff_len;
   int64_t rxn_title_len;
   int64_t pathway_len;
   int64_t compartment_len;
   int64_t species_len;
+  int64_t rxn_title_space;
+  int64_t pathway_space;
+  int64_t compartment_space;
+  int64_t species_space;
+  int64_t rxn_title_pos;
+  int64_t pathway_pos;
+  int64_t compartment_pos;
+  int64_t species_pos;
+  int64_t mixed_case_pos;
+  int64_t usage;
   double  ideal_gas_r;
   double  temp_kelvin;
   double  cal_gm_per_joule;
   double  joule_per_cal_gm;
+  int  *cmpts_map;
   int  number_reactions;
   int  number_species;
 
   int  number_compartments;
-  int  max_species_len;
-
-  int  min_species_len;
   int  molecules_or_conc;
+
+  int  max_species_len;
+  int  min_species_len;
 
   int  num_rxn_file_keywords;
   int  pad1;
 #ifdef TIMING_ON
   struct timing_struct timing_data;
 #endif
+  FILE *rxn_fp;
+  FILE *conc_fp;
+  FILE *out_fp;
   FILE *lfp;
 }
 ;
