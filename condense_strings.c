@@ -3,7 +3,7 @@
 int condense_strings(struct boot_state_struct *boot_state) {
   /*
     Build a condensed list of compartment and molecule names with 
-    duplicates removed, and addust the local compartment and molecle
+    duplicates removed, and adjust the local compartment and molecle
     string pointers to point into the condenesed string arrays.
     Called by: boltzmann_boot
     Calls:     strlen, strcpy
