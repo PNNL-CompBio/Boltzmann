@@ -2,9 +2,7 @@
 #include "ode23tb.h"
 #include "boltzmann_cvodes.h"
 #include "ode_solver.h"
-int ode_solver (struct state_struct *state, double *concs,
-		double htry, int nonnegative, int normcontrol,
-		int print_concs, int choice) {
+int ode_solver (struct state_struct *state, double *concs, int choice) {
   /*
     Called by: deq_run
     Calls:     ode23tb
@@ -38,8 +36,7 @@ int ode_solver (struct state_struct *state, double *concs,
   local_choice = choice;
   switch (local_choice) {
   case 0:
-    success = ode23tb(state,concs,htry,nonnegative,normcontrol,
-		      print_concs,local_choice);
+    success = ode23tb(state,concs);
     break;
   case 1:
     success = boltzmann_cvodes(state,concs);
@@ -49,8 +46,7 @@ int ode_solver (struct state_struct *state, double *concs,
       fprintf(lfp,"ode_solver: invalid ode_solver_choice, using default\n");
       fflush(lfp);
       state->ode_solver_choice = 0;
-      success = ode23tb(state,concs,htry,nonnegative,normcontrol,
-			print_concs,local_choice);
+      success = ode23tb(state,concs);
     }
   } /* end switch(local_choice) */
   return(success);
