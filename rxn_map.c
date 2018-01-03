@@ -61,12 +61,12 @@ int main(int argc, char **argv)
   } else {
     param_file_name = NULL;
   }
-  success = rxn_map_init(param_file_name,&state,&molecules_matrix);
+  success = rxn_map_init(param_file_name,&state);
   TIMING_STOP(INITIALIZE);
   while (success) {
     success = rxn_map_parse_start_stop_line(state,&mi,&mj);
     if (success) {
-      success = rxn_map_run(state,molecules_matrix,mi,mj);
+      success = rxn_map_run(state,mi,mj);
     }
   }
   TIMING_STOP(TOTAL_TIME);
