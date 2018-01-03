@@ -25,8 +25,8 @@ specific language governing permissions and limitations under the License.
 #include "merge_compartments.h"
 
 #include "sort_global_compartments.h"
-int sort_global_compartments(struct istring_elem_struct **unsorted_compartments,
-			     struct istring_elem_struct **sorted_compartments,
+int sort_global_compartments(struct molecule_struct **unsorted_compartments,
+			     struct molecule_struct **sorted_compartments,
 			     int64_t *compartment_map_indices,
 			     char *compartment_text,
 			     int n) {
@@ -50,9 +50,9 @@ int sort_global_compartments(struct istring_elem_struct **unsorted_compartments,
     
   
   */
-  struct istring_elem_struct *u_compartments;
-  struct istring_elem_struct *s_compartments;
-  struct istring_elem_struct *temp;
+  struct molecule_struct *u_compartments;
+  struct molecule_struct *s_compartments;
+  struct molecule_struct *temp;
   int global_compartments;
   int success;
   int step;
@@ -86,9 +86,9 @@ int sort_global_compartments(struct istring_elem_struct **unsorted_compartments,
 	if ((j + step + step) < n) {
 	  l2 = compartment_map_indices[j+step+step] - list2_first;
 	}
-	merge_compartments((struct istring_elem_struct *)&u_compartments[list1_first],
-		       (struct istring_elem_struct *)&u_compartments[list2_first],
-			   (struct istring_elem_struct *)&s_compartments[list1_first],
+	merge_compartments((struct molecule_struct *)&u_compartments[list1_first],
+		       (struct molecule_struct *)&u_compartments[list2_first],
+			   (struct molecule_struct *)&s_compartments[list1_first],
 			   compartment_text,l1,l2);
       }
       /* Now if the last group is <= step they just need to be copied
