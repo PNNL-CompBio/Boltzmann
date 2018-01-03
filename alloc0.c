@@ -124,7 +124,7 @@ int alloc0(struct state_struct **statep, int setup) {
     usage = state->usage;
   }
   if (success && setup) {
-    state->version_no = 4658; // Checkin revision of state_struct.h
+    state->version_no = 4762; // Checkin revision of state_struct.h
     /*
       Allocate space for filename strings and solvent string
       These are considered auxilliary strings, needed only for setup
