@@ -29,7 +29,7 @@ int check_initial_concentrations(struct state_struct *state) {
     Check that all molecules in the rxns.dat file had entries in the
     intial concentrations file. Code is mostly lifteed from
     print_dictionary.c
-    Called by: boltzmann_init and boltzmann_boot
+    Called by: species_init
     Calls:     fprintf,fflush (intrinsic)
   */
   struct molecule_struct *molecules;
@@ -72,7 +72,7 @@ int check_initial_concentrations(struct state_struct *state) {
       if (molecules->variable == -1) {
 	/*
 	  We have a molecule that did not get an intial concentration
-	  in read_intial_concentrations and is not a solvent molecue.
+	  in read_intial_concentrations and is not a solvent molecule.
 	*/
 	if (lfp) {
 	  if (ci > 0) {
