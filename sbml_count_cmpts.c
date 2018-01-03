@@ -57,9 +57,9 @@ int sbml_count_cmpts(struct sbml2bo_struct *sbml_state) {
 	    sbml_state->sbml_file);
     fflush(error_fp);
   }
+  num_cmpts = 0;
   if (success) {
     another = 1;
-    num_cmpts = 0;
     while (!feof(sbml_fp) && another) {
       another = sbml_find_section(sbml_fp,sbml_buffer,
 				  sbml_buffer_len,
