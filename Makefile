@@ -163,7 +163,7 @@ TIMING_LIB = djb_timing.a
 TIMING_DEP = timingi.h djb_timing.h
 TIMING_DEPS = timingi.h djb_timing_b.h djb_timing.h
 LUNWIND_DEPS = luwtb.h luwtb1.h luwtb2.h
-SERIAL_INCS = boltzmann_structs.h boot_state_struct.h super_state_struct.h super_state_pointers_struct.h state_struct.h rxn_struct.h rxn_matrix_struct.h molecules_matrix_struct.h molecule_struct.h compartment_struct.h vgrng_state_struct.h pseudoisomer_struct.h formation_energy_struct.h stack_level_elem_struct.h sbml2bo_struct.h t2js_struct.h $(TIMING_DEPS) $(LUNWIND_DEPS)
+SERIAL_INCS = boltzmann_structs.h boot_state_struct.h super_state_struct.h super_state_pointers_struct.h state_struct.h rxn_struct.h rxn_matrix_struct.h molecules_matrix_struct.h molecule_struct.h compartment_struct.h vgrng_state_struct.h pseudoisomer_struct.h stack_level_elem_struct.h sbml2bo_struct.h t2js_struct.h $(TIMING_DEPS) $(LUNWIND_DEPS)
 SERIAL_OBJS1 = boltzmann_init.o alloc0.o boltzmann_set_filename_ptrs.o read_params.o boltzmann_init_core.o io_size_init.o create_output_filenames.o open_output_files.o size_rxns_file.o init_rxn_file_keywords.o parse_rxn_file_keyword.o count_ws.o count_nws.o count_molecules.o is_a_coef.o alloc2.o rxns_init.o parse_reactions_file.o upcase.o parse_side_line.o find_colon.o sort_compartments.o merge_compartments.o unique_compartments.o unique_compartments_core.o translate_compartments.o sort_molecules.o merge_molecules.o unique_molecules.o unique_molecules_core.o alloc3.o species_init.o set_compartment_ptrs.o set_count_trans.o translate_regulation_metabolites.o molecules_lookup.o read_compartment_sizes.o read_initial_concentrations.o compartment_lookup.o check_initial_concentrations.o
 SERIAL_OBJS2 = energy_init.o compute_standard_energies.o size_pseudoisomer_file.o alloc5.o parse_pseudoisomer_dg0f_file.o blank_to_dash.o sharp_pos.o alloc6.o compute_molecule_dg0tfs.o compute_molecule_dg0tf.o pseudoisomer_dg0tf.o compute_molecular_partition_probability.o compute_chemical_potential.o compute_reaction_dg0.o unalloc6.o compute_ke.o zero_solvent_coefficients.o compute_kss.o echo_inputs.o echo_params.o echo_reactions_file.o print_molecules_dictionary.o print_dg0_ke.o print_reactions_matrix.o recover_solvent_coefficients.o run_init.o vgrng_init.o vgrng.o print_rxn_likelihoods_header.o print_free_energy_header.o flatten_state.o free_boot_state2.o free_boot_state.o
 SERIAL_OBJS3 = boltzmann_run.o update_rxn_log_likelihoods.o rxn_log_likelihoods.o rxn_likelihoods.o rxn_likelihood.o choose_rxn.o candidate_rxn.o binary_search_l_u_b.o update_regulations.o update_regulation.o rxn_count_update.o bndry_flux_update.o metropolis.o rxn_likelihood_postselection.o compute_delta_g_forward_entropy_free_energy.o print_counts.o print_likelihoods.o save_likelihoods.o print_free_energy.o print_boundary_flux.o print_restart_file.o print_reactions_view.o
@@ -171,8 +171,8 @@ SERIAL_OBJS4 = rxn_map_init.o rxn_map_parse_start_stop_line.o rxn_map_run.o allo
 SERIAL_OBJS5 = boltzmann_boot.o boot_init.o boot_alloc0.o boot_alloc1.o boot_io_init.o size_rxns_list.o boot_alloc2.o parse_rxn_list_line.o save_and_count_local_state.o boot_alloc3.o catenate_compartments_and_molecules.o global_merge_and_map_compartments.o sort_global_compartments.o global_merge_molecules.o sort_global_molecules.o boot_alloc4.o condense_strings.o fill_meta_data.o write_super_state.o copy_local_states.o boltzmann_mmap_superstate.o boltzmann_boot_check.o flatten_super_state.o boltzmann_rep_state_i.o
 SERIAL_OBJS6 = boltzmann_global_to_local_counts.o boltzmann_global_to_local_fluxes.o boltzmann_local_to_global_counts.o boltzmann_local_to_global_fluxes.o size_file.o boltzmann_load.o boltzmann_number_of_reaction_files.o boltzmann_global_molecule_count.o boltzmann_length_state_i.o boltzmann_max_local_state_size.o boltzmann_size_superstate.o
 
-#SERIAL_OBJS7 = deq_run.o alloc7.o fill_flux_pieces.o ode_solver.o ode23tb.o init_base_reactants.o ode_num_jac.o num_jac_col.o blas.o ode_it_solve.o compute_flux_scaling.o approximate_delta_concs.o vec_abs.o vec_div.o vec_max.o vec_mul.o ce_approximate_delta_concs.o update_rxn_likelihoods.o print_concs_fluxes.o ode_print_concs_header.o ode_print_concs.o
-SERIAL_OBJS7 = deq_run.o alloc7.o ode_solver.o ode23tb.o init_base_reactants.o ode_num_jac.o num_jac_col.o blas.o ode_it_solve.o compute_flux_scaling.o approximate_delta_concs.o compute_net_likelihoods.o compute_net_lklhd_bndry_flux.o print_net_likelihood_header.o print_net_likelihoods.o print_net_lklhd_bndry_flux_header.o print_net_lklhd_bndry_flux.o vec_abs.o vec_div.o vec_max.o vec_mul.o lr_approximate_delta_concs.o lr1_approximate_delta_concs.o lr2_approximate_delta_concs.o lr3_approximate_delta_concs.o lr4_approximate_delta_concs.o lr5_approximate_delta_concs.o ce_approximate_delta_concs.o update_rxn_likelihoods.o print_concs_fluxes.o lsame.o dtrsm.o dlaswp.o dgetrf2.o dgetrf.o dgetrs.o dgemm.o ode_print_concs_header.o ode_print_concs.o ode_print_flux_header.o ode_print_fluxes.o ode_print_lklhd_header.o ode_print_lklhds.o ode_print_bflux_header.o
+#SERIAL_OBJS7 = deq_run.o alloc7.o fill_flux_pieces.o ode_solver.o ode23tb.o init_base_reactants.o init_relative_rates.o ode_num_jac.o num_jac_col.o blas.o ode_it_solve.o compute_flux_scaling.o approximate_delta_concs.o vec_abs.o vec_div.o vec_max.o vec_mul.o ce_approximate_delta_concs.o update_rxn_likelihoods.o print_concs_fluxes.o ode_print_concs_header.o ode_print_concs.o
+SERIAL_OBJS7 = deq_run.o alloc7.o init_base_reactants.o init_relative_rates.o ode_solver.o ode23tb.o num_jac_col.o blas.o ode_it_solve.o compute_flux_scaling.o approximate_delta_concs.o compute_net_likelihoods.o compute_net_lklhd_bndry_flux.o print_net_likelihood_header.o print_net_likelihoods.o print_net_lklhd_bndry_flux_header.o print_net_lklhd_bndry_flux.o vec_abs.o vec_div.o vec_max.o vec_mul.o lr_approximate_delta_concs.o lr1_approximate_delta_concs.o lr2_approximate_delta_concs.o lr3_approximate_delta_concs.o lr4_approximate_delta_concs.o lr5_approximate_delta_concs.o lr6_approximate_delta_concs.o ce_approximate_delta_concs.o update_rxn_likelihoods.o print_concs_fluxes.o lsame.o dtrsm.o dlaswp.o dgetrf2.o dgetrf.o dgetrs.o dgemm.o ode_print_concs_header.o ode_print_concs.o ode_print_flux_header.o ode_print_fluxes.o ode_print_lklhd_header.o ode_print_lklhds.o ode_print_bflux_header.o
 SBML_OBJS = sbml_to_boltzmann.o size_ms2js_file.o size_kg2js_file.o \
 	sbml_alloc0.o sbml_set_file_names.o sbml_alloc2.o read_ms2js.o \
 	read_kg2js.o sort_json_ids.o merge_sorted_strings.o \
@@ -761,6 +761,7 @@ libboltzmann.a: $(SERIAL_OBJS1)  $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SERIAL_OBJS4)
 	$(AR) $(ARFLAGS) libboltzmann.a ode_print_fluxes.o
 	$(AR) $(ARFLAGS) libboltzmann.a ode_print_lklhds.o
 	$(AR) $(ARFLAGS) libboltzmann.a init_base_reactants.o
+	$(AR) $(ARFLAGS) libboltzmann.a init_relative_rates.o
 	$(AR) $(ARFLAGS) libboltzmann.a blas.o
 	$(AR) $(ARFLAGS) libboltzmann.a lsame.o
 	$(AR) $(ARFLAGS) libboltzmann.a dtrsm.o
@@ -782,6 +783,7 @@ libboltzmann.a: $(SERIAL_OBJS1)  $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SERIAL_OBJS4)
 	$(AR) $(ARFLAGS) libboltzmann.a lr3_approximate_delta_concs.o
 	$(AR) $(ARFLAGS) libboltzmann.a lr4_approximate_delta_concs.o
 	$(AR) $(ARFLAGS) libboltzmann.a lr5_approximate_delta_concs.o
+	$(AR) $(ARFLAGS) libboltzmann.a lr6_approximate_delta_concs.o
 	$(AR) $(ARFLAGS) libboltzmann.a ce_approximate_delta_concs.o
 	$(AR) $(ARFLAGS) libboltzmann.a num_jac_col.o
 	$(AR) $(ARFLAGS) libboltzmann.a ode_it_solve.o
@@ -1333,7 +1335,7 @@ bwarmup.o : bwarmup.c $(SERIAL_INCS) boltzmann_init.h bwarmup_run.h
 
 #deq_run.o: deq_run.c deq_run.h $(SERIAL_INCS) flatten_state.h alloc4.h form_molecules_matrix.h alloc7.h update_rxn_log_likelihoods.h fill_flux_pieces.h ode23tb.h
 
-deq_run.o: deq_run.c deq_run.h $(SERIAL_INCS) flatten_state.h alloc4.h form_molecules_matrix.h alloc7.h update_rxn_log_likelihoods.h ode_solver.h ode_print_concs_header.h ode_print_flux_header.h ode_print_lklhd_header.h ode_print_bflux_header.h
+deq_run.o: deq_run.c deq_run.h $(SERIAL_INCS) flatten_state.h alloc7.h init_base_reactants.h init_relative_rates.h ode_solver.h ode_print_concs_header.h ode_print_flux_header.h ode_print_lklhd_header.h ode_print_bflux_header.h print_net_lklhd_bndry_flux_header.h print_net_likelihood_header.h
 	   $(CC) $(DCFLAGS) $(TFLAGS) -c deq_run.c
 
 alloc7.o: alloc7.c alloc7.h $(SERIAL_INCS)
@@ -1357,7 +1359,7 @@ ode_print_lklhd_header.o: ode_print_lklhd_header.c ode_print_lklhd_header.h $(SE
 ode_solver.o: ode_solver.c ode_solver.h ode23tb.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c ode_solver.c
 
-ode23tb.o: ode23tb.c ode23tb.h $(SERIAL_INCS) init_base_reactants.h compute_flux_scaling.h approximate_delta_concs.h ode_num_jac.h ode_it_solve.h print_concs_fluxes.h blas.h ode_print_concs.h compute_net_likelihoods.h compute_net_lklhd_bndry_flux.h print_net_likelihood_header.h print_net_lklhd_bndry_flux_header.h print_net_likelihoods.h print_net_lklhd_bndry_flux.h
+ode23tb.o: ode23tb.c ode23tb.h $(SERIAL_INCS) compute_flux_scaling.h approximate_delta_concs.h ode_num_jac.h ode_it_solve.h print_concs_fluxes.h blas.h ode_print_concs.h compute_net_likelihoods.h compute_net_lklhd_bndry_flux.h print_net_likelihood_header.h print_net_lklhd_bndry_flux_header.h print_net_likelihoods.h print_net_lklhd_bndry_flux.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c ode23tb.c 
 
 ode_print_concs.o: ode_print_concs.c ode_print_concs.h $(SERIAL_INCS) 
@@ -1390,10 +1392,13 @@ print_net_lklhd_bndry_flux.o: print_net_lklhd_bndry_flux.c print_net_lklhd_bndry
 init_base_reactants.o: init_base_reactants.c init_base_reactants.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c init_base_reactants.c
 
+init_relative_rates.o: init_relative_rates.c init_relative_rates.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c init_relative_rates.c
+
 compute_flux_scaling.o: compute_flux_scaling.c compute_flux_scaling.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c compute_flux_scaling.c
 
-approximate_delta_concs.o: approximate_delta_concs.c approximate_delta_concs.h ce_approximate_delta_concs.h lr_approximate_delta_concs.h lr2_approximate_delta_concs.h lr1_approximate_delta_concs.h lr3_approximate_delta_concs.h lr4_approximate_delta_concs.h lr5_approximate_delta_concs.h $(SERIAL_INCS)
+approximate_delta_concs.o: approximate_delta_concs.c approximate_delta_concs.h ce_approximate_delta_concs.h lr_approximate_delta_concs.h lr2_approximate_delta_concs.h lr1_approximate_delta_concs.h lr3_approximate_delta_concs.h lr4_approximate_delta_concs.h lr5_approximate_delta_concs.h lr6_approximate_delta_concs.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c approximate_delta_concs.c 
 
 vec_abs.o: vec_abs.c vec_abs.h $(SERIAL_INCS)
@@ -1411,23 +1416,26 @@ vec_mul.o: vec_mul.c vec_mul.h $(SERIAL_INCS)
 ce_approximate_delta_concs.o: ce_approximate_delta_concs.c ce_approximate_delta_concs.h update_rxn_likelihoods.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c ce_approximate_delta_concs.c 
 
-lr_approximate_delta_concs.o: lr_approximate_delta_concs.c lr_approximate_delta_concs.h update_rxn_likelihoods.h $(SERIAL_INCS)
+lr_approximate_delta_concs.o: lr_approximate_delta_concs.c lr_approximate_delta_concs.h compute_flux_scaling.h update_rxn_likelihoods.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c lr_approximate_delta_concs.c 
 
-lr1_approximate_delta_concs.o: lr1_approximate_delta_concs.c lr1_approximate_delta_concs.h update_rxn_likelihoods.h $(SERIAL_INCS)
+lr1_approximate_delta_concs.o: lr1_approximate_delta_concs.c lr1_approximate_delta_concs.h compute_flux_scaling.h update_rxn_likelihoods.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c lr1_approximate_delta_concs.c 
 
-lr2_approximate_delta_concs.o: lr2_approximate_delta_concs.c lr2_approximate_delta_concs.h update_rxn_likelihoods.h $(SERIAL_INCS)
+lr2_approximate_delta_concs.o: lr2_approximate_delta_concs.c lr2_approximate_delta_concs.h compute_flux_scaling.h update_rxn_likelihoods.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c lr2_approximate_delta_concs.c 
 
-lr3_approximate_delta_concs.o: lr3_approximate_delta_concs.c lr3_approximate_delta_concs.h update_rxn_likelihoods.h $(SERIAL_INCS)
+lr3_approximate_delta_concs.o: lr3_approximate_delta_concs.c lr3_approximate_delta_concs.h compute_flux_scaling.h update_rxn_likelihoods.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c lr3_approximate_delta_concs.c 
 
-lr4_approximate_delta_concs.o: lr4_approximate_delta_concs.c lr4_approximate_delta_concs.h update_rxn_likelihoods.h $(SERIAL_INCS)
+lr4_approximate_delta_concs.o: lr4_approximate_delta_concs.c lr4_approximate_delta_concs.h compute_flux_scaling.h update_rxn_likelihoods.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c lr4_approximate_delta_concs.c 
 
-lr5_approximate_delta_concs.o: lr5_approximate_delta_concs.c lr5_approximate_delta_concs.h update_rxn_likelihoods.h $(SERIAL_INCS)
+lr5_approximate_delta_concs.o: lr5_approximate_delta_concs.c lr5_approximate_delta_concs.h compute_flux_scaling.h update_rxn_likelihoods.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c lr5_approximate_delta_concs.c 
+
+lr6_approximate_delta_concs.o: lr6_approximate_delta_concs.c lr6_approximate_delta_concs.h update_rxn_likelihoods.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c lr6_approximate_delta_concs.c 
 
 ode_num_jac.o: ode_num_jac.c ode_num_jac.h $(SERIAL_INCS) num_jac_col.h blas.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c ode_num_jac.c 
