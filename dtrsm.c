@@ -1,4 +1,5 @@
 #include "system_includes.h"
+#include "blas.h"
 #include "lsame.h"
 
 #include "dtrsm.h"
@@ -98,7 +99,7 @@ void dtrsm_(char *side_p, char *uplo_p, char *transa_p, char *diag_p,
           max( 1, m ).
 
         Called by dgetrf, dgetrf2, dgetrs
-	Calls lsame
+	Calls lsame, dscal, daxpy, ddot
   */
   double temp;
   double alpha;
