@@ -185,14 +185,14 @@ void dgetrf2_(int *m_p,
 	    Solve A12
 	  */
 	  dtrsm_(&l_char,&l_char, &n_char, &u_char,&n1,&n2,&one,a,&lda,
-		 &a[a12_start],&lda);
+		 &a[a12_start],&lda,1,1,1,1);
 	  /*
 	    Update A22
 	  */
 	  mmn1 = m - n1;
 	  mone = -1.0;
 	  dgemm_(&n_char, &n_char, &mmn1, &n2, &n1, &mone, &a[a21_start],
-		 &lda, &a[a12_start], &lda, &one, &a[a22_start], &lda);
+		 &lda, &a[a12_start], &lda, &one, &a[a22_start], &lda,1,1);
 	  /*
 	    Factor A22
 	    Recursive Call.
