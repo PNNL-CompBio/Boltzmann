@@ -29,7 +29,7 @@ specific language governing permissions and limitations under the License.
 #include "update_rxn_log_likelihoods.h"
 #include "choose_rxn.h"
 #include "compute_delta_g_forward_entropy_free_energy.h"
-#include "print_concentrations.h"
+#include "print_counts.h"
 #include "print_likelihoods.h"
 #include "save_likelihoods.h"
 #include "print_free_energy.h"
@@ -307,7 +307,7 @@ int boltzmann_run(struct state_struct *state) {
 	*/
 	conc_view_step = conc_view_step - 1;
 	if ((conc_view_step <= 0) || (i == (n_record_steps-1))) {
-	  print_concentrations(state,i);
+	  print_counts(state,i);
 	  conc_view_step = conc_view_freq;
 	}
 	/* 
