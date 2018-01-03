@@ -67,8 +67,8 @@ AUTOMAKE = ${SHELL} /home/dbaxter/boltzmann/trunk/missing --run automake-1.11
 AWK = gawk
 CC = gcc 
 CCDEPMODE = depmode=none
-#CFLAGS = ${OPT_FLAGS} ${SUNDIALS_INCS}
-CFLAGS = ${NO_OPT_FLAGS} ${SUNDIALS_INCS}
+#CFLAGS = $(OPT_FLAGS) $(SUNDIALS_INCS)
+CFLAGS = $(NO_OPT_FLAGS) $(SUNDIALS_INCS)
 CPP = gcc -E
 CPPFLAGS = 
 CYGPATH_W = echo
@@ -85,7 +85,7 @@ INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
 LDFLAGS = 
 LIBOBJS = 
-LIBS = libboltzmann.a -lm ${SUNDIALS_LIBS} libboltzmann.a
+LIBS = libboltzmann.a -lm $(SUNDIALS_LIBS) libboltzmann.a
 LTLIBOBJS = 
 MAKEINFO = ${SHELL} /home/dbaxter/boltzmann/trunk/missing --run makeinfo
 MKDIR_P = /bin/mkdir -p
@@ -151,14 +151,14 @@ SUNDIALS_ROOT = ./sundials-2.7.0
 CLINKER = gcc
 AR = ar
 ARFLAGS = -crv
-SUNDIALS_LIB_DIR = ${SUNDIALS_ROOT}/lib
-SUNDIALS_INC_DIR = ${SUNDIALS_ROOT}/include
-SUNDIALS_LIBS = ${SUNDIALS_LIB_DIR}/libsundials.so ${SUNDIALS_LIB_DIR}/libsundials_cvodes.so ${SUNDIALS_LIB_DIR}/libsundials_cvodes.so ${SUNDIALS_LIB_DIR}/libsundials_nvec_ser.so
-SUNDIALS_INCS = -I ${SUNDIALS_INC_DIR} -I ${SUNDIALS_INC_DIR}/sundials -I ${SUNDIALS_INC_DIR}/cvodes -I ${SUNDIALS_INC_DIR}/cvode -I${SUNDIALS_INC_DIR}/nvector
-DBG_FLAGS = -O0 -g -fPIC -Wall ${SUNDIALS_INCS}
-NO_OPT_FLAGS = -O0 -g -fPIC -Wall ${SUNDIALS_INCS}
-OPT_FLAGS = -g -O2 -fPIC -Wall ${SUNDIALS_INCS}
-DCFLAGS = ${CFLAGS} 
+SUNDIALS_LIB_DIR = $(SUNDIALS_ROOT)/lib
+SUNDIALS_INC_DIR = $(SUNDIALS_ROOT)/include
+SUNDIALS_LIBS = $(SUNDIALS_LIB_DIR)/libsundials.so $(SUNDIALS_LIB_DIR)/libsundials_cvodes.so $(SUNDIALS_LIB_DIR)/libsundials_cvodes.so $(SUNDIALS_LIB_DIR)/libsundials_nvec_ser.so
+SUNDIALS_INCS = -I $(SUNDIALS_INC_DIR) -I $(SUNDIALS_INC_DIR)/sundials -I $(SUNDIALS_INC_DIR)/cvodes -I $(SUNDIALS_INC_DIR)/cvode -I$(SUNDIALS_INC_DIR)/nvector
+DBG_FLAGS = -O0 -g -fPIC -Wall $(SUNDIALS_INCS)
+NO_OPT_FLAGS = -O0 -g -fPIC -Wall $(SUNDIALS_INCS)
+OPT_FLAGS = -g -O2 -fPIC -Wall $(SUNDIALS_INCS)
+DCFLAGS = $(CFLAGS) 
 LFLAGS = -g 
 TIMING_LIB = 
 TIMING_DEP = 
@@ -517,7 +517,7 @@ all:  $(EXECS) $(SUNDIALS_LIB_DIR)/libsundials_cvodes.so $(SUNDIALS_LIB_DIR)/lib
 $(SUNDIALS_LIB_DIR)/libsundials_cvodes.so $(SUNDIALS_LIB_DIR)/libsundials_cvodes.a $(SUNDIALS_LIB_DIR)/libsundials_nvec_ser.a $(SUNDIALS_LIB_DIR)/libsundials_nvec_ser.so $(SUNDIALS_LIB_DIR)/libsundials.so $(SUNDIALS_LIB_DIR)/libsundials.a:
 	cd $(SUNDIALS_ROOT) && $(MAKE)
 
-default: $(EXECS) ${LIBS}
+default: $(EXECS) $(SUNDIALS_LIBS) libboltzmann.a
 
 ms2js_ids: $(KPM_OBJS)
 	$(CLINKER) -O0 -o ms2js_ids $(KPM_OBJS)
@@ -858,7 +858,7 @@ libboltzmann.a: $(SERIAL_OBJS1)  $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SERIAL_OBJS4)
 	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_load_aux_data.o
 	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_free_state.o
 
-boltzmann_test_save_load: boltzmann_test_save_load.o $(MMAP_OBJS) $(TIMING_LIB) libboltzmann.a
+boltzmann_test_save_load: boltzmann_test_save_load.o $(MMAP_OBJS) $(TIMING_LIB) libboltzmann.a $(SUNDIALS_LIBS) 
 	$(CLINKER) $(LFLAGS) -o boltzmann_test_save_load boltzmann_test_save_load.o $(SERIAL_OBJS1) $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SERIAL_OBJS4) $(SBML_OBJS) $(SERIAL_OBJS7) $(SERIAL_OBJS8) $(SAVE_LOAD_OBJS) $(MMAP_OBJS) $(TIMING_LIB) $(LIBS)
 
 #boltzmann_boot_test: boltzmann_boot_test.o libboltzmann.a
@@ -939,18 +939,18 @@ boltzmann_test_save_load: boltzmann_test_save_load.o $(MMAP_OBJS) $(TIMING_LIB) 
 #boltzmann_rep_state_i.o: boltzmann_rep_state_i.c boltzmann_rep_state_i.h flatten_state.h $(SERIAL_INCS)
 #	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_rep_state_i.c
 
-boltzmann: $(MMAP_OBJS) $(TIMING_LIB) boltzmann.o libboltzmann.a $(LIBS)
+boltzmann: $(MMAP_OBJS) $(TIMING_LIB) boltzmann.o libboltzmann.a $(SUNDIALS_LIBS)
 	$(CLINKER) $(LFLAGS) -o boltzmann boltzmann.o $(SERIAL_OBJS1) $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SERIAL_OBJS4) $(SBML_OBJS) $(SERIAL_OBJS7) $(SERIAL_OBJS8) $(MMAP_OBJS) $(TIMING_LIB) $(LIBS)
 
 boltzmann.o: $(SERIAL_INCS) boltzmann.c boltzmann_init.h boltzmann_run.h 
 	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann.c
 
-deq: $(MMAP_OBJS) $(TIMING_LIB) deq.o libboltzmann.a
+deq: $(MMAP_OBJS) $(TIMING_LIB) deq.o libboltzmann.a $(SUNDIALS_LIBS)
 #	$(CLINKER) $(LFLAGS) -o deq deq.o $(SERIAL_OBJS1) $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SERIAL_OBJS4) $(SERIAL_OBJS5) $(SERIAL_OBJS7) $(SERIAL_OBJS8) $(MMAP_OBJS) $(TIMING_LIB) $(LIBS)
 	$(CLINKER) $(LFLAGS) -o deq deq.o $(SERIAL_OBJS1) $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SERIAL_OBJS4) $(SBML_OBJS) $(SERIAL_OBJS7) $(SERIAL_OBJS8) $(MMAP_OBJS) $(TIMING_LIB) $(LIBS)
 
-bwarmup: $(MMAP_OBJS) $(TIMING_LIB) bwarmup.o libboltzmann.a
-	$(CLINKER) $(LFLAGS) -o bwarmup bwarmup.o $(SERIAL_OBJS1) $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SERIAL_OBJS4) $(SBML_OBJS) bwarmup_run.o $(SERIAL_OBJS7) $(SERIAL_OBJS8) $(MMAP_OBJS) $(TIMING_LIB) $(LIBS)
+bwarmup: $(MMAP_OBJS) $(TIMING_LIB) bwarmup.o libboltzmann.a $(SUNDIALS_LIBS)
+	$(CLINKER) $(LFLAGS) -o bwarmup bwarmup.o $(SERIAL_OBJS1) $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SERIAL_OBJS4) $(SBML_OBJS) bwarmup_run.o $(SERIAL_OBJS7) $(SERIAL_OBJS8) $(MMAP_OBJS) $(TIMING_LIB) $(LIBS) 
 
 boltzmann_init.o: $(SERIAL_INCS) boltzmann_init.c boltzmann_init.h alloc0.h read_params.h boltzmann_init_core.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_init.c
@@ -1305,7 +1305,7 @@ size_file.o: size_file.c size_file.h
 #boltzmann_size_superstate.o: boltzmann_size_superstate.c boltzmann_size_superstate.h $(SERIAL_INCS)
 #	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_size_superstate.c
 
-sbml2bo: sbml2bo.o libboltzmann.a
+sbml2bo: sbml2bo.o libboltzmann.a 
 	$(CLINKER) $(LFLAGS) -o sbml2bo sbml2bo.o $(SERIAL_OBJS1) $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SERIAL_OBJS4) $(SBML_OBJS) $(SERIAL_OBJS7) $(SERIAL_OBJS8) $(MMAP_OBJS) $(TIMING_LIB) $(LIBS)
 
 sbml2bo.o: sbml2bo.c alloc0.h size_ms2js_file.h size_kg2js_file.h sbml_alloc0.h sbml_alloc2.h read_ms2js.h read_kg2js.h sort_json_ids.h sbml_set_file_names.h sbml_count_cmpts.h sbml_count_species.h sbml_alloc1.h parse_sbml.h $(SERIAL_INCS)
