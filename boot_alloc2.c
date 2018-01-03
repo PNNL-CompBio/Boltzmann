@@ -49,7 +49,7 @@ int boot_alloc2(struct boot_state_struct *boot_state) {
   if (compartment_list_starts == NULL) {
     success = 0;
     if (lfp) {
-      fprintf(lfp,"boot_alloc2: Error unable to allocate %ld bytes for compartment_list_starts\n",
+      fprintf(lfp,"boot_alloc2: Error unable to allocate %lld bytes for compartment_list_starts\n",
 	      ask_for);
       fflush(lfp);
     }
@@ -65,7 +65,7 @@ int boot_alloc2(struct boot_state_struct *boot_state) {
     if (meta_data == NULL) {
       success = 0;
       if (lfp) {
-	fprintf(lfp,"boot_alloc2: Error unable to allocate %ld bytes for meta_data\n",
+	fprintf(lfp,"boot_alloc2: Error unable to allocate %lld bytes for meta_data\n",
 		ask_for);
 	fflush(lfp);
       }
