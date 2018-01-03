@@ -80,14 +80,28 @@ int alloc3(struct state_struct *state) {
   }
   if (success) {
     /*
-      Allocate space for the concentrations buffer.
+      Allocate space for the current concentrations buffer.
     */
     ask_for = ((int64_t)nu_molecules) * ((int64_t)sizeof(double));
     usage += ask_for;
-    state->concentrations = (double *)calloc(one_l,ask_for);
-    if (state->concentrations == NULL) {
+    state->current_concentrations = (double *)calloc(one_l,ask_for);
+    if (state->current_concentrations == NULL) {
       fprintf(stderr,"alloc3: Error unable to allocate %ld bytes for "
-	      "concentrations field\n",ask_for);
+	      "current_concentrations field\n",ask_for);
+      fflush(stderr);
+      success = 0;
+    }
+  }
+  if (success) {
+    /*
+      Allocate space for the future concentrations buffer.
+    */
+    ask_for = ((int64_t)nu_molecules) * ((int64_t)sizeof(double));
+    usage += ask_for;
+    state->future_concentrations = (double *)calloc(one_l,ask_for);
+    if (state->future_concentrations == NULL) {
+      fprintf(stderr,"alloc3: Error unable to allocate %ld bytes for "
+	      "future_concentrations field\n",ask_for);
       fflush(stderr);
       success = 0;
     }
@@ -181,10 +195,10 @@ int alloc3(struct state_struct *state) {
   if (success) {
     ask_for = ((int64_t)nrxns) * ((int64_t)sizeof(double));
     usage += ask_for;
-    state->dgs = (double *)calloc(one_l,ask_for);
-    if (state->dgs == NULL) {
+    state->ke = (double *)calloc(one_l,ask_for);
+    if (state->ke == NULL) {
       fprintf(stderr,"alloc3: Error unable to allocate %ld bytes for "
-	      "state->dgs field.\n",ask_for);
+	      "state->ke field.\n",ask_for);
       fflush(stderr);
       success = 0;
     } 
@@ -193,10 +207,22 @@ int alloc3(struct state_struct *state) {
   if (success) {
     ask_for = ((int64_t)nrxns) * ((int64_t)sizeof(double));
     usage += ask_for;
-    state->ke = (double *)calloc(one_l,ask_for);
-    if (state->ke == NULL) {
+    state->free_energy = (double *)calloc(one_l,ask_for);
+    if (state->free_energy == NULL) {
       fprintf(stderr,"alloc3: Error unable to allocate %ld bytes for "
-	      "state->ke field.\n",ask_for);
+	      "state->free_energy field.\n",ask_for);
+      fflush(stderr);
+      success = 0;
+    } 
+    
+  }
+  if (success) {
+    ask_for = ((int64_t)nrxns) * ((int64_t)sizeof(double));
+    usage += ask_for;
+    state->forward_rxn_likelihood = (double *)calloc(one_l,ask_for);
+    if (state->forward_rxn_likelihood == NULL) {
+      fprintf(stderr,"alloc3: Error unable to allocate %ld bytes for "
+	      "state->forward_rxn_likelihood field.\n",ask_for);
       fflush(stderr);
       success = 0;
     } 
@@ -204,10 +230,55 @@ int alloc3(struct state_struct *state) {
   if (success) {
     ask_for = ((int64_t)nrxns) * ((int64_t)sizeof(double));
     usage += ask_for;
-    state->log_rxn_ratio = (double *)calloc(one_l,ask_for);
-    if (state->log_rxn_ratio == NULL) {
+    state->reverse_rxn_likelihood = (double *)calloc(one_l,ask_for);
+    if (state->reverse_rxn_likelihood == NULL) {
+      fprintf(stderr,"alloc3: Error unable to allocate %ld bytes for "
+	      "state->reverse_rxn_likelihood field.\n",ask_for);
+      fflush(stderr);
+      success = 0;
+    } 
+  }
+  if (success) {
+    ask_for = ((int64_t)nrxns) * ((int64_t)sizeof(double));
+    usage += ask_for;
+    state->current_log_rxn_ratio = (double *)calloc(one_l,ask_for);
+    if (state->current_log_rxn_ratio == NULL) {
       fprintf(stderr,"alloc3: Error unable to allocate %ld bytes for "
 	      "state->log_rxn_ratio field.\n",ask_for);
+      fflush(stderr);
+      success = 0;
+    } 
+  }
+  if (success) {
+    ask_for = ((int64_t)nrxns) * ((int64_t)sizeof(double));
+    usage += ask_for;
+    state->next_log_rxn_ratio = (double *)calloc(one_l,ask_for);
+    if (state->next_log_rxn_ratio == NULL) {
+      fprintf(stderr,"alloc3: Error unable to allocate %ld bytes for "
+	      "state->next_log_rxn_ratio field.\n",ask_for);
+      fflush(stderr);
+      success = 0;
+    } 
+  }
+  if (success) {
+    ask_for = ((int64_t)nrxns) * ((int64_t)sizeof(double));
+    ask_for += ask_for + 1;
+    usage += ask_for;
+    state->rxn_likelihood_ps = (double *)calloc(one_l,ask_for);
+    if (state->rxn_likelihood_ps == NULL) {
+      fprintf(stderr,"alloc3: Error unable to allocate %ld bytes for "
+	      "state->rxn_likelihood_ps field.\n",ask_for);
+      fflush(stderr);
+      success = 0;
+    } 
+  }
+  if (success) {
+    ask_for = ((int64_t)nrxns) * ((int64_t)sizeof(double));
+    usage += ask_for;
+    state->l_thermo = (double *)calloc(one_l,ask_for);
+    if (state->l_thermo == NULL) {
+      fprintf(stderr,"alloc3: Error unable to allocate %ld bytes for "
+	      "state->l_thermo field.\n",ask_for);
       fflush(stderr);
       success = 0;
     } 
