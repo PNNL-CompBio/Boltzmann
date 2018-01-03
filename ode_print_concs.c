@@ -37,7 +37,7 @@ void ode_print_concs(struct state_struct *state, double time, double *concs) {
 
     state         G*I      state structure :
                            input fields are unique_molecules,
-					    solvent_pos,
+					    sorted_molecules,
 					    ode_concs_fp
                            no fields of state are modified.
 
@@ -45,21 +45,21 @@ void ode_print_concs(struct state_struct *state, double time, double *concs) {
                   
     
   */
+  struct molecule_struct *cur_molecule;
   int unique_molecules;
   int j;
-  int solvent_pos;
-  int padi;
 
   FILE *ode_concs_fp;
   ode_concs_fp           = state->ode_concs_fp;
   unique_molecules       = state->nunique_molecules;
-  solvent_pos            = (int)state->solvent_pos;
+  cur_molecule           = state->sorted_molecules;
   if (ode_concs_fp) {
     fprintf(ode_concs_fp,"%le",time);
     for (j=0;j<unique_molecules;j++) {
-      if (j != solvent_pos) {
+      if ((cur_molecule->solvent == 0) || (cur_molecule->variable == 1)) {
 	fprintf(ode_concs_fp,"\t%le",concs[j]);
       }
+      cur_molecule += 1; /* caution address arithmetic.*/
     }
     fprintf(ode_concs_fp,"\n");
     fflush(ode_concs_fp);
