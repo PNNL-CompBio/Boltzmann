@@ -9,6 +9,7 @@
 #include "boltzmann_monitor_ode.h"
 #include "boltzmann_print_sensitivities.h"
 #include "vec_set_constant.h"
+#inclue  "ode_test_steady_state.h"
 #include "boltzmann_cvodes.h"
 int boltzmann_cvodes(struct state_struct *state, double *concs) {
   /*
@@ -49,6 +50,7 @@ int boltzmann_cvodes(struct state_struct *state, double *concs) {
   double *recip_diag_u;
   double *frow;
   double *srow;
+  double *f0;
   double *p;
   double *rp;
   double *pbar;
@@ -59,21 +61,30 @@ int boltzmann_cvodes(struct state_struct *state, double *concs) {
   double *fdel;
   double *fdiff;
   double *dfdy_tmp;
+
   int    *dfdy_ia;
   int    *dfdy_ja;
+
   int    *dfdy_iat;
   int    *dfdy_jat;
+
   int    *miter_im;
   int    *miter_jm;
+
   int    *prec_il;
   int    *prec_jl;
+
   int    *prec_iu;
   int    *prec_ju;
+
   int    *lindex;
   int    *uindex;
+
   int    *column_mask;
   int    *sindex;
+
   int    *plist;
+
   double t0;
   double tfinal;
   double tout;
@@ -111,11 +122,15 @@ int boltzmann_cvodes(struct state_struct *state, double *concs) {
 
   int nnz;
   int nnzm;
+
   int nnzl;
   int nnzu;
 
   int drfc_len;
   int ns;
+
+  int done;
+  int padi;
 
   FILE *lfp;
   FILE *efp;
@@ -189,7 +204,7 @@ int boltzmann_cvodes(struct state_struct *state, double *concs) {
   nnzm = cvodes_params->nnzm;
   nnzl = cvodes_params->nnzl;
   nnzu = cvodes_params->nnzu;
-  num_doubles = (nnz + nnz + nnzm + nnzl + nnzu + (4*ny) + (3*ns) + (ns*ny));
+  num_doubles = (nnz + nnz + nnzm + nnzl + nnzu + (5*ny) + (3*ns) + (ns*ny));
   num_ints    = (num_doubles + 5*ny + 5 + ns);
   num_doubles = num_doubles + (num_ints + (num_ints & 1))/2;
   drfc_len    = state->number_molecules * 2;
@@ -211,7 +226,8 @@ int boltzmann_cvodes(struct state_struct *state, double *concs) {
     recip_diag_u = &prec_row[ny];
     frow         = &recip_diag_u[ny];
     srow         = &frow[ny];
-    p            = &srow[ny];
+    f0           = &srow[ny];
+    p            = &f0[ny];
     rp           = &p[ns];
     pbar         = &rp[ns];
     ys0v         = &pbar[ns];
@@ -390,6 +406,10 @@ int boltzmann_cvodes(struct state_struct *state, double *concs) {
 	    }
 	  }
 	}
+	done = ode_test_steady_state(state,ny,concs,f0);
+	if (done) {
+	  not_done = 0;
+	}
       } /* end for (i...) */
       /* end if num_steps > 0) */
     } else {
@@ -433,6 +453,10 @@ int boltzmann_cvodes(struct state_struct *state, double *concs) {
 	      ode_rxn_view_step = ode_rxn_view_freq;
 	    }
 	  }
+	}
+	done = ode_test_steady_state(state,ny,concs,f0);
+	if (done) {
+	  not_done = 0;
 	}
       } /* end while not_done */
       
