@@ -33,7 +33,7 @@ int compute_reaction_dg0(struct formation_energy_struct *fes){
   /*
     Set the delta_g0 field for all of the reactions
     based on energies of formation.
-    Called by: formation_energy_rxn_dg0
+    Called by: compute_standard_energies
     Calls:     fprintf, fflush
   */
   int success;
