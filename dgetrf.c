@@ -4,12 +4,12 @@
 #include "dgemm.h"
 #include "dtrsm.h"
 #include "dgetrf.h"
-void dgetrf_(int *m_p, 
-	    int *n_p, 
-	    double *a, 
-	    int *lda_p, 
-	    int *ipiv, 
-	    int *info_p) {
+void dgetrf_(const int *m_p, 
+	     const int *n_p, 
+	     double *a, 
+	     const int *lda_p, 
+	     int *ipiv, 
+	     int *info_p) {
   /*
     Adapted from dgetrf.f from lapack source.
   */
@@ -139,8 +139,8 @@ void dgetrf_(int *m_p,
 	      Compute block row of U.
 	    */
 	    dtrsm_(&l_char,&l_char, &n_char, &u_char,
-		  &jb, &n_m_j_m_jb, &one, &a[ajj_pos], &lda,
-		  &a[j+j_p_jb_lda], &lda);
+		   &jb, &n_m_j_m_jb, &one, &a[ajj_pos], &lda,
+		   &a[j+j_p_jb_lda], &lda,1,1,1,1);
 
 	    if (m_m_j_m_jb > 0) {
 	      /*
@@ -150,7 +150,7 @@ void dgetrf_(int *m_p,
 		    &n_m_j_m_jb, &jb,  &mone,
 		    &a[j_lda + j + jb],&lda,
 		    &a[j_p_jb_lda + j],&lda,&one,
-		    &a[j_p_jb_lda + j + jb],&lda);
+		     &a[j_p_jb_lda + j + jb],&lda,1,1);
 	    } /* end if more rows left */
 	  } /* end if more columns left. */
 	  j_lda = j_p_jb_lda;
