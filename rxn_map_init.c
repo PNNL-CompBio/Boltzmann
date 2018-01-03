@@ -20,15 +20,6 @@ under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <strings.h>
-#include <float.h>
-#include <signal.h>
-#include <unistd.h>
-
-#include "djb_timing_b.h"
 #include "boltzmann_structs.h"
 #include "alloc0.h"
 #include "read_params.h"
@@ -75,7 +66,6 @@ int rxn_map_init(char *param_file_name, struct state_struct **statep,
 	       alloc3,
 	       read_initial_concentrations,
 	       form_molecules_matrix,
-	       compute_ke
 	       print_rxn_likelihoods_header
 	       print_free_energy_header
   */
