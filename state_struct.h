@@ -46,6 +46,8 @@ specific language governing permissions and limitations under the License.
      reactions_matrix,
      sorted_molecules,
      ke,
+     kss,
+     kssr,
      activities,
      sorted_compartments
 
@@ -117,6 +119,7 @@ struct state_struct {
   int64_t number_molecules;            
   int64_t nunique_molecules;     	
   int64_t use_activities;       	
+  int64_t adjust_steady_state;
   int64_t molecules_or_conc;      
   int64_t warmup_steps;           
   int64_t record_steps;           
@@ -133,7 +136,7 @@ struct state_struct {
   int64_t rxn_view_freq;          
   int64_t rxn_view_hist_length;    
   int64_t lklhd_view_freq;        
-  int64_t conc_view_freq;         
+  int64_t count_view_freq;         
   int64_t fe_view_freq;
   int64_t reaction_file_length;   
   int64_t rxn_title_space;        
@@ -169,7 +172,7 @@ struct state_struct {
   double  m_rt;
   double  cals_per_joule;
   double  joules_per_cal;
-  double  default_initial_conc;
+  double  default_initial_count;
   double  dg_forward;
   double  entropy;
   double  current_concentrations_sum;
@@ -180,8 +183,8 @@ struct state_struct {
   /* two way data (modified) */
   double  *dg_forward_p; /* scalar */        /* 8 */             
   double  *entropy_p;    /* scalar */        /* 8 */             
-  double  *current_concentrations; /* len = unique_molecules */
-  double  *bndry_flux_concs;       /* len = unique_molecules */
+  double  *current_counts; /* len = unique_molecules */
+  double  *bndry_flux_counts;       /* len = unique_molecules */
   struct  vgrng_state_struct *vgrng_state; /* len = 13 */
   struct  vgrng_state_struct *vgrng2_state;/* len = 13 */ 
   /* 
@@ -190,10 +193,14 @@ struct state_struct {
   */
   /*
     Incoming data not modified, depends only on agent type.
-    (2*number_reactions + unique_molecules) * sizeof(double)
+    (2*number_reactions + 4*unique_molecules) * sizeof(double)
   */
-  double  *dg0s;      /* len = number_reactions */
-  double  *ke;        /* len = number_reactions */
+  double  *dg0s;      /* len = number_reactions  */
+  double  *ke;        /* len = number_reactions  */
+  double  *kss;       /* len = number_reactions  */
+  double  *kssr;       /* len = number_reactions  */
+  double  *kss_e_val; /* len = unique_molecules  */
+  double  *kss_u_val; /* len = unique_molecules  */
   double  *molecule_dg0tfs; /* len = unique_molecules */
   double  *molecule_probabilities; /* len = unique_molecules */
   double  *molecule_chemical_potentials; /* len = unique_molecules */
@@ -255,7 +262,7 @@ struct state_struct {
   char    *rxn_file_keyword_buffer; /* 144, allocated in alloc0  */
   char    *param_buffer; /*  2* max_param_line_len, allocated in alloc0 */ 
   char    *raw_molecules_text; /* molecules_space Allocated in alloc2 */
-  double  *future_concentrations;  /* unique_molecules */
+  double  *future_counts;      /* unique_molecules */
   double  *free_energy;            /* number_reactions */
   double  *forward_rxn_likelihood; /* number_reactions */
   double  *reverse_rxn_likelihood; /* number_reactions */
