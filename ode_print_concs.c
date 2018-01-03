@@ -37,8 +37,8 @@ void ode_print_concs(struct state_struct *state, double time, double *concs) {
 
     state         G*I      state structure :
                            input fields are unique_molecules,
-					    current_concentrations,
-					    counts_out_fp
+					    solvent_pos,
+					    ode_concs_fp
                            no fields of state are modified.
 
     step          JSI      eight byte integer step number, -1 for initial step.
