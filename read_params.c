@@ -551,9 +551,9 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	}
       } else if (strncmp(key,"CVODES_LMM",10) == 0) {
         if (strncmp(value,"ADAMS",8) == 0) {
-	cvodes_params->linear_multistep_method = CV_ADAMS;
+	  cvodes_params->linear_multistep_method = CV_ADAMS; /* 1 */
 	} else if (strncmp(value,"BDF",6) == 0) {
-	  cvodes_params->linear_multistep_method = CV_BDF;
+	  cvodes_params->linear_multistep_method = CV_BDF; /* 2 */
 	}
       } else if (strncmp(key,"CVODES_ITER",11) == 0) {
 	if (strncmp(value,"NEWTON",6) == 0) {
@@ -563,17 +563,17 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	}
       } else if (strncmp(key,"CVODES_SOLVER",13) == 0) {
 	if (strncmp(value,"DENSE",5) == 0) {
-	  cvodes_params->linear_solver_method = 0;
+	  cvodes_params->linear_solver_method = 0; /* DENSE */
 	} else if (strncmp(value,"BAND",4) == 0) {
-	  cvodes_params->linear_solver_method = 2;
+	  cvodes_params->linear_solver_method = 2; /* BAND */
 	} else if (strncmp(value,"DIAG",4) == 0) {
-	  cvodes_params->linear_solver_method = 4;
+	  cvodes_params->linear_solver_method = 4; /* DIAG */
 	} else if (strncmp(value,"GMR",3) == 0) {
-	  cvodes_params->linear_solver_method = 7;
+	  cvodes_params->linear_solver_method = 7; /* PGMR */
 	} else if (strncmp(value,"BCG",3) == 0) {
-	  cvodes_params->linear_solver_method = 8;
+	  cvodes_params->linear_solver_method = 8; /* PBCG */
 	} else if (strncmp(value,"TFQMR",5) == 0) {
-	  cvodes_params->linear_solver_method = 9;
+	  cvodes_params->linear_solver_method = 9; /* PTFQMR */
 	}
       } else if (strncmp(key,"CVODES_MAX_ORD",14) == 0) {
 	sscan_ok = sscanf(value,"%d",&cvodes_params->max_ord);
