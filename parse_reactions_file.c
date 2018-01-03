@@ -45,11 +45,12 @@ int parse_reactions_file(struct state_struct *state) {
     total length of the file, total length
     of compartment names, total length of pathway_names,
     total_length reaction titles.
-    Called by: boltzmann
+    Called by: boltzmann_init
     Calls    : parse_rxn_file_keyword
                count_ws
 	       count_nws
 	       upcase
+	       fseek, feof, fgets, fprintf, fflush, sscanf (intrinsic)
   */
   struct rxn_struct *reactions;
   struct rxn_struct *reaction;
