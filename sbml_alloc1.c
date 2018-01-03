@@ -74,7 +74,7 @@ int sbml_alloc1(struct sbml2bo_struct *state) {
 
   if (state->compartment_text == NULL) {
     success = 0;
-    fprintf(error_fp,"sbml_alloc1: Error unable to allocate %lld bytes for "
+    fprintf(error_fp,"sbml_alloc1: Error unable to allocate %ld bytes for "
 	    "compartment_text\n",ask_for);
     fflush(error_fp);
   }
@@ -83,7 +83,7 @@ int sbml_alloc1(struct sbml2bo_struct *state) {
     compartments = (struct compartment_struct *)calloc(one_l,ask_for);
     if (compartments == NULL) {
       success = 0;
-      fprintf(error_fp,"sbml_alloc1: Error unable to allocate %lld bytes for "
+      fprintf(error_fp,"sbml_alloc1: Error unable to allocate %ld bytes for "
 	      "sorted_compartment work space\n",ask_for);
       fflush(error_fp);
     }
@@ -95,7 +95,7 @@ int sbml_alloc1(struct sbml2bo_struct *state) {
     specid_2_json_strings = (char *)calloc(one_l,ask_for);
     if (specid_2_json_strings == NULL) {
       success = 0;
-      fprintf(error_fp,"sbml_alloc1: Error unable to allocate %lld bytes for "
+      fprintf(error_fp,"sbml_alloc1: Error unable to allocate %ld bytes for "
 	      "specid_2_json_strings\n",ask_for);
       fflush(error_fp);
     }
@@ -106,7 +106,7 @@ int sbml_alloc1(struct sbml2bo_struct *state) {
     species_trans = (char **)calloc(one_l,ask_for);
     if (species_trans == NULL) {
       success = 0;
-      fprintf(error_fp,"sbml_alloc1: Error unable to allocate %lld bytes for "
+      fprintf(error_fp,"sbml_alloc1: Error unable to allocate %ld bytes for "
 	      "species_trans\n",ask_for);
       fflush(error_fp);
     }
@@ -119,7 +119,7 @@ int sbml_alloc1(struct sbml2bo_struct *state) {
       sort_species_trans_scratch = (char **)calloc(one_l,ask_for);
       if (sort_species_trans_scratch == NULL) {
 	success = 0;
-	fprintf(error_fp,"sbml_alloc1: Error unable to allocate %lld bytes for "
+	fprintf(error_fp,"sbml_alloc1: Error unable to allocate %ld bytes for "
 		"sort_species_trans_scratch\n",ask_for);
 	fflush(error_fp);
       } else {
