@@ -103,11 +103,16 @@ int boltzmann_run(struct state_struct *state) {
   int conc_view_step;
   int conc_view_freq;
 
+  int fe_view_step;
+  int fe_view_freq;
+
   int print_output;
   int noop_rxn;
 
   int rxn_no;
   int padi;
+
+
 
   FILE *lfp;
   success = 1;
@@ -133,6 +138,7 @@ int boltzmann_run(struct state_struct *state) {
   rxn_view_hist_length 	 = (int)state->rxn_view_hist_length;
   lklhd_view_freq        = (int)state->lklhd_view_freq;
   conc_view_freq         = (int)state->conc_view_freq;
+  fe_view_freq           = (int)state->fe_view_freq;
   rxn_view_pos         	 = 0;
   choice_view_freq       = lklhd_view_freq;
   rxn_view_step        	 = 1;
@@ -239,6 +245,7 @@ int boltzmann_run(struct state_struct *state) {
     rxn_view_step    = 1;
     conc_view_step   = 1;
     lklhd_view_step  = 1;
+    fe_view_step     = 1;
     choice_view_step = 1;
     for (i=0;i<n_record_steps;i++) {
       /*
@@ -337,7 +344,13 @@ int boltzmann_run(struct state_struct *state) {
 	  If user has requested them, print out free energies as well.
 	*/
 	if (state->free_energy_format > (int64_t)0) {
-	  print_free_energy(state,i);
+	  if (fe_view_freq > 0) {
+	    fe_view_step = fe_view_step - 1;
+	    if ((fe_view_step <= 0) || (i == (n_record_steps-1))) {
+	      print_free_energy(state,i);
+	      fe_view_step = fe_view_freq;
+	    }
+	  }
 	}
       } /* end if (print_output) */
     } /* end for(i...) */
