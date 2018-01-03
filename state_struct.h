@@ -92,7 +92,8 @@ specific language governing permissions and limitations under the License.
 
     Partition 1 is a little different in that all the quantities are
     scalars, we will make them all 8 byte quantites.
-    First quantity will be num_scalars (includes itself).
+
+    This struct is allocated in alloc0.
 */
 struct state_struct {
   int64_t agent_type;
@@ -151,6 +152,7 @@ struct state_struct {
   int64_t compartments_text_offset_in_bytes;
   int64_t num_files;
 
+  int64_t use_pseudoisomers;
 
   double  ideal_gas_r;
   double  temp_kelvin;
@@ -159,11 +161,12 @@ struct state_struct {
   double  rt;
   double  m_r_rt;
   double  m_rt;
-  double  cal_gm_per_joule;
-  double  joule_per_cal_gm;
+  double  cals_per_joule;
+  double  joules_per_cal;
   double  default_initial_conc;
   double  dg_forward;
   double  entropy;
+  double  current_concentrations_sum;
   int64_t *workspace_base;
 
   /* two way data (modified) */
@@ -184,71 +187,61 @@ struct state_struct {
   double  *dg0s;      /* len = number_reactions */
   double  *ke;        /* len = number_reactions */
   double  *activities; /* len = unique_molecules */
-  /* sizeof(rxn_struct) * number of reactions */
+  /* 
+     sizeof(rxn_struct) * number of reactions. 
+     Allocated in alloc2 
+  */
   struct rxn_struct *reactions; 
   /* 
      ((number_reactions + 1) * sizeof(int64_t)) +
-     number_molecules * (4*sizeof(int64_t))
+     number_molecules * (4*sizeof(int64_t)) 
+     allocated in alloc2 
   */
-  struct rxn_matrix_struct *reactions_matrix; 
-  /* sizeof(istring_elem_struct) * unique_molecules */
-  struct istring_elem_struct *sorted_molecules;   
-  /* sizeof(istring_elem_struct) * unique_compartments */
-  struct istring_elem_struct *sorted_cmpts;
+  struct rxn_matrix_struct *reactions_matrix; /* */
+  /* 
+    sizeof(istring_elem_struct) * unique_molecules 
+    allocated in alloc2 
+  */
+  struct istring_elem_struct *sorted_molecules;  
+  /* 
+     sizeof(istring_elem_struct) * unique_compartments 
+     allocated in alloc2 
+  */ 
+  struct istring_elem_struct *sorted_cmpts; 
   /*
     Auxilliary data read in by boltzmann_init, not needed by
     boltzman_run unless printing is enabled.
+    These strings are allocated in alloc0.
   */
-  char *params_file;      /* max_filename_len */
-  char *reaction_file;    /* max_filename_len */
-  char *init_conc_file;   /* max_filename_len */
-  char *input_dir;        /* max_filename_len */
-  char *output_file;      /* max_filename_len */
-  char *log_file;         /* max_filename_len */
-  char *output_dir;       /* max_filename_len */
-  char *concs_out_file;   /* max_filename_len */
-  char *rxn_lklhd_file;   /* max_filename_len */
-  char *free_energy_file; /* max_filename_len */
-  char *restart_file;     /* max_filename_len */
-  char *rxn_view_file;    /* max_filename_len */
-  char *bndry_flux_file;  /* max_filename_len */
-  /* 2*sizeof(double) + 
-     ((unique_molecules * 3) + 2*number_reactions) * sizeof(double)+
-     2*sizeof(vgrng_struct)  + 
-     (sizeof(rxn_struct) * number of reactions) + 
-     sizeof(rxn_matrix_struct) +
-     ((number_reactions + 1) * sizeof(int64_t)) +
-     (number_molecules * ((3*sizeof(int64_t)) + sizeof(char*))) +
-     (sizeof(istring_elem_struct) * (unique_molecules+unqiue_compartments))) +
-     (num_state_files * max_filename_len) +
-     rxn_title_space + 	
-     pathway_space + 
-     compartment_space + 
-     molecules_space +
-     
-     max(molecules_space+ ,
-     (sizeof(istring_elem_struct) * (number_molecules+number_compartments))) +
-	     
-     ((unqiue_molecules + 6*number_reactions + 1)*sizeof(double)
-     + print_output ? 
-     ((rxn_view_hist_length *(2*number_reactions+1)) * sizeof(double)
-     + ((2*number_reactions+2)*sizeof(int))) : 0))
-  */
-  char *rxn_title_text;   /* rxn_title_space */
-  char *pathway_text;     /* pathway_space   */
-  char *compartment_text; /* compartment_space */
-  char *molecules_text;   /* molecules_space */
+  char *params_file;       /* max_filename_len */
+  char *reaction_file;     /* max_filename_len */
+  char *init_conc_file;    /* max_filename_len */
+  char *input_dir;         /* max_filename_len */
+  char *output_file;       /* max_filename_len */
+  char *log_file;          /* max_filename_len */
+  char *output_dir;        /* max_filename_len */
+  char *concs_out_file;    /* max_filename_len */
+  char *rxn_lklhd_file;    /* max_filename_len */
+  char *free_energy_file;  /* max_filename_len */
+  char *restart_file;      /* max_filename_len */
+  char *rxn_view_file;     /* max_filename_len */
+  char *bndry_flux_file;   /* max_filename_len */
+  char *pseudoisomer_file; /* max_filename_len */
+  char *rxn_title_text;    /* rxn_title_space. Allocated in alloc2  */
+  char *pathway_text;      /* pathway_space. Allocated in alloc2    */
+  char *compartment_text;  /* compartment_space Allocated in alloc2 */
+  char *molecules_text;    /* molecules_space Allocated in alloc2 */
   /*
     Workspace only.
   */
-  struct istring_elem_struct *unsorted_molecules;
-  struct istring_elem_struct *unsorted_cmpts;
+  struct istring_elem_struct *unsorted_molecules; /* allocated in alloc2 */
+  struct istring_elem_struct *unsorted_cmpts; /* allocated in alloc2 */
   int64_t *compartment_ptrs;
-  int64_t *rxn_file_keyword_lengths;
-  char    **rxn_file_keywords; /* 12 */
-  char    *rxn_file_keyword_buffer; /* 144 */
-  char    *param_buffer; /*  2* max_param_line_len */
-  char    *raw_molecules_text; /* molecules_space */
+  int64_t *rxn_file_keyword_lengths /* allocated in alloc0 */;
+  char    **rxn_file_keywords; /* 12, allocated in alloc0 */
+  char    *rxn_file_keyword_buffer; /* 144, allocated in alloc0  */
+  char    *param_buffer; /*  2* max_param_line_len, allocated in alloc0 */ 
+  char    *raw_molecules_text; /* molecules_space Allocated in alloc2 */
   double  *future_concentrations;  /* unique_molecules */
   double  *free_energy;            /* number_reactions */
   double  *forward_rxn_likelihood; /* number_reactions */
