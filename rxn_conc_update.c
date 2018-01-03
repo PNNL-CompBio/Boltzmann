@@ -34,11 +34,18 @@ int rxn_conc_update(int rxn_no, int direction,
   */
   struct molecule_struct *sorted_molecules;
   struct molecule_struct *molecule;
+  struct compartment_struct *sorted_cmpts;
   double *current_counts;
   double *future_counts;
   int64_t *rxn_ptrs;
   int64_t *molecules_indices;
   int64_t *coefficients;
+  /*
+  int64_t *compartment_indices;
+  double min_count;
+  double min_conc;
+  double cmpt_vol;
+  */
 
   int     nu_molecules;
   int     i;
@@ -47,7 +54,7 @@ int rxn_conc_update(int rxn_no, int direction,
   int     k;
 
   int     success;
-  int     padi;
+  int     cmpt;
 			 
   struct rxn_matrix_struct *rxns_matrix;
 
@@ -56,10 +63,17 @@ int rxn_conc_update(int rxn_no, int direction,
   future_counts     = state->future_counts;
   nu_molecules      = state->nunique_molecules;
   sorted_molecules  = state->sorted_molecules;
+  /*
+  sorted_cmpts      = state->sorted_cmpts;
+  min_conc          = state->min_conc;
+  */
   rxns_matrix       = state->reactions_matrix;
   rxn_ptrs          = rxns_matrix->rxn_ptrs;
   molecules_indices = rxns_matrix->molecules_indices;
   coefficients      = rxns_matrix->coefficients;
+  /*
+    compartment_indices = rxns_matrix->compartment_indices;
+  */
   /*
     The following could be done with an memmove
   */
@@ -77,10 +91,20 @@ int rxn_conc_update(int rxn_no, int direction,
   if (direction > 0) {
     for (j=rxn_ptrs[rxn_no];j<rxn_ptrs[rxn_no+1];j++) {
       k = molecules_indices[j];
+      /*
+      cmpt = compartment_indices[j];
+      cmpt_vol = sorted_cmpts[cmpt].volume;
+      min_count = min_conc * cmpt_vol;
+      */
       molecule = (struct molecule_struct *) &sorted_molecules[k];
       if (molecule->variable) {
         future_counts[k] += (double)coefficients[j];
       }
+      /*
+      if (future_counts[k] < min_count) {
+        future_counts[k] = min_count;
+      }
+      */.
       if (future_counts[k] < 0.0) {
         future_counts[k] = 0.0;
       }
@@ -88,10 +112,20 @@ int rxn_conc_update(int rxn_no, int direction,
   } else {
     for (j=rxn_ptrs[rxn_no];j<rxn_ptrs[rxn_no+1];j++) {
       k = molecules_indices[j];
+      /*
+      cmpt = compartment_indices[j];
+      cmpt_vol = sorted_cmpts[cmpt].volume;
+      min_count = min_conc * cmpt_vol;
+      */
       molecule = (struct molecule_struct *) &sorted_molecules[k];
       if (molecule->variable) {
         future_counts[k] -= (double)coefficients[j];
       }
+      /*
+      if (future_counts[k] < min_count) {
+        future_counts[k] = min_count;
+      }
+      */
       if (future_counts[k] < 0.0) {
         future_counts[k] = 0.0;
       }
