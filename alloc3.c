@@ -54,7 +54,7 @@ int alloc3(struct state_struct *state) {
   int nrxns;
 
   int nzr;
-  int padi;
+  int max_compartment_len;
   success = 1;
   one_l      = (int64_t)1;
   usage      = state->usage;
@@ -64,6 +64,7 @@ int alloc3(struct state_struct *state) {
   nzr        = state->number_molecules;
   nrxns      = state->number_reactions;
   max_molecule_len = state->max_molecule_len + 1;
+  max_compartment_len     = state->max_compartment_len + 1;
   /*
     Allocate space for molecules name when reading initial 
     concentrations file.
@@ -78,6 +79,38 @@ int alloc3(struct state_struct *state) {
     fflush(stderr);
     success = 0;
   }
+  /*
+    Allocate space for compartment name when reading initial concentrations
+    file.
+  */
+  if (success) {
+    ask_for = max_compartment_len + 
+      ((align_len - (max_compartment_len & align_mask)) & align_mask);
+    usage += ask_for;
+    state->compartment_name = (char *)calloc(one_l,ask_for);
+    if (state->compartment_name == NULL) {
+      fprintf(stderr,"alloc3: Error unable to allocate %ld bytes for "
+	      "compartment_name field\n",ask_for);
+      fflush(stderr);
+      success = 0;
+    }
+  }
+  /*
+    Allocate space for compartment pointers in the sorted molecules list -
+    length is unique_compartments + 1;
+  */
+  if (success) {
+    ask_for = ((int64_t)state->unique_compartments + one_l) * 
+      ((int64_t)sizeof(int64_t));
+    state->compartment_ptrs = (int64_t*)calloc(one_l,ask_for);
+    if (state->compartment_ptrs == NULL) {
+      fprintf(stderr,"alloc3: Error unable to allocate %ld bytes for "
+	      "compartment_ptrs field\n",ask_for);
+      fflush(stderr);
+      success = 0;
+    }
+  }
+
   if (success) {
     /*
       Allocate space for the current concentrations buffer.
@@ -241,10 +274,10 @@ int alloc3(struct state_struct *state) {
   if (success) {
     ask_for = ((int64_t)nrxns) * ((int64_t)sizeof(double));
     usage += ask_for;
-    state->current_log_rxn_ratio = (double *)calloc(one_l,ask_for);
-    if (state->current_log_rxn_ratio == NULL) {
+    state->current_rxn_log_likelihood_ratio = (double *)calloc(one_l,ask_for);
+    if (state->current_rxn_log_likelihood_ratio == NULL) {
       fprintf(stderr,"alloc3: Error unable to allocate %ld bytes for "
-	      "state->log_rxn_ratio field.\n",ask_for);
+	      "state->current_rxn_log_likelihood_ratio field.\n",ask_for);
       fflush(stderr);
       success = 0;
     } 
@@ -252,10 +285,10 @@ int alloc3(struct state_struct *state) {
   if (success) {
     ask_for = ((int64_t)nrxns) * ((int64_t)sizeof(double));
     usage += ask_for;
-    state->next_log_rxn_ratio = (double *)calloc(one_l,ask_for);
-    if (state->next_log_rxn_ratio == NULL) {
+    state->future_rxn_log_likelihood_ratio = (double *)calloc(one_l,ask_for);
+    if (state->future_rxn_log_likelihood_ratio == NULL) {
       fprintf(stderr,"alloc3: Error unable to allocate %ld bytes for "
-	      "state->next_log_rxn_ratio field.\n",ask_for);
+	      "state->future_rxn_log_likelihood_ratio field.\n",ask_for);
       fflush(stderr);
       success = 0;
     } 
