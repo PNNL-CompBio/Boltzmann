@@ -246,7 +246,7 @@ void dgemm_(char *transa_p, char *transb_p, int *m_p, int *n_p, int *k_p,
 		a_col = &a[a_pos];
 		b_col = &b[b_pos];
 		temp = alpha*b_col[j];
-		daxpy_(&m,temp,a_col,&inc1,c_col,&inc1);
+		daxpy_(&m,&temp,a_col,&inc1,c_col,&inc1);
 		a_pos += lda;
 		b_pos += ldb;
 	      }
