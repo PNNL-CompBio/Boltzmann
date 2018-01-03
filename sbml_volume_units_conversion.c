@@ -58,4 +58,5 @@ double sbml_volume_units_conversion(char *units, FILE *error_fp) {
       }
     }
   }
+  return (multiplier);
 }
