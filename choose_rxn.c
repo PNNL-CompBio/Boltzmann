@@ -134,8 +134,12 @@ int choose_rxn(struct state_struct *state,
 	  in the reaction list.
 	*/
 	choice  = vgrng(vgrng2_state);
+	/*
 	dchoice = ((double)choice)*scaling;
+	*/
+	dchoice = 0;
 	if (dchoice < likelihood*activities[i]) {
+	  
 	  accept = 1;
 	  /*
 	    Update the boundary fluxes.
