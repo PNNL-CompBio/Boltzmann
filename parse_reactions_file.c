@@ -204,7 +204,7 @@ int parse_reactions_file(struct state_struct *state,
       This is not quite accurate,as some reactions may not
       have a pathway line, and Bill wants to also add an additional
       compartment line.
-      We add optional FORWARD_RATE and REVERSE_RATE lines for use 
+      We add optional K_FORWARD and K_REVERSE lines for use 
       with DELTA_CONCS_CHOICE 9 in the ode parts.
       
     */
@@ -377,8 +377,7 @@ int parse_reactions_file(struct state_struct *state,
 	  lcompartment = (char *)&compartment_text[compartment_pos];
 	  strncpy(lcompartment,(char*)&rxn_buffer[word1],word1_len);
 	  lcompartment[word1_len] = '\0';
-	  upcase(compartment_len,lcompartment,
-		 lcompartment);
+	  upcase(compartment_len,lcompartment);
 	  if ((strcmp(lcompartment,"V") == 0) ||
 	      (strcmp(lcompartment,"C") == 0)) {
 	    if (lfp) {
@@ -421,8 +420,7 @@ int parse_reactions_file(struct state_struct *state,
 	  lcompartment = (char *)&compartment_text[compartment_pos];
 	  strncpy(lcompartment,(char*)&rxn_buffer[word1],word1_len);
 	  lcompartment[word1_len] = '\0';
-	  upcase(compartment_len,lcompartment,
-		 lcompartment);
+	  upcase(compartment_len,lcompartment);
 	  padding = (align_len - (compartment_len & align_mask)) & align_mask;
 	  reaction->left_compartment = cmpts;
 	  /*
@@ -454,8 +452,7 @@ int parse_reactions_file(struct state_struct *state,
 	  rcompartment = (char *)&compartment_text[compartment_pos];
 	  strncpy(rcompartment,(char*)&rxn_buffer[word1],word1_len);
 	  rcompartment[word1_len] = '\0';
-	  upcase(compartment_len,rcompartment,
-		 rcompartment);
+	  upcase(compartment_len,rcompartment);
 	  padding = (align_len - (compartment_len & align_mask)) & align_mask;
 	  reaction->right_compartment = cmpts;
 	  /*
@@ -536,7 +533,7 @@ int parse_reactions_file(struct state_struct *state,
 	    }
 	    reaction->unit_i = 1;
 	  } else {
-	    upcase(sl,(char*)&rxn_buffer[word1],(char*)&rxn_buffer[word1]);
+	    upcase(sl,(char*)&rxn_buffer[word1]);
 	    if (strncmp((char*)&rxn_buffer[word1],"KJ/MOL",6) == 0) {
 	      reaction->unit_i = 1;
 	    } else {
@@ -578,7 +575,7 @@ int parse_reactions_file(struct state_struct *state,
 	  metabolite = (char *)&regulation_text[regulation_pos];
 	  strncpy(metabolite,(char*)&rxn_buffer[word1],word1_len);
 	  metabolite[word1_len] = '\0';
-	  upcase(word1_len,metabolite,metabolite);
+	  upcase(word1_len,metabolite);
 	  padding = (align_len - (word1_len & align_mask)) & align_mask;
 	  /*
 	    reg_pos = reg_base + reg_count;
@@ -616,7 +613,7 @@ int parse_reactions_file(struct state_struct *state,
 	  metabolite = (char *)&regulation_text[regulation_pos];
 	  strncpy(metabolite,(char*)&rxn_buffer[word1],word1_len);
 	  metabolite[word1_len] = '\0';
-	  upcase(word1_len,metabolite,metabolite);
+	  upcase(word1_len,metabolite);
 	  padding = (align_len - (word1_len & align_mask)) & align_mask;
 	  /*
 	    reg_pos = reg_base + reg_count;
@@ -714,7 +711,7 @@ int parse_reactions_file(struct state_struct *state,
 	    }
 	  }
 	  break;
-	case 14: /* FORWARD_RATE */
+	case 14: /* K_FORWARD */
 	  /*
 	    A FOWARD rate line.
 	  */
@@ -731,7 +728,7 @@ int parse_reactions_file(struct state_struct *state,
 	    break;
 	  }
 	  break;
-	case 15: /* REVERSE_RATE */
+	case 15: /* K_REVERSE */
 	  /*
 	    A REVERSE rate line.
 	  */
