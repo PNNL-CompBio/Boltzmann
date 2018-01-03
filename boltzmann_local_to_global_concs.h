@@ -21,5 +21,5 @@ CONDITIONS OF ANY KIND, either express or implied. See the License for the
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
 extern int boltzmann_local_to_global_concs(struct super_state_struct *super_state,
-					   double *global_concentrations,
+					   double *global_counts,
 					   struct state_struct *local_state);
