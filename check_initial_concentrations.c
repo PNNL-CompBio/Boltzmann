@@ -54,7 +54,7 @@ int check_initial_concentrations(struct state_struct *state) {
   lfp = state->lfp;
   nunique_molecules = state->nunique_molecules;
   molecules         = state->sorted_molecules;
-  compartments      = state->sorted_cmpts;
+  compartments      = state->sorted_compartments;
   molecules_text    = state->molecules_text;
   compartment_text  = state->compartment_text;
   oi          = -1;
