@@ -228,15 +228,6 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
     success = unique_molecules(state);
   }
   /*
-    Print the molecules dictionary and the header lines for 
-    the concentrations output file.
-  */
-  if (success) {
-    if (print_output) {
-      success = print_molecules_dictionary(state);
-    }
-  }
-  /*
     Now we need to allocate space for the concentrations,
     and read in the intial concentrations.
   */
@@ -277,6 +268,15 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
     if (state->use_pseudoisomers) {
       formation_energies = NULL;
       success = compute_standard_energies(state,&formation_energies);
+    }
+  }
+  /*
+    Print the molecules dictionary and the header lines for 
+    the concentrations output file.
+  */
+  if (success) {
+    if (print_output) {
+      success = print_molecules_dictionary(state);
     }
   }
   /*
