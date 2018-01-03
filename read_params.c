@@ -72,6 +72,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
     strcpy(state->concs_out_file,"./concs.out");
     strcpy(state->rxn_lklhd_file,"./rxns.lklhd");
     strcpy(state->free_energy_file,"./rxns.fe");
+    strcpy(state->restart_file,"./restart.in");
     strcpy(state->input_dir,"./");
     strcpy(state->output_dir,"./");
     state->align_len        = (int64_t)16;
@@ -109,12 +110,14 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	sscan_ok = sscanf(value,"%s",state->output_dir);
       } else if (strncmp(key,"OUT_FILE",8) == 0) {
 	sscan_ok = sscanf(value,"%s",state->output_file);
-      } else if (strncmp(key,"CONCS_OUT_FILE",13) == 0) {
+      } else if (strncmp(key,"CONCS_OUT_FILE",14) == 0) {
 	sscan_ok = sscanf(value,"%s",state->concs_out_file);
-      } else if (strncmp(key,"RXN_LKLHD_FILE",13) == 0) {
+      } else if (strncmp(key,"RXN_LKLHD_FILE",14) == 0) {
 	sscan_ok = sscanf(value,"%s",state->rxn_lklhd_file);
-      } else if (strncmp(key,"FREE_ENERGY_FILE",15) == 0) {
+      } else if (strncmp(key,"FREE_ENERGY_FILE",16) == 0) {
 	sscan_ok = sscanf(value,"%s",state->free_energy_file);
+      } else if (strncmp(key,"RESTART_FILE",12) == 0) {
+	sscan_ok = sscanf(value,"%s",state->restart_file);
       } else if (strncmp(key,"LOG_FILE",8) == 0) {
 	sscan_ok = sscanf(value,"%s",state->log_file);
       } else if (strncmp(key,"ALIGN_LEN",9) == 0) {
