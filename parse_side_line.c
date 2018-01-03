@@ -173,7 +173,7 @@ int parse_side_line(char *rctnts_p,
 	:compartment trailing the molecule name. We do not
 	allow spaces on either side of the semicolon.
       */
-      ci = -1;
+      ci = 0;
       rctnts[sl] = '\0';
       colon_loc = find_colon(rctnts);
       if (colon_loc >= 0) {
