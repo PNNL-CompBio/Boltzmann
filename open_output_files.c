@@ -88,7 +88,7 @@ int open_output_files(struct state_struct *state) {
     }
   }
   if (success) {
-    if (state->free_energy_format > 0) {
+    if (state->free_energy_format > (int64_t)0) {
       /*
 	Open the free energy output file.
       */
