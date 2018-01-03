@@ -632,7 +632,7 @@ free_boot_state2.o: $(SERIAL_INCS) free_boot_state2.c free_boot_state2.h
 free_boot_state.o: $(SERIAL_INCS) free_boot_state.c free_boot_state.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c free_boot_state.c
 	
-boltzmann_run.o: $(SERIAL_INCS) boltzmann_run.c boltzmann_run.h update_rxn_log_likelihoods.h choose_rxn.h compute_delta_g_forward_entropy_free_energy.h print_rxn_choice.h print_counts.h boltzmann_watch.h print_boundary_flux.h print_restart_file.h print_reactions_view.h deq_run.h
+boltzmann_run.o: $(SERIAL_INCS) boltzmann_run.c boltzmann_run.h update_rxn_log_likelihoods.h choose_rxn.h compute_delta_g_forward_entropy_free_energy.h print_rxn_choice.h print_counts.h boltzmann_watch.h print_boundary_flux.h print_restart_file.h print_reactions_view.h deq_run.h vec_set_constant.h blas.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_run.c
 
 bwarmup_run.o: $(SERIAL_INCS) bwarmup_run.c bwarmup_run.h update_rxn_log_likelihoods.h choose_rxn.h compute_delta_g_forward_entropy_free_energy.h print_rxn_choice.h print_counts.h print_restart_file.h deq_run.h
