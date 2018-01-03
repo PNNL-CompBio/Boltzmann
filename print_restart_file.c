@@ -89,15 +89,17 @@ int print_restart_file(struct state_struct *state) {
       ci = cur_molecules->c_index;
       if (ci != oi) {
 	oi = ci;
-	cur_cmpt = (struct istring_elem_struct *)&(cur_cmpts[ci]);
-	cmpt_string = (char*)&compartment_text[cur_cmpt->string];
+	if (ci > 0) {
+	  cur_cmpt = (struct istring_elem_struct *)&(cur_cmpts[ci]);
+	  cmpt_string = (char*)&compartment_text[cur_cmpt->string];
+	}
       }
       if (cur_molecules->variable) {
 	vbsp = vbsv;
       } else {
 	vbsp = vbsc;
       }
-      if (ci != -1) {
+      if (ci > 0) {
 	molecule = (char*)&molecules_text[cur_molecules->string];
 	fprintf(restart_fp," %s:%s\t%le\t%s\n",
 		molecule,cmpt_string,cconcs[i],vbsp);
