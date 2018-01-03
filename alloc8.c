@@ -134,7 +134,7 @@ int alloc8(struct state_struct *state) {
   }
   if (success) {
     state->reverse_rxn_log_likelihood_ratio = reverse_rxn_log_likelihood_ratio;
-    ask_for = (number_reactions+1) * sizeof(double);
+    ask_for = (number_reactions + number_reactions + 2) * sizeof(double);
     data_pad = (align_len - (ask_for & align_mask)) & align_mask;
     ask_for += data_pad;
     usage += ask_for;
