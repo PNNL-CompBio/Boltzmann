@@ -21,23 +21,11 @@ int echo_inputs(struct state_struct *state) {
 	       print_reactions_matrix,
 
   */
-  struct formation_energy_struct *formation_energies;
-  struct vgrng_state_struct *vgrng_state;
-  struct vgrng_state_struct *vgrng2_state;
-  double *dg0s;
-  double *free_energy;
-  double *activities;
-  int64_t vgrng_start;
-  int64_t i;
-
   int success;
-  int vgrng_start_steps;
-
-  int print_output;
   int padi;
-  
-  FILE *bndry_flux_fp;
+
   FILE *lfp;
+  FILE *efp;
 
   lfp = state->lfp;
   /* 
