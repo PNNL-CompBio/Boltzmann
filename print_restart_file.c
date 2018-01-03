@@ -30,8 +30,6 @@ int print_restart_file(struct state_struct *state) {
     Called by: boltzmann_run, deq
     Calls:     fopen, fprintf, fclose (intrinsic)
   */
-  struct rxn_struct *reactions;
-  struct rxn_matrix_struct *rxns_matrix;
   struct molecule_struct *cur_molecules;
   struct compartment_struct *cur_cmpts;
   struct compartment_struct *cur_cmpt;
@@ -39,7 +37,6 @@ int print_restart_file(struct state_struct *state) {
   double multiplier;
   double conc;
   char   *restart_file;
-  int64_t *column_indices;
   char *cmpt_string;
   char *molecule;
   char *molecules_text;
@@ -48,14 +45,15 @@ int print_restart_file(struct state_struct *state) {
   char *vbsp;
   char *vbsc;
   char *vbsv;
-  int nzr;
-  int i;
 
   int oi;
   int ci;
 
   int success;
   int nu_molecules;
+
+  int i;
+  int padi;
 
   FILE *restart_fp;
   success = 1;
