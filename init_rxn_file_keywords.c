@@ -49,7 +49,7 @@ void init_rxn_file_keywords(struct state_struct *state) {
   strcpy((char *)&keyword_buffer[48],
 	 "RIGHT_COMPARTMENT       LEFT    RIGHT   DGZERO  ");
   strcpy((char *)&keyword_buffer[96],
-	 "DGZERO-UNITS    //             ");
+	 "DGZERO-UNITS    ACTIVITY        //             ");
   keywords[0] = (char*)(&keyword_buffer[0]);
   keywords[1] = (char*)(&keyword_buffer[8]);
   keywords[2] = (char*)(&keyword_buffer[16]);
@@ -60,6 +60,7 @@ void init_rxn_file_keywords(struct state_struct *state) {
   keywords[7] = (char*)(&keyword_buffer[88]);
   keywords[8] = (char*)(&keyword_buffer[96]);
   keywords[9] = (char*)(&keyword_buffer[112]);
+  keywords[10] = (char*)(&keyword_buffer[128]);
   keyword_len[0]     = (int64_t)8;
   keyword_len[1]     = (int64_t)7;
   keyword_len[2]     = (int64_t)11;
@@ -69,5 +70,6 @@ void init_rxn_file_keywords(struct state_struct *state) {
   keyword_len[6]     = (int64_t)5;
   keyword_len[7]     = (int64_t)6;
   keyword_len[8]     = (int64_t)12;
-  keyword_len[9]     = (int64_t)2;
+  keyword_len[9]     = (int64_t)8;
+  keyword_len[10]    = (int64_t)2;
 }
