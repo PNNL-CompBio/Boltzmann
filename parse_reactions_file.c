@@ -112,6 +112,9 @@ int parse_reactions_file(struct state_struct *state) {
   int mol_pos_lim;
 
   int padding;
+  int ci;
+
+  int colon_loc;
   int padi;
 
   FILE *rxn_fp;
@@ -258,7 +261,7 @@ int parse_reactions_file(struct state_struct *state) {
 	  if (compartment_len > state->max_compartment_len) {
 	    state->max_compartment_len = compartment_len;
 	  } else {
-	    if (compartment_len > state->min_compartment_len) {
+	    if (compartment_len < state->min_compartment_len) {
 	      state->min_compartment_len = compartment_len;
 	    }
 	  }
@@ -292,7 +295,7 @@ int parse_reactions_file(struct state_struct *state) {
 	  if (compartment_len > state->max_compartment_len) {
 	    state->max_compartment_len = compartment_len;
 	  } else {
-	    if (compartment_len > state->min_compartment_len) {
+	    if (compartment_len < state->min_compartment_len) {
 	      state->min_compartment_len = compartment_len;
 	    }
 	  }
@@ -316,7 +319,7 @@ int parse_reactions_file(struct state_struct *state) {
 	  if (compartment_len > state->max_compartment_len) {
 	    state->max_compartment_len = compartment_len;
 	  } else {
-	    if (compartment_len > state->min_compartment_len) {
+	    if (compartment_len < state->min_compartment_len) {
 	      state->min_compartment_len = compartment_len;
 	    }
 	  }
@@ -360,6 +363,44 @@ int parse_reactions_file(struct state_struct *state) {
 	      } else {
 		coefficients[molecules] = -1;
 	      }
+	      /*
+		At this juncture we need to check for
+		a "local" compartment specification of the form 
+		:compartment trailing the molecule name. We do not
+		allow spaces on either side of the semicolon.
+	      */
+	      ci = -1;
+	      rctnts[sl] = '\0';
+	      colon_loc = find_colon(rctnts);
+	      if (colon_loc >= 0) {
+		/* 
+		  We had a local :compartment attached.
+		  determine its length, store it and shorten the
+		  length for the molecule - do not forget to 
+		  allow for the terminating null.
+		*/
+		compartment_len = sl - colon_loc;
+		sl = colon_loc;
+		rctnts[sl] = '\0';
+		if (compartment_len > state->max_compartment_len) {
+		  state->max_compartment_len = compartment_len;
+		} else {
+		  if (compartment_len < state->min_compartment_len) {
+		    state->min_compartment_len = compartment_len;
+		  }
+		}
+		unsorted_cmpts->string = (char *)&compartment_text[compartment_pos];
+		unsorted_cmpts->c_index  = cmpts;
+		unsorted_cmpts += 1; /* Caution address arithmetic */
+		ci = cmpts;
+		cmpts += 1;
+		strcpy(unsorted_cmpts->string,(char*)&rctnts[colon_loc+1]);
+		upcase(compartment_len,unsorted_cmpts->string,
+		       unsorted_cmpts->string);
+		padding = (align_len - (compartment_len & align_mask)) & 
+		  align_mask;
+		compartment_pos += compartment_len + padding;
+	      }
 	      if (sl > state->max_molecule_len) {
 		state->max_molecule_len = sl;
 	      } else {
@@ -368,7 +409,6 @@ int parse_reactions_file(struct state_struct *state) {
 		}
 	      }
 	      matrix_text[molecules] = (char*)&raw_molecules_text[molecules_pos];
-	      rctnts[sl] = '\0';
 	      sll = (int64_t)sl + (int64_t)1;
 	      padding = (align_len - (sll & align_mask)) & align_mask;
 	      strcpy((char *)&raw_molecules_text[molecules_pos],rctnts);
@@ -376,7 +416,7 @@ int parse_reactions_file(struct state_struct *state) {
 		     (char *)&molecules_text[molecules_pos]);
 	      unsorted_molecules->string = (char *)&molecules_text[molecules_pos];
 	      unsorted_molecules->m_index  = molecules;
-	      unsorted_molecules->c_index  = reaction->left_compartment;
+	      unsorted_molecules->c_index  = ci;
 	      unsorted_molecules += 1; /* Caution address arithmetic. */
 
 	      molecules_pos += (int64_t)(sll + padding);
@@ -440,6 +480,45 @@ int parse_reactions_file(struct state_struct *state) {
 	      } else {
 		coefficients[molecules] = 1;
 	      }
+	      ci = -1;
+	      rctnts[sl] = '\0';
+	      colon_loc = find_colon(rctnts);
+	      if (colon_loc >= 0) {
+		/* 
+		  We had a local :compartment attached.
+		  determine its length, store it and shorten the
+		  length for the molecule - do not forget to 
+		  allow for the terminating null.
+		*/
+		compartment_len = sl - colon_loc;
+		sl = colon_loc;
+		rctnts[sl] = '\0';
+		if (compartment_len > state->max_compartment_len) {
+		  state->max_compartment_len = compartment_len;
+		} else {
+		  if (compartment_len < state->min_compartment_len) {
+		    state->min_compartment_len = compartment_len;
+		  }
+		}
+		unsorted_cmpts->string = (char *)&compartment_text[compartment_pos];
+		unsorted_cmpts->c_index  = cmpts;
+		unsorted_cmpts += 1; /* Caution address arithmetic */
+		ci = cmpts;
+		cmpts += 1;
+		strcpy(unsorted_cmpts->string,(char*)&rctnts[colon_loc+1]);
+		upcase(compartment_len,unsorted_cmpts->string,
+		       unsorted_cmpts->string);
+		padding = (align_len - (compartment_len & align_mask)) & 
+		  align_mask;
+		compartment_pos += compartment_len + padding;
+	      }
+	      if (sl > state->max_molecule_len) {
+		state->max_molecule_len = sl;
+	      } else {
+		if (sl < state->min_molecule_len) {
+		  state->min_molecule_len = sl;
+		}
+	      }
 	      if (sl > state->max_molecule_len) {
 		state->max_molecule_len = sl;
 	      } else {
@@ -456,7 +535,7 @@ int parse_reactions_file(struct state_struct *state) {
 		     (char *)&molecules_text[molecules_pos]);
 	      unsorted_molecules->string = (char *)&molecules_text[molecules_pos];
 	      unsorted_molecules->m_index  = molecules;
-	      unsorted_molecules->c_index  = reaction->right_compartment;
+	      unsorted_molecules->c_index  = ci;
 	      unsorted_molecules += 1; /* Caution address arithmetic. */
 	      molecules_pos += (int64_t)(sll + padding);
 	      prdcts[sl] = ' ';
@@ -533,10 +612,16 @@ int parse_reactions_file(struct state_struct *state) {
 	  mol_pos_lim = mol_pos + reaction->num_reactants +
 	    reaction->num_products;
 	  for (j = mol_pos;j<mol_pos_lim;j++) {
-	    if (coefficients[j] < 0) {
-	      rxn_molecules->c_index = reaction->left_compartment;
-	    } else {
-	      rxn_molecules->c_index = reaction->right_compartment;
+	    /*
+	      Only look to set the compartment index if the molecule did
+	      not have a local compartment (:compartment).
+	    */
+	    if (rxn_molecules->c_index < 0) {
+	      if (coefficients[j] < 0) {
+		rxn_molecules->c_index = reaction->left_compartment;
+	      } else {
+		rxn_molecules->c_index = reaction->right_compartment;
+	      }
 	    }
 	    rxn_molecules += 1; /* Caution address arithmetic */
 	  }
