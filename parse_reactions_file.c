@@ -40,15 +40,10 @@ specific language governing permissions and limitations under the License.
 #include "parse_reactions_file.h"
 int parse_reactions_file(struct state_struct *state) {
   /*
-    Determine the number of reactions,
-    Total length of molecules names, and
-    max possiblie number of molecules, and
-    total length of the file, total length
-    of compartment names, total length of pathway_names,
-    total_length reaction titles.
 
     This routine fills the unsorted_molecules and unsorted_cmpts
     istring_elem structures. 
+    It fills the reactions structure.
     It also sets the molecules_indices, coefficients,
     and text fields of the reactions matrix.
    
