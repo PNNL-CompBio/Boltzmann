@@ -14,6 +14,6 @@ int64_t compute_flattened_state_size(struct state_struct *state) {
   nm = state->nunique_molecules;
   nc = state->nunique_compartments;
   nz = state->number_molecules;
-  fsize = (int64_t)276 + (34*nr) + (15*nm) + (8*nc) + (5*nz);
+  fsize = (int64_t)284 + (34*nr) + (15*nm) + (8*nc) + (7*nz);
   return(fsize);
 }  
