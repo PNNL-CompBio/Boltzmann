@@ -31,7 +31,6 @@ int print_dg0_ke(struct state_struct *state) {
     Called by: echo_inputs
     Calls:     fopen, fprintf, fclose (intrinsic)
   */
-  struct rxn_struct *reactions;
   struct rxn_struct *reaction;
   struct rxn_matrix_struct *rxns_matrix;
   int64_t *rxn_ptrs;
@@ -49,16 +48,13 @@ int print_dg0_ke(struct state_struct *state) {
   int rxns;
 
   int nrxns;
-  int padi;
-
   int np;
-  int nr;
-  
-  int coeff;
-  int j;
 
-  int k;
-  int rxn_view_hist_length;
+  int nr;
+  int coeff;
+
+  int j;
+  int padi;
 
   FILE *dg0_ke_fp;
 
