@@ -1,6 +1,6 @@
 TIMING_DEPS = timingi.h djb_timing_b.h djb_timing.h
 LUNWIND_DEPS = luwtb.h luwtb1.h luwtb2.h
-EXECS        = boltzmann boltzmann_boot_test deq lapack_test sbml2bo kegg_ms_ids ms2js_ids kegg_ids bwarmup
+EXECS        = boltzmann boltzmann_boot_test deq lapack_test sbml2bo kegg_ms_ids ms2js_ids kegg_ids bwarmup boltzmann_test_save_load
      
 
 SERIAL_INCS = boltzmann_structs.h boot_state_struct.h super_state_struct.h super_state_pointers_struct.h state_struct.h reaction_struct.h reactions_matrix_struct.h molecules_matrix_struct.h molecule_struct.h compartment_struct.h vgrng_state_struct.h pseudoisomer_struct.h stack_level_elem_struct.h sbml2bo_struct.h t2js_struct.h $(TIMING_DEPS) $(LUNWIND_DEPS)
@@ -34,6 +34,7 @@ KFM_OBJS  = kegg_from_modelseed.o count_ws.o count_ntb.o count_nor.o check_for_w
 
 KPM_OBJS = modelseed_2_json.o count_ws.o count_ntb.o count_nws.o 
 
+SAVE_LOAD_OBJS = boltzmann_save_state.o boltzmann_flatten_state.o boltzmann_flatten_alloc.o compute_flattend_state_size.o boltzmann_flatten_external.o boltzmann_flatten_aux_name.o boltzmann_flatten_scalars.o boltzmann_flatten_alloc1.o boltzmann_flatten_oneway_data.o boltzmann_flatten_reactions.o boltzmann_flatten_molecules.o boltzmann_flatten_compartments.o boltzmann_flatten_rmatrix.o boltzmann_flatten_mmatrix.o boltzmann_flatten_oneway_vecs.o boltzmann_flatten_twoway_data.o boltzmann_flatten_vgrng_state.o boltzmann_load_state.o boltzmann_save_aux_data.o boltzmann_flatten_aux_data.o boltzmann_load_aux_data.o
 
 ms2js_ids: $(KPM_OBJS)
 	$(CLINKER) -O0 -o ms2js_ids $(KPM_OBJS)
@@ -72,7 +73,7 @@ check_for_ws.o: check_for_ws.c check_for_ws.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c check_for_ws.c
 		
 
-libboltzmann.a: $(SERIAL_OBJS1)  $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SERIAL_OBJS4) $(SERIAL_OBJS5) $(SERIAL_OBJS6) $(SBML_OBJS) $(KFM_OBJS) $(KFP_OBJS) $(KPM_OBJS) $(SERIAL_OBJS7) $(SERIAL_OBJS8) bwarmup_run.o
+libboltzmann.a: $(SERIAL_OBJS1)  $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SERIAL_OBJS4) $(SERIAL_OBJS5) $(SERIAL_OBJS6) $(SBML_OBJS) $(KFM_OBJS) $(KFP_OBJS) $(KPM_OBJS) $(SERIAL_OBJS7) $(SERIAL_OBJS8) $(SAVE_LOAD_OBJS) bwarmup_run.o
 	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_boot.o
 	$(AR) $(ARFLAGS) libboltzmann.a boot_init.o
 	$(AR) $(ARFLAGS) libboltzmann.a boot_alloc0.o
@@ -316,15 +317,36 @@ libboltzmann.a: $(SERIAL_OBJS1)  $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SERIAL_OBJS4)
 	$(AR) $(ARFLAGS) libboltzmann.a print_net_lklhd_bndry_flux_header.o
 	$(AR) $(ARFLAGS) libboltzmann.a print_net_likelihoods.o
 	$(AR) $(ARFLAGS) libboltzmann.a print_net_lklhd_bndry_flux.o
+	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_save_state.o
+	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_flatten_state.o
+	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_flatten_alloc.o
+	$(AR) $(ARFLAGS) libboltzmann.a compute_flattened_state_size.o
+	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_flatten_external.o
+	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_flatten_aux_name.o
+	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_flatten_scalars.o
+	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_flatten_alloc1.o
+	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_flatten_oneway_data.o
+	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_flatten_reactions.o
+	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_flatten_molecules.o
+	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_flatten_compartments.o
+	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_flatten_rmatrix.o
+	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_flatten_mmatrix.o
+	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_flatten_oneway_vecs.o
+	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_flatten_twoway_data.o
+	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_flatten_vgrng_state.o
+	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_load_state.o
+	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_save_aux_data.o
+	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_load_aux_data.o
 #	$(AR) $(ARFLAGS) libboltzmann.a fill_flux_pieces.o
+	
+boltzmann_test_save_load: boltzmann_test_save_load.o $(MMAP_OBJS) $(TIMING_LIB) libboltzmann.a
+	$(CLINKER) $(LFLAGS) -o boltzmann_test_save_load boltzmann_test_save_load.o $(SERIAL_OBJS1) $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SERIAL_OBJS4) $(SERIAL_OBJS5) $(SERIAL_OBJS7) $(SAVE_LOAD_OBJS) $(MMAP_OBJS) $(TIMING_LIB) $(LIBS)
 
 boltzmann_boot_test: boltzmann_boot_test.o libboltzmann.a
 	$(CLINKER) $(LFLAGS) -o boltzmann_boot_test boltzmann_boot_test.o $(TIMING_LIB) $(LIBS)
 
 boltzmann_boot_test.o: boltzmann_boot_test.c boltzmann_boot.h boltzmann_boot_check.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_boot_test.c
-
-
 
 boltzmann_boot.o: $(SERIAL_INCS) boltzmann_boot.c boltzmann_boot.h alloc0.h read_params.h boot_init.h parse_rxn_list_line.h save_and_count_local_state.h boot_alloc3.h catenate_compartments_and_molecules.h global_merge_and_map_compartments.h global_merge_molecules.h boot_alloc4.h condense_strings.h fill_meta_data.h write_super_state.h boltzmann_mmap_superstate.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_boot.c
@@ -690,10 +712,10 @@ bndry_flux_update.o: $(SERIAL_INCS) bndry_flux_update.c bndry_flux_update.h
 compute_delta_g_forward_entropy_free_energy.o: $(SERIAL_INCS) compute_delta_g_forward_entropy_free_energy.c compute_delta_g_forward_entropy_free_energy.h update_regulations.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c compute_delta_g_forward_entropy_free_energy.c
 
-boltzmann_watch.o: boltzmann_watch.c boltzmann_watch.h ${SERIAL_INCS} print_rxn_choice.h print_counts.h print_likelihoods.h save_likelihoods.h print_free_energy.h
+boltzmann_watch.o: boltzmann_watch.c boltzmann_watch.h $(SERIAL_INCS) print_rxn_choice.h print_counts.h print_likelihoods.h save_likelihoods.h print_free_energy.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_watch.c
 
-print_rxn_choice.o: print_rxn_choice.c print_rxn_choice.h ${SERIAL_INCS}
+print_rxn_choice.o: print_rxn_choice.c print_rxn_choice.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c print_rxn_choice.c
 
 print_counts.o: $(SERIAL_INCS) print_counts.c print_counts.h
@@ -912,43 +934,43 @@ ode_solver.o: ode_solver.c ode_solver.h ode23tb.h $(SERIAL_INCS)
 ode23tb.o: ode23tb.c ode23tb.h $(SERIAL_INCS) compute_flux_scaling.h approximate_delta_concs.h ode_num_jac.h ode_it_solve.h print_concs_fluxes.h blas.h ode_print_concs.h ode_print_lklhds.h compute_net_likelihoods.h compute_net_lklhd_bndry_flux.h print_net_likelihood_header.h print_net_lklhd_bndry_flux_header.h print_net_likelihoods.h print_net_lklhd_bndry_flux.h ode23tb_normyp_o_wt.h ode23tb_limit_h.h ode23tb_init_wt.h ode23tb_update_wt.h vec_set_constant.h ode23tb_build_factor_miter.h ode23tb_max_abs_ratio.h ode23tb_nonneg_err.h ode23tb_enforce_nonneg.h get_counts.h update_rxn_likelihoods.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c ode23tb.c 
 
-ode23tb_normyp_o_wt.o: ode23tb_normyp_o_wt.c ode23tb_normyp_o_wt.h ${SERIAL_INCS}
+ode23tb_normyp_o_wt.o: ode23tb_normyp_o_wt.c ode23tb_normyp_o_wt.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c ode23tb_normyp_o_wt.c
 		       
-ode23tb_limit_h.o: ode23tb_limit_h.c ode23tb_limit_h.h ${SERIAL_INCS}
+ode23tb_limit_h.o: ode23tb_limit_h.c ode23tb_limit_h.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c ode23tb_limit_h.c
 
-ode23tb_init_wt.o: ode23tb_init_wt.c ode23tb_init_wt.h vec_set_constant.h ${SERIAL_INCS}
+ode23tb_init_wt.o: ode23tb_init_wt.c ode23tb_init_wt.h vec_set_constant.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c ode23tb_init_wt.c
 
-ode23tb_update_wt.o: ode23tb_update_wt.c ode23tb_update_wt.h vec_set_constant.h ${SERIAL_INCS}
+ode23tb_update_wt.o: ode23tb_update_wt.c ode23tb_update_wt.h vec_set_constant.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c ode23tb_update_wt.c
 
-vec_set_constant.o: vec_set_constant.c vec_set_constant.h ${SERIAL_INCS}
+vec_set_constant.o: vec_set_constant.c vec_set_constant.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c vec_set_constant.c
 
-ode23tb_build_factor_miter.o: ode23tb_build_factor_miter.c ode23tb_build_factor_miter.h ${SERIAL_INCS}
+ode23tb_build_factor_miter.o: ode23tb_build_factor_miter.c ode23tb_build_factor_miter.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c ode23tb_build_factor_miter.c
 
-ode23tb_max_abs_ratio.o: ode23tb_max_abs_ratio.c ode23tb_max_abs_ratio.h ${SERIAL_INCS}
+ode23tb_max_abs_ratio.o: ode23tb_max_abs_ratio.c ode23tb_max_abs_ratio.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c ode23tb_max_abs_ratio.c
 
-ode23tb_nonneg_err.o: ode23tb_nonneg_err.c ode23tb_nonneg_err.h ${SERIAL_INCS}
+ode23tb_nonneg_err.o: ode23tb_nonneg_err.c ode23tb_nonneg_err.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c ode23tb_nonneg_err.c
 
-ode23tb_enforce_nonneg.o: ode23tb_enforce_nonneg.c ode23tb_enforce_nonneg.h ${SERIAL_INCS}
+ode23tb_enforce_nonneg.o: ode23tb_enforce_nonneg.c ode23tb_enforce_nonneg.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c ode23tb_enforce_nonneg.c
 
 ode_print_concs.o: ode_print_concs.c ode_print_concs.h $(SERIAL_INCS) 
 	$(CC) $(DCFLAGS) $(TFLAGS) -c ode_print_concs.c
 
-ode_print_dconcs.o: ode_print_dconcs.c ode_print_dconcs.h ${SERIAL_INCS}
+ode_print_dconcs.o: ode_print_dconcs.c ode_print_dconcs.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c ode_print_dconcs.c
 
-ode_print_lklhds.o: ode_print_lklhds.c ode_print_lklhds.h ${SERIAL_INCS}
+ode_print_lklhds.o: ode_print_lklhds.c ode_print_lklhds.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c ode_print_lklhds.c
 
-get_counts.o: get_counts.c get_counts.h ${SERIAL_INCS}
+get_counts.o: get_counts.c get_counts.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c get_counts.c
 
 compute_net_likelihoods.o: compute_net_likelihoods.c compute_net_likelihoods.h $(SERIAL_INCS) 
@@ -1071,7 +1093,73 @@ dlaswp.o: dlaswp.c dlaswp.h system_includes.h
 dgetrs.o: dgetrs.c dgetrs.h system_includes.h lsame.h dlaswp.h dtrsm.h
 	 $(CC) $(DCFLAGS) $(TFLAGS) -c dgetrs.c
 
-	 
+boltzmann_test_save_load.o: boltzmann_test_save_load.c $(SERIAL_INCS) boltzmann_init.h boltzmann_save_state.h boltzmann_save_aux_data.h boltzmann_load_state.h boltzmann_load_aux_state.h boltzmann_io_init.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_test_save_load.c
+			    
+
+boltzmann_save_state.o: boltzmann_save_state.c boltzmann_save_state.h $(SERIAL_INCS) boltzmann_flatten_state.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_save_state.c
+
+boltzmann_flatten_state.o: boltzmann_flatten_state.c boltzmann_flatten_state.h $(SERIAL_INCS) boltzmann_flatten_alloc.h boltzmann_flatten_external.h boltzmann_flatten_aux_name.h boltzmann_flatten_scalars.h boltzmann_flatten_alloc1.h boltzmann_flatten_oneway_data.h boltzmann_flatten_twoway_data.h 
+	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_flatten_state.c
+
+boltzmann_flatten_alloc.o: boltzmann_flatten_alloc.c boltzmann_flatten_alloc.h $(SERIAL_INCS) compute_flattened_state_size.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_flatten_alloc.c
+
+compute_flattened_state_size.o: compute_flattened_state_size.c compute_flattened_state_size.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c compute_flattened_state_size.c
+
+boltzmann_flatten_external.o: boltzmann_flatten_external.c boltzmann_flatten_external.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_flatten_external.c
+			      
+boltzmann_flatten_aux_name.o: boltzmann_flatten_aux_name.c boltzmann_flatten_aux_name.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_flatten_aux_name.c
+
+boltzmann_flatten_scalars.o: boltzmann_flatten_scalars.c boltzmann_flatten_scalars.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_flatten_scalars.c
+
+boltzmann_flatten_alloc1.o: boltzmann_flatten_alloc1.c boltzmann_flatten_alloc1.h $(SERIAL_INCS) alloc2.h alloc3.h alloc4.h alloc7.h alloc8.h alloc9.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_flatten_alloc1.c
+
+boltzmann_flatten_oneway_data.o: boltzmann_flatten_oneway_data.c boltzmann_flatten_oneway_data.h $(SERIAL_INCS) boltzmann_flatten_reactions.h boltzmann_flatten_molecules.h boltzmann_flatten_compartments.h boltzmann_flatten_rmatrix.h boltzmann_flatten_mmatrix.h boltzmann_flatten_oneway_vecs.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_flatten_oneway_data.c
+
+boltzmann_flatten_reactions.o: boltzmann_flatten_reactions.c boltzmann_flatten_reactions.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_flatten_reactions.c
+
+boltzmann_flatten_molecules.o: boltzmann_flatten_molecules.c boltzmann_flatten_molecules.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_flatten_molecules.c
+
+boltzmann_flatten_compartments.o: boltzmann_flatten_compartments.c boltzmann_flatten_compartments.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_flatten_compartments.c
+
+boltzmann_flatten_rmatrix.o: boltzmann_flatten_rmatrix.c boltzmann_flatten_rmatrix.h $(SERIAL_INCS)	
+	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_flatten_rmatrix.c
+
+boltzmann_flatten_mmatrix.o: boltzmann_flatten_mmatrix.c boltzmann_flatten_mmatrix.h $(SERIAL_INCS) 
+	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_flatten_mmatrix.c
+
+boltzmann_flatten_oneway_vecs.o: boltzmann_flatten_oneway_vecs.c boltzmann_flatten_oneway_vecs.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_flatten_oneway_vecs.c
+
+boltzmann_flatten_twoway_data.o: boltzmann_flatten_twoway_data.c boltzmann_flatten_twoway_data.h $(SERIAL_INCS) boltzmann_flatten_vgrng_state.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_flatten_twoway_data.c
+
+boltzmann_flatten_vgrng_state.o: boltzmann_flatten_vgrng_state.c boltzmann_flatten_vgrng_state.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_flatten_vgrng_state.c
+
+boltzmann_load_state.o: boltzmann_load_state.c boltzmann_load_state.h $(SERIAL_INCS) boltzmann_flatten_state.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_load_state.c
+
+boltzmann_save_aux_data.o: boltzmann_save_aux_data.c boltzmann_save_aux_data.h $(SERIAL_INCS) boltzmann_flatten_aux_data.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_save_aux_data.c
+
+boltzmann_flatten_aux_data.o: boltzmann_flatten_aux_data.c boltzmann_flatten_aux_data.h $(SERIAL_INCS) boltzmann_set_filename_ptrs.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_flatten_aux_data.c
+
+boltzmann_load_aux_data.o: boltzmann_load_aux_data.c boltzmann_load_aux_data.h $(SERIAL_INCS) boltzmann_flatten_aux_data.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_load_aux_data.c
+
 clean:
 	-/bin/rm -f *.o *.a *~ $(EXECS)
 .c.o:
