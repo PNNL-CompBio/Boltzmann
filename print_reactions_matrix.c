@@ -28,9 +28,9 @@ specific language governing permissions and limitations under the License.
 #include "print_reactions_matrix.h"
 int print_reactions_matrix(struct state_struct *state) {
   /*
-    Print the reaction likelihoods per reaction to a file along with
+    Print the reaction matrix
     the reaction title and stoichiometric statement.
-    Called by: echo_inputs
+    Called by: run_init
     Calls:     fopen, fprintf, fclose (intrinsic)
 
     As this routine is called after the solvent coefficients have been 
