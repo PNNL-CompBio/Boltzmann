@@ -45,6 +45,9 @@ int free_boot_state(struct state_struct **statep) {
     if (state->param_buffer) {
       free(state->param_buffer);
     }
+    if (state->solvent_string) {
+      free(state->solvent_string);
+    }
     if (state->rxn_file_keyword_buffer) {
       free(state->rxn_file_keyword_buffer);
     }
