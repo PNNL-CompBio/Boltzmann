@@ -213,7 +213,10 @@ int ode23tb (struct state_struct *state, double *counts,
   FILE *efp;
   success = 1;
   t0      = 0.0;
+  /*
   tfinal  = 10.0;
+  */
+  tfinal  = state->ode_t_final;
   tdir    = 1.0;
   one_l   = (int64_t)1;
   rate    = 0.0;
@@ -247,7 +250,7 @@ int ode23tb (struct state_struct *state, double *counts,
     if (dfdy == NULL) {
       success = 0;
       if (lfp) {
-	fprintf(lfp,"ode23tb: Error could not allocate %ld bytes "
+	fprintf(lfp,"ode23tb: Error could not allocate %lld bytes "
 		"for double scratch space.\n",ask_for);
 	fflush(lfp);
       }
@@ -700,7 +703,7 @@ int ode23tb (struct state_struct *state, double *counts,
 		      i,min_conc);
 	    } else {
 	      fprintf(lfp,"ode23tb: Warning y2[%d] was < %le, setting to %le\n",
-		      i,min_conc);
+		      i,min_conc,min_conc);
 	    }
 	    y2[i] = min_conc;
 	  }
@@ -773,7 +776,7 @@ int ode23tb (struct state_struct *state, double *counts,
 			  i,min_conc);
 		} else {
 		  fprintf(lfp,"ode23tb: Warning ynew[%d] was < %le, setting to %le\n",
-			  i,min_conc);
+			  i,min_conc,min_conc);
 		}
 	      }
 	      ynew[i] = min_conc;
@@ -1029,7 +1032,7 @@ int ode23tb (struct state_struct *state, double *counts,
 		      i,min_conc);
 	    } else {
 	      fprintf(lfp,"ode23tb: Warning y[%d] was < %le, setting to %le\n",
-		      i,min_conc);
+		      i,min_conc,min_conc);
 	    }
 	  }
 	  y[i] = min_conc;
