@@ -55,6 +55,9 @@ int alloc7(struct state_struct *state) {
   */
   double *reactant_term;
   double *product_term;
+  double *rfc;
+  double *deriv_acc;
+  double *stable_add_scr;
   double *rxn_q;
   double *recip_rxn_q;
   double *log_kf_rel;
@@ -324,6 +327,27 @@ int alloc7(struct state_struct *state) {
     base_reactants = (int*)&base_reactant_indicator[num_species];
     state->base_reactant_indicator = base_reactant_indicator;
     state->base_reactants          = base_reactants;
+  }
+  if (success) {
+    ask_for = (int64_t)(6*num_rxns) * sizeof(double);
+    usage += ask_for;
+    run_workspace_bytes  += ask_for;
+    rfc = (double *)calloc(ask_for,one_l);
+    if (rfc == NULL) {
+      success = 0;
+      if (lfp) {
+	fprintf(lfp,"alloc7: Error could not allocate %ld "
+		"bytes for int rfc and deriv_acc scratch space.\n",ask_for);
+	fflush(lfp);
+      }
+    }
+  }
+  if (success) {
+    deriv_acc = &rfc[num_rxns+num_rxns];
+    stable_add_scr = &deriv_acc[num_rxns+num_rxns];
+    state->rfc = rfc;
+    state->deriv_acc = deriv_acc;
+    state->stable_add_scr = stable_add_scr;
   }
   state->usage = usage;
   state->run_workspace_bytes  = run_workspace_bytes;
