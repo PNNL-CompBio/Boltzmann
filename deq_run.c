@@ -60,23 +60,10 @@ int deq_run(struct state_struct *state) {
 	       ode_solver
   */ 
   struct state_struct *nstate;
-  struct molecules_matrix_struct *molecules_matrix;
   struct molecule_struct *molecules;
   struct molecule_struct *molecule;
   struct compartment_struct *compartments;
   struct compartment_struct *compartment;
-  int64_t *transpose_work;
-  int64_t choice;
-  double dchoice;
-  double uni_multiplier;
-  double vall;
-  double rvall;
-  double scaling;
-  double dg_forward;
-  double sum_likelihood;
-  double r_sum_likelihood;
-  double entropy;
-  double scaled_likelihood;
   double *forward_rxn_likelihood;
   double *reverse_rxn_likelihood;
   double *current_counts;
@@ -95,7 +82,6 @@ int deq_run(struct state_struct *state) {
   double *conc_to_count;
   double *count_to_conc;
   int    *rxn_fire;
-  char   *cmpt_string;
   double *dg0s;
   double *free_energy;
   double htry;
@@ -122,26 +108,16 @@ int deq_run(struct state_struct *state) {
   int64_t count_view_step;
   int64_t count_view_freq;
 
-  int64_t fe_view_step;
-  int64_t fe_view_freq;
-
   int success;
   int number_reactions;
 
   int number_reactions_t2;
   int number_reactions_t2_p1;
 
-  int rxn_choice;
   int unique_molecules;
 
   int print_output;
   int noop_rxn;
-
-  int rxn_no;
-  int j;
-
-  int base_reaction;
-  int fill_jacobi;
 
   int nonnegative;
   int cindex;
@@ -182,7 +158,6 @@ int deq_run(struct state_struct *state) {
   rxn_view_hist_length 	 = state->rxn_view_hist_length;
   lklhd_view_freq        = state->lklhd_view_freq;
   count_view_freq        = state->count_view_freq;
-  fe_view_freq           = state->fe_view_freq;
   molecules              = state->sorted_molecules;
   compartments           = state->sorted_cmpts;
   print_ode_concs        = state->print_ode_concs;
