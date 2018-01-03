@@ -43,31 +43,31 @@ int alloc2(struct state_struct *state) {
   struct rxn_matrix_struct rms;
   struct rxn_matrix_struct *reactions_matrix;
   struct istring_elem_struct ises;
-  struct istring_elem_struct *sorted_species;
-  struct istring_elem_struct *unsorted_species;
+  struct istring_elem_struct *sorted_molecules;
+  struct istring_elem_struct *unsorted_molecules;
   struct istring_elem_struct *sorted_cmpts;
   struct istring_elem_struct *unsorted_cmpts;
   int64_t usage;
   int64_t rxn_title_space;
   int64_t pathway_space;
   int64_t compartment_space;
-  int64_t species_space;
+  int64_t molecules_space;
   int64_t align_len;
   int64_t align_mask;
   int64_t rxn_title_len;
   int64_t pathway_len;
   int64_t compartment_len;
-  int64_t species_len;
+  int64_t molecules_len;
   int64_t ask_for;
   int64_t one_l;
   int64_t nze;
   char *rxn_title_text;
   char *pathway_text;
   char *compartment_text;
-  char *species_text;
-  char *raw_species_text;
+  char *molecules_text;
+  char *raw_molecules_text;
   int num_rxns;
-  int num_species;
+  int num_molecules;
   int num_cmpts;
   int success;
   success    = 1;
@@ -76,7 +76,7 @@ int alloc2(struct state_struct *state) {
   align_mask = state->align_mask;
   align_len  = state->align_len;
   num_rxns   = state->number_reactions;
-  num_species = state->number_species;
+  num_molecules = state->number_molecules;
   num_cmpts   = state->number_compartments;
   rxn_title_space =  state->rxn_title_len + ((int64_t)num_rxns) * align_len;
   rxn_title_space += align_len - (rxn_title_space & align_mask);
@@ -89,29 +89,29 @@ int alloc2(struct state_struct *state) {
   } else {
     compartment_space = 0;
   }
-  species_space  = state->species_len + ((int64_t)num_species) * align_len;
-  species_space  += align_len - (species_space & align_mask);
+  molecules_space  = state->molecules_len + ((int64_t)num_molecules) * align_len;
+  molecules_space  += align_len - (molecules_space & align_mask);
   ask_for = rxn_title_space + pathway_space + compartment_space +
-    species_space + species_space;
+    molecules_space + molecules_space;
   usage += ask_for;
   rxn_title_text = (char *) calloc(one_l,ask_for);
   if (rxn_title_text) {
     state->rxn_title_space   = rxn_title_space;
     state->pathway_space     = pathway_space;
     state->compartment_space = compartment_space;
-    state->species_space     = species_space;
+    state->molecules_space     = molecules_space;
     /*
       Caution address arithmetic follows.
     */
     pathway_text = rxn_title_text + rxn_title_space;
     compartment_text = pathway_text + pathway_space;
-    species_text     = compartment_text + compartment_space;
-    raw_species_text = species_text + species_space;
+    molecules_text     = compartment_text + compartment_space;
+    raw_molecules_text = molecules_text + molecules_space;
     state->rxn_title_text   = rxn_title_text;
     state->pathway_text     = pathway_text;
     state->compartment_text = compartment_text;
-    state->species_text     = species_text;
-    state->raw_species_text = raw_species_text;
+    state->molecules_text     = molecules_text;
+    state->raw_molecules_text = raw_molecules_text;
   } else {
     fprintf(stderr,"alloc2: Error, unable to allocate %ld bytes of space "
 	    "for text strings in core.\n",ask_for);
@@ -151,10 +151,10 @@ int alloc2(struct state_struct *state) {
   }
   /*
     Allocate space for the reaction matrix arrays, each having nze elements
-    where nze = num_species + num_rxns + 1;
+    where nze = num_molecules + num_rxns + 1;
   */
   if (success) {
-    nze = (int64_t)num_species + (int64_t)num_rxns + one_l;
+    nze = (int64_t)num_molecules + (int64_t)num_rxns + one_l;
     ask_for = nze * ((int64_t)sizeof(int64_t));
     usage += ask_for;
     reactions_matrix->rxn_ptrs = (int64_t*)calloc(one_l,ask_for);
@@ -167,10 +167,10 @@ int alloc2(struct state_struct *state) {
   }
   if (success) {
     usage += ask_for;
-    reactions_matrix->species_indices = (int64_t*)calloc(one_l,ask_for);
-    if (reactions_matrix->species_indices == NULL) {
+    reactions_matrix->molecules_indices = (int64_t*)calloc(one_l,ask_for);
+    if (reactions_matrix->molecules_indices == NULL) {
       fprintf(stderr,"alloc2: Error, unable to allocate %ld bytes of space "
-	      "for reactions_matrix->species_indices\n",ask_for);
+	      "for reactions_matrix->molecules_indices\n",ask_for);
       fflush(stderr);
       success = 0;
     }
@@ -197,23 +197,23 @@ int alloc2(struct state_struct *state) {
     }
   }
   /*
-    Allocate space to store the sorted species pointers,
-    and scratch space for sorting the species pointers.
+    Allocate space to store the sorted molecules pointers,
+    and scratch space for sorting the molecules pointers.
   */
   if (success) {
-    ask_for = ((int64_t)num_species) * ((int64_t)sizeof(ises));
+    ask_for = ((int64_t)num_molecules) * ((int64_t)sizeof(ises));
     ask_for = ask_for << 1;
     usage += ask_for;
-    state->unsorted_species = (struct istring_elem_struct *)calloc(one_l,ask_for);
-    if (state->unsorted_species) {
+    state->unsorted_molecules = (struct istring_elem_struct *)calloc(one_l,ask_for);
+    if (state->unsorted_molecules) {
       /*
 	Caution address arithmetic follows.
-	state->sorted_species = &state->unsorted_species[num_species];
+	state->sorted_molecules = &state->unsorted_molecules[num_molecules];
       */
-      state->sorted_species = state->unsorted_species + num_species;
+      state->sorted_molecules = state->unsorted_molecules + num_molecules;
     } else {
       fprintf(stderr,"alloc2: Error, unable to allocate %ld bytes of space "
-	      "for sorted and unsorted species pointers\n",ask_for);
+	      "for sorted and unsorted molecules pointers\n",ask_for);
       fflush(stderr);
       success = 0;
     }
@@ -223,7 +223,7 @@ int alloc2(struct state_struct *state) {
     ask_for = ask_for << 1;
     usage += ask_for;
     state->unsorted_cmpts = (struct istring_elem_struct *)calloc(one_l,ask_for);
-    if (state->unsorted_species) {
+    if (state->unsorted_molecules) {
       /*
 	Caution address arithmetic follows.
 	state->sorted_cmpts = &state->unsorted_cmpts[num_cmpts];
@@ -231,7 +231,7 @@ int alloc2(struct state_struct *state) {
       state->sorted_cmpts = state->unsorted_cmpts + num_cmpts;
     } else {
       fprintf(stderr,"alloc2: Error, unable to allocate %ld bytes of space "
-	      "for sorted and unsorted species pointers\n",ask_for);
+	      "for sorted and unsorted molecules pointers\n",ask_for);
       fflush(stderr);
       success = 0;
     }
