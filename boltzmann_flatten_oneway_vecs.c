@@ -17,7 +17,7 @@ int boltzmann_flatten_oneway_vecs(struct state_struct *state,
   int64_t nunique_molecules;
   int64_t rxn_len;
   int64_t mlcl_len;
-  int65_t cs_len;
+  int64_t cs_len;
 
   void *dg0s;
   void *ke;
