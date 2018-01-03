@@ -168,7 +168,9 @@ int parse_reactions_file(struct state_struct *state,
   max_regs_per_rxn = (int)state->max_regs_per_rxn;
   reg_base         = (int64_t)0;
   reg_pos          = reg_base;
+  /*
   strcpy(state->reaction_file,reaction_file);
+  */
   rxn_fp           = fopen(reaction_file,"r");
   if (rxn_fp == NULL) {
     success = 0;
