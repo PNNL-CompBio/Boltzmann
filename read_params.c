@@ -70,7 +70,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
     strcpy(state->init_conc_file,"./rxns.concs");
     strcpy(state->log_file,"./boltzmann.log");
     strcpy(state->output_file,"./boltzmann.out");
-    strcpy(state->concs_out_file,"./concs.out");
+    strcpy(state->counts_out_file,"./counts.out");
     strcpy(state->rxn_lklhd_file,"./rxns.lklhd");
     strcpy(state->free_energy_file,"./rxns.fe");
     strcpy(state->restart_file,"./restart.concs");
@@ -140,8 +140,8 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	sscan_ok = sscanf(value,"%s",state->output_dir);
       } else if (strncmp(key,"OUT_FILE",8) == 0) {
 	sscan_ok = sscanf(value,"%s",state->output_file);
-      } else if (strncmp(key,"CONCS_OUT_FILE",14) == 0) {
-	sscan_ok = sscanf(value,"%s",state->concs_out_file);
+      } else if (strncmp(key,"COUNTS_OUT_FILE",14) == 0) {
+	sscan_ok = sscanf(value,"%s",state->counts_out_file);
       } else if (strncmp(key,"RXN_LKLHD_FILE",14) == 0) {
 	sscan_ok = sscanf(value,"%s",state->rxn_lklhd_file);
       } else if (strncmp(key,"FREE_ENERGY_FILE",16) == 0) {
@@ -175,8 +175,11 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	sscan_ok = sscanf(value,"%le",&(state->ideal_gas_r));
       } else if (strncmp(key,"TEMP_KELVIN",11) == 0) {
 	sscan_ok = sscanf(value,"%le",&(state->temp_kelvin));
+	/*
+	  Bill says we don't let users modify Avogadro's number
       } else if (strncmp(key,"AVOGADRO",8) == 0) {
 	sscan_ok = sscanf(value,"%le",&(state->avogadro));
+	*/
       /*
 	Following four lines addd by DGT on 4/15/2013
       */
