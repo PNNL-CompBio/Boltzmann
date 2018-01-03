@@ -57,7 +57,6 @@ int size_rxns_file(struct state_struct *state) {
   char *rxn_buffer;
   char *fgp;
   char **keywords;
-  char *header[8];
   char *rctnts;
   char *prdcts;
 
@@ -86,6 +85,7 @@ int size_rxns_file(struct state_struct *state) {
     fflush(stderr);
   }
   if (success) {
+    state->rxn_fp = rxn_fp;
     rxn_buffer = state->rxn_buffer;
     init_rxn_file_keywords(state);
     keywords   = state->rxn_file_keywords;
@@ -99,7 +99,7 @@ int size_rxns_file(struct state_struct *state) {
       reaction. We build a state machine
       This is not quite accurate,as some reactions may not
       have a pathway line, and Bill wants to also add an additional
-      compartment line.
+      compartment, left_compartment, right_compartement  lines.
       
     */
     total_length = (int64_t)0;
@@ -153,33 +153,34 @@ int size_rxns_file(struct state_struct *state) {
 	  /*
 	    Pathway line.
 	  */
-	  ws_chars = count_ws((char *)&rxn_buffer[kl]);
 	  pathway_len += line_len - kl - ws_chars;
 	  break;
 	case 2: 
+        case 3:
+        case 4:
 	  /*
 	    Compartment line.
 	  */
 	  cmpts += 1;
 	  compartment_len += line_len - kl - ws_chars;
 	  break;
-	case 3:
+	case 5:
 	  /*
 	    A left line, count species.
 	  */
 	  rctnts = (char *)&rxn_buffer[kl];
 	  species += count_species(rctnts,&species_len);
 	  break;
-	case 4:
+	case 6:
 	  /*
 	    A right line, count species.
 	  */
 	  prdcts = (char *)&rxn_buffer[kl];
 	  species += count_species(prdcts,&species_len);
 	  break;
-	case 5:
-	case 6:
 	case 7:
+	case 8:
+	case 9:
         default:
 	  break;
       }
