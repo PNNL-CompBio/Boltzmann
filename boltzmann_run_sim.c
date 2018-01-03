@@ -92,6 +92,7 @@ int boltzmann_run_sim(struct state_struct *state) {
   double *lthermo;
   */
   double m_rt;
+  int    *rxn_fire;
   int success;
   int num_state_files;
 
@@ -142,6 +143,7 @@ int boltzmann_run_sim(struct state_struct *state) {
   rxn_view_data  = state->rxn_view_likelihoods;
   rrxn_view_data  = state->rev_rxn_view_likelihoods;
   cal_gm_per_joule = state->cal_gm_per_joule;
+  rxn_fire         = state->rxn_fire;
   /*
   lthermo        = state->l_thermo;
   */
@@ -233,13 +235,21 @@ int boltzmann_run_sim(struct state_struct *state) {
       }
     }
   } /* end for(i...) */
-  
+  /* 
+    Data collection phase (recorcing.
+  */
   if (success) {
     /*
-      Reinitialize the boundary fluxes to the current concentrations.
+      Set the rxn_fire counts to 0.
+    */
+    for (i=0;i<num_rxns_t2;i++) {
+      rxn_fire[i] = 0;
+    }
+    /*
+      Initialize the boundary fluxes 0.
     */
     for (i=0;i<nu;i++) {
-      bndry_flux_concs[i] = cconcs[i];
+      bndry_flux_concs[i] = 0.0;
     }
     for (i=0;i<n_record_steps;i++) {
       /*
@@ -280,9 +290,11 @@ int boltzmann_run_sim(struct state_struct *state) {
 				       num_rxns_t2_p1);
       if (rxn_choice < num_rxns) {
 	success = forward_rxn_conc_update(rxn_choice,state);
+	rxn_fire[rxn_choice] += 1;
       } else {
 	if (rxn_choice < num_rxns_t2) {
 	  success = reverse_rxn_conc_update(rxn_choice-num_rxns,state);
+	  rxn_fire[rxn_choice] += 1;
 	} /* else do nothing, no change */
       }
       for (j=0;j<nu;j++) {
@@ -400,6 +412,7 @@ int boltzmann_run_sim(struct state_struct *state) {
 	  molecule += 1; /* Caution address arithmetic.*/
 	}
 	fprintf(state->bndry_flux_fp,"\n");
+	/*
 	fprintf(bndry_flux_fp," flux - fixed ");
 	molecule = sorted_molecules;
 	for (j=0;j<nu;j++) {
@@ -407,9 +420,10 @@ int boltzmann_run_sim(struct state_struct *state) {
 	    delta = bndry_flux_concs[j]-cconcs[j];
 	    fprintf(state->bndry_flux_fp,"\t%le",delta);
 	  }
-	  molecule += 1; /* Caution address arithmetic.*/
+	  molecule += 1; 
 	}
 	fprintf(state->bndry_flux_fp,"\n");
+	*/
       }
     }
     if (success) {
