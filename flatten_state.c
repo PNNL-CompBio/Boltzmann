@@ -54,6 +54,8 @@ int flatten_state(struct state_struct *boot_state,
   struct rxn_matrix_struct rms;
   struct rxn_matrix_struct *reactions_matrix;
   int64_t *new_state_l;
+  int64_t *workspace_base_l;
+  int64_t *workspace_base;
   int64_t ask_for;
   int64_t one_l;
   int64_t align_len;
@@ -160,6 +162,7 @@ int flatten_state(struct state_struct *boot_state,
   int64_t move_size;
   int success;
   int load_from_boot;
+  one_l   = (int64_t)1;
   success     = 1;
   word_len    = 8;
   log2_word_len = 3;
@@ -201,7 +204,7 @@ int flatten_state(struct state_struct *boot_state,
   ke_offset            = dg0s_offset + dg0s_size;
   ke_size              = dg0s_size;
   activities_offset    = ke_offset + ke_size;
-  activities_size      = unique_molecules + (unique_molecules & 1);
+  activities_size      = number_reactions + (number_reactions & 1);
   reactions_offset     = activities_offset + activities_size;
   reactions_size       = (int64_t)sizeof(rs) * number_reactions; 
   reactions_pad        = (align_len - (reactions_size & align_mask)) & align_mask;
@@ -232,6 +235,7 @@ int flatten_state(struct state_struct *boot_state,
   sorted_cmpts_size       = (sorted_cmpts_size + sorted_cmpts_pad) >> log2_word_len;
   auxiliary_data_offset   = sorted_cmpts_offset + sorted_cmpts_size;
   incoming_data_length    = auxiliary_data_offset - incoming_data_offset;  
+  
   file_names_offset       = auxiliary_data_offset;
   file_names_size         = num_files * max_filename_len;
   file_names_pad          = (align_len - (file_names_size & align_mask)) & align_mask;
@@ -251,11 +255,15 @@ int flatten_state(struct state_struct *boot_state,
     Overlap workspace with auxiliary_data as the auxiliary_data is
     not needed for running the simulations.
   */
+  /*
   if (print_output) {
     workspace_offset       = auxiliary_end;
   } else {
     workspace_offset       = auxiliary_data_offset;
   }
+  */
+  workspace_base          = boot_state->workspace_base;
+  workspace_offset        = (int64_t)0;
   future_concs_offset     = workspace_offset;
   future_concs_size       = unique_molecules + (unique_molecules&1);
   free_energy_offset      = future_concs_offset + future_concs_size;
@@ -287,13 +295,15 @@ int flatten_state(struct state_struct *boot_state,
     workspace_end           = rxn_fire_offset + rxn_fire_size;
   }
   workspace_length = workspace_end - workspace_offset;
+  /*
   state_length = workspace_end;
   if (auxiliary_end > workspace_end) {
     state_length = auxiliary_end;
   }
+  */
+  state_length = auxiliary_end;
   if (*new_state_p == NULL) {
-    one_l   = (int64_t)1;
-    ask_for = workspace_end * sizeof(int64_t);
+    ask_for = state_length * sizeof(int64_t);
     new_state_l = (int64_t*)calloc(one_l,ask_for);
     if (new_state_l) {
       new_state = (struct state_struct *)new_state_l;
@@ -309,6 +319,7 @@ int flatten_state(struct state_struct *boot_state,
       new_state->incoming_data_length  = incoming_data_length;
       new_state->auxiliary_data_offset = auxiliary_data_offset;
       new_state->auxiliary_data_length = auxiliary_data_length;
+      new_state->workspace_base        = workspace_base;
       new_state->workspace_offset      = workspace_offset;
       new_state->workspace_length      = workspace_length;
       load_from_boot = 1;
@@ -319,7 +330,30 @@ int flatten_state(struct state_struct *boot_state,
     }
   } else {
     new_state = boot_state;
+    new_state_l = (int64_t *)new_state;
     load_from_boot = 0;
+  }
+  if (success  && new_state) {
+    /*
+      Allocate space for a workspace if on input it was null.
+    */
+    if (workspace_base == NULL) {
+      if (load_from_boot == 0) {
+	ask_for = workspace_length * sizeof(int64_t);
+	workspace_base_l = (int64_t*)calloc(one_l,ask_for);
+	if (workspace_base_l) {
+	  new_state->workspace_base = workspace_base_l;
+	} else {
+	  new_state->workspace_base = 0;
+	  success = 0;
+	  fprintf(stderr,"flatten_state: could not allocate %ld bytes "
+		  "for workspace\n",ask_for);
+	  fflush(stderr);
+	}
+      }
+    } else {
+      workspace_base_l = workspace_base;
+    }
   }
   if (success  && new_state) {
     /*
@@ -361,18 +395,18 @@ int flatten_state(struct state_struct *boot_state,
     new_state->pathway_text   = (char *)&new_state_l[pathway_offset];
     new_state->compartment_text   = (char *)&new_state_l[compartment_offset];
     new_state->molecules_text   = (char *)&new_state_l[molecules_offset];
-    new_state->future_concentrations = (double *)&new_state_l[future_concs_offset];
-    new_state->free_energy = (double *)&new_state_l[free_energy_offset];
-    new_state->forward_rxn_likelihood = (double *)&new_state_l[forward_rxn_offset];
-    new_state->reverse_rxn_likelihood = (double *)&new_state_l[reverse_rxn_offset];
-    new_state->forward_rxn_log_likelihood_ratio = (double *)&new_state_l[forward_rxn_log_offset];
-    new_state->reverse_rxn_log_likelihood_ratio = (double *)&new_state_l[reverse_rxn_log_offset];
-    new_state->rxn_likelihood_ps = (double*)&new_state_l[rxn_likelihood_ps_offset];
+    new_state->future_concentrations = (double *)&workspace_base_l[future_concs_offset];
+    new_state->free_energy = (double *)&workspace_base_l[free_energy_offset];
+    new_state->forward_rxn_likelihood = (double *)&workspace_base_l[forward_rxn_offset];
+    new_state->reverse_rxn_likelihood = (double *)&workspace_base_l[reverse_rxn_offset];
+    new_state->forward_rxn_log_likelihood_ratio = (double *)&workspace_base_l[forward_rxn_log_offset];
+    new_state->reverse_rxn_log_likelihood_ratio = (double *)&workspace_base_l[reverse_rxn_log_offset];
+    new_state->rxn_likelihood_ps = (double*)&workspace_base_l[rxn_likelihood_ps_offset];
     if (print_output) {
-      new_state->no_op_likelihood = (double *)&new_state_l[no_op_likelihood_offset];
-      new_state->rxn_view_likelihoods = (double *)&new_state_l[rxn_view_offset];
-      new_state->rev_rxn_view_likelihoods = (double *)&new_state_l[rev_rxn_view_offset];
-      new_state->rxn_fire = (int *)&new_state_l[rxn_fire_offset];
+      new_state->no_op_likelihood = (double *)&workspace_base_l[no_op_likelihood_offset];
+      new_state->rxn_view_likelihoods = (double *)&workspace_base_l[rxn_view_offset];
+      new_state->rev_rxn_view_likelihoods = (double *)&workspace_base_l[rev_rxn_view_offset];
+      new_state->rxn_fire = (int *)&workspace_base_l[rxn_fire_offset];
     }
   }
   if (success) {
