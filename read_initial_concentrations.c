@@ -77,7 +77,7 @@ int read_initial_concentrations(struct state_struct *state) {
   char *fgp;
   
   FILE *conc_fp;
-  nu_molecules       = state->unique_molecules;
+  nu_molecules       = state->nunique_molecules;
   molecules_buff_len = state->max_param_line_len;
   molecules_buffer   = state->param_buffer;
   molecule_name      = molecules_buffer + state->max_param_line_len;
