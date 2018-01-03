@@ -87,6 +87,8 @@ int parse_side_line(char *rctnts_p,
   struct molecule_struct *unsorted_molecules;
   struct compartment_struct *unsorted_cmpts;
   struct reactions_matrix_struct *rxns_matrix;
+  double *recip_coeffs;
+  int64_t coeff;
   int64_t *molecules_indices;
   int64_t *coefficients;
   int64_t *matrix_text;
@@ -131,6 +133,7 @@ int parse_side_line(char *rctnts_p,
   rxns_matrix        = state->reactions_matrix;
   molecules_indices  = rxns_matrix->molecules_indices;
   coefficients       = rxns_matrix->coefficients;
+  recip_coeffs       = rxns_matrix->recip_coeffs;
   matrix_text        = rxns_matrix->text;
 
   align_len    	     = state->align_len;
@@ -148,11 +151,12 @@ int parse_side_line(char *rctnts_p,
       molecules_indices[molecules] = molecules;
       if (is_a_coef(sl,rctnts)) {
 	rctnts[sl] = '\0';
+	coeff = atoi(rctnts);
 	if (side < 0) {
-	  coefficients[molecules] = - atoi(rctnts);
-	} else {
-	  coefficients[molecules] = atoi(rctnts);
-	}
+	  coeff = - coeff;
+	} 
+	coefficients[molecules] = coeff;
+	recip_coeffs[molecules] = 1.0/((double)coeff);
 	rctnts[sl] = ' ';
 
 	pos += (int64_t)sl;
@@ -165,7 +169,8 @@ int parse_side_line(char *rctnts_p,
 
 	sl = count_nws(rctnts);
       } else {
-	coefficients[molecules] = (double)side;
+	coefficients[molecules] = (int64_t)side;
+	recip_coeffs[molecules] = (double)side;
       }
       /*
 	At this juncture we need to check for
