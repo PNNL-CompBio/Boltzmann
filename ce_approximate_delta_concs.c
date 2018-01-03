@@ -21,9 +21,9 @@ int ce_approximate_delta_concs(struct state_struct *state, double *counts,
                                 TMF
     state                       *SI   Boltzmant state structure.
                                       uses number_reactions,
-				           unique_moleules,
-                                           molecules_matrix,
-					   and lfp,
+				           unique_moleules, and
+                                           molecules_matrix
+
 				      
 
     counts			D1I   molecule counts vector of length 
@@ -46,60 +46,16 @@ int ce_approximate_delta_concs(struct state_struct *state, double *counts,
     concentrations in base reaction).
 	    molecule = (struct molecule_struct *)&sorted_molecules[si];
   */
-  struct molecule_struct *molecules;
-  struct molecule_struct *molecule;
-  struct molecules_matrix_struct *molecules_matrix;
-  struct rxn_matrix_struct *rxn_matrix;
   double k1a,k1_a, k2a,k2_a,k3a,k3_a,k1b,k1_b,k2b,k2_b,k3b,k3_b;
-  double frb;
-  double lrb;
-  double recip_frb;
-  double forward;
-  double backward;
-  double *product_term;
-  double *reactant_term;
   double *count_to_conc;
   double y[9];
-  double  pt;
-  double  rt;
-  int64_t *molecules_ptrs;
-  int64_t *rxn_indices;
-  int64_t *coefficients;
-  int64_t *rxn_ptrs;
-  int64_t *molecule_indices;
-  int64_t *rcoefficients;
-  int num_species;
-  int num_rxns;
-  int rxn;
 
-  int i;
-  int j;
-
-  int mi;
   int success;
-
-  FILE *lfp;
-  FILE *efp;
+  int i;
   /*
 #define DBG 1
   */
-  /*
-    Check that base_rxn is in range.
-  */
   success = 1;
-  num_rxns = state->number_reactions;
-  num_species = state->nunique_molecules;
-  molecules   = state->sorted_molecules;
-  molecules_matrix = state->molecules_matrix;
-  molecules_ptrs   = molecules_matrix->molecules_ptrs;
-  rxn_indices      = molecules_matrix->rxn_indices;
-  coefficients     = molecules_matrix->coefficients;
-  rxn_matrix       = state->reactions_matrix;
-  rxn_ptrs         = rxn_matrix->rxn_ptrs;
-  molecule_indices = rxn_matrix->molecules_indices;
-  rcoefficients    = rxn_matrix->coefficients;
-  product_term     = state->product_term;
-  reactant_term    = state->reactant_term;
 
   if (success) {
     success = update_rxn_likelihoods(state,counts,forward_rxn_likelihoods,
