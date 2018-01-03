@@ -24,7 +24,7 @@ specific language governing permissions and limitations under the License.
 #include "check_for_ws.h"
 int check_for_ws(char *string) {
   /*
-    Called by: keg_from_pseudoisomer
+    Called by: kegg_from_pseudoisomer
     Calls:     strlen
   */
   int i;
