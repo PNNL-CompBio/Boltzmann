@@ -389,6 +389,9 @@ struct state_struct {
   double *product_term;  /* product of reaction product concentrations, length number_reactions */
   double *rxn_q; /* Ratio  product_term to reactant_term.  */
   double *recip_rxn_q;/* Ratio of reactant_term to product_term. */
+  double *rfc;
+  double *deriv_acc;
+  double *stable_add_scr;
   double *log_kf_rel;
   double *log_kr_rel;
   double *ode_counts; /* counts from concentrations */
