@@ -94,8 +94,8 @@ int read_initial_concentrations(struct state_struct *state) {
 	  }
 	}
       }
-      fclose(conc_fp);
     }
+    fclose(conc_fp);
   } else {
     fprintf(stderr,
 	    "read_initial_concentrations: Warning unable to open concs.in ."
