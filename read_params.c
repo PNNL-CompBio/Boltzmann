@@ -39,6 +39,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
   double avogadro;
   double temp_kelvin;
   double epsilon;
+  double min_conc;
   double default_volume_candidate;
   int64_t max_param_line_len;
   char *param_buffer;
@@ -123,6 +124,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
     state->cals_per_joule      = 1.0/state->joules_per_cal;
     state->default_volume      = 1.0e-15;
     state->recip_default_volume = 1.0e15;
+    state->min_conc            = 1.0e-26;
     state->warmup_steps        = (int64_t)1000;
     state->record_steps        = (int64_t)1000;
     state->free_energy_format  = (int64_t)0;
@@ -245,6 +247,11 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	  state->default_volume = default_volume_candidate;
 	  state->recip_default_volume = 1.0/default_volume_candidate;
 	} 
+      } else if (strncmp(key,"MIN_CONC",8) == 0) {
+	sscan_ok = sscanf(value,"%le",&min_conc);
+	if (min_conc > 0.0) {
+	  state->min_conc = min_conc;
+	}
       } else if (strncmp(key,"WARMUP_STEPS",12) == 0) {
 	sscan_ok = sscanf(value,"%ld",&(state->warmup_steps));
       } else if (strncmp(key,"RXN_VIEW_FREQ",13) == 0) {
