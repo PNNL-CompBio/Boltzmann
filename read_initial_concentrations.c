@@ -336,10 +336,15 @@ int read_initial_concentrations(struct state_struct *state) {
 	    */
 	    /*
 	      Stochastic case, only whole molecules allowed.
-	    */
+	      Stochastic conversion will be handled in deq_run
+	      and boltzman_run
 	    counts[si] = (double)((int64_t)((conc * multiplier) + half));
 	    opt_count  = (double)((int64_t)((u_val * multiplier) + half));
 	    exp_count  = (double)((int64_t)((e_val * multiplier) + half));
+	    */
+	    counts[si] = conc * multiplier;
+	    opt_count  = u_val * multiplier;
+	    exp_count  = e_val * multiplier;
 	    /*
 	    if (opt_count < 1.0) {
 	      opt_count = 1.0;
