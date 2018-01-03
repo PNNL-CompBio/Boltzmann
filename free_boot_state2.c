@@ -58,6 +58,9 @@ int free_boot_state2(struct state_struct **statep) {
       if (reactions_matrix->coefficients) {
 	free(reactions_matrix->coefficients);
       }
+      if (reactions_matrix->solvent_coefficients) {
+	free(reactions_matrix->solvent_coefficients);
+      }
       if (reactions_matrix->text) {
 	free(reactions_matrix->text);
       }
