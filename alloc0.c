@@ -155,7 +155,7 @@ int alloc0(struct state_struct **statep) {
     }
   }
   if (success) {
-    num_rxn_file_keywords = 13;
+    num_rxn_file_keywords = 14;
     state->num_rxn_file_keywords = num_rxn_file_keywords;
     ask_for = ((int64_t)num_rxn_file_keywords) * ((int64_t)sizeof(char *));
     usage   += ask_for;
