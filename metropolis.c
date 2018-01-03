@@ -24,6 +24,7 @@ specific language governing permissions and limitations under the License.
 #include "boltzmann_structs.h"
 
 #include "rxn_likelihood_postselection.h"
+#include "update_regulation.h"
 #include "vgrng.h"
 #include "bndry_flux_update.h"
 
@@ -59,6 +60,9 @@ int metropolis(struct state_struct *state,
   int64_t choice;
   int accept;
   int success;
+  int use_regulation;
+  int padi;
+  use_regulation         = state->use_regulation;
   future_counts          = state->future_counts;
   forward_rxn_likelihood = state->forward_rxn_likelihood;
   reverse_rxn_likelihood = state->reverse_rxn_likelihood;
@@ -87,7 +91,9 @@ int metropolis(struct state_struct *state,
     */
     choice  = vgrng(vgrng2_state);
     dchoice = ((double)choice)*scaling;
-
+    if (use_regulation) {
+      update_regulation(state,rxn_number);
+    }
     if (dchoice < likelihood*activities[rxn_number]) {
       accept = 1;
       /*
