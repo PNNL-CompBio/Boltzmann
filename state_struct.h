@@ -103,12 +103,12 @@ struct state_struct {
   double  y_coord;
   double  z_coord;
   int64_t num_partitions;       	
-  int64_t scalars_length;       	
-  int64_t scalars_offset;       	
   int64_t two_way_data_length;  	
   int64_t two_way_data_offset;  	
   int64_t incoming_data_length; 	
   int64_t incoming_data_offset; 	
+  int64_t auxiliary_data_length;
+  int64_t auxiliary_data_offset;
   int64_t work_space_length;    	
   int64_t work_space_offset;    	
   int64_t num_scalars;          	
@@ -161,7 +161,7 @@ struct state_struct {
 
   /* two way data (modified) */
   double  *dg_forward_p; /* scalar */        /* 8 */             
-  double  *entropy_p;    /* scalar */        /* 16 */             
+  double  *entropy_p;    /* scalar */        /* 8 */             
   double  *current_concentrations; /* len = unique_molecules */
   double  *bndry_flux_concs;       /* len = unique_molecules */
   struct  vgrng_state_struct *vgrng_state; /* len = 13 */
@@ -238,7 +238,7 @@ struct state_struct {
   struct istring_elem_struct *unsorted_cmpts;
   int64_t *compartment_ptrs;
   int64_t *rxn_file_keyword_lengths;
-  char    **rxn_file_keywords;
+  char    **rxn_file_keywords; /* 12 */
   char    *rxn_file_keyword_buffer; /* 144 */
   char    *param_buffer; /*  2* max_param_line_len */
   char    *raw_molecules_text; /* molecules_space */
@@ -246,9 +246,9 @@ struct state_struct {
   double  *free_energy;            /* number_reactions */
   double  *forward_rxn_likelihood; /* number_reactions */
   double  *reverse_rxn_likelihood; /* number_reactions */
-  double  *rxn_likelihood_ps;      /* number_reactions + 1 */
   double  *forward_rxn_log_likelihood_ratio; /* number_reactions */
   double  *reverse_rxn_log_likelihood_ratio; /* number_reactions */
+  double  *rxn_likelihood_ps;      /* number_reactions + 1 */
   /*
     Workspace only if printing. (debugging);
   */
