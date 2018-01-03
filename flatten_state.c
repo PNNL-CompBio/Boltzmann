@@ -38,7 +38,7 @@ int flatten_state(struct state_struct *boot_state,
       just set the self referential pointers in the new_state appropriately.
 
       
-    Called by boltzmann_init and boltzmann_run
+    Called by run_init and boltzmann_run
 
   */
   struct state_struct *new_state;
@@ -113,6 +113,15 @@ int flatten_state(struct state_struct *boot_state,
   int64_t activities_offset;
   int64_t activities_size;
 
+  int64_t reg_constant_offset;
+  int64_t reg_constant_size;
+  int64_t reg_exponent_offset;
+  int64_t reg_exponent_size;
+  int64_t reg_species_offset;
+  int64_t reg_species_size;
+  int64_t reg_drctn_offset;
+  int64_t reg_drctn_size;
+
   int64_t reactions_offset;
   int64_t reactions_size;
   int64_t reactions_pad;
@@ -180,6 +189,7 @@ int flatten_state(struct state_struct *boot_state,
   int64_t sorted_compartments_offset_in_bytes;
   int64_t molecules_text_offset_in_bytes;
   int64_t compartments_text_offset_in_bytes;
+  int64_t max_regs_per_rxn;
   int success;
   int load_from_boot;
   one_l   = (int64_t)1;
@@ -193,7 +203,8 @@ int flatten_state(struct state_struct *boot_state,
   meta_pad     = (align_len - (align_mask & meta_size)) & align_mask;
   two_way_data_offset = state_offset + ((meta_size + meta_pad) >> log2_word_len);
   unique_molecules    = boot_state->nunique_molecules;
-  print_output = boot_state->print_output;
+  print_output        = boot_state->print_output;
+  max_regs_per_rxn    = boot_state->max_regs_per_rxn;
 
   dg_forward_offset  = two_way_data_offset;
   dg_forward_size    = 1;
@@ -243,9 +254,21 @@ int flatten_state(struct state_struct *boot_state,
 
   activities_offset    = molecule_chemical_potentials_offset +
     molecule_chemical_potentials_size;
-  activities_size      = current_counts_size;
+  activities_size      = number_reactions;
 
-  reactions_offset     = activities_offset + current_counts_size;
+  reg_constant_size    = number_reactions * max_regs_per_rxn;
+  reg_constant_offset  = activities_offset + activities_size;
+
+  reg_exponent_size    = reg_constant_size;
+  reg_exponent_offset  = reg_constant_offset + reg_constant_size;
+
+  reg_drctn_size       = reg_constant_size;
+  reg_drctn_offset     = reg_exponent_offset + reg_exponent_size;
+
+  reg_species_size     = reg_constant_size;
+  reg_species_offset   = reg_drctn_offset + reg_drctn_size;
+
+  reactions_offset     = reg_species_offset + reg_species_size;
   reactions_size       = (int64_t)sizeof(rs) * number_reactions; 
   reactions_pad        = (align_len - (reactions_size & align_mask)) & align_mask;
   reactions_size       = (reactions_size + reactions_pad) >> log2_word_len;
@@ -285,15 +308,15 @@ int flatten_state(struct state_struct *boot_state,
   file_names_pad          = (align_len - (file_names_size & align_mask)) & align_mask;
   file_names_size         = (file_names_size + file_names_pad) >> log2_word_len;
   rxn_title_offset        = file_names_offset + file_names_size;
-  rxn_title_size          = boot_state->rxn_title_space >> log2_word_len;
+  rxn_title_size          = boot_state->rxn_title_text_length >> log2_word_len;
   pathway_offset          = rxn_title_offset + rxn_title_size;
-  pathway_size            = boot_state->pathway_space >> log2_word_len;
+  pathway_size            = boot_state->pathway_text_length >> log2_word_len;
   compartment_offset      = pathway_offset + pathway_size;
   compartments_text_offset_in_bytes = compartment_offset << log2_word_len;
-  compartment_size        = boot_state->compartment_space >> log2_word_len;
+  compartment_size        = boot_state->compartment_text_length >> log2_word_len;
   molecules_offset        = compartment_offset + compartment_size;
   molecules_text_offset_in_bytes = molecules_offset << log2_word_len;
-  molecules_size          = boot_state->molecules_space >> log2_word_len;
+  molecules_size          = boot_state->molecule_text_length >> log2_word_len;
 
   auxiliary_end           = molecules_offset + molecules_size;
   auxiliary_data_length   = auxiliary_end - auxiliary_data_offset;
@@ -426,7 +449,13 @@ int flatten_state(struct state_struct *boot_state,
     new_state->molecule_dg0tfs   = (double*)&new_state_l[molecule_dg0tfs_offset];
     new_state->molecule_probabilities   = (double*)&new_state_l[molecule_probabilities_offset];
     new_state->molecule_chemical_potentials   = (double*)&new_state_l[molecule_chemical_potentials_offset];
-    new_state->activities  = (double*)&new_state_l[activities_offset];
+    new_state->activities    = (double*)&new_state_l[activities_offset];
+    new_state->reg_constant  = (double*)&new_state_l[reg_constant_offset];
+    new_state->reg_exponent  = (double*)&new_state_l[reg_exponent_offset];
+    new_state->reg_drctn     = (double*)&new_state_l[reg_drctn_offset];
+    new_state->reg_species   = (int64_t*)&new_state_l[reg_species_offset];
+
+
     new_state->reactions   = (struct rxn_struct *)&new_state_l[reactions_offset];
     new_state->reactions_matrix = (struct rxn_matrix_struct*)&new_state_l[reactions_matrix_offset];
     reactions_matrix = new_state->reactions_matrix;
@@ -494,7 +523,14 @@ int flatten_state(struct state_struct *boot_state,
 	     boot_state->molecule_probabilities,move_size);
       memcpy(new_state->molecule_chemical_potentials,
 	     boot_state->molecule_chemical_potentials,move_size);
+      move_size = number_reactions * sizeof(double);
       memcpy(new_state->activities,boot_state->activities,move_size);
+      move_size = number_reactions * max_regs_per_rxn * sizeof(double);
+      memcpy(new_state->reg_constant,boot_state->reg_constant,move_size);
+      memcpy(new_state->reg_exponent,boot_state->reg_exponent,move_size);
+      memcpy(new_state->reg_drctn,boot_state->reg_drctn,move_size);
+      memcpy(new_state->reg_species,boot_state->reg_species,move_size);
+
       move_size = (int64_t)sizeof(rs) * number_reactions;
       memcpy(new_state->reactions,boot_state->reactions,move_size);
       move_size = (number_reactions + 1) * sizeof(int64_t);      
@@ -523,16 +559,16 @@ int flatten_state(struct state_struct *boot_state,
 	     boot_state->params_file,move_size);
       move_size  = (int64_t)64;
       memcpy(new_state->solvent_string,boot_state->solvent_string,move_size);
-      move_size = boot_state->rxn_title_space;
+      move_size = boot_state->rxn_title_text_length;
       memcpy(new_state->rxn_title_text,
 	     boot_state->rxn_title_text,move_size);
-      move_size = boot_state->pathway_space;
+      move_size = boot_state->pathway_text_length;
       memcpy(new_state->pathway_text,
 	     boot_state->pathway_text,move_size);
-      move_size = boot_state->compartment_space;
+      move_size = boot_state->compartment_text_length;
       memcpy(new_state->compartment_text,
 	     boot_state->compartment_text,move_size);
-      move_size = boot_state->molecules_space;
+      move_size = boot_state->molecule_text_length;
       memcpy(new_state->molecules_text,
 	     boot_state->molecules_text,move_size);
     }
