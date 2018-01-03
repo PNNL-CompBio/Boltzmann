@@ -28,7 +28,8 @@ specific language governing permissions and limitations under the License.
 int rxn_count_update(int rxn_no, int direction,
 		    struct state_struct *state) {
   /*
-    Compute the change in counts for forward reaction rxn_no.
+    Compute the change in counts for reaction rxn_no in the specified 
+    direction.
     Called by candidate_rxn.
     Calls:
   */
