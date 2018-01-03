@@ -105,11 +105,12 @@ int rxn_likelihoods(double *free_energy,
       conc  = concs[molecules_indices[j]];
       if (coeff < 0) {
 	for (k=0;k<(0-coeff);k++) {
-	  left_concs *= conc;	
+	  left_concs = left_concs * (conc-k);	
 	} 
       } else {
 	for (k=0;k<coeff;k++) {
-	  right_concs *= conc;	
+	  right_concs = right_concs * (conc-k);
+;	
 	} 
       }
     }
