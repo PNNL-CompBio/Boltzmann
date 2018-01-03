@@ -547,4 +547,5 @@ int main(int argc, char **argv)
     fprintf(stdout,"   xtest[%d] - xsol[%d] = %le\n",i,i,xtest[i]);
   }
   fflush(stdout);
+  return(0);
 }
