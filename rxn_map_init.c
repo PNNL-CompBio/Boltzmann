@@ -72,17 +72,15 @@ int rxn_map_init(char *param_file_name, struct state_struct **statep,
   struct state_struct *state;
   struct molecules_matrix_struct *molecules_matrix;
   int64_t *transpose_work;
-  double *dg0s;
-  double *free_energy;
   int success;
   int print_output;
 
-  int i;
-  int padi;
-
   FILE *start_stop_fp;
   FILE *rxn_echo_fp;
+#ifdef DBG_BOLTZMANN_INIT
   FILE *lfp;
+  FILE *efp;
+#endif
   /*
     allocate space for the state struct.
     Allocate space for the reactions line buffer, and the rxn_file keywords.
