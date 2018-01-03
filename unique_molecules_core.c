@@ -25,7 +25,7 @@ specific language governing permissions and limitations under the License.
 
 #include "unique_molecules_core.h"
 int unique_molecules_core(int nzr,
-			  struct istring_elem_struct *sorted_molecules,
+			  struct molecule_struct *sorted_molecules,
 			  char *molecules_text,
 			  int64_t *molecules_map,
 			  int64_t *nunique_molecules,
@@ -39,8 +39,8 @@ int unique_molecules_core(int nzr,
     Called by: unique_molecules, boltzmann_boot
     Calls:     strcmp (intrinsic)
   */
-  struct istring_elem_struct *cur_molecule;
-  struct istring_elem_struct *umolecules_next;
+  struct molecule_struct *cur_molecule;
+  struct molecule_struct *umolecules_next;
   char *cstring;
   char *sstring;
   int64_t molecule_len;
