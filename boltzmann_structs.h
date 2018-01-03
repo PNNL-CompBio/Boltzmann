@@ -23,6 +23,8 @@ specific language governing permissions and limitations under the License.
 #ifdef TIMING_ON
 #include "djb_timing_b.h"
 #endif
+#include "super_state_struct.h"
+#include "super_state_pointers_struct.h"
 #include "state_struct.h"
 #include "rxn_struct.h"
 #include "rxn_matrix_struct.h"
