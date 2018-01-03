@@ -90,6 +90,7 @@ int alloc0(struct state_struct **statep, int setup) {
   struct state_struct *state;
   struct vgrng_state_struct vss;
   struct cvodes_params_struct cps;
+  struct ode23tb_params_struct ops;
   int64_t *rxn_file_keyword_lengths;
   char    *rxn_keyword_buff;
   char    **rxn_keywords;
@@ -243,6 +244,22 @@ int alloc0(struct state_struct **statep, int setup) {
 	success = 0;
       } else {
 	state->cvodes_params_size = ask_for;
+      }
+    }
+    /*
+      Allocate space for the ode23tb params struct.
+    */
+    if (success) {
+      ask_for = (int64_t)sizeof(ops);
+      usage += ask_for;
+      state->ode23tb_params = (struct ode23tb_params_sruct *)calloc(one_l,ask_for);
+      if (state->ode23tb_params == NULL) {
+	fprintf(stderr,"alloc0: Error, unalbe to allocate %ld bytes for "
+		"ode23tb_params\n",ask_for);
+	fflush(stderr);
+	success = 0;
+      } else {
+	state->ode23tb_params_size = ask_for;
       }
     }
   } /* end if setup */
