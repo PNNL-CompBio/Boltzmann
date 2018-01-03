@@ -61,8 +61,7 @@ int print_restart_file(struct state_struct *state) {
   cur_molecules = state->sorted_molecules;
   cur_cmpts     = state->sorted_compartments;
   ccounts       = state->current_counts;
-  /*multiplier    = state->count_to_conc; */
-  
+  multiplier    = 1.0;
   molecules_text = state->molecules_text;
   compartment_text = state->compartment_text;
   vbs[0]        = 'F';
