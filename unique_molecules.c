@@ -41,6 +41,7 @@ int unique_molecules(struct state_struct *state) {
   struct molecule_struct *cur_molecule;
   struct molecule_struct *umolecules_next;
   char *molecules_text;
+  char *solvent_string;
   char *cstring;
   char *sstring;
   int64_t sum_molecule_len;
@@ -51,6 +52,8 @@ int unique_molecules(struct state_struct *state) {
   int success;
   int nzr;
 
+  int solvent_pos;
+  int padi;
   /*
   int i;
   int nu_molecules;
@@ -62,6 +65,7 @@ int unique_molecules(struct state_struct *state) {
   nzr                 = state->number_molecules;
   sorted_molecules    = state->sorted_molecules;
   molecules_text      = state->molecules_text;
+  solvent_string      = state->solvent_string;
   rxns_matrix         = state->reactions_matrix;
   molecules_indices   = rxns_matrix->molecules_indices;
   align_len           = state->align_len;
@@ -69,12 +73,15 @@ int unique_molecules(struct state_struct *state) {
   success = unique_molecules_core(nzr,
 				  sorted_molecules,
 				  molecules_text,
+				  solvent_string,
 				  molecules_indices,
 				  &nunique_molecules,
 				  &sum_molecule_len,
+				  &solvent_pos,
 				  align_len,
 				  align_mask);
   state->nunique_molecules = nunique_molecules;
   state->sum_molecule_len  = sum_molecule_len;
+  state->solvent_pos       = (int64_t)solvent_pos;
   return(success);
 }
