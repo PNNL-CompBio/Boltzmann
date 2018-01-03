@@ -41,18 +41,22 @@ void init_rxn_file_keywords(struct state_struct *state) {
   strcpy((char *)&keyword_buffer[48],
 	 "RIGHT_COMPARTMENT       LEFT    RIGHT   DGZERO  ");
   strcpy((char *)&keyword_buffer[96],
-	 "DGZERO-UNITS    ACTIVITY        //             ");
-  keywords[0] = (char*)(&keyword_buffer[0]);
-  keywords[1] = (char*)(&keyword_buffer[8]);
-  keywords[2] = (char*)(&keyword_buffer[16]);
-  keywords[3] = (char*)(&keyword_buffer[32]);
-  keywords[4] = (char*)(&keyword_buffer[48]);
-  keywords[5] = (char*)(&keyword_buffer[72]);
-  keywords[6] = (char*)(&keyword_buffer[80]);
-  keywords[7] = (char*)(&keyword_buffer[88]);
-  keywords[8] = (char*)(&keyword_buffer[96]);
-  keywords[9] = (char*)(&keyword_buffer[112]);
-  keywords[10] = (char*)(&keyword_buffer[128]);
+	 "DGZERO-UNITS    ACTIVITY        PREGULATION     ");
+  strcpy((char *)&keyword_buffer[144],
+	 "NREGULATION     //                              ");
+  keywords[0]  	     = (char*)(&keyword_buffer[0]);
+  keywords[1]  	     = (char*)(&keyword_buffer[8]);
+  keywords[2]  	     = (char*)(&keyword_buffer[16]);
+  keywords[3]  	     = (char*)(&keyword_buffer[32]);
+  keywords[4]  	     = (char*)(&keyword_buffer[48]);
+  keywords[5]  	     = (char*)(&keyword_buffer[72]);
+  keywords[6]  	     = (char*)(&keyword_buffer[80]);
+  keywords[7]  	     = (char*)(&keyword_buffer[88]);
+  keywords[8]  	     = (char*)(&keyword_buffer[96]);
+  keywords[9]  	     = (char*)(&keyword_buffer[112]);
+  keywords[10] 	     = (char*)(&keyword_buffer[128]);
+  keywords[11] 	     = (char*)(&keyword_buffer[144]);
+  keywords[12] 	     = (char*)(&keyword_buffer[160]);
   keyword_len[0]     = (int64_t)8;
   keyword_len[1]     = (int64_t)7;
   keyword_len[2]     = (int64_t)11;
@@ -63,5 +67,7 @@ void init_rxn_file_keywords(struct state_struct *state) {
   keyword_len[7]     = (int64_t)6;
   keyword_len[8]     = (int64_t)12;
   keyword_len[9]     = (int64_t)8;
-  keyword_len[10]    = (int64_t)2;
+  keyword_len[10]    = (int64_t)11;
+  keyword_len[11]    = (int64_t)11;
+  keyword_len[12]    = (int64_t)2;
 }
