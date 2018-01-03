@@ -35,9 +35,6 @@ int rxn_count_update(int rxn_no, int direction,
   */
   struct molecule_struct *sorted_molecules;
   struct molecule_struct *molecule;
-  /*
-  struct compartment_struct *sorted_cmpts;
-  */
   double *current_counts;
   double *future_counts;
   int64_t *rxn_ptrs;
@@ -62,7 +59,7 @@ int rxn_count_update(int rxn_no, int direction,
   int     cmpt;
   */
 			 
-  struct rxn_matrix_struct *rxns_matrix;
+  struct reactions_matrix_struct *rxns_matrix;
 
   success           = 1;
   current_counts    = state->current_counts;
@@ -71,7 +68,6 @@ int rxn_count_update(int rxn_no, int direction,
   sorted_molecules  = state->sorted_molecules;
   rxns_matrix       = state->reactions_matrix;
   /*
-  sorted_cmpts      = state->sorted_cmpts;
   min_conc          = state->min_conc;
   */
   rxn_ptrs          = rxns_matrix->rxn_ptrs;
@@ -99,7 +95,6 @@ int rxn_count_update(int rxn_no, int direction,
       k = molecules_indices[j];
       /*
       cmpt = compartment_indices[j];
-      cmpt_vol = sorted_cmpts[cmpt].volume;
       min_count = min_conc * cmpt_vol;
       */
       molecule = (struct molecule_struct *) &sorted_molecules[k];
@@ -120,7 +115,6 @@ int rxn_count_update(int rxn_no, int direction,
       k = molecules_indices[j];
       /*
       cmpt = compartment_indices[j];
-      cmpt_vol = sorted_cmpts[cmpt].volume;
       min_count = min_conc * cmpt_vol;
       */
       molecule = (struct molecule_struct *) &sorted_molecules[k];
