@@ -28,7 +28,7 @@ struct compartment_struct {
         volume  - volume of the compartment, must be > 0
 	recip_volume 1/volume
 
-        string  - character offest into the molecules_text array 
+        string  - character offset into the compartment_text array 
 	          to a null terminated string that contains the molecule 
 		  or compartment string.
 	          
