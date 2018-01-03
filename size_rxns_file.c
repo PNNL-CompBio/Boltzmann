@@ -32,15 +32,15 @@ specific language governing permissions and limitations under the License.
 
 #include "init_rxn_file_keywords.h"
 #include "parse_rxn_file_keyword.h"
-#include "count_species.h"
+#include "count_molecules.h"
 #include "count_ws.h"
 
 #include "size_rxns_file.h"
 int size_rxns_file(struct state_struct *state) {
   /*
     Determine the number of reactions,
-    Total length of species names, and
-    max possiblie number of species, and
+    Total length of molecules names, and
+    max possiblie number of molecules, and
     total length of the file. Total length
     of compartment names.
     Called by: boltzmann
@@ -48,7 +48,7 @@ int size_rxns_file(struct state_struct *state) {
   */
   int64_t rxn_buff_len;
   int64_t total_length;
-  int64_t species_len;
+  int64_t molecules_len;
   int64_t rxn_title_len;
   int64_t pathway_len;
   int64_t compartment_len;
@@ -63,7 +63,7 @@ int size_rxns_file(struct state_struct *state) {
   int success;
   int rxns;
 
-  int species;
+  int molecules;
   int ws_chars;
 
   int line_type;
@@ -91,7 +91,7 @@ int size_rxns_file(struct state_struct *state) {
     keywords   = state->rxn_file_keywords;
     keyword_lens = state->rxn_file_keyword_lengths;
     rxns = 0;
-    species = 0;
+    molecules = 0;
     cmpts   = 0;
     /*
       Should get a reaction line, a pathway line, a left line, a right line,
@@ -103,7 +103,7 @@ int size_rxns_file(struct state_struct *state) {
       
     */
     total_length = (int64_t)0;
-    species_len  = (int64_t)0;
+    molecules_len  = (int64_t)0;
     pathway_len  = (int64_t)0;
     compartment_len = (int64_t)0;
     rxn_title_len  = (int64_t)0;
@@ -166,17 +166,17 @@ int size_rxns_file(struct state_struct *state) {
 	  break;
 	case 5:
 	  /*
-	    A left line, count species.
+	    A left line, count molecules.
 	  */
 	  rctnts = (char *)&rxn_buffer[kl];
-	  species += count_species(rctnts,&species_len);
+	  molecules += count_molecules(rctnts,&molecules_len);
 	  break;
 	case 6:
 	  /*
-	    A right line, count species.
+	    A right line, count molecules.
 	  */
 	  prdcts = (char *)&rxn_buffer[kl];
-	  species += count_species(prdcts,&species_len);
+	  molecules += count_molecules(prdcts,&molecules_len);
 	  break;
 	case 7:
 	case 8:
@@ -189,9 +189,9 @@ int size_rxns_file(struct state_struct *state) {
   } /* end if (success) */
   state->reaction_file_length = total_length;
   state->number_reactions = rxns;
-  state->number_species   = species;
+  state->number_molecules   = molecules;
   state->number_compartments = cmpts;
-  state->species_len = species_len;
+  state->molecules_len = molecules_len;
   state->pathway_len = pathway_len;
   state->compartment_len = compartment_len;
   state->rxn_title_len = rxn_title_len;
