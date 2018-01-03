@@ -535,8 +535,8 @@ int boltzmann_boot(char *param_file_name,
 	  First we need to sort the compartments.
 	*/
 	if (success) {
-	  success = sort_compartments(&state->unsorted_cmpts,
-				      &state->sorted_cmpts,
+	  success = sort_compartments(state->unsorted_cmpts,
+				      state->sorted_cmpts,
 				      state->compartment_text,
 				      state->number_compartments);
 	}
@@ -560,8 +560,8 @@ int boltzmann_boot(char *param_file_name,
 	  Now we need to sort the molecules, by compartment and name.
 	*/
 	if (success) {
-	  success = sort_molecules(&state->unsorted_molecules,
-				   &state->sorted_molecules,
+	  success = sort_molecules(state->unsorted_molecules,
+				   state->sorted_molecules,
 				   state->molecules_text,
 				   state->number_molecules);
 	}
