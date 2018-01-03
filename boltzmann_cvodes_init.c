@@ -1,20 +1,26 @@
 #include "boltzmann_structs.h"
 #include "boltzmann_cvodes_headers.h"
+#include "cvodes_params_struct.h"
 #include "boltzmann_check_cvodeset_errors.h"
 #include "boltzmann_check_tol_errors.h"
 #include "boltzmann_set_cvodes_linear_solver.h"
 #include "boltzmann_check_cvspils_errors.h"
+#include "boltzmann_check_cvodesens_errors.h"
+#include "approximate_ys0.h"
 #include "boltzmann_cvodes_psetup.h"
 #include "boltzmann_cvodes_psolve.h"
 #include "boltzmann_cvodes_jtimes.h"
 #include "boltzmann_cvodes_init.h"
 
-int boltzmann_cvodes_init(void *cvode_mem,struct state_struct *state) {
+int boltzmann_cvodes_init(void *cvode_mem,struct state_struct *state, double *concs) {
   /*
     Initialize the parameters controlling cvodes ode solver.
     Assumes CVodeCreate and CVodeInit have been called.
     Called by: boltzmann_cvodes
-    Calls:     CVodeSetErrFile,
+    Calls:     N_VNew_Serial,
+               N_VMake_Serial,
+	       N_VCloneVectorArray_Serial
+               CVodeSetErrFile,
                boltzmann_check_cvodeset_errors,
 	       CVodeSStolerances,
 	       boltzmann_check_tol_errors,
@@ -36,18 +42,29 @@ int boltzmann_cvodes_init(void *cvode_mem,struct state_struct *state) {
 	       CVSpilsSetEpsLin,
 	       CVSpilsSetPreconditioner,
 	       CVSpilsSetJacTimesVecFn,
+	       approximate_ys0,
 	       boltzmann_set_cvodes_linear_solver,
 	       boltzman_check_cvspils_errors,
 	       boltzmann_cvodes_psetup,
 	       boltzmann_cvodes_psolve,
-	       boltzmann_cvodes_jtime
+	       boltzmann_cvodes_jtime,
+	       boltzmann_check_cvodesens_errors
   */
   /*
     Direct cvode error messages to log file, lfp.
   */
+  CVSensRhsFn fs;
   struct cvodes_params_struct *cvodes_params;
   N_Vector abs_tol;
+  N_Vector y0;
+  N_Vector *ys0;
+  N_Vector *dys;
   double *abs_tol_data;
+  double *p;
+  double *pbar;
+  double *ke;
+  double *ys0v;
+  double *ys0vi;
   double reltol;
   double abstol_v;
   double nlscoef;
@@ -56,6 +73,9 @@ int boltzmann_cvodes_init(void *cvode_mem,struct state_struct *state) {
   double hmin;
   double hmax;
   double tstop;
+  double dqromax;
+
+  int *plist;
 
   int success;
   int flag;
@@ -78,6 +98,14 @@ int boltzmann_cvodes_init(void *cvode_mem,struct state_struct *state) {
   int use_stab_lim_det;
   int mxhnil;
 
+  int ns;
+  int ism;
+
+  int dqtype;
+  int maxcors;
+
+  int errcons;
+
   FILE *lfp;
   FILE *efp;
 
@@ -85,6 +113,7 @@ int boltzmann_cvodes_init(void *cvode_mem,struct state_struct *state) {
   lfp     = state->lfp;
   cvodes_params = state->cvodes_params;
   ny            = state->nunique_molecules;
+  ke            = state->ke;
   if (success) {
     flag = CVodeSetErrFile(cvode_mem,lfp);
     success = boltzmann_check_cvodeset_errors(flag,cvode_mem,state,"ErrFile");
@@ -287,6 +316,138 @@ int boltzmann_cvodes_init(void *cvode_mem,struct state_struct *state) {
     success = boltzmann_check_cvspils_errors(flag,cvode_mem,state,
 					     "CVSpilsSetJacTimesVecFn");
   }
+  if (success) {
+    if ((state->compute_sensitivities == 1)  &&
+	(state->ode_solver_choice == 1)) {
+      /*
+	Define the sensitivity problem.
+      */
+      /*
+	Set ns the number of sensitivity parameters,
+	= number_reactions.
+      */
+      ns  = cvodes_params->ns;
+      y0  = cvodes_params->y0;
+      /*
+	Set the sensitivity initial conditions.
+      */
+      /*
+	Allocate space for the ys0 array of ns N_vectors.
+      */
+      ys0  = N_VCloneVectorArray_Serial(ns,y0);
+      if (ys0 == NULL) {
+	success =0;
+	if (lfp) {
+	  fprintf(lfp,"boltzman_cvodes_init: Error allocating space for ys0\n");
+	  fflush(lfp);
+	}
+      }
+      if (success) {
+	cvodes_params->ys0 = ys0;
+	dys = N_VCloneVectorArray_Serial(ns,y0);
+	if (dys == NULL) {
+	  success =0;
+	  if (lfp) {
+	    fprintf(lfp,"boltzman_cvodes_init: Error allocating space for ys0\n");
+	    fflush(lfp);
+	  }
+	}
+      }
+      if (success) {
+	cvodes_params->dys = dys;
+	ys0v = cvodes_params->ys0v;
+	/*
+	  Initialize the sensitivy vectors.
+	*/
+	/*
+	  Fill the ys0v array, with dy[i]/dke[j]
+	*/
+	approximate_ys0(state,concs);
+	ys0vi = ys0v;
+	for (i=0;i<ns;i++) {
+	  ys0[i] = N_VMake_Serial(ny,ys0vi);
+	  ys0vi += ny; /* Caution Address artihmetic here. */
+	}
+	/*
+	  Activate the forward sensitivity computation.
+	*/
+	ism  = CV_STAGGERED;
+	/*
+	  Use the internal difference quotient sensitivity 
+	  right hand side routine.
+	*/
+	fs   = NULL;
+	flag = CVodeSensInit(cvode_mem,ns,ism,fs,ys0);
+	success = boltzmann_check_cvodesens_errors(flag,cvode_mem,state,
+						   "Init");
+      }
+      if (success) {
+	/*
+	  Set the plist array to be plist[i] = i; i=0;i<number_reactions;
+	*/
+	plist = cvodes_params->plist;
+	for (i=0;i<ns;i++) {
+	  plist[i] = i;
+	}
+	/*
+	  Set pbar[i] = abs(ke[i]).
+	*/
+	pbar = cvodes_params->pbar;
+	for (i=0;i<ns;i++) {
+	  pbar[i] = abs(ke[i]);
+	}
+	/*
+	  Set the P used by cvodes sensitivity analyses to be state->ke.
+	*/
+	p    = cvodes_params->p;
+	for (i=0;i<ns;i++) {
+	  p[i] = ke[i];
+	}
+	flag = CVodeSetSensParams(cvode_mem,p,pbar,plist);
+	success = boltzmann_check_cvodesens_errors(flag,cvode_mem,state,
+						   "SetSensParams");
+      }
+      if (success) {
+	/*
+	  Set the differenc quotient strategy, for now using the defaults.
+	*/
+	dqtype = CV_CENTERED;
+	dqromax = 0.0;
+	flag = CVodeSetSensDQMethod(cvode_mem,dqtype,dqromax);
+	success = boltzmann_check_cvodesens_errors(flag,cvode_mem,state,
+						   "SetSensDQMethod");
+      }
+      if (success) {
+	/*
+	  Set the error control strategy to exclude the parameters.
+	*/
+	errcons = 0;
+	flag = CVodeSetSensErrCon(cvode_mem,(booleantype)errcons);
+	success = boltzmann_check_cvodesens_errors(flag,cvode_mem,state,
+						   "SetSensErrCon");
+      }
+      if (success) {
+	/*
+	  Set the mximum number of nonliear solver iterations for sensitivity 
+	  variables per step to its default value.
+	*/
+	maxcors = 3;
+	flag = CVodeSetSensMaxNonlinIters(cvode_mem,maxcors);
+	success = boltzmann_check_cvodesens_errors(flag,cvode_mem,state,
+						   "SetSensMaxNonlinIters");
+      }
+      if (success) {
+	/*
+	  Set sensitiviy tolerance to be based on toleranfces supplied for
+	  states variables and scaling factors in pbar.
+	*/
+	flag = CVodeSensEEtolerances(cvode_mem);
+	success = boltzmann_check_cvodesens_errors(flag,cvode_mem,state,
+						   "SensEEtolerances");
+	
+      }
+    } /* end if (ode_solver_choice == 1) */
+  } /* end if (success) */
   return(success);
 }
 
