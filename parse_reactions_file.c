@@ -26,7 +26,6 @@ specific language governing permissions and limitations under the License.
 #include "count_ws.h"
 #include "count_nws.h"
 #include "upcase.h"
-#include "is_a_coef.h"
 #include "parse_side_line.h"
 
 #include "parse_reactions_file.h"
@@ -36,7 +35,7 @@ int parse_reactions_file(struct state_struct *state,
 
     This routine fills the unsorted_molecules and unsorted_cmpts
     molecule structures. 
-    It fills the reactions structure.
+    It fills the reactions structure, and builds the reactions matrix.
     It also sets the molecules_indices, coefficients,
     and text fields of the reactions matrix.
     It also fills the rxn_title_text, pathway_text, compartment_text
@@ -69,7 +68,7 @@ int parse_reactions_file(struct state_struct *state,
     Calls    : parse_rxn_file_keyword,
                count_ws,
 	       count_nws,
-	       is_a_coef,
+               parse_side_line
 	       upcase,
 	       fseek, feof, fgets, fprintf, fflush, sscanf (intrinsic)
   */
