@@ -2,7 +2,8 @@ CC      = gcc
 CLINKER = gcc
 AR = ar
 ARFLAGS = -crv
-OPT_FLAGS = -g -O2
+#OPT_FLAGS = -g -O2
+OPT_FLAGS = -g -O0
 #
 ### End User configurable options ###
 LIBS = libboltzmann.a -lm 
@@ -12,7 +13,7 @@ NO_OPT_FLAGS = -O0 -g
 CFLAGS = ${OPT_FLAGS}
 DCFLAGS = ${CFLAGS}
 TFLAGS  =
-LFLAGS = -g
+LFLAGS = -g -lm
 default: $(EXECS)
 all:  $(EXECS)
 include Makefile.timing
