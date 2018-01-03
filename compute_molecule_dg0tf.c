@@ -78,7 +78,11 @@ int compute_molecule_dg0tf(double ph,
   int check;
 
   int priority_level;
-  int count1,count2;
+  int found;
+
+  int count1;
+  int count2;
+
 
   /*
   int index;
@@ -94,12 +98,14 @@ int compute_molecule_dg0tf(double ph,
   count2 = 0;
   pseudoisomer = pseudoisomers;
   sum = 0;
+  found = 0;
   for(i=0;i<num_cpds;i++){
 
     json_cpd_name = (char*)&pseudoisomer_strings[pseudoisomer->json_cpd_name];
     cmp1 = strcmp(cpd_name,json_cpd_name); // compare reaction cpd names and json cpd names
 
     if(cmp1==0){
+      found = 1;
       nh = pseudoisomer->nh;
       z = pseudoisomer->z;
       deltag0 = pseudoisomer->dg0_f;
@@ -148,16 +154,22 @@ int compute_molecule_dg0tf(double ph,
     }
     pseudoisomer += 1; /* Caution address arithmetic */
   }
-  if (dgt1 != dgtmin) {
-    sum *= exp((dgt1 - dgtmin)*m_r_rt);
-  }
-  if (check) {
-    /*
-    *deltaG_tf = deltaG_temp[index]+m_rt*log(sum);
-    */
-    *deltag_tf = dgtmin + (m_rt * log(sum));
+  if (found) {
+    if (dgt1 != dgtmin) {
+      sum *= exp((dgt1 - dgtmin)*m_r_rt);
+    }
+    if (check) {
+      /*
+       *deltaG_tf = deltaG_temp[index]+m_rt*log(sum);
+       */
+      *deltag_tf = dgtmin + (m_rt * log(sum));
+    } else {
+      *deltag_tf = 0.0;
+    }
   } else {
-    *deltag_tf = 0.0;
+    success = 0;
+    fprintf(stderr,"compute_molecule_dg0tf, molecule %s not found in pseudoisomer list\n",cpd_name);
+    fflush(stderr);
   }
   /*
   min = 0;
