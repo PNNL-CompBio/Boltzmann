@@ -31,10 +31,15 @@ int is_a_coef(int sl, char *line) {
   int i;
   int result;
   int c;
+  int sp;
   result = 0;
   if (line) {
     result = 1;
-    for (i=0;i<sl;i++) {
+    sp = 0;
+    if (line[0] == '-') {
+      sp = 1;
+    }
+    for (i=sp;i<sl;i++) {
       c = (int)line[i];
       if ((c < 48) || (c > 57)) {
 	result = 0;

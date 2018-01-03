@@ -30,7 +30,7 @@ specific language governing permissions and limitations under the License.
 #include "find_colon.h"
 
 #include "parse_side_line.h"
-int parse_side_line(char *rctnts_p, 
+int parse_side_line(char *species_p, 
 		    int64_t *molecules_pos_p,
 		    int64_t *compartment_pos_p,
 		    int *molecules_p,
@@ -47,7 +47,7 @@ int parse_side_line(char *rctnts_p,
 
     Variable           TMF    Description
 
-    rctnts_p           C*I   Pointer to the string of reactants/products.
+    species_p           C*I   Pointer to the string of reactants/products.
     molecules_pos_p    L*B   Index into the raw_molecules_text and 
                              molecules_text buffers in the state struct.
 			     The contents of this pointer is advanced 
@@ -88,6 +88,7 @@ int parse_side_line(char *rctnts_p,
   struct compartment_struct *unsorted_cmpts;
   struct reactions_matrix_struct *rxns_matrix;
   double *recip_coeffs;
+  double dside;
   int64_t coeff;
   int64_t *molecules_indices;
   int64_t *coefficients;
@@ -128,8 +129,8 @@ int parse_side_line(char *rctnts_p,
   cmpts              = *cmpts_p;
   unsorted_molecules = (struct molecule_struct *)&state->unsorted_molecules[molecules];
   unsorted_cmpts     = (struct compartment_struct *)&state->unsorted_cmpts[cmpts];
-  rctnts             = rctnts_p;
-
+  rctnts             = species_p;
+  dside              = (double)side;
   rxns_matrix        = state->reactions_matrix;
   molecules_indices  = rxns_matrix->molecules_indices;
   coefficients       = rxns_matrix->coefficients;
@@ -151,7 +152,15 @@ int parse_side_line(char *rctnts_p,
       molecules_indices[molecules] = molecules;
       if (is_a_coef(sl,rctnts)) {
 	rctnts[sl] = '\0';
-	coeff = atoi(rctnts);
+	if (sl == 1) {
+	  if (rctnts[0] == '-') {
+	    coeff = -1.0;
+	  } else {
+	    coeff = atoi(rctnts);
+	  }
+	} else {
+	  coeff = atoi(rctnts);
+	}
 	if (side < 0) {
 	  coeff = - coeff;
 	} 
@@ -264,22 +273,33 @@ int parse_side_line(char *rctnts_p,
       rctnts += skip;
 
       if (pos < len) {
-	if (rctnts[0] != '+') {
-	  fprintf(stderr,"parse_reactions_file: Error, missing + "
-		  "between reactants, reactions file line was \n%s\n",
-		  rctnts_p);
-	  fflush(stderr);
-	  success = 0;
-	  break;
+	/*
+	  If connecting sign is a + skip over it.
+	*/
+	if (rctnts[0] == '+') {
+	  pos += 1;
+	  rctnts += 1; /* Caution address arithmetic.*/
+
+	  skip = count_ws(rctnts);
+	
+	  pos  += skip;
+	  rctnts += skip; /* Caution address arithmetic.*/
+	} else {
+	  /*
+	    If connecting sign is a minus, don't skip over it to 
+	    allow it to be parsed as a minus 1 stoichiometric coefficient
+	    next pass through the loop.
+	  */
+	  if (rctnts[0] != '-') {
+	    fprintf(stderr,"parse_reactions_file: Error, missing + or - "
+		    "between species, reactions file line was \n%s\n",
+		    species_p);
+	    fflush(stderr);
+	    success = 0;
+	    break;
+	  } 
 	}
 	
-	pos += 1;
-	rctnts += 1; /* Caution address arithmetic.*/
-
-	skip = count_ws(rctnts);
-	
-	pos  += skip;
-	rctnts += skip; /* Caution address arithmetic.*/
       }
     } /* end if (sl > 0)  - a reactant was found . */
   } /* end while (pos > len) */
