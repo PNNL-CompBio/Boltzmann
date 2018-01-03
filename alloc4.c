@@ -93,17 +93,6 @@ int alloc4(struct state_struct *state,
   if (success) {
     ask_for = ((int64_t)(nzr)) * ((int64_t)sizeof(int64_t));
     usage += ask_for;
-    molecules_matrix->rxn_indices = (int64_t*)calloc(one_l,ask_for);
-    if (molecules_matrix->rxn_indices == NULL) {
-      fprintf(stderr,"alloc4: Error unable to allocate %lld bytes for "
-	      "rxn_indices field in molecules_matrix\n",ask_for);
-      fflush(stderr);
-      success = 0;
-    } 
-  }
-  if (success) {
-    ask_for = ((int64_t)(nzr)) * ((int64_t)sizeof(int64_t));
-    usage += ask_for;
     molecules_matrix->coefficients = (int64_t*)calloc(one_l,ask_for);
     if (molecules_matrix->coefficients == NULL) {
       fprintf(stderr,"alloc4: Error unable to allocate %lld bytes for "
