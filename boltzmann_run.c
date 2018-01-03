@@ -63,9 +63,9 @@ int boltzmann_run(struct state_struct *state) {
   double scaled_likelihood;
   double *forward_rxn_likelihood;
   double *reverse_rxn_likelihood;
-  double *current_concentrations;
-  double *future_concentrations;
-  double *bndry_flux_concs;
+  double *current_counts;
+  double *future_counts;
+  double *bndry_flux_counts;
   double *activities;
   double *no_op_likelihood;
   int    *rxn_fire;
@@ -100,8 +100,8 @@ int boltzmann_run(struct state_struct *state) {
   int choice_view_step;
   int choice_view_freq;
 
-  int conc_view_step;
-  int conc_view_freq;
+  int count_view_step;
+  int count_view_freq;
 
   int fe_view_step;
   int fe_view_freq;
@@ -123,9 +123,9 @@ int boltzmann_run(struct state_struct *state) {
   n_record_steps    	 = (int)state->record_steps;
   number_reactions       = (int)state->number_reactions;
   unique_molecules     	 = (int)state->nunique_molecules;
-  current_concentrations = state->current_concentrations;
-  future_concentrations  = state->future_concentrations;
-  bndry_flux_concs  	 = state->bndry_flux_concs;
+  current_counts         = state->current_counts;
+  future_counts          = state->future_counts;
+  bndry_flux_counts  	 = state->bndry_flux_counts;
   activities        	 = state->activities;
   rxn_fire          	 = state->rxn_fire;
   no_op_likelihood  	 = state->no_op_likelihood;
@@ -137,12 +137,12 @@ int boltzmann_run(struct state_struct *state) {
   rxn_view_freq        	 = (int)state->rxn_view_freq;
   rxn_view_hist_length 	 = (int)state->rxn_view_hist_length;
   lklhd_view_freq        = (int)state->lklhd_view_freq;
-  conc_view_freq         = (int)state->conc_view_freq;
+  count_view_freq        = (int)state->count_view_freq;
   fe_view_freq           = (int)state->fe_view_freq;
   rxn_view_pos         	 = 0;
   choice_view_freq       = lklhd_view_freq;
   rxn_view_step        	 = 1;
-  conc_view_step         = 1;
+  count_view_step         = 1;
   lklhd_view_step 	 = 1;
   choice_view_step       = 1;
   lfp                    = state->lfp;
@@ -175,7 +175,7 @@ int boltzmann_run(struct state_struct *state) {
       likelihood ratio. A second step called the metropolis method is 
       employed to allow reactions that use the last reactant molecules or
       produce the first product molecules to fire.
-      This call call also updates the future_concentrations vector.
+      This call call also updates the future_counts vector.
     */
     rxn_choice = choose_rxn(state,&r_sum_likelihood);
     if (rxn_choice < 0) break;
@@ -202,11 +202,11 @@ int boltzmann_run(struct state_struct *state) {
       }
     }
     /*
-      Copy the future concentrations, resulting from the reaction firing
-      to the current concentrations.
+      Copy the future counts, resulting from the reaction firing
+      to the current counts.
     */
     for (j=0;j<unique_molecules;j++) {
-      current_concentrations[j] = future_concentrations[j];
+      current_counts[j] = future_counts[j];
     }
     /*
       Doug thinks we can remove these calls.
@@ -240,16 +240,16 @@ int boltzmann_run(struct state_struct *state) {
       Initialize the boundary fluxes to 0.
     */
     for (i=0;i<unique_molecules;i++) {
-      bndry_flux_concs[i] = 0.0;
+      bndry_flux_counts[i] = 0.0;
     }
     rxn_view_step    = 1;
-    conc_view_step   = 1;
+    count_view_step   = 1;
     lklhd_view_step  = 1;
     fe_view_step     = 1;
     choice_view_step = 1;
     for (i=0;i<n_record_steps;i++) {
       /*
-	Choose a reaction setting the future_concentrations field of
+	Choose a reaction setting the future_counts field of
 	the state structure and counting the number of times this
 	reaction in this direction has fired.
       */
@@ -285,23 +285,23 @@ int boltzmann_run(struct state_struct *state) {
 	}
       }
       /*
-	Copy the future concentrations, the result of the reaction firing
-	to the current concentrations.
+	Copy the future counts, the result of the reaction firing
+	to the current counts.
       */
       for (j=0;j<unique_molecules;j++) {
-	current_concentrations[j] = future_concentrations[j];
+	current_counts[j] = future_counts[j];
       }
       /*
 	Compute the reaction likelihoods and their logarithms
 	in the forward_rxn_likelihood, reverse_rxn_likelihood 
 	forward_rxn_log_likelihood_ratio and 
 	reverse_rxn_log_likelihood_ratio fields
-	based on the current_concentrations field of state.
+	based on the current_counts field of state.
       */
       success = update_rxn_log_likelihoods(state);
       /*
 	Compute the dg_forward and entropy values and free_energy field of
-	the state structure at the current concentations, and 
+	the state structure at the current counts, and 
 	rxn_likelihoods.
       */
       success = compute_delta_g_forward_entropy_free_energy(state,
@@ -310,12 +310,12 @@ int boltzmann_run(struct state_struct *state) {
 							    i);
       if (print_output) {
 	/* 
-	  print the concentrations. 
+	  print the counts. 
 	*/
-	conc_view_step = conc_view_step - 1;
-	if ((conc_view_step <= 0) || (i == (n_record_steps-1))) {
+	count_view_step = count_view_step - 1;
+	if ((count_view_step <= 0) || (i == (n_record_steps-1))) {
 	  print_counts(state,i);
-	  conc_view_step = conc_view_freq;
+	  count_view_step = count_view_freq;
 	}
 	/* 
 	  print the entropy, dg_forward and the reaction likelihoods, 
