@@ -61,6 +61,8 @@ int boltzmann_run(struct state_struct *state) {
   double r_sum_likelihood;
   double entropy;
   double scaled_likelihood;
+  double *forward_rxn_likelihood;
+  double *reverse_rxn_likelihood;
   double *current_concentrations;
   double *future_concentrations;
   double *bndry_flux_concs;
@@ -116,6 +118,8 @@ int boltzmann_run(struct state_struct *state) {
   activities        	 = state->activities;
   rxn_fire          	 = state->rxn_fire;
   no_op_likelihood  	 = state->no_op_likelihood;
+  forward_rxn_likelihood = state->forward_rxn_likelihood;
+  reverse_rxn_likelihood = state->reverse_rxn_likelihood;
   print_output           = (int)state->print_output;
   number_reactions_t2    = number_reactions << 1;
   number_reactions_t2_p1 = number_reactions_t2 + 1;
@@ -127,6 +131,7 @@ int boltzmann_run(struct state_struct *state) {
   rxn_view_step        	 = 1;
   conc_view_step         = 1;
   lklhd_view_step 	 = 1;
+  lfp                    = state->lfp;
   /*
     Initialize the free_energy to be the delta_g0.
   */
@@ -136,6 +141,11 @@ int boltzmann_run(struct state_struct *state) {
     for (i=0;i<state->number_reactions;i++) {
       free_energy[i] = dg0s[i];
     }
+  }
+  if (print_output && lfp) {
+    fprintf(lfp,
+	    "\nWarmup_step rxn_choice forward_likelihood "
+	    "reverse_likelihood\n");
   }
   for (i=0;i<n_warmup_steps;i++) {
     /*
@@ -154,6 +164,11 @@ int boltzmann_run(struct state_struct *state) {
     */
     rxn_choice = choose_rxn(state,&r_sum_likelihood);
     if (rxn_choice < 0) break;
+    if (print_output && lfp) {
+      fprintf(lfp,"%d\t%d\t%le\t%le\n",i,rxn_choice,forward_rxn_likelihood[i],
+	      reverse_rxn_likelihood[i]);
+      fflush(lfp);
+    }
     /*
       Copy the future concentrations, resulting from the reaction firing
       to the current concentrations.
@@ -180,6 +195,11 @@ int boltzmann_run(struct state_struct *state) {
       Set the rxn_fire counts to 0.
     */
     if (print_output) {
+      if (lfp) {
+	fprintf(lfp,
+	    "\nRecord_step rxn_choice forward_likelihood "
+	    "reverse_likelihood\n");
+      }
       for (i=0;i<number_reactions_t2;i++) {
 	rxn_fire[i] = 0;
       }
@@ -199,6 +219,11 @@ int boltzmann_run(struct state_struct *state) {
       rxn_choice = choose_rxn(state,&r_sum_likelihood);
       if (rxn_choice < 0) break;
       if (print_output) {
+	if (lfp) {
+	  fprintf(lfp,"%d\t%d\t%le\t%le\n",i,rxn_choice,forward_rxn_likelihood[i],
+		  reverse_rxn_likelihood[i]);
+	  fflush(lfp);
+	}
 	if (rxn_choice <= number_reactions_t2) {
 	  rxn_fire[rxn_choice] += 1;
 	}
