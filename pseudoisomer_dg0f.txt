@@ -951,8 +951,8 @@ D-Xylulose 5-phosphate#C00231#2#Group Contribution#8#-3#-1535.28157118014#
 D-Xylulose 5-phosphate#C00231#2#Group Contribution#9#-2#-1600.48910218743#ChemAxon
 D-Xylulose 5-phosphate#C00231#2#Group Contribution#10#-1#-1635.9168158843#ChemAxon
 D-Xylulose 5-phosphate#C00231#2#Group Contribution#11#0#-1642.64865198129#ChemAxon
-Succinate semialdehyde#C00232#2#Group Contribution#5#-1#-457.257482006413#
-Succinate semialdehyde#C00232#2#Group Contribution#6#0#-480.818908345879#ChemAxon
+Succinate_semialdehyde#C00232#2#Group Contribution#5#-1#-457.257482006413#
+Succinate_semialdehyde#C00232#2#Group Contribution#6#0#-480.818908345879#ChemAxon
 4-Methyl-2-oxopentanoate#C00233#1#Alberty (2006)#9#-1#-445.14#Alberty 2006
 4-Methyl-2-oxopentanoate#C00233#2#Group Contribution#9#-1#-454.702973214338#
 4-Methyl-2-oxopentanoate#C00233#2#Group Contribution#10#0#-474.84143204686#ChemAxon
@@ -42337,10 +42337,6 @@ H+-TL#C00080#1#Alberty (2006)#1#1#0#Alberty 2006
 H+-TL#C00080#2#Alberty (2006)#1#1#0#
 HV680-PLASTOQUINONE-9-TM#XXXXXX#1#Sun#0#0#175.81#negative of absorption oflight at wavelength 680 nm by plastoquinone
 HV700-REDUCED_PLASTOCYANIN#XXXXXX#1#Sun#0#0#171.13#negative of Absorption of light at wavelength 700 nm by plasticyanin
-A#xxxxxx#1#Bill#0#0#0.0#Hypothetical comnpound A
-B#xxxxxx#1#Bill#0#0#-3.9895#Hypothetical comnpound B
-C#xxxxxx#1#Bill#0#0#-7.9790#Hypothetical comnpound C
-D#xxxxxx#1#Bill#0#0#-11.9685#Hypothetical comnpound D
 redox2#xxx#1#Alberty (2006)#4#-2#-690.44#
 redox2#xxx#1#Alberty (2006)#5#-1#-722.62#
 redox2#xxx#1#Alberty (2006)#6#0#-746.64#
