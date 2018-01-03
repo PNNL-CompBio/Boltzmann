@@ -54,7 +54,7 @@ int init_base_reactants(struct state_struct *state) {
   if (base_reactant_indicator == NULL) {
     success = 0;
     if (lfp) {
-      fprintf(lfp,"ode23tb: Error could not allocate %ld "
+      fprintf(lfp,"ode23tb: Error could not allocate %lld "
 	      "bytes for int scratch space.\n",ask_for);
       fflush(lfp);
     }
