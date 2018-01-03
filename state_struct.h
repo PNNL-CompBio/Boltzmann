@@ -111,6 +111,7 @@ struct state_struct {
   double  x_coord;
   double  y_coord;
   double  z_coord;
+  int64_t agent_data_length;
 
   int64_t number_reactions;     	
   int64_t number_molecules;            
@@ -233,8 +234,8 @@ struct state_struct {
   double  *bndry_flux_counts;       /* len = unique_molecules */
   double  *net_lklhd_bndry_flux;    /* len = unique_molecules */
   double  *net_likelihood;          /* len = number_reactions */
-  struct  vgrng_state_struct *vgrng_state; /* len = 14 */
-  struct  vgrng_state_struct *vgrng2_state;/* len = 14 */ 
+  struct  vgrng_state_struct *vgrng_state; /* len = 16 */
+  struct  vgrng_state_struct *vgrng2_state;/* len = 16 */ 
   /* 
     (2 + (3*unique_molecules)+ number_reactions) * sizeof(double) 
     + 2 * sizeof(vgrng_state_struct)
