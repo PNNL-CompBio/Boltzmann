@@ -36,10 +36,7 @@ int size_rxns_list(struct boot_state_struct *boot_state) {
   char    *fgp;
 
   int success;
-  int rxns;
-
   int num_reaction_files;
-  int padi;
 
   FILE *rxn_fp;
   FILE *lfp;
