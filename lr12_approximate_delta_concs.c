@@ -1,4 +1,6 @@
 #include "boltzmann_structs.h"
+#include "boltzmann_cvodes_headers.h"
+#include "cvodes_params_struct.h"
 #include "get_counts.h"
 #include "update_regulations.h"
 #include "stable_add.h"
@@ -40,6 +42,7 @@ int lr12_approximate_delta_concs(struct state_struct *state,
     choice                      IOI   Not used by this routine.
 
   */
+  struct  cvodes_params_struct *cvodes_params;
   struct  molecule_struct *molecules;
   struct  molecule_struct *molecule;
   /*
@@ -102,6 +105,9 @@ int lr12_approximate_delta_concs(struct state_struct *state,
   int ii;
   int jj;
 
+  int compute_sensitivities;
+  int ode_solver_choice;
+
   int irfc;
   int padi;
 
@@ -143,6 +149,16 @@ int lr12_approximate_delta_concs(struct state_struct *state,
   counts           = state->ode_counts;
   conc_to_count    = state->conc_to_count;
   use_regulation   = state->use_regulation;
+  ode_solver_choice = state->ode_solver_choice;
+  compute_sensitivities = state->compute_sensitivities;
+  if ((ode_solver_choice == 1) && compute_sensitivities) {
+    cvodes_params = state->cvodes_params;
+    ke = cvodes_params->p;
+    rke = cvodes_params->rp;
+    for (i=0;i<num_rxns;i++) {
+      rke[i] = 1.0/ke[i];
+    }
+  }
   /*
   recip_avogadro   = state->recip_avogadro;
   */
