@@ -77,7 +77,6 @@ int num_jac_col(struct state_struct *state,
   double recip_delj;
   double yj;
   double delj;
-  double y_counts_savej;
   double ydelj;
   double conc_scalej;
   double absdfdy_coljk;
