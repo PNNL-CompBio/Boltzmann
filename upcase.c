@@ -24,11 +24,11 @@ specific language governing permissions and limitations under the License.
 #include "boltzmann_structs.h"
 #include "upcase.h"
 
-void upcase (int sl, char *in_string, char *out_string) {
+void upcase (int sl, char *string)  {
   /*
     Convert lower case to upper case in a string that may
     have non-alphabetic characters included.
-    Called by: parse_reactions_file, parse_pseudoisomer_dg0f_file
+    Called by: read_params, parse_rnxs_file_keyword, parse_pseudoisomer_dg0f_file
     Leaf routine.
   */
   /*
@@ -99,11 +99,11 @@ void upcase (int sl, char *in_string, char *out_string) {
   */
   istart = 0;
   for (i=istart;i<sl;i++) {
-    ic = (int)in_string[i];
+    ic = (int)string[i];
     if ((ic > 96) && (ic < 123)) {
       ic = ic - 32;
     }
-    out_string[i] = (char)ic;
+    string[i] = (char)ic;
   }
 }
 
