@@ -78,10 +78,10 @@ int read_initial_concentrations(struct state_struct *state) {
   
   FILE *conc_fp;
   nu_molecules       = state->unique_molecules;
-  molecules_buff_len = state->rxn_buff_len;
-  molecules_buffer   = state->rxn_buffer;
-  molecule_name      = state->molecule_name;
-  compartment_name   = state->compartment_name;
+  molecules_buff_len = state->max_param_line_len;
+  molecules_buffer   = state->param_buffer;
+  molecule_name      = molecules_buffer + state->max_param_line_len;
+  compartment_name   = molecule_name + (state->max_param_line_len>>1);
   sorted_molecules   = state->sorted_molecules;
   concs              = state->current_concentrations;
   bndry_flux_concs   = (double *)state->bndry_flux_concs;
