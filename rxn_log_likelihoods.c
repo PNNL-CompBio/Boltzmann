@@ -33,7 +33,7 @@ int rxn_log_likelihoods(double *counts,
   /*
     Compute the logs of the equilibrium constants and reaction quotients Q_p 
     ( = the ratio of reactant counts to product counts with 
-        any count where the stoichiometric coefficient is greater 
+       any count where the stoichiometric coefficient is greater 
 	than 1 is raised to that power).
     In the process we may want the rxn_likelihood as well though frequently as
     when called from update_rxn_log_likelihoods we only want the logs, so 
