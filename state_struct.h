@@ -100,8 +100,8 @@ struct state_struct {
   double  *reverse_rxn_likelihood;
   double  *rxn_likelihood_ps;
   double  *ke;
-  double  *current_rxn_log_likelihood_ratio;
-  double  *future_rxn_log_likelihood_ratio;
+  double  *forward_rxn_log_likelihood_ratio;
+  double  *reverse_rxn_log_likelihood_ratio;
   double  *activities;
   double  *activities_save;
   double  *l_thermo;
