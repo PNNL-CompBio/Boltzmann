@@ -80,7 +80,7 @@ int size_rxns_file(struct state_struct *state) {
   FILE *rxn_fp;
   FILE *lfp;
   success = 1;
-  rxn_buff_len = state->rxn_buff_len;
+  rxn_buff_len = state->max_param_line_len << 1;
   lfp          = state->lfp;
   rxn_fp       = fopen(state->reaction_file,"r");
   if (rxn_fp == NULL) {
@@ -91,7 +91,7 @@ int size_rxns_file(struct state_struct *state) {
   }
   if (success) {
     state->rxn_fp = rxn_fp;
-    rxn_buffer = state->rxn_buffer;
+    rxn_buffer = state->param_buffer;
     init_rxn_file_keywords(state);
     keywords   = state->rxn_file_keywords;
     keyword_lens = state->rxn_file_keyword_lengths;
