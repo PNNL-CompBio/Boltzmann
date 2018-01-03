@@ -30,7 +30,7 @@ int alloc0_a(struct state_struct *state) {
     Allocate auxilliary data fields (fields use in setup and printing,
     but not needed for boltzmann_run) that are allocated in alloc0
 
-    Called by: alloc_0,
+    Called by: alloc0,
     Calls:     boltzmann_set_filename_ptrs
                fprintf,fflush
     Sets: The following fields in state:
@@ -88,7 +88,7 @@ int alloc0_a(struct state_struct *state) {
   if (state->params_file == NULL) {
     success = 0;
     fprintf(stderr,
-	    "alloc0_a: unable to allocate %lld bytes for state file names.\n",
+	    "alloc0_a: unable to allocate %ld bytes for state file names.\n",
 	    ask_for);
     fflush(stderr);
   }
@@ -101,7 +101,7 @@ int alloc0_a(struct state_struct *state) {
     if (solvent_string) {
       state->solvent_string = solvent_string;
     } else {
-      fprintf(stderr,"alloc0_a: Error unable to allocate %lld bytes of space "
+      fprintf(stderr,"alloc0_a: Error unable to allocate %ld bytes of space "
 	      "for solvent_string\n",ask_for);
       fflush(stderr);
       success = 0;
