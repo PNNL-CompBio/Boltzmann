@@ -310,17 +310,20 @@ int boltzmann_run_sim(struct state_struct *state) {
 	    fprintf(state->free_energy_fp," %le",
 		    -c_loglr[j]);
 	  }
+	  fprintf(state->free_energy_fp,"\n");
 	}
 	if (state->free_energy_format == 2) {
 	  for (j=0;j<num_rxns;j++) {
 	    fe = free_energy[j]*cal_gm_per_joule;
 	    fprintf(state->free_energy_fp," %le",fe);
 	  }
+	  fprintf(state->free_energy_fp,"\n");
 	}
 	if (state->free_energy_format == 3) {
 	  for (j=0;j<num_rxns;j++) {
 	    fprintf(state->free_energy_fp," %le",free_energy[j]);
 	  }
+	  fprintf(state->free_energy_fp,"\n");
 	}
       }
     } /* end for(i...) */
