@@ -36,7 +36,7 @@ int compute_delta_g_forward_entropy_free_energy(struct state_struct *state,
     Arguments         TMF          Description
     state             G*B          Pointer to the global state structure.
                                    Fields used as input only are m_rt = -RT,
-				   current_concentrations, activities,
+				   activities,
 				   forward_rxn_likelihood,
 				   forward_rxn_log_likelihood_ratio,
 				   number_reactions.
@@ -58,7 +58,9 @@ int compute_delta_g_forward_entropy_free_energy(struct state_struct *state,
   */
   double *forward_rxn_likelihood;
   double *forward_rxn_log_likelihood;
-  double *current_concentrations;
+  /*
+  double *current_counts;
+  */
   double *free_energy;
   double *activities;
   double dg_forward;
@@ -76,7 +78,9 @@ int compute_delta_g_forward_entropy_free_energy(struct state_struct *state,
   success                    = 1;
   m_rt                       = state->m_rt;
   number_reactions           = (int)state->number_reactions;
-  current_concentrations     = state->current_concentrations;
+  /*
+  current_counts             = state->current_counts;
+  */
   activities        	     = state->activities;
   forward_rxn_log_likelihood = state->forward_rxn_log_likelihood_ratio;
   forward_rxn_likelihood     = state->forward_rxn_likelihood;
@@ -89,7 +93,7 @@ int compute_delta_g_forward_entropy_free_energy(struct state_struct *state,
     store the likelihoods in forward_rxn_likelihod 
     and their logs in forward_rxn_log_likelihood_ratio field
     of state. Now done before this call in boltzmann_run.
-    success = rxn_log_likelihoods(current_concentrations,
+    success = rxn_log_likelihoods(current_counts,
                                   forward_rxn_likelihood,
 				  forward_rxn_log_likelihood,
 				  state,
