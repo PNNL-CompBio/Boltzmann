@@ -39,14 +39,18 @@ void print_rxn_likelihoods_header(struct state_struct *state) {
     Calls    : fprintf,fflush.
   */
   struct rxn_struct *reactions;
+  char *rxn_title_text;
+  char *title;
   int i;
   int padi;
+  rxn_title_text = state->rxn_title_text;
   if (state->rxn_lklhd_fp) {
     fprintf(state->rxn_lklhd_fp,"iter\tentropy\tdg_forward\tforward_rxn_likelihood\treverse_rxn_likelihood\n");
     fprintf(state->rxn_lklhd_fp,"iter\tentropy\tdg_forward");
     reactions                   = state->reactions;
     for (i=0;i<state->number_reactions;i++) {
-      fprintf(state->rxn_lklhd_fp,"\tf_%s\tr_%s",reactions->title,reactions->title);
+      title = (char*)&rxn_title_text[reactions->title];
+      fprintf(state->rxn_lklhd_fp,"\tf_%s\tr_%s",title,title);
       reactions += 1; /* Caution address arithmetic */
     }
     fprintf(state->rxn_lklhd_fp,"\n");
