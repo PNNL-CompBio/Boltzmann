@@ -105,6 +105,7 @@ struct state_struct {
   double  *rxn_view_likelihoods;
   double  *rev_rxn_view_likelihoods;
   int  *cmpts_map;
+  int  *rxn_fire;
 
   int  number_reactions;
   /* free energy_format, 0 for none, 1 for negative log likelihoods,
