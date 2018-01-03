@@ -239,7 +239,7 @@ int lr10_approximate_delta_concs(struct state_struct *state,
 	for (j=molecules_ptrs[i];j<molecules_ptrs[i+1];j++) {
 	  rxn = rxn_indices[j];
 	  if (coefficients[j] != 0) {
-	    fluxi += (rfc[rxn]/((double)coefficients[j]));
+	    fluxi += (rfc[rxn]*((double)coefficients[j]));
 	  }
 	} /* end for(j...) */
 	flux[i] = flux_scaling * fluxi;
