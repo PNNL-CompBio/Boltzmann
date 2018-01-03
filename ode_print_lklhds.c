@@ -34,7 +34,7 @@ void ode_print_lklhds(struct state_struct *state,
   nrxns        = state->number_reactions;
   ode_lklhd_fp = state->ode_lklhd_fp;
   if (ode_lklhd_fp) {
-    fprintf(ode_lklhd_fp,"%le",time);
+    fprintf(ode_lklhd_fp,"%le",t);
     for(j=0;j<nrxns;j++) {
       fprintf(ode_lklhd_fp,"\t%le\t%le",forward_rxn_likelihoods[j],
 	      reverse_rxn_likelihoods[j]);
