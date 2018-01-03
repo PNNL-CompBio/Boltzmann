@@ -19,7 +19,7 @@
 #include "ode23tb_max_abs_ratio.h"
 #include "ode23tb_nonneg_err.h"
 #include "ode23tb_enforce_nonneg.h"
-#include "ode23tb_test_steady_state.h"
+#include "ode_test_steady_state.h"
 #include "boltzmann_monitor_ode.h"
 #include "boltzmann_size_jacobian.h"
 #include "approximate_jacobian.h"
@@ -248,13 +248,10 @@ int ode23tb (struct state_struct *state, double *concs) {
   int nnreset_znew;
 
   int print_output;
-  int ierr;
+  int nnz;
   
   int normcontrol;
   int nonnegative;
-
-  int number_molecules;
-  int nnz;
 
   int num_ints;
   int ode_jacobian_choice;
