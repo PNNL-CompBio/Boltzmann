@@ -31,7 +31,6 @@
      unsorted_compartments.
      future_concentrations,
      rxn_fire,
-     cmpts_map,
      no_op_likelihood,
      forward_rxn_likelihood,
      reverse_rxn_likelihood,
@@ -64,7 +63,7 @@
 
     10 + total_length_in_8byte_words_of_partition_1_size_params_and_fp_constants    +     total_length_in_8byte_words_of_partition_2_2way_data
     +     total_length_in_8byte_words_of_partition_3_input_data
-    total_length_in_8byte_words_of_partition_4_work_space.
+    total_length_in_8byte_words_of_partition_4_workspace.
 
 
     Partition 1 is a little different in that all the quantities are
@@ -109,8 +108,8 @@ struct state_struct {
   int64_t incoming_data_offset; 	
   int64_t auxiliary_data_length;
   int64_t auxiliary_data_offset;
-  int64_t work_space_length;    	
-  int64_t work_space_offset;    	
+  int64_t workspace_length;    	
+  int64_t workspace_offset;    	
   int64_t num_scalars;          	
   int64_t number_reactions;     	
   int64_t number_molecules;            
@@ -130,7 +129,7 @@ struct state_struct {
   int64_t num_rxn_file_keywords;  
   int64_t free_energy_format;     
   int64_t rxn_view_freq;          
-  int64_t rxn_view_hist_lngth;    
+  int64_t rxn_view_hist_length;    
   int64_t lklhd_view_freq;        
   int64_t conc_view_freq;         
   int64_t reaction_file_length;   
