@@ -30,6 +30,7 @@ specific language governing permissions and limitations under the License.
 #include "form_molecules_matrix.h"
 #include "alloc7.h"
 #include "update_rxn_log_likelihoods.h"
+#include "ode_print_concs_header.h"
 /*
 #include "fill_flux_pieces.h"
 */
@@ -139,7 +140,7 @@ int deq_run(struct state_struct *state) {
   int cindex;
 
   int normcontrol;
-  int padi;
+  int print_ode_concs;
 
   FILE *lfp;
   success = 1;
@@ -172,6 +173,7 @@ int deq_run(struct state_struct *state) {
   fe_view_freq           = state->fe_view_freq;
   molecules              = state->sorted_molecules;
   compartments           = state->sorted_cmpts;
+  print_ode_concs        = state->print_ode_concs;
   rxn_view_pos         	 = zero_l;
   choice_view_freq       = lklhd_view_freq;
   rxn_view_step        	 = one_l;
@@ -246,7 +248,11 @@ int deq_run(struct state_struct *state) {
   htry = 0.0;
   nonnegative = 1.0;
   if (success) {
-    success = ode23tb(state,counts,htry,nonnegative,normcontrol);
+    if (print_ode_concs) {
+      ode_print_concs_header(state);
+    }
+    success = ode23tb(state,counts,htry,nonnegative,normcontrol,
+		      print_ode_concs);
   }
   /*
   j = 1;
