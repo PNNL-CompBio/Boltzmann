@@ -25,12 +25,12 @@ specific language governing permissions and limitations under the License.
 
 #include "alloc3.h"
 
-int alloc3(struct state_struct *state) {
+int alloc3(struct state_struct *state, int setup) {
   /*
     Allocate space for the following vector fields for reading in
     information about species concentrations, experimental values
     and user values.
-    compartment_pointers   	     (nunique_compartments + 1) 
+    compartment_counts            (nunique_compartments + 1) (Only if setup > 0)
     current_counts         	     (nunique_molecules)
     bndry_flux_counts      	     (nunique_molecules)
     net_lklhd_bndry_flux             (nunique_molecules)
@@ -74,18 +74,21 @@ int alloc3(struct state_struct *state) {
   max_molecule_len        = (int)state->max_molecule_len + 1;
   max_compartment_len     = (int)state->max_compartment_len + 1;
   /*
-    Allocate space for compartment pointers in the sorted molecules list -
+    If we are in setup mode, (setup == 1).
+    Allocate space for compartment pointers in the sorted molecules list:
     length is unique_compartments + 1;
   */
-  if (success) {
-    ask_for = ((int64_t)state->nunique_compartments + one_l) * 
-      ((int64_t)sizeof(int64_t));
-    state->compartment_ptrs = (int64_t*)calloc(one_l,ask_for);
-    if (state->compartment_ptrs == NULL) {
-      fprintf(stderr,"alloc3: Error unable to allocate %lld bytes for "
-	      "compartment_ptrs field\n",ask_for);
-      fflush(stderr);
-      success = 0;
+  if (setup > 0) {
+    if (success) {
+      ask_for = ((int64_t)state->nunique_compartments + one_l) * 
+	((int64_t)sizeof(int64_t));
+      state->compartment_ptrs = (int64_t*)calloc(one_l,ask_for);
+      if (state->compartment_ptrs == NULL) {
+	fprintf(stderr,"alloc3: Error unable to allocate %lld bytes for "
+		"compartment_ptrs field\n",ask_for);
+	fflush(stderr);
+	success = 0;
+      }
     }
   }
 
