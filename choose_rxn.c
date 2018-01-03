@@ -33,6 +33,7 @@ specific language governing permissions and limitations under the License.
 #include "boltzmann_structs.h"
 #include "vgrng.h"
 #include "candidate_rxn.h"
+#include "bndry_flux_update.h"
 #include "rxn_likelihood.h"
 
 #include "choose_rxn.h"
@@ -135,16 +136,20 @@ int choose_rxn(struct state_struct *state) {
 	dchoice = ((double)choice)*scaling;
 	if (dchoice < likelihood*activities[i]) {
 	  accept = 1;
+	  /*
+	    Update the boundary fluxes.
+	  */
+	  success = bndry_flux_update(i,rxn_direction,state);
 	} else {
 	  /*
 	    Record existing activity levels for restoration later.
-	  */
 	  if (not_saved) {
 	    for (k=0;k<num_rxns;k++) {
 	      activities_save[k] = activities[k];
 	    }
 	    not_saved = 0;
 	  }
+	  */
 	  /*
 	    Prevent this reaction from happening again.
 	  */
@@ -159,10 +164,15 @@ int choose_rxn(struct state_struct *state) {
 	  new likelihood was > 1 so accept. 
 	*/
 	accept = 1;
+	/*
+	  Update the boundary fluxes.
+	*/
+	success = bndry_flux_update(i,rxn_direction,state);
       }
     } else {
       /*
 	Reaction selected was a No-op
+	Boundary fluxes did not change.
       */
       accept = 1;
     }
@@ -170,11 +180,13 @@ int choose_rxn(struct state_struct *state) {
   /*
     Recover the original activities if necessary.
   */
+  /*
   if (not_saved == 0) {
     for (k=0;k<num_rxns;k++) {
       activities[k] = activities_save[k];
     }
   }
+  */
   if (accept == 0) {
     /*
       No reactions were accepted. Print error message.
