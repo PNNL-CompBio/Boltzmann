@@ -179,6 +179,7 @@ struct state_struct {
   int64_t cvodes_jtimes_choice;
   int64_t cvodes_prec_choice;
   int64_t cvodes_params_size;
+  int64_t ode23tb_params_size;
   int64_t ode_jacobian_choice;
   int64_t cvodes_prec_fill;
   int64_t ode_stop_norm; /* 0 for infinity(max), 1 for 1(sum abs), 2 for 2 */
@@ -249,6 +250,11 @@ struct state_struct {
     ode stop_style
   */
   double ode_stop_thresh; 
+  /*
+    Numerical Jacobian threshold for ode_num_jac thresh vector initialization.
+  */
+  double nj_thresh;
+
 
   int64_t *workspace_base;
 
@@ -260,6 +266,7 @@ struct state_struct {
   struct  vgrng_state_struct *vgrng_state; /* len = 16 */
   struct  vgrng_state_struct *vgrng2_state;/* len = 16 */ 
   struct  cvodes_params_struct *cvodes_params; /* len = 168, round up to 256 */
+  struct  ode23tb_params_struct *ode23tb_params; /* len = 96 round up to 128 */
   /* 
     (2 + (3*unique_molecules)+ number_reactions) * sizeof(double) 
     + 2 * sizeof(vgrng_state_struct)
