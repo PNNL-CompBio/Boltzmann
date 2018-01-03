@@ -1,4 +1,6 @@
 #include "boltzmann_structs.h"
+#include "boltzmann_cvodes_headers.h"
+#include "cvodes_params_struct.h"
 #include "dcrsng_mag_sort.h"
 #include "isort.h"
 #include "iluvf.h"
