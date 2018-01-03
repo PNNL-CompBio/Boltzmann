@@ -65,15 +65,13 @@ int compute_ke(struct state_struct *state) {
   m_r_rt = state->m_r_rt;
   reaction = reactions;
   for (i=0;i<nrxns;i++) {
-    if (reaction->unit_i == 0) {
+    if (reaction->unit_i == 1) {
       dg0 = reaction->delta_g0;
     } else {
       /*
-	Delta_g0 units was in KJoules, convert to Kcals.
-	Dougs question is here doe we want * or divide, I think
-	we want * as written.
+	Delta_g0 units was in Kcals, convert to KJoules.
       */
-      dg0 = reaction->delta_g0 * cals_per_joule;
+      dg0 = reaction->delta_g0 / cals_per_joule;
     }
     dg0s[i] = dg0;
     ke[i] = exp(dg0 * m_r_rt);
