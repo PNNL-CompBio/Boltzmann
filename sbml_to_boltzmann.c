@@ -106,14 +106,12 @@ int sbml_to_boltzmann(struct state_struct *state) {
     	       parse_sbml.h
   */
   struct sbml2bo_struct *sbml_state;
-  struct compartment_struct *unsorted_compartments;
-  struct compartment_struct *sorted_compartments;
   int64_t num_modelseed_ids;
   int64_t num_kegg_ids;
   int64_t length_ms2js_strings;
   int64_t length_kg2js_strings;
   int success;
-  int max_compartment_len;
+  int padi;
   FILE *lfp;
   FILE *extra_fp;
   success = size_ms2js_file(state,&num_modelseed_ids,
