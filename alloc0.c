@@ -88,6 +88,7 @@ int alloc0(struct state_struct **statep, int setup) {
   struct state_struct bltzs;
   struct state_struct *state;
   struct vgrng_state_struct vss;
+  struct cvodes_params_struct cps;
   int64_t *rxn_file_keyword_lengths;
   char    *rxn_keyword_buff;
   char    **rxn_keywords;
@@ -217,7 +218,7 @@ int alloc0(struct state_struct **statep, int setup) {
       usage += ask_for;
       rxn_file_keyword_lengths = (int64_t *)calloc(one_l,ask_for);
       if (rxn_file_keyword_lengths) {
-	state->rxn_file_keyword_lengths = rxn_file_keyword_lengths;
+	state->rxn_file_keyword_lengths = (int64_t *)rxn_file_keyword_lengths;
       } else {
 	fprintf(stderr,
 		"alloc0: Error, unable to allocate %ld bytes for "
@@ -225,6 +226,22 @@ int alloc0(struct state_struct **statep, int setup) {
 		ask_for);
 	fflush(stderr);
 	success = 0;
+      }
+    }
+    /*
+      Allocate space for the cvodes params struct.
+    */
+    if (success) {
+      ask_for = (int64_t)sizeof(cps);
+      usage+= ask_for;
+      state->cvodes_params = (struct cvodes_params_struct *)calloc(one_l,ask_for);
+      if (state->cvodes_params == NULL) {
+	fprintf(stderr,"alloc0: Error, unalbe to allocate %ld bytes for "
+		"cvodes_params\n",ask_for);
+	fflush(stderr);
+	success = 0;
+      } else {
+	state->cvodes_params_size = ask_for;
       }
     }
   } /* end if setup */
