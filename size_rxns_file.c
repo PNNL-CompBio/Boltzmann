@@ -27,6 +27,7 @@ specific language governing permissions and limitations under the License.
 #include "parse_rxn_file_keyword.h"
 #include "count_molecules.h"
 #include "count_ws.h"
+#include "count_nws.h"
 
 #include "size_rxns_file.h"
 int size_rxns_file(struct state_struct *state,
@@ -37,7 +38,7 @@ int size_rxns_file(struct state_struct *state,
     max possiblie number of molecules, and
     total length of the file. Total length
     of compartment names.
-    Called by: boltzmann_init
+    Called by: io_size_init
     Calls    : count_ws,
                count_molecules,
                fopen, fgets, fprintf, fflush (intrinsic)
@@ -50,6 +51,7 @@ int size_rxns_file(struct state_struct *state,
   int64_t compartment_len;
   int64_t line_len;
   int64_t align_len;
+  int64_t regulation_len;
   int64_t *keyword_lens;
   char *rxn_buffer;
   char *fgp;
@@ -61,13 +63,13 @@ int size_rxns_file(struct state_struct *state,
   int rxns;
 
   int molecules;
+  int species_len;
+
   int ws_chars;
-
   int line_type;
-  int kl;
 
+  int kl;
   int cmpts;
-  int padi;
 
   FILE *rxn_fp;
   FILE *lfp;
@@ -105,6 +107,7 @@ int size_rxns_file(struct state_struct *state,
     total_length = (int64_t)0;
     molecules_len  = (int64_t)0;
     pathway_len  = (int64_t)0;
+    regulation_len = (int64_t)0;
     /*
       Allow for space for the empty compartment null string. 
     */
@@ -121,7 +124,8 @@ int size_rxns_file(struct state_struct *state,
 	state, every reaction starts with a REACTION line
 	ends with a // line.
 	It requires: LEFT, RIGHT, DGZERO and DGZERO-UNITS lines.
-	It may have PATHWAY and COMPARTMENT lines.
+	It may have PATHWAY and COMPARTMENT lines,
+	and PREGULATION and NREGULATION and ACTIVITY lines.
 
 	Allow pre REACTION lines in reactions file as a header.
 	So before the first REACTION line the state is -1
@@ -188,6 +192,14 @@ int size_rxns_file(struct state_struct *state,
 	case 8:
 	  break;
 	case 9:
+	  break;
+        case 10:
+        case 11:
+	  /*
+	    A PREGULATION or NREGULATION line.
+	  */
+	  species_len = count_nws((char*)&rxn_buffer[kl+ws_chars]);
+	  regulation_len += species_len;
         default:
 	  break;
       }
@@ -201,10 +213,11 @@ int size_rxns_file(struct state_struct *state,
     */
     cmpts += 1;
     state->number_compartments = cmpts;
-    state->molecules_space = molecules_len;
-    state->pathway_space = pathway_len;
-    state->compartment_space = compartment_len;
-    state->rxn_title_space = rxn_title_len;
+    state->molecule_text_length    = molecules_len;
+    state->pathway_text_length     = pathway_len;
+    state->compartment_text_length = compartment_len;
+    state->rxn_title_text_length   = rxn_title_len;
+    state->regulation_text_length  = regulation_len;
     fclose(rxn_fp);
   }
   return(success);
