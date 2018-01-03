@@ -107,9 +107,9 @@ int num_jac_col(struct state_struct *state,
 #ifdef DBG
   double t0;
   double h;
-#endif
   int    origin;
   int    nsteps;
+#endif
 
   int    base_rxn;
   int    k;
