@@ -98,7 +98,7 @@ int num_jac_col(struct state_struct *state,
   success = 1;
   base_rxn      = state->base_reaction;
   conc_to_count = state->conc_to_count;
-  delj          = delj_p;
+  delj          = *delj_p;
   if ((delj == 0.0) || (j < 0) || (j >= ny)) {
     success = 0;
   } else {
