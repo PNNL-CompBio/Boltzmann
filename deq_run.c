@@ -85,11 +85,13 @@ int deq_run(struct state_struct *state) {
   double *p_over_r;
   double *r_over_p;
   double *concs;
+  double *conc_to_count;
   int    *rxn_fire;
   char   *cmpt_string;
   double *dg0s;
   double *free_energy;
   double htry;
+  double min_conc;
   int64_t i;
   int64_t n_warmup_steps;
   int64_t n_record_steps;
@@ -157,6 +159,8 @@ int deq_run(struct state_struct *state) {
   forward_rxn_likelihood = state->forward_rxn_likelihood;
   reverse_rxn_likelihood = state->reverse_rxn_likelihood;
   print_output           = (int)state->print_output;
+  conc_to_count          = state->conc_to_count;
+  min_conc               = state->min_conc;
   number_reactions_t2    = number_reactions << 1;
   number_reactions_t2_p1 = number_reactions_t2 + 1;
   rxn_view_freq        	 = state->rxn_view_freq;
@@ -227,27 +231,29 @@ int deq_run(struct state_struct *state) {
     }
   }
   /*
-    Compute the reaction likelihoods: forward_rxn_likelihood, 
-    and reverse_rxn_likelihood fields of state..
-  success = update_rxn_log_likelihoods(state);
+    Convert counts to continuous setting if 0 to avoid 0 concentrations.
   */
-  /*
-  base_reaction = 0;
-  fill_jacobi = 1;
-  if (success) {
-    success = fill_flux_pieces(state,molecules_matrix,base_reaction,
-			       fill_jacobi);
+  for (i=0;i<unique_molecules;i++) {
+    if (counts[i] <= 0.0) {
+      counts[i] = min_conc * conc_to_count[i];
+    }
   }
-  */
-
   htry = 0.0;
   nonnegative = 1.0;
   if (success) {
     success = ode23tb(state,counts,htry,nonnegative);
   }
-  j = 1;
   /*
+  j = 1;
   print_counts(state,j);
   */
+  /*
+    Convert counts back to integers,
+  */
+  for (i=0;i<unique_molecules;i++) {
+    if (counts[i] <= 0.0) {
+      counts[i] = (double)((int64_t)(counts[i] + 0.5));
+    }
+  }
   return(success);
 }
