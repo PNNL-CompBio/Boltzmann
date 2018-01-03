@@ -94,13 +94,13 @@ int read_initial_concentrations(struct state_struct *state) {
   int nu_compartments;
   
   int success;
-  int step;
+  int padi;
 
   char vc[2];
   char cc[2];
   
   FILE *conc_fp;
-  FILE *counts_out_fp;
+  FILE *efp;
   avogadro            = state->avogadro;
   recip_avogadro      = state->recip_avogadro;
   /*
@@ -300,7 +300,7 @@ int read_initial_concentrations(struct state_struct *state) {
 	if (compartment_name == molecule_name) {
 	  ci = 0;
 	} else {
-	  upcase(cmpt_len,compartment_name,compartment_name);
+	  upcase(cmpt_len,compartment_name);
 	  ci = compartment_lookup(compartment_name,state);
 	}
 	compartment = (struct compartment_struct *)&sorted_compartments[ci];
@@ -322,7 +322,7 @@ int read_initial_concentrations(struct state_struct *state) {
 	  u_val = min_conc;
 	}
 	if (nscan >= 2) {
-	  upcase(mol_len,molecule_name,molecule_name);
+	  upcase(mol_len,molecule_name);
 	  si = molecules_lookup(molecule_name,ci,state);
 	  if ((si >=0) && si < nu_molecules) {
 	    /*
