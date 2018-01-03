@@ -20,15 +20,9 @@ under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <strings.h>
-#include <float.h>
-#include <signal.h>
 
 #include "boltzmann_structs.h"
-
+#include "boltzmann_set_filename_ptrs.h"
 
 #include "alloc0.h"
 int alloc0(struct state_struct **state) {
@@ -51,9 +45,9 @@ int alloc0(struct state_struct **state) {
   int64_t ask_for;
   int64_t one_l;
   int64_t usage;
+  int64_t num_state_files;
 
   int success;
-  int num_state_files;
 
   int num_rxn_file_keywords;
   int rxn_file_keyword_len;
@@ -63,7 +57,6 @@ int alloc0(struct state_struct **state) {
   max_file_name_len = (int64_t)4096;
   max_param_line_len = (int64_t)4096;
   success           = 1;
-  num_state_files   = 14;
   usage             = ask_for;
   statep            = (struct state_struct *)calloc(one_l,ask_for);
   *state            = statep;
@@ -75,6 +68,8 @@ int alloc0(struct state_struct **state) {
     fflush(stderr);
   }
   if (success) {
+    statep->num_files = (int64_t)14;
+    num_state_files   = statep->num_files;
     statep->max_filename_len = max_file_name_len;
     ask_for = ((int64_t)num_state_files) * max_file_name_len;
     usage   += ask_for;
@@ -88,9 +83,9 @@ int alloc0(struct state_struct **state) {
     }
   }
   if (success) {
+    statep->max_filename_len   = max_file_name_len;
+    boltzmann_set_filename_ptrs(statep);
     /*
-	Caution Address arthmetic follows:
-    */
     statep->reaction_file      = statep->params_file + max_file_name_len;
     statep->init_conc_file     = statep->reaction_file + max_file_name_len;
     statep->input_dir          = statep->init_conc_file + max_file_name_len;
@@ -103,8 +98,9 @@ int alloc0(struct state_struct **state) {
     statep->restart_file       = statep->free_energy_file + max_file_name_len;
     statep->rxn_view_file      = statep->restart_file + max_file_name_len;
     statep->bndry_flux_file    = statep->rxn_view_file + max_file_name_len;
+    */
+
     statep->max_param_line_len = max_param_line_len;
-    statep->max_filename_len   = max_file_name_len;
     ask_for                    = max_param_line_len << 1;
     usage                      += ask_for;
     statep->param_buffer       = (char *)calloc(one_l,ask_for);
