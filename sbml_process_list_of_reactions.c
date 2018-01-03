@@ -172,7 +172,6 @@ int sbml_process_list_of_reactions(FILE *sbml_fp,
   comp[0] = '\0';
   species[0] = '\0';
   init_amt=0;
-  units[0] = '\0';
   variable     = 1;
   in_reaction = 0;
   in_reaction_tag = 0;
@@ -186,6 +185,8 @@ int sbml_process_list_of_reactions(FILE *sbml_fp,
   in_species_reference_tag  = 64;
   in_kinetic_law_tag        = 128;
   end_reaction_tag          = 256;
+  in_list_of_reactions      = 1;
+  coefficient               = 1;
 
   enclosing_tag = not_in_tag;
   species_count = 0;
@@ -442,7 +443,7 @@ int sbml_process_list_of_reactions(FILE *sbml_fp,
 	line += nb; /* Caution address arithmetic */
 	ns = count_nws(line);
 	while (ns != 0) {
-	  if (strncmp(line,"/>",2) == 0) {
+	  if ((strncmp(line,"/>",2) == 0) || (line[0] == '>')){
 	    /*
 	      We have reached the end of the speciesReference tag,
 	      print out the stoichiometry, species name and compartment
@@ -452,13 +453,14 @@ int sbml_process_list_of_reactions(FILE *sbml_fp,
 	      fprintf(rxns_fp,"\t+\t");
 	    }
 	    if (coefficient > 1) {
-	      fprintf(rxns_fp,"%d\t",coefficient);
+	      fprintf(rxns_fp,"%d ",coefficient);
 	    }
 	    fprintf(rxns_fp,"%s",tspecies);
 	    if (comp[0] != '\0') {
 	      fprintf(rxns_fp,":%s",comp);
 	      comp[0] = '\0';
 	    }
+	    coefficient = 1;
 	    species_count += 1;
 	    enclosing_tag = not_in_tag;
 	    ns = 0;
@@ -474,8 +476,6 @@ int sbml_process_list_of_reactions(FILE *sbml_fp,
 	      line += tl;
 	      nb = count_ws(line);
 	      line += nb; /* Caution address arithmetic */
-	      ns = strlen(line);
-	      line += tl;
 	      tag = sbml_lookup_speciesref_attribute(key);
 	      
 	      if (tag >= 0) {
@@ -511,7 +511,7 @@ int sbml_process_list_of_reactions(FILE *sbml_fp,
 		  break;
 		case 3:
 		  /*
-		    stoichiomentry.
+		    stoichiometry.
 		  */
 		  sscanf(value,"%d",&coefficient);
 		  break;
@@ -533,11 +533,11 @@ int sbml_process_list_of_reactions(FILE *sbml_fp,
 	line += nb; /* Caution address arithmetic */
 	ns = count_nws(line);
 	if (strncmp(line,"</kineticLaw>",13) == 0) {
-	  enclosing_tag = 0;
+	  enclosing_tag = not_in_tag;
 	}
 	break;
       case 256:
-	enclosing_tag = 0;
+	enclosing_tag = not_in_tag;
 	in_reaction = 0;
 	fprintf(rxns_fp,"DGZERO\t%le\n",delta_g0);
 	fprintf(rxns_fp,"DGZERO_UNITS\t%s\n",units);
