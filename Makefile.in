@@ -153,7 +153,7 @@ AR = ar
 ARFLAGS = -crv
 SUNDIALS_LIB_DIR = $(SUNDIALS_ROOT)/lib
 SUNDIALS_INC_DIR = $(SUNDIALS_ROOT)/include
-SUNDIALS_LIBS = $(SUNDIALS_LIB_DIR)/libsundials.so $(SUNDIALS_LIB_DIR)/libsundials_cvodes.so $(SUNDIALS_LIB_DIR)/libsundials_cvodes.so $(SUNDIALS_LIB_DIR)/libsundials_nvec_ser.so
+SUNDIALS_LIBS = $(SUNDIALS_LIB_DIR)/libsundials.a $(SUNDIALS_LIB_DIR)/libsundials_cvodes.a $(SUNDIALS_LIB_DIR)/libsundials_cvodes.a $(SUNDIALS_LIB_DIR)/libsundials_nvec_ser.a
 SUNDIALS_INCS = -I $(SUNDIALS_INC_DIR) -I $(SUNDIALS_INC_DIR)/sundials -I $(SUNDIALS_INC_DIR)/cvodes -I $(SUNDIALS_INC_DIR)/cvode -I$(SUNDIALS_INC_DIR)/nvector
 DBG_FLAGS = -O0 -g -fPIC -Wall $(SUNDIALS_INCS)
 NO_OPT_FLAGS = -O0 -g -fPIC -Wall $(SUNDIALS_INCS)
@@ -512,9 +512,9 @@ uninstall-am:
 	maintainer-clean-generic mostlyclean mostlyclean-generic pdf \
 	pdf-am ps ps-am uninstall uninstall-am
 
-all:  $(EXECS) $(SUNDIALS_LIB_DIR)/libsundials_cvodes.so $(SUNDIALS_LIB_DIR)/libsundials_cvodes.a $(SUNDIALS_LIB_DIR)/libsundials_nvec_ser.a $(SUNDIALS_LIB_DIR)/libsundials_nvec_ser.so $(SUNDIALS_LIB_DIR)/libsundials.so $(SUNDIALS_LIB_DIR)/libsundials.a
+all:  $(EXECS) $(SUNDIALS_LIB_DIR)/libsundials_cvodes.a $(SUNDIALS_LIB_DIR)/libsundials_nvec_ser.a $(SUNDIALS_LIB_DIR)/libsundials.a
 
-$(SUNDIALS_LIB_DIR)/libsundials_cvodes.so $(SUNDIALS_LIB_DIR)/libsundials_cvodes.a $(SUNDIALS_LIB_DIR)/libsundials_nvec_ser.a $(SUNDIALS_LIB_DIR)/libsundials_nvec_ser.so $(SUNDIALS_LIB_DIR)/libsundials.so $(SUNDIALS_LIB_DIR)/libsundials.a:
+$(SUNDIALS_LIB_DIR)/libsundials_cvodes.a $(SUNDIALS_LIB_DIR)/libsundials_nvec_ser.a $(SUNDIALS_LIB_DIR)/libsundials.a:
 	cd $(SUNDIALS_ROOT) && $(MAKE)
 
 default: $(EXECS) $(SUNDIALS_LIBS) libboltzmann.a
