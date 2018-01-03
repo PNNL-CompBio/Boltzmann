@@ -28,9 +28,10 @@ void upcase (int sl, char *in_string, char *out_string) {
   /*
     Convert lower case to upper case in a string that may
     have non-alphabetic characters included.
-    Called by: parse_reactions_file
+    Called by: parse_reactions_file, parse_pseudoisomer_dg0f_file
     Leaf routine.
   */
+  /*
   int64_t add_con_in;
   int64_t add_con_out;
   int64_t i64_mask;
@@ -47,13 +48,14 @@ void upcase (int sl, char *in_string, char *out_string) {
   int64_t cc;
   int64_t adj;
   int64_t v;
-  int i;
   int lim;
+  int j;
+  */
+  int i;
   int ic;
   int istart;
-  int j;
   int pad1;
-
+  /*
   i64_mask = (int64_t)7;
   hi_start = ((int64_t)123) << 56;
   lo_start = ((int64_t)96) << 56;
@@ -61,7 +63,13 @@ void upcase (int sl, char *in_string, char *out_string) {
   mk_start = i64_mask << 56;
   add_con_in = (int64_t)in_string;
   add_con_out = (int64_t)out_string;
-  if (((i64_mask | add_con_in) | add_con_out) == 0) {
+  */
+  /*
+    If character strings are both eight byte aligned work
+    on eight byte integers as much as possible.
+  */
+  /*
+  if (((i64_mask & add_con_in) | (i64_mask & (add_con_out))) == 0) {
     ii = (int64_t *)in_string;
     oi = (int64_t *)out_string;
     istart = sl - (sl & i64_mask);
@@ -82,15 +90,14 @@ void upcase (int sl, char *in_string, char *out_string) {
 	lo  = lo >> 8;
       }
       *oi = v;
-      /*
-	Caution address arithmetic follows.
-      */
       ii += 1;
       oi += 1;
     }
   } else {
     istart = 0;
   }
+  */
+  istart = 0;
   for (i=istart;i<sl;i++) {
     ic = (int)in_string[i];
     if ((ic > 96) && (ic < 123)) {
