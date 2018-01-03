@@ -183,7 +183,7 @@ int ode_num_jac(struct state_struct *state,
 	  tmpfac = facmax;
 	}
 	delj   = (yj + (tmpfac * yscalej)) - yj;
-	if ((tmpfac != facj) && (delj > 0.0)) {
+	if ((tmpfac != facj) && (delj != 0.0)) {
 	  num_jac_col(state,ny,j,y,f,&delj,threshj,
 		      y_counts,fdel,fdiff,
 		      forward_rxn_likelihoods,
