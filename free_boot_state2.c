@@ -25,18 +25,17 @@ specific language governing permissions and limitations under the License.
 #define DBG_FREE_BOOT_STATE2 1
 */
 #include "free_boot_state2.h"
-int free_boot_state2(struct state_struct **statep) {
+int free_boot_state2(struct state_struct *state) {
   /*
-    Free space allocated by alloc2 and alloc3 calls.
-    Called by: boltzmann_boot, free_boot_state
+    Free space allocated to fields of teh state_struct by alloc2 and 
+    alloc3 calls.
+    Called by: boltzmann_init_core
     Calls:     free.
   */
-  struct state_struct *state;
   struct rxn_matrix_struct *reactions_matrix; 
   int success;
   int padi;
   success = 1;
-  state = *statep;
   if (state) {
     if (state->rxn_title_text) {
       free(state->rxn_title_text);
@@ -86,6 +85,18 @@ int free_boot_state2(struct state_struct **statep) {
     }
     if (state->activities) {
       free(state->activities);
+    }
+    if (state->reg_constant) {
+      free(state->reg_constant);
+    }
+    if (state->reg_exponent) {
+      free(state->reg_exponent);
+    }
+    if (state->reg_species) {
+      free(state->reg_species);
+    }
+    if (state->reg_drctn) {
+      free(state->reg_drctn);
     }
     if (state->vgrng_state) {
       free(state->vgrng_state);
