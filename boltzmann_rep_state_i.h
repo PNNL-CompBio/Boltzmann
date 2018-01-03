@@ -20,5 +20,6 @@ under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
-extern int boltzmann_rep_state_i(int64_t *super_statep, int i, 
+extern int boltzmann_rep_state_i(struct super_state_struct *super_statep, 
+				 int i,
 				 struct state_struct **l_statep);
