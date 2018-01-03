@@ -72,7 +72,7 @@ int alloc2(struct state_struct *state, int setup) {
       vgrng_state,
       vgnrg2_state
 
-    Called by: boltzmann_init
+    Called by: boltzmann_init, boltzmann_flatten_alloc1
     Calls:     alloc2_a, calloc, fprintf, fflush 
   */
   struct vgrng_state_struct vss;
@@ -110,6 +110,9 @@ int alloc2(struct state_struct *state, int setup) {
   int64_t_size       = (int64_t)sizeof(int64_t);
 
   if (setup > 0) {
+    /*
+      Allocate space for the text strings in the reactions file.
+    */
     success = alloc2_a(state,setup);
   }
   if (success) {
@@ -120,7 +123,7 @@ int alloc2(struct state_struct *state, int setup) {
     usage   += ask_for;
     state->reactions = (struct reaction_struct *)calloc(one_l,ask_for);
     if (state->reactions == NULL) {
-      fprintf(stderr,"alloc2: Error, unable to allocate %lld bytes of space "
+      fprintf(stderr,"alloc2: Error, unable to allocate %ld bytes of space "
 	      "for reaction meta data \n",
 	      ask_for);
       fflush(stderr);
@@ -137,7 +140,7 @@ int alloc2(struct state_struct *state, int setup) {
     if (reactions_matrix) {
       state->reactions_matrix = reactions_matrix;
     } else {
-      fprintf(stderr,"alloc2: Error, unable to allocate %lld bytes of space "
+      fprintf(stderr,"alloc2: Error, unable to allocate %ld bytes of space "
 	      "for reaction meta data \n",
 	      ask_for);
       success = 0;
@@ -145,26 +148,26 @@ int alloc2(struct state_struct *state, int setup) {
   }
   /*
     Allocate space for the reaction matrix arrays, each having nze elements
-    where nze = num_molecules + num_rxns + 1;
+    where nze = num_molecules
   */
   if (success) {
-    nze = num_molecules + num_rxns + one_l;
-    state->nz = nze;
-    ask_for = nze * int64_t_size;
+    ask_for = ((int64_t)(num_rxns + 1))*int64_t_size;
     usage += ask_for;
     reactions_matrix->rxn_ptrs = (int64_t*)calloc(one_l,ask_for);
     if (reactions_matrix->rxn_ptrs == NULL) {
-      fprintf(stderr,"alloc2: Error, unable to allocate %lld bytes of space "
+      fprintf(stderr,"alloc2: Error, unable to allocate %ld bytes of space "
 	      "for reactions_matrix->rxn_ptrs\n",ask_for);
       fflush(stderr);
       success = 0;
     }
   }
   if (success) {
+    nze = num_molecules;
+    ask_for = nze * int64_t_size;
     usage += ask_for;
     reactions_matrix->molecules_indices = (int64_t*)calloc(one_l,ask_for);
     if (reactions_matrix->molecules_indices == NULL) {
-      fprintf(stderr,"alloc2: Error, unable to allocate %lld bytes of space "
+      fprintf(stderr,"alloc2: Error, unable to allocate %ld bytes of space "
 	      "for reactions_matrix->molecules_indices\n",ask_for);
       fflush(stderr);
       success = 0;
@@ -174,7 +177,7 @@ int alloc2(struct state_struct *state, int setup) {
     usage += ask_for;
     reactions_matrix->compartment_indices = (int64_t*)calloc(one_l,ask_for);
     if (reactions_matrix->compartment_indices == NULL) {
-      fprintf(stderr,"alloc2: Error, unable to allocate %lld bytes of space "
+      fprintf(stderr,"alloc2: Error, unable to allocate %ld bytes of space "
 	      "for reactions_matrix->compartment_indices\n",ask_for);
       fflush(stderr);
       success = 0;
@@ -185,7 +188,7 @@ int alloc2(struct state_struct *state, int setup) {
     usage += ask_for;
     reactions_matrix->coefficients = (int64_t*)calloc(one_l,ask_for);
     if (reactions_matrix->coefficients == NULL) {
-      fprintf(stderr,"alloc2: Error, unable to allocate %lld bytes of space "
+      fprintf(stderr,"alloc2: Error, unable to allocate %ld bytes of space "
 	      "for reactions_matrix->coefficients\n",ask_for);
       fflush(stderr);
       success = 0;
@@ -196,7 +199,7 @@ int alloc2(struct state_struct *state, int setup) {
     usage += ask_for;
     reactions_matrix->solvent_coefficients = (int64_t*)calloc(one_l,ask_for);
     if (reactions_matrix->solvent_coefficients == NULL) {
-      fprintf(stderr,"alloc2: Error, unable to allocate %lld bytes of space "
+      fprintf(stderr,"alloc2: Error, unable to allocate %ld bytes of space "
 	      "for reactions_matrix->solvent_coefficients\n",ask_for);
       fflush(stderr);
       success = 0;
@@ -207,7 +210,7 @@ int alloc2(struct state_struct *state, int setup) {
     usage += ask_for;
     reactions_matrix->text = (int64_t *)calloc(one_l,ask_for);
     if (reactions_matrix->text == NULL) {
-      fprintf(stderr,"alloc2: Error, unable to allocate %lld bytes of space "
+      fprintf(stderr,"alloc2: Error, unable to allocate %ld bytes of space "
 	      "for reactions_matrix->text\n",ask_for);
       fflush(stderr);
       success = 0;
@@ -233,7 +236,7 @@ int alloc2(struct state_struct *state, int setup) {
 	state->unsorted_molecules = state->sorted_molecules + num_molecules;
       }
     } else {
-      fprintf(stderr,"alloc2: Error, unable to allocate %lld bytes of space "
+      fprintf(stderr,"alloc2: Error, unable to allocate %ld bytes of space "
 	      "for sorted and unsorted molecules pointers\n",ask_for);
       fflush(stderr);
       success = 0;
@@ -255,7 +258,7 @@ int alloc2(struct state_struct *state, int setup) {
 	state->unsorted_cmpts = state->sorted_compartments + num_cmpts;
       }
     } else {
-      fprintf(stderr,"alloc2: Error, unable to allocate %lld bytes of space "
+      fprintf(stderr,"alloc2: Error, unable to allocate %ld bytes of space "
 	      "for sorted and unsorted molecules pointers\n",ask_for);
       fflush(stderr);
       success = 0;
@@ -266,7 +269,7 @@ int alloc2(struct state_struct *state, int setup) {
     usage += ask_for;
     state->activities= (double*)calloc(one_l,ask_for);
     if (state->activities == NULL) {
-      fprintf(stderr,"alloc2: Error unable to allocate %lld bytes for "
+      fprintf(stderr,"alloc2: Error unable to allocate %ld bytes for "
 	      "state->activities field.\n",ask_for);
       fflush(stderr);
       success = 0;
@@ -277,7 +280,7 @@ int alloc2(struct state_struct *state, int setup) {
     usage += ask_for;
     state->enzyme_level = (double*)calloc(one_l,ask_for);
     if (state->enzyme_level == NULL) {
-      fprintf(stderr,"alloc2: Error unable to allocate %lld bytes for "
+      fprintf(stderr,"alloc2: Error unable to allocate %ld bytes for "
 	      "state->enzyme_level field.\n",ask_for);
       fflush(stderr);
       success = 0;
@@ -289,7 +292,7 @@ int alloc2(struct state_struct *state, int setup) {
     usage += ask_for;
     state->forward_rc = (double*)calloc(one_l,ask_for);
     if (state->forward_rc == NULL) {
-      fprintf(stderr,"alloc2: Error unable to allocate %lld bytes for "
+      fprintf(stderr,"alloc2: Error unable to allocate %ld bytes for "
 	      "state->forward_rc.\n",ask_for);
       fflush(stderr);
       success = 0;
@@ -302,7 +305,7 @@ int alloc2(struct state_struct *state, int setup) {
     usage += ask_for;
     state->reg_constant = (double*)calloc(one_l,ask_for);
     if (state->reg_constant == NULL) {
-      fprintf(stderr,"alloc2: Error unable to allocate %lld bytes for "
+      fprintf(stderr,"alloc2: Error unable to allocate %ld bytes for "
 	      "state->reg_constant field.\n",ask_for);
       fflush(stderr);
       success = 0;
@@ -313,7 +316,7 @@ int alloc2(struct state_struct *state, int setup) {
     usage += ask_for;
     state->reg_exponent = (double*)calloc(one_l,ask_for);
     if (state->reg_exponent == NULL) {
-      fprintf(stderr,"alloc2: Error unable to allocate %lld bytes for "
+      fprintf(stderr,"alloc2: Error unable to allocate %ld bytes for "
 	      "state->reg_exponent field.\n",ask_for);
       fflush(stderr);
       success = 0;
@@ -324,7 +327,7 @@ int alloc2(struct state_struct *state, int setup) {
     usage += ask_for;
     state->reg_drctn = (double*)calloc(one_l,ask_for);
     if (state->reg_drctn == NULL) {
-      fprintf(stderr,"alloc2: Error unable to allocate %lld bytes for "
+      fprintf(stderr,"alloc2: Error unable to allocate %ld bytes for "
 	      "state->reg_drctn field.\n",ask_for);
       fflush(stderr);
       success = 0;
@@ -335,7 +338,7 @@ int alloc2(struct state_struct *state, int setup) {
     usage += ask_for;
     state->reg_species = (int64_t*)calloc(one_l,ask_for);
     if (state->reg_species == NULL) {
-      fprintf(stderr,"alloc2: Error unable to allocate %lld bytes for "
+      fprintf(stderr,"alloc2: Error unable to allocate %ld bytes for "
 	      "state->reg_species field.\n",ask_for);
       fflush(stderr);
       success = 0;
@@ -348,7 +351,7 @@ int alloc2(struct state_struct *state, int setup) {
     if (state->vgrng_state == NULL) {
       success = 0;
       fprintf(stderr,
-	      "alloc2: unable to allocate %lld bytes for state->vgrng_state.\n",
+	      "alloc2: unable to allocate %ld bytes for state->vgrng_state.\n",
 	      ask_for);
       fflush(stderr);
     }
@@ -360,7 +363,7 @@ int alloc2(struct state_struct *state, int setup) {
     if (state->vgrng2_state == NULL) {
       success = 0;
       fprintf(stderr,
-	      "alloc2: unable to allocate %lld bytes for state->vgrng2_state.\n",
+	      "alloc2: unable to allocate %ld bytes for state->vgrng2_state.\n",
 	      ask_for);
       fflush(stderr);
     }
