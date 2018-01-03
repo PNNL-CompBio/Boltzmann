@@ -342,8 +342,10 @@ struct state_struct {
   double *flux_vector;   /* flux vector of length number_unique_molecules */
   double *reactant_term; /* product of reaction reactant concentrations, length number_reactions */
   double *product_term;  /* product of reaction product concentrations, length number_reactions */
-  double *p_over_r; /*  product of produced species concentrations.  */
-  double *r_over_p;/* Ratio of reactant_term to product_term. */
+  double *rxn_q; /* Ratio  product_term to reactant_term.  */
+  double *recip_rxn_q;/* Ratio of reactant_term to product_term. */
+  double *kf_rel;
+  double *kr_rel;
   double *ode_counts; /* counts from concentrations */
   double *ode_concs;  /* concentrations from counts. */
   double *ode_forward_lklhds;
