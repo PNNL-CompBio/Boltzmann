@@ -126,6 +126,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
     state->net_lklhd_file[0]    = '\0';
     state->nl_bndry_flx_file[0] = '\0';
     state->concs_out_file[0]    = '\0';
+    state->ode_counts_file[0]   = '\0';
     /*
       Following line Added by DGT on 4/18/2013
      */
@@ -188,7 +189,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
     state->base_reaction       = (int64_t)0;
     state->ode_solver_choice   = (int64_t)0;
     state->delta_concs_choice  = (int64_t)0;
-    state->concs_or_counts     = (int64_t)3;
+    state->print_concs_or_counts = (int64_t)3;
     state->use_bulk_water      = (int64_t)1;
     state->cvodes_rhs_choice   = (int64_t)0;
     state->cvodes_jtimes_choice = (int64_t)2;
@@ -266,6 +267,8 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	sscan_ok = sscanf(value,"%s",state->concs_out_file);
       } else if (strncmp(key,"ODE_CONCS_FILE",14) == 0) {
 	sscan_ok = sscanf(value,"%s",state->ode_concs_file);
+      } else if (strncmp(key,"ODE_COUNTS_FILE",15) == 0) {
+	sscan_ok = sscanf(value,"%s",state->ode_counts_file);
       } else if (strncmp(key,"RXN_LKLHD_FILE",14) == 0) {
 	sscan_ok = sscanf(value,"%s",state->rxn_lklhd_file);
       } else if (strncmp(key,"FREE_ENERGY_FILE",16) == 0) {
@@ -332,7 +335,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	} else if (strncmp(value,"MAX",3) == 0) {
 	  state->ode_stop_norm = 1;
 	} else {
-	  sscan_ok = sscanf(value,"%ld",&ode_stop_norm);
+	  sscan_ok = sscanf(value,"%d",&ode_stop_norm);
 	  if (sscan_ok == 1) {
 	    state->ode_stop_norm = ode_stop_norm;
 	    /*
@@ -346,7 +349,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	} else if (strncmp(value,"REL",3) == 0) {
 	  state->ode_stop_rel = 1;
 	} else {
-	  sscan_ok = sscanf(value,"%ld",&ode_stop_rel);
+	  sscan_ok = sscanf(value,"%d",&ode_stop_rel);
 	  if (sscan_ok == 1) {
 	    state->ode_stop_rel = ode_stop_rel;
 	    /*
@@ -360,7 +363,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	} else if (strncmp(value,"ELE",3) == 0) {
 	  state->ode_stop_style = 1;
 	} else {
-	  sscan_ok = sscanf(value,"%ld",&ode_stop_style);
+	  sscan_ok = sscanf(value,"%d",&ode_stop_style);
 	  if (sscan_ok == 1) {
 	    state->ode_stop_style = ode_stop_style;
 	    /*
@@ -458,10 +461,10 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	}
       } else if (strncmp(key,"CONC_VIEW_FREQ",14) == 0) {
 	/*
-	  NB counts and concs print frequency is really controled by
-	  the count_view_freq field and the CONCS_OR_COUNTS field.
-	  If CONCS_OR_COUNTS is 2 or 3 concentrations are printed 
-	  every count_view_freq steps, if CONCS_OR_COUNTS is 1 or 3
+	  NB counts and concs print frequency is really controlled by
+	  the count_view_freq field and the PRINT_CONCS_OR_COUNTS field.
+	  If PRINT_CONCS_OR_COUNTS is 2 or 3 concentrations are printed 
+	  every count_view_freq steps, if PRINT_CONCS_OR_COUNTS is 1 or 3
 	  counts are printed every count_view_freq steps.
 	*/
 	sscan_ok = sscanf(value,"%ld",&(state->count_view_freq));
@@ -474,7 +477,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	  state->lklhd_view_freq = 1;
 	}
       } else if (strncmp(key,"CONCS_OR_COUNTS",15) == 0) {
-	sscan_ok = sscanf(value,"%ld",&(state->concs_or_counts));
+	sscan_ok = sscanf(value,"%ld",&(state->print_concs_or_counts));
       } else if (strncmp(key,"FE_VIEW_FREQ",12) == 0) {
 	sscan_ok = sscanf(value,"%ld",&(state->fe_view_freq));
 	if (state->fe_view_freq < 0) {
