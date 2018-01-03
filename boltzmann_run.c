@@ -35,6 +35,7 @@ specific language governing permissions and limitations under the License.
 #define DBG_BOLTZMANN_RUN 1
 */
 
+#include "flatten_state.h"
 #include "update_rxn_log_likelihoods.h"
 #include "choose_rxn.h"
 #include "compute_delta_g_forward_entropy_free_energy.h"
@@ -58,6 +59,7 @@ int boltzmann_run(struct state_struct *state) {
 	       print_restart_file
 	       print_reactions_view
   */
+  struct state_struct *nstate;
   int64_t choice;
   double dchoice;
   double uni_multiplier;
@@ -96,7 +98,7 @@ int boltzmann_run(struct state_struct *state) {
   int rxn_view_pos;
 
   int rxn_view_freq;
-  int rxn_view_hist_lngth;
+  int rxn_view_hist_length;
 
   int lklhd_view_step;
   int lklhd_view_freq;
@@ -109,7 +111,8 @@ int boltzmann_run(struct state_struct *state) {
 
   FILE *lfp;
   success = 1;
-  
+  nstate = state;
+  success = flatten_state(state,&nstate);
   n_warmup_steps    	 = (int)state->warmup_steps;
   n_record_steps    	 = (int)state->record_steps;
   number_reactions       = (int)state->number_reactions;
@@ -124,7 +127,7 @@ int boltzmann_run(struct state_struct *state) {
   number_reactions_t2    = number_reactions << 1;
   number_reactions_t2_p1 = number_reactions_t2 + 1;
   rxn_view_freq        	 = (int)state->rxn_view_freq;
-  rxn_view_hist_lngth  	 = (int)state->rxn_view_hist_lngth;
+  rxn_view_hist_length 	 = (int)state->rxn_view_hist_length;
   lklhd_view_freq        = (int)state->lklhd_view_freq;
   conc_view_freq         = (int)state->conc_view_freq;
   rxn_view_pos         	 = 0;
