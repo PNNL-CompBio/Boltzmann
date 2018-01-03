@@ -20,9 +20,12 @@ under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
+#ifndef _MERGE_COMPARTMENTS_H_
+#define _MERGE_COMPARTMENTS_H_
 extern int merge_compartments(struct compartment_struct *list1,
 			      struct compartment_struct *list2,
 			      struct compartment_struct *mlist,
 			      char *compartment_text,
 			      int l1,
 			      int l2);
+#endif
