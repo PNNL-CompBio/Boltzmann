@@ -40,8 +40,10 @@ void ode_print_dconcs_header(struct state_struct *state) {
   char *ode_dconcs_file;
   int i;
   int ci;
+
   int nu_molecules;
-  int solvent_pos;
+  int padi;
+
   FILE *ode_dconcs_fp;
   FILE *lfp;
   nu_molecules     = state->nunique_molecules;
@@ -50,7 +52,6 @@ void ode_print_dconcs_header(struct state_struct *state) {
   molecules_text   = state->molecules_text;
   compartment_text = state->compartment_text;
   ode_dconcs_file  = state->ode_dconcs_file;
-  solvent_pos      = state->solvent_pos;
   lfp              = state->lfp;
 
   ode_dconcs_fp = fopen(ode_dconcs_file,"w+");
@@ -64,7 +65,7 @@ void ode_print_dconcs_header(struct state_struct *state) {
   } else {
     fprintf(ode_dconcs_fp,"Time");
     for (i=0;i<nu_molecules;i++) {
-      if (i != solvent_pos) {
+      if ((cur_molecule->solvent == 0) || (cur_molecule->variable == 1)) {
 	ci = cur_molecule->c_index;
 	molecule = (char*)&molecules_text[cur_molecule->string];
 	fprintf(ode_dconcs_fp,"\t%s",molecule);
