@@ -122,6 +122,7 @@ int parse_reactions_file(struct state_struct *state,
   char *rcompartment;
   char *pathway;
   char *metabolite;
+  int  *coeff_sum;
 
   size_t word1_len;
 
@@ -156,7 +157,7 @@ int parse_reactions_file(struct state_struct *state,
   int reg_pos;
 
   int last_line_type;
-  int padi;
+  int sum_coeffs;
 
   FILE *rxn_fp;
   FILE *lfp;
@@ -170,6 +171,7 @@ int parse_reactions_file(struct state_struct *state,
   reg_exponent 	   = state->reg_exponent;
   reg_species  	   = state->reg_species;
   reg_drctn    	   = state->reg_drctn;
+  coeff_sum        = state->coeff_sum;
   max_regs_per_rxn = (int)state->max_regs_per_rxn;
   reg_base         = (int64_t)0;
   reg_pos          = reg_base;
@@ -658,7 +660,9 @@ int parse_reactions_file(struct state_struct *state,
 	  rxn_molecules = (struct molecule_struct *)&state->unsorted_molecules[mol_pos];
 	  mol_pos_lim = mol_pos + reaction->num_reactants +
 	    reaction->num_products;
+	  sum_coeffs = 0;
 	  for (j = mol_pos;j<mol_pos_lim;j++) {
+	    sum_coeffs += coefficients[j];
 	    /*
 	      Only look to set the compartment index if the molecule did
 	      not have a local compartment (:compartment).
@@ -672,6 +676,8 @@ int parse_reactions_file(struct state_struct *state,
 	    }
 	    rxn_molecules += 1; /* Caution address arithmetic */
 	  }
+	  reaction->coefficient_sum = sum_coeffs;
+	  coeff_sum[rxns] = sum_coeffs;
 	  rxns += 1;
 	  /*
 	    Caution address arithmetic follows
