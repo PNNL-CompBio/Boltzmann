@@ -157,8 +157,8 @@ struct state_struct {
   int64_t compartments_text_offset_in_bytes;
   int64_t num_files;
   int64_t solvent_pos;
-
   int64_t use_pseudoisomers;
+  int64_t use_metropolis;
 
   double  ideal_gas_r;
   double  temp_kelvin;
