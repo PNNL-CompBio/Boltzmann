@@ -29,8 +29,7 @@ int alloc3(struct state_struct *state) {
   /*
     Allocate space for the molecule_name field for reading
     in intial concentrations, the concentrations vector,
-    and the molecules matrix and its fields. The molecules 
-    matrix is a transpose of the reactions matris.
+    and 
     Called by: boltzmann_init
     Calls:     calloc, fprintf, fflush (intrinsic)
   */
@@ -108,6 +107,9 @@ int alloc3(struct state_struct *state) {
       success = 0;
     }
   }
+  /*
+    Allocate space for the change in Gibb's free energy.
+  */
   if (success) {
     ask_for = ((int64_t)nrxns) * ((int64_t)sizeof(double));
     usage += ask_for;
@@ -120,6 +122,9 @@ int alloc3(struct state_struct *state) {
     } 
     
   }
+  /*
+    Allocate space for the reaction equilibrium coefficients.
+  */
   if (success) {
     ask_for = ((int64_t)nrxns) * ((int64_t)sizeof(double));
     usage += ask_for;
@@ -127,6 +132,48 @@ int alloc3(struct state_struct *state) {
     if (state->ke == NULL) {
       fprintf(stderr,"alloc3: Error unable to allocate %ld bytes for "
 	      "state->ke field.\n",ask_for);
+      fflush(stderr);
+      success = 0;
+    } 
+  }
+  /*
+    Allocate space for molecule_dg0tfs
+  */
+  if (success) {
+    ask_for = ((int64_t)nu_molecules) * ((int64_t)sizeof(double));
+    usage += ask_for;
+    state->molecule_dg0tfs = (double *)calloc(one_l,ask_for);
+    if (state->molecule_dg0tfs == NULL) {
+      fprintf(stderr,"alloc3: Error unable to allocate %ld bytes for "
+	      "state->molecule_dg0tfs field.\n",ask_for);
+      fflush(stderr);
+      success = 0;
+    } 
+  }
+  /*
+    Allocate space for molecule_probabilities
+  */
+  if (success) {
+    ask_for = ((int64_t)nu_molecules) * ((int64_t)sizeof(double));
+    usage += ask_for;
+    state->molecule_probabilities = (double *)calloc(one_l,ask_for);
+    if (state->molecule_probabilities == NULL) {
+      fprintf(stderr,"alloc3: Error unable to allocate %ld bytes for "
+	      "state->molecule_probabilities field.\n",ask_for);
+      fflush(stderr);
+      success = 0;
+    } 
+  }
+  /*
+    Allocate space for molecule_chemical_potentials
+  */
+  if (success) {
+    ask_for = ((int64_t)nu_molecules) * ((int64_t)sizeof(double));
+    usage += ask_for;
+    state->molecule_chemical_potentials = (double *)calloc(one_l,ask_for);
+    if (state->molecule_chemical_potentials == NULL) {
+      fprintf(stderr,"alloc3: Error unable to allocate %ld bytes for "
+	      "state->molecule_chemical_potentials field.\n",ask_for);
       fflush(stderr);
       success = 0;
     } 
