@@ -191,6 +191,9 @@ SERIAL_OBJS7 = deq_run.o alloc7.o ode_solver.o ode23tb.o \
 	lr5_approximate_delta_concs.o lr6_approximate_delta_concs.o \
 	lr7_approximate_delta_concs.o lr8_approximate_delta_concs.o \
 	lr9_approximate_delta_concs.o lr10_approximate_delta_concs.o \
+	lr11_approximate_delta_concs.o stable_add.o dsort.o dmerge.o \
+	dsort_pairs_in_place.o dsort_pairs.o pairwise_sum.o \
+	dreverse_list.o lr12_approximate_delta_concs.o \
 	ce_approximate_delta_concs.o update_rxn_likelihoods.o \
 	print_concs_dconcs.o lsame.o dtrsm.o dlaswp.o dgetrf2.o \
 	dgetrf.o dgetrs.o dgemm.o ode_print_concs_header.o \
@@ -824,7 +827,16 @@ libboltzmann.a: $(SERIAL_OBJS1)  $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SERIAL_OBJS4)
 	$(AR) $(ARFLAGS) libboltzmann.a lr8_approximate_delta_concs.o
 	$(AR) $(ARFLAGS) libboltzmann.a lr9_approximate_delta_concs.o
 	$(AR) $(ARFLAGS) libboltzmann.a lr10_approximate_delta_concs.o
+	$(AR) $(ARFLAGS) libboltzmann.a lr11_approximate_delta_concs.o
+	$(AR) $(ARFLAGS) libboltzmann.a lr12_approximate_delta_concs.o
 	$(AR) $(ARFLAGS) libboltzmann.a ce_approximate_delta_concs.o
+	$(AR) $(ARFLAGS) libboltzmann.a stable_add.o
+	$(AR) $(ARFLAGS) libboltzmann.a dsort.o
+	$(AR) $(ARFLAGS) libboltzmann.a dmerge.o
+	$(AR) $(ARFLAGS) libboltzmann.a dsort_pairs.o
+	$(AR) $(ARFLAGS) libboltzmann.a dsort_pairs_in_place.o
+	$(AR) $(ARFLAGS) libboltzmann.a pairwise_sum.o
+	$(AR) $(ARFLAGS) libboltzmann.a dreverse_list.o
 	$(AR) $(ARFLAGS) libboltzmann.a num_jac_col.o
 	$(AR) $(ARFLAGS) libboltzmann.a ode_it_solve.o
 	$(AR) $(ARFLAGS) libboltzmann.a update_rxn_likelihoods.o
@@ -1524,7 +1536,7 @@ init_relative_rates.o: init_relative_rates.c init_relative_rates.h $(SERIAL_INCS
 compute_flux_scaling.o: compute_flux_scaling.c compute_flux_scaling.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c compute_flux_scaling.c
 
-approximate_delta_concs.o: approximate_delta_concs.c approximate_delta_concs.h ce_approximate_delta_concs.h lr_approximate_delta_concs.h lr2_approximate_delta_concs.h lr1_approximate_delta_concs.h lr3_approximate_delta_concs.h lr4_approximate_delta_concs.h lr5_approximate_delta_concs.h lr6_approximate_delta_concs.h lr7_approximate_delta_concs.h lr8_approximate_delta_concs.h lr9_approximate_delta_concs.h lr10_approximate_delta_concs.h ce_approximate_delta_concs.h $(SERIAL_INCS)
+approximate_delta_concs.o: approximate_delta_concs.c approximate_delta_concs.h ce_approximate_delta_concs.h lr_approximate_delta_concs.h lr2_approximate_delta_concs.h lr1_approximate_delta_concs.h lr3_approximate_delta_concs.h lr4_approximate_delta_concs.h lr5_approximate_delta_concs.h lr6_approximate_delta_concs.h lr7_approximate_delta_concs.h lr8_approximate_delta_concs.h lr9_approximate_delta_concs.h lr10_approximate_delta_concs.h lr11_approximate_delta_concs.h lr12_approximate_delta_concs.h ce_approximate_delta_concs.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c approximate_delta_concs.c 
 
 vec_abs.o: vec_abs.c vec_abs.h $(SERIAL_INCS)
@@ -1569,11 +1581,38 @@ lr7_approximate_delta_concs.o: lr7_approximate_delta_concs.c lr7_approximate_del
 lr8_approximate_delta_concs.o: lr8_approximate_delta_concs.c lr8_approximate_delta_concs.h get_counts.h update_regulations.h $(SERIAL_INCS) 
 	$(CC) $(DCFLAGS) $(TFLAGS) -c lr8_approximate_delta_concs.c 
 
-lr9_approximate_delta_concs.o: lr9_approximate_delta_concs.c lr9_approximate_delta_concs.h get_counts.h $(SERIAL_INCS)
+lr9_approximate_delta_concs.o: lr9_approximate_delta_concs.c lr9_approximate_delta_concs.h get_counts.h update_regulations.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c lr9_approximate_delta_concs.c 
 
-lr10_approximate_delta_concs.o: lr10_approximate_delta_concs.c lr10_approximate_delta_concs.h get_counts.h $(SERIAL_INCS)
+lr10_approximate_delta_concs.o: lr10_approximate_delta_concs.c lr10_approximate_delta_concs.h get_counts.h update_regulations.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c lr10_approximate_delta_concs.c 
+
+lr11_approximate_delta_concs.o: lr11_approximate_delta_concs.c lr11_approximate_delta_concs.h get_counts.h update_regulations.h stable_add.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c lr11_approximate_delta_concs.c 
+
+stable_add.o: stable_add.c stable_add.h dsort.h pairwise_sum.h dreverse_list.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c stable_add.c
+
+dsort.o: dsort.c dsort.h dmerge.h dsort_pairs.h dsort_pairs_in_place.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c dsort.c
+
+dmerge.o: dmerge.c dmerge.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c dmerge.c
+
+dsort_pairs.o: dsort_pairs.c dsort_pairs.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c dsort_pairs.c
+
+dsort_pairs_in_place.o: dsort_pairs_in_place.c dsort_pairs_in_place.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c dsort_pairs_in_place.c
+
+pairwise_sum.o: pairwise_sum.c pairwise_sum.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c pairwise_sum.c
+
+dreverse_list.o: dreverse_list.c dreverse_list.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c dreverse_list.c
+
+lr12_approximate_delta_concs.o: lr12_approximate_delta_concs.c lr12_approximate_delta_concs.h get_counts.h update_regulations.h stable_add.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c lr12_approximate_delta_concs.c 
 
 ode_num_jac.o: ode_num_jac.c ode_num_jac.h $(SERIAL_INCS) num_jac_col.h blas.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c ode_num_jac.c 
