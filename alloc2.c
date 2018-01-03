@@ -195,7 +195,7 @@ int alloc2(struct state_struct *state, int setup) {
     }
   }
   if (success) {
-    ask_for = num_rxns * int64_t_size;
+    ask_for = 2 * num_rxns * int64_t_size;
     usage += ask_for;
     reactions_matrix->solvent_coefficients = (int64_t*)calloc(one_l,ask_for);
     if (reactions_matrix->solvent_coefficients == NULL) {
