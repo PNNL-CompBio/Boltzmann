@@ -390,6 +390,7 @@ int ode23tb (struct state_struct *state, double *counts,
       normy     = fabs(y[idamax(&ny,y,&inc1)]);
       normyp    = fabs(yp[idamax(&ny,yp,&inc1)]);
     }
+    jcurrent   = 1;
     need_new_j = 0;
     htspan  = tfinal - t0;
     tdir = 1.0;
@@ -1041,6 +1042,7 @@ int ode23tb (struct state_struct *state, double *counts,
       if (info != 0) {
 	break;
       }
+
       nsteps = nsteps + 1;
       nnreset_znew = 0;
       if (nonnegative) {
@@ -1063,6 +1065,9 @@ int ode23tb (struct state_struct *state, double *counts,
 	  }
 	}
       }
+      /* 
+	Advance the integration one step. 
+      */
       if (nnreset_znew) {
 	for (i=0;i<ny;i++) {
 	  znew[i] = z3[i];
@@ -1091,7 +1096,7 @@ int ode23tb (struct state_struct *state, double *counts,
 	  normy = normynew;
 	} 
 	jcurrent = 0;
-	need_new_j = 1;
+	mcurrent = 1;
 	if (nofailed) {
 	  q = pow((err/rtol),third);
 	  h_ratio = hmax/absh;
@@ -1110,6 +1115,7 @@ int ode23tb (struct state_struct *state, double *counts,
 	  if (fabs(h_ratio - 1) > 0.2) {
 	    absh = h_ratio *absh;
 	    dscal(&ny,&h_ratio,z,&inc1);
+	    need_new_lu = 1;
 	  }
 	}
       }
