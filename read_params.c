@@ -51,7 +51,9 @@ int read_params (char *param_file_name, struct state_struct *state) {
   int success;
   int sscan_ok;
   int kl;
-  int padi;
+  int ode_stop_norm;
+  int ode_stop_rel;
+  int ode_stop_style;
   FILE *in_fp;
   success = 1;
   vgrng_state  = state->vgrng_state;
@@ -159,6 +161,8 @@ int read_params (char *param_file_name, struct state_struct *state) {
     state->max_log_g0_sum      = 100.0;
     state->dg0_scale_factor    = .001;
     state->flux_scaling        = 0.0;
+    state->deriv_thresh        = 1.0e-8;
+    state->ode_stop_thresh     = 1.0e-8;
     /*
     state->min_conc            = 1.0e-52;
     */
@@ -191,6 +195,9 @@ int read_params (char *param_file_name, struct state_struct *state) {
     state->cvodes_prec_choice  = (int64_t)2;
     state->ode_jacobian_choice = (int64_t)8;
     state->cvodes_prec_fill    = (int64_t)0;
+    state->ode_stop_norm       = (int64_t)0; /* max norm */
+    state->ode_stop_rel        = (int64_t)0; /* absolute size */
+    state->ode_stop_style      = (int64_t)0; /* none: integrate till t_final */
 
     state->default_initial_count = (int64_t)0;
 
@@ -319,8 +326,54 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	if (state->max_regs_per_rxn <= 0) {
 	  state->max_regs_per_rxn = 4;
 	}
+      } else if (strncmp(key,"ODE_STOP_NORM",13) == 0) {
+	if (strncmp(value,"INF",3) == 0) {
+	  state->ode_stop_norm = 0;
+	} else if (strncmp(value,"MAX",3) == 0) {
+	  state->ode_stop_norm = 1;
+	} else {
+	  sscan_ok = sscanf(value,"%ld",&ode_stop_norm);
+	  if (sscan_ok == 1) {
+	    state->ode_stop_norm = ode_stop_norm;
+	    /*
+	      might want to check that it is 0,1,or 2 here.
+	    */
+	  }
+	}
+      } else if (strncmp(key,"ODE_STOP_REL",12) == 0) {
+	if (strncmp(value,"ABS",3) == 0) {
+	  state->ode_stop_rel = 0;
+	} else if (strncmp(value,"REL",3) == 0) {
+	  state->ode_stop_rel = 1;
+	} else {
+	  sscan_ok = sscanf(value,"%ld",&ode_stop_rel);
+	  if (sscan_ok == 1) {
+	    state->ode_stop_rel = ode_stop_rel;
+	    /*
+	      might want to check that it is 0, or 1.
+	    */
+	  }
+	}
+      } else if (strncmp(key,"ODE_STOP_STYLE",14) == 0) {
+	if (strncmp(value,"VEC",3) == 0) {
+	  state->ode_stop_style = 0;
+	} else if (strncmp(value,"ELE",3) == 0) {
+	  state->ode_stop_style = 1;
+	} else {
+	  sscan_ok = sscanf(value,"%ld",&ode_stop_style);
+	  if (sscan_ok == 1) {
+	    state->ode_stop_style = ode_stop_style;
+	    /*
+	      might want to check that it is 0, or 1.
+	    */
+	  }
+	}
       } else if (strncmp(key,"EPSILON",7) == 0) {
 	sscan_ok = sscanf(value,"%le",&state->epsilon);
+      } else if (strncmp(key,"DERIV_THRESH",12) == 0) {
+	sscan_ok = sscanf(value,"%le",&state->deriv_thresh);
+      } else if (strncmp(key,"ODE_STOP_THRESH",15) == 0) {
+	sscan_ok = sscanf(value,"%le",&state->ode_stop_thresh);
       } else if (strncmp(key,"IDEAL_GAS_R",11) == 0) {
 	sscan_ok = sscanf(value,"%le",&(state->ideal_gas_r));
       } else if (strncmp(key,"TEMP_KELVIN",11) == 0) {
