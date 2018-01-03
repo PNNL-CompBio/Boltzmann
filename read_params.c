@@ -127,6 +127,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
     state->cals_per_joule      = 1.0/state->joules_per_cal;
     state->default_volume      = 1.0e-15;
     state->recip_default_volume = 1.0e15;
+    state->ode_t_final         = 10.0;
     /*
     state->min_conc            = 1.0e-52;
     */
@@ -207,23 +208,23 @@ int read_params (char *param_file_name, struct state_struct *state) {
       } else if (strncmp(key,"MS2JS_FILE",9) == 0) {
 	sscan_ok = sscanf(value,"%s",state->ms2js_file);
       } else if (strncmp(key,"USE_PSEUDOISOMERS",17) == 0) {
-	sscan_ok = sscanf(value,"%ld",&state->use_pseudoisomers);
+	sscan_ok = sscanf(value,"%lld",&state->use_pseudoisomers);
       } else if (strncmp(key,"USE_METROPOLIS",14) == 0) {
-	sscan_ok = sscanf(value,"%ld",&state->use_metropolis);
+	sscan_ok = sscanf(value,"%lld",&state->use_metropolis);
       } else if (strncmp(key,"USE_REGULATION",14) == 0) {
-	sscan_ok = sscanf(value,"%ld",&state->use_regulation);
+	sscan_ok = sscanf(value,"%lld",&state->use_regulation);
       } else if (strncmp(key,"LOG_FILE",8) == 0) {
 	sscan_ok = sscanf(value,"%s",state->log_file);
       } else if (strncmp(key,"SOLVENT",7) == 0) {
 	sscan_ok = sscanf(value,"%s",state->solvent_string);
       } else if (strncmp(key,"ALIGN_LEN",9) == 0) {
-	sscan_ok = sscanf(value,"%ld",&(state->align_len));
+	sscan_ok = sscanf(value,"%lld",&(state->align_len));
 	if (state->align_len < 0) {
 	  state->align_len = 16;
 	}
 	state->align_mask = state->align_len - (int64_t)1;
       } else if (strncmp(key,"MAX_REGS_PER_RXN",18) == 0) {
-	sscan_ok = sscanf(value,"%ld",&(state->max_regs_per_rxn));
+	sscan_ok = sscanf(value,"%lld",&(state->max_regs_per_rxn));
 	if (state->max_regs_per_rxn <= 0) {
 	  state->max_regs_per_rxn = 4;
 	}
@@ -257,45 +258,52 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	  state->default_volume = default_volume_candidate;
 	  state->recip_default_volume = 1.0/default_volume_candidate;
 	} 
+      } else if (strncmp(key,"ODE_T_FINAL",11) == 0) {
+	sscan_ok = sscanf(value,"%le",&(state->ode_t_final));
       } else if (strncmp(key,"MIN_CONC",8) == 0) {
 	sscan_ok = sscanf(value,"%le",&min_conc);
 	if (min_conc >= 0.0) {
 	  state->min_conc = min_conc;
 	}
       } else if (strncmp(key,"WARMUP_STEPS",12) == 0) {
-	sscan_ok = sscanf(value,"%ld",&(state->warmup_steps));
+	sscan_ok = sscanf(value,"%lld",&(state->warmup_steps));
       } else if (strncmp(key,"RXN_VIEW_FREQ",13) == 0) {
-	sscan_ok = sscanf(value,"%ld",&(state->rxn_view_freq));
+	sscan_ok = sscanf(value,"%lld",&(state->rxn_view_freq));
 	if (state->rxn_view_freq < 0) {
 	  state->rxn_view_freq = 0;
 	}
+      } else if (strncmp(key,"ODE_RXN_VIEW_FREQ",17) == 0) {
+	sscan_ok = sscanf(value,"%lld",&(state->ode_rxn_view_freq));
+	if (state->ode_rxn_view_freq < 0) {
+	  state->ode_rxn_view_freq = 0;
+	}
       } else if (strncmp(key,"COUNT_VIEW_FREQ",15) == 0) {
-	sscan_ok = sscanf(value,"%ld",&(state->count_view_freq));
+	sscan_ok = sscanf(value,"%lld",&(state->count_view_freq));
 	if (state->count_view_freq < 0) {
 	  state->count_view_freq = 1;
 	}
       } else if (strncmp(key,"LKLHD_VIEW_FREQ",15) == 0) {
-	sscan_ok = sscanf(value,"%ld",&(state->lklhd_view_freq));
+	sscan_ok = sscanf(value,"%lld",&(state->lklhd_view_freq));
 	if (state->lklhd_view_freq < 0) {
 	  state->lklhd_view_freq = 1;
 	}
       } else if (strncmp(key,"FE_VIEW_FREQ",12) == 0) {
-	sscan_ok = sscanf(value,"%ld",&(state->fe_view_freq));
+	sscan_ok = sscanf(value,"%lld",&(state->fe_view_freq));
 	if (state->fe_view_freq < 0) {
 	  state->fe_view_freq = 0;
 	}
       } else if (strncmp(key,"USE_ACTIVITIES",14) == 0) {
-	sscan_ok = sscanf(value,"%ld",&(state->use_activities));
+	sscan_ok = sscanf(value,"%lld",&(state->use_activities));
 	if (state->use_activities < 0) {
 	  state->use_activities = 0;
 	}
       } else if (strncmp(key,"USE_DEQ",7) == 0) {
-	sscan_ok = sscanf(value,"%ld",&(state->use_deq));
+	sscan_ok = sscanf(value,"%lld",&(state->use_deq));
 	if (state->use_deq < 0) {
 	  state->use_deq = 0;
 	}
       } else if (strncmp(key,"USE_STEADY_STATE",19) == 0) {
-	sscan_ok = sscanf(value,"%ld",&(state->adjust_steady_state));
+	sscan_ok = sscanf(value,"%lld",&(state->adjust_steady_state));
 	state->use_metropolis = state->adjust_steady_state;
 	if (state->adjust_steady_state < 0) {
 	  state->adjust_steady_state = 0;
@@ -304,7 +312,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	  state->use_metropolis = 1;
 	}
       } else if (strncmp(key,"ADJUST_STEADY_STATE",19) == 0) {
-	sscan_ok = sscanf(value,"%ld",&(state->adjust_steady_state));
+	sscan_ok = sscanf(value,"%lld",&(state->adjust_steady_state));
 	if (state->adjust_steady_state < 0) {
 	  state->adjust_steady_state = 0;
 	}
@@ -312,15 +320,15 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	  state->use_metropolis = 1;
 	}
       } else if (strncmp(key,"BASE_REACTION",13) == 0) {
-	sscan_ok = sscanf(value,"%ld",&(state->base_reaction));
+	sscan_ok = sscanf(value,"%lld",&(state->base_reaction));
       } else if (strncmp(key,"ODE_SOLVER_CHOICE",17) == 0) {
-	sscan_ok = sscanf(value,"%ld",&(state->ode_solver_choice));
+	sscan_ok = sscanf(value,"%lld",&(state->ode_solver_choice));
       } else if (strncmp(key,"DELTA_CONCS_CHOICE",18) == 0) {
-	sscan_ok = sscanf(value,"%ld",&(state->delta_concs_choice));
+	sscan_ok = sscanf(value,"%lld",&(state->delta_concs_choice));
       } else if (strncmp(key,"PRINT_OUTPUT",12) == 0) {
-	sscan_ok = sscanf(value,"%ld",&(state->print_output));
+	sscan_ok = sscanf(value,"%lld",&(state->print_output));
       } else if (strncmp(key,"RECORD_STEPS",12) == 0) {
-	sscan_ok = sscanf(value,"%ld",&(state->record_steps));
+	sscan_ok = sscanf(value,"%lld",&(state->record_steps));
       } else if (strncmp(key,"FREE_ENERGY_FORMAT",12) == 0) {
 	if (strncmp(value,"NONE",4) == 0) {
 	  state->free_energy_format = (int64_t)0;
@@ -331,7 +339,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	} else if (strcmp(value,"KCAL/MOL") == 0) {
 	  state->free_energy_format = (int64_t)3;
 	} else {
-	  sscan_ok = sscanf(value,"%ld",&(state->free_energy_format));
+	  sscan_ok = sscanf(value,"%lld",&(state->free_energy_format));
 	  if (sscan_ok != 1) {
 	    fprintf(stderr,"read_params: invalid value for free_energy "
 		    "format using 0\n");
