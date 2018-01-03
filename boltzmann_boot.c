@@ -56,7 +56,9 @@ specific language governing permissions and limitations under the License.
 #include "alloc3.h"
 #include "set_compartment_ptrs.h"
 #include "read_initial_concentrations.h"
+/*
 #include "form_molecules_matrix.h"
+*/
 #include "compute_ke.h"
 #include "print_rxn_likelihoods_header.h"
 #include "print_free_energy_header.h"
@@ -66,6 +68,7 @@ specific language governing permissions and limitations under the License.
 #include "sort_global_molecules.h"
 #include "count_ws.h"
 #include "count_nws.h"
+#include "boltzmann_mmap_superstate.h"
 /*
 #define DBG_BOLTZMANN_BOOT  
 */
@@ -146,7 +149,6 @@ int boltzmann_boot(char *param_file_name, int64_t **super_statep) {
 	       print_molecules_dictionary,
 	       alloc3,
 	       read_initial_concentrations,
-	       form_molecules_matrix,
 	       compute_ke
 	       print_rxn_likelihoods_header
 	       print_free_energy_header
@@ -251,10 +253,7 @@ int boltzmann_boot(char *param_file_name, int64_t **super_statep) {
   int64_t local_state_buff_size_in_pages;
   int64_t ntr;
   int64_t ntw;
-  int64_t mmap_start_addr;
-  int64_t mmap_offset;
   int64_t mmap_file_len;
-  int64_t zero_l;
   int64_t ask_for;
   int64_t mi_base;
   int64_t ci_base;
@@ -284,10 +283,7 @@ int boltzmann_boot(char *param_file_name, int64_t **super_statep) {
   int log2_page_size;
 
   int ierr;
-  int mmap_err;
-  
-  int mmap_sm_flags;
-  int mmap_read_prot;
+  int padi;
 
   int skip1;
   int skip2;
@@ -1237,40 +1233,10 @@ int boltzmann_boot(char *param_file_name, int64_t **super_statep) {
   }
   if (success) {
     fclose(global_state_fp);
-    global_state_fp = fopen(global_state_filename,"r");
-    if (global_state_fp == NULL) {
-      fprintf(stderr,"boltzmann_boot: Error, could not open global state "
-	      "file for reading.%s\n",global_state_filename);
-      fflush(stderr);
-      success = 0;
-    }
-    global_state_fd = fileno(global_state_fp);
-
-  }
-  if (success) {
-    zero_l    = (int64_t)0;
-    lseek_pos = zero_l;
-    mmap_start_addr = zero_l;
-    mmap_read_prot  = PROT_READ;
-    mmap_sm_flags   = MAP_SHARED;
-    mmap_offset     = zero_l;
     mmap_file_len   = meta_data[1];
-    super_statev = (int64_t *) mmap(&mmap_start_addr,
-				    mmap_file_len,
-				    mmap_read_prot,
-				    mmap_sm_flags,
-				    global_state_fd,
-				    mmap_offset);
-    mmap_err = errno;
-    if ((int64_t)(super_statev) < zero_l) {
-      success = 0;
-      fprintf(stderr,"boltzmann_boot: Error unable to mmap global state file,"
-	      " length = %ld, errno = %d:%s\n",
-		mmap_file_len,mmap_err,strerror(mmap_err));
-      fflush(stderr);
-    } else {
-      *super_statep = super_statev;
-    }
+    success = boltzmann_mmap_superstate(global_state_filename,
+					mmap_file_len,
+					super_statep);
   }
   return(success);
 }
