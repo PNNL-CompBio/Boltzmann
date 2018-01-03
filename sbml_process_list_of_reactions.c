@@ -21,7 +21,7 @@ CONDITIONS OF ANY KIND, either express or implied. See the License for the
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
 
-#include "sbml2bo_structs.h"
+#include "boltzmann_structs.h"
 
 #include "count_ws.h"
 #include "count_nws.h"
@@ -29,6 +29,7 @@ specific language governing permissions and limitations under the License.
 #include "sbml_key_value.h"
 #include "sbml_lookup_reaction_attribute.h"
 #include "sbml_lookup_speciesref_attribute.h"
+#include "translate_ms_2_js.h"
 
 #include "sbml_process_list_of_reactions.h"
 
@@ -65,6 +66,7 @@ int sbml_process_list_of_reactions(FILE *sbml_fp,
     "</reaction>" {in_reaction=0}
     {print //}
   */
+  struct ms2js_struct *ms2js_data;
   char comp_c[1024];
   char species_c[1024];
   char value_c[1024];
@@ -75,6 +77,7 @@ int sbml_process_list_of_reactions(FILE *sbml_fp,
   char *value;
   char *comp;
   char *species;
+  char *tspecies;
   char *rxn_id;
   char *units;
   char bcf[8];
@@ -125,6 +128,9 @@ int sbml_process_list_of_reactions(FILE *sbml_fp,
   int max_key_len;
   int max_val_len;
 
+  int translate_from_modelseed;
+  int padi;
+
   FILE *lfp;
   FILE *error_fp;
   FILE *rxns_fp;
@@ -141,7 +147,7 @@ int sbml_process_list_of_reactions(FILE *sbml_fp,
   vc[1]       = 'V';
   max_key_len = 1023;
   max_val_len = 1023;
-
+  ms2js_data = state->ms2js_data;
   lfp        = state->log_fp;
   rxns_fp    = state->rxns_fp;
   if (lfp == NULL) {
@@ -149,6 +155,14 @@ int sbml_process_list_of_reactions(FILE *sbml_fp,
   } else {
     error_fp = lfp;
   }
+  /*
+    For now we hardware translate_from_modelseed to be 1,
+    assuming the sbml files are using the modelseed id's.
+    Could become a parameter later.
+  */
+  translate_from_modelseed = 1;
+
+
   /*
     Set the default delta_g0 and delta_g0_units.
   */
@@ -440,7 +454,7 @@ int sbml_process_list_of_reactions(FILE *sbml_fp,
 	    if (coefficient > 1) {
 	      fprintf(rxns_fp,"%d\t",coefficient);
 	    }
-	    fprintf(rxns_fp,"%s",species);
+	    fprintf(rxns_fp,"%s",tspecies);
 	    if (comp[0] != '\0') {
 	      fprintf(rxns_fp,":%s",comp);
 	      comp[0] = '\0';
@@ -482,6 +496,18 @@ int sbml_process_list_of_reactions(FILE *sbml_fp,
 		    species
 		  */
 		  strcpy(species,value);
+		  if (translate_from_modelseed) {
+		    tspecies = translate_ms_2_js(ms2js_data,species);
+		    if (tspecies == NULL) {
+		      /*
+			Warning will have already been printed by
+			sbml_process_list_of_species
+		      */
+		      tspecies = species;
+		    }
+		  } else {
+		    tspecies = species;
+		  }
 		  break;
 		case 3:
 		  /*
