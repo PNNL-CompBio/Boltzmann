@@ -56,6 +56,7 @@ int size_rxns_file(struct state_struct *state,
   int64_t pathway_len;
   int64_t compartment_len;
   int64_t line_len;
+  int64_t align_len;
   int64_t *keyword_lens;
   char *rxn_buffer;
   char *fgp;
@@ -73,15 +74,13 @@ int size_rxns_file(struct state_struct *state,
   int kl;
 
   int cmpts;
-  int had_a_compartment;
-
-  int no_cmpt_ct;
   int padi;
 
   FILE *rxn_fp;
   FILE *lfp;
   success = 1;
   rxn_buff_len = state->max_param_line_len << 1;
+  align_len    = state->align_len;
   lfp          = state->lfp;
   rxn_fp       = fopen(reaction_file,"r");
   if (rxn_fp == NULL) {
@@ -113,10 +112,14 @@ int size_rxns_file(struct state_struct *state,
     total_length = (int64_t)0;
     molecules_len  = (int64_t)0;
     pathway_len  = (int64_t)0;
-    compartment_len = (int64_t)0;
+    /*
+      Allow for space for the empty compartment null string. 
+    */
+    compartment_len = (int64_t)align_len;
+    if (compartment_len < 1) {
+      compartment_len = 1;
+    }
     rxn_title_len  = (int64_t)0;
-    had_a_compartment = 0;
-    no_cmpt_ct = 0;
     fgp = fgets(rxn_buffer,rxn_buff_len,rxn_fp);
     while (fgp && (! feof(rxn_fp))) {
       line_len     =  strlen(rxn_buffer);
@@ -173,7 +176,6 @@ int size_rxns_file(struct state_struct *state,
 	  */
 	  cmpts += 1;
 	  compartment_len += line_len - kl - ws_chars;
-	  had_a_compartment = 1;
 	  break;
 	case 5:
 	  /*
@@ -193,10 +195,6 @@ int size_rxns_file(struct state_struct *state,
 	case 8:
 	  break;
 	case 9:
-	  if (had_a_compartment == 0) {
-	    no_cmpt_ct += 1;
-	  }
-	  had_a_compartment = 0;
         default:
 	  break;
       }
@@ -206,15 +204,9 @@ int size_rxns_file(struct state_struct *state,
     state->number_reactions = rxns;
     state->number_molecules   = molecules;
     /*
-      Allow for no compartment specified reactions.
+      Always have an empty compartment.
     */
-    if (cmpts > 1) {
-      if (no_cmpt_ct > 0) {
-	cmpts += 1;
-      } 
-    } else {
-      cmpts = 1;
-    }
+    cmpts += 1;
     state->number_compartments = cmpts;
     state->molecules_space = molecules_len;
     state->pathway_space = pathway_len;
