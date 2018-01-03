@@ -28,5 +28,6 @@ specific language governing permissions and limitations under the License.
 #include "state_struct.h"
 #include "rxn_struct.h"
 #include "rxn_matrix_struct.h"
+#include "species_matrix_struct.h"
 #include "istring_elem_struct.h"
 #endif
