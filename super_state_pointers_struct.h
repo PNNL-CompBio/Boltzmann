@@ -1,6 +1,6 @@
 /* super_state_pointers_struct.h 
 *******************************************************************************
-Boltsman
+Boltzmann
 
 Pacific Northwest National Laboratory, Richland, WA 99352.
 
