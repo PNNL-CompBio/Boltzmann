@@ -26,8 +26,10 @@ specific language governing permissions and limitations under the License.
 */
 
 #include "flatten_state.h"
+/*
 #include "alloc4.h"
 #include "form_molecules_matrix.h"
+*/
 #include "alloc7.h"
 #include "update_rxn_log_likelihoods.h"
 #include "ode_print_concs_header.h"
@@ -48,11 +50,9 @@ int deq_run(struct state_struct *state) {
 
     Called by: deq, boltzmann_run
     Calls:     flatten_state,
-               alloc4,
-	       form_molelcules_matrix,
 	       alloc7,
 	       update_rxn_log_likelihoods
-	       ode23tb
+	       ode_solver
   */ 
   struct state_struct *nstate;
   struct molecules_matrix_struct *molecules_matrix;
@@ -190,17 +190,19 @@ int deq_run(struct state_struct *state) {
   noop_rxn               = number_reactions + number_reactions;
   normcontrol            = 0;
   /*
+    NB alloc4 and form_molecules matrix are now called from 
+    boltzmann_init_core
     Allocate space for forming the molecules matrix.
-  */
   if (success) {
     success = alloc4(state,&molecules_matrix,&transpose_work);
   }
+  */
   /*
     Compute the molecules matrix.
-  */
   if (success) {
     success = form_molecules_matrix(state,molecules_matrix,transpose_work);
   }
+  */
   /*
     We need to allocate space for a flux vector ( lenth = num_species)
     The Jacobian of the flux vector (length = num_species * num_species);
