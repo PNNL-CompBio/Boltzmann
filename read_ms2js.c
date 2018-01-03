@@ -29,8 +29,8 @@ specific language governing permissions and limitations under the License.
 
 int read_ms2js(struct sbml2bo_struct *sbml_state) {
   /*
-    read the moduleseed to json id file translations, assumed to be
-    sorted on moduleseed id's.
+    read the modelseed to json id file translations, assumed to be
+    sorted on modelseed id's.
     Called by: sbml2bo, sbml_to_boltzmann.
     Calls:     count_ntb, strcpy, fopen, fgets, fclose
   */
