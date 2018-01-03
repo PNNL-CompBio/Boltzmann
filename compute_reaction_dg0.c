@@ -1,5 +1,5 @@
 /* compute_reaction_dg0.c
- ********************************************************************************
+********************************************************************************
 boltzmann
 
 Pacific Northwest National Laboratory, Richland, WA 99352.
@@ -111,7 +111,6 @@ int compute_reaction_dg0(struct state_struct *state){
       /*
 	Set the free energy units to KJ/mol.
       */
-      reaction->unit_i = 1;
       sum = 0;
       rxn_dg0_tf = (double)0.0;
       for (j=rxn_ptrs[rxns];j<rxn_ptrs[rxns+1];j++) {
@@ -137,6 +136,7 @@ int compute_reaction_dg0(struct state_struct *state){
 	}
       } /* end for(j...) */
       if (sum == 0) {
+	reaction->unit_i = 1;
 	reaction->delta_g0 = rxn_dg0_tf;
 	reaction->deltag0_computed = 1;
 	if (print_output) {
@@ -149,7 +149,7 @@ int compute_reaction_dg0(struct state_struct *state){
 		  reaction->delta_g0);
 	}
       }
-    }
+    } /*end if try_pseudoisomer */
     reaction += 1; /* Caution address arithmetic */
   } /* end for (rxns...) */
   if (print_output) {
