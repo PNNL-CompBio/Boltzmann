@@ -120,16 +120,11 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
   }
   if (success) {
     /*
-      Initialize the random number generators,
-      setting the vgrng_state and vgrng2_state fields of
-      the state structure.
+      Echo the input parameters to the log file.
     */
-    vgrng_state = state->vgrng_state;
-    vgrng_start_steps = 1001;
-    vgrng_start= vgrng_init(vgrng_state,vgrng_start_steps);
-    vgrng2_state = state->vgrng2_state;
-    vgrng_start_steps = 1042;
-    vgrng_start= vgrng_init(vgrng2_state,vgrng_start_steps);
+    if (print_output) {
+      success = echo_params(state->lfp,state);
+    }
   }
   /*
     Allocate space for the reactions line buffer, and the rxn_file keywords.
@@ -138,20 +133,15 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
     success = alloc1(state);
   }
   if (success) {
-    /*
-      Echo the input parameters to the log file.
-    */
-    if (print_output) {
-      success = echo_params(state->lfp,state);
-    }
+    success = size_rxns_file(state);
+  }
+  if (success) {
+    success = alloc2(state);
   }
   /*
     Read reactions file to count molecules and reactions
     Then allocate space then read for real.
   */
-  if (success) {
-    success = size_rxns_file(state);
-  }
   if (success) {
 #ifdef DBG_BOLTZMANN_INIT
     lfp = state->lfp;
@@ -181,9 +171,6 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
     state->number_molecules, and we can allocate space for the molecules 
     sorting.
   */
-  if (success) {
-    success = alloc2(state);
-  }
   if (success) {
     /*
       Read and parse the reactions file.
@@ -292,7 +279,9 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
     /*
       Print the header lines for the reaction likelihoods output file.
     */
-    print_rxn_likelihoods_header(state);
+    if (print_output) {
+      print_rxn_likelihoods_header(state);
+    }
   }
   if (success) {
     if (state->free_energy_format > (int64_t)0) {
@@ -326,6 +315,18 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
       }
     }
   }
-
+  if (success) {
+    /*
+      Initialize the random number generators,
+      setting the vgrng_state and vgrng2_state fields of
+      the state structure.
+    */
+    vgrng_state = state->vgrng_state;
+    vgrng_start_steps = 1001;
+    vgrng_start= vgrng_init(vgrng_state,vgrng_start_steps);
+    vgrng2_state = state->vgrng2_state;
+    vgrng_start_steps = 1042;
+    vgrng_start= vgrng_init(vgrng2_state,vgrng_start_steps);
+  }
   return(success);
 }
