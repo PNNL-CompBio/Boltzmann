@@ -74,10 +74,6 @@ int boltzmann_run_sim(struct state_struct *state) {
   double *bndry_flux_concs;
   double *activities;
   double *no_op_likelihood;
-  double delta;
-  /*
-  double *lthermo;
-  */
   int    *rxn_fire;
   char   *cmpt_string;
 
@@ -111,25 +107,22 @@ int boltzmann_run_sim(struct state_struct *state) {
   FILE *lfp;
   success = 1;
   
-  n_warmup_steps    	 = state->warmup_steps;
-  n_record_steps    	 = state->record_steps;
-  number_reactions       = state->number_reactions;
-  unique_molecules     	 = state->unique_molecules;
+  n_warmup_steps    	 = (int)state->warmup_steps;
+  n_record_steps    	 = (int)state->record_steps;
+  number_reactions       = (int)state->number_reactions;
+  unique_molecules     	 = (int)state->unique_molecules;
   current_concentrations = state->current_concentrations;
   future_concentrations  = state->future_concentrations;
   bndry_flux_concs  	 = state->bndry_flux_concs;
   activities        	 = state->activities;
   rxn_fire          	 = state->rxn_fire;
   no_op_likelihood  	 = state->no_op_likelihood;
-  /*
-  lthermo        = state->l_thermo;
-  */
   number_reactions_t2    = number_reactions << 1;
   number_reactions_t2_p1 = number_reactions_t2 + 1;
-  rxn_view_freq        	 = state->rxn_view_freq;
-  rxn_view_hist_lngth  	 = state->rxn_view_hist_lngth;
-  lklhd_view_freq        = state->lklhd_view_freq;
-  conc_view_freq         = state->conc_view_freq;
+  rxn_view_freq        	 = (int)state->rxn_view_freq;
+  rxn_view_hist_lngth  	 = (int)state->rxn_view_hist_lngth;
+  lklhd_view_freq        = (int)state->lklhd_view_freq;
+  conc_view_freq         = (int)state->conc_view_freq;
   rxn_view_pos         	 = 0;
   rxn_view_step        	 = 1;
   conc_view_step         = 1;
@@ -252,11 +245,11 @@ int boltzmann_run_sim(struct state_struct *state) {
       /*
 	If user has requested them, print out free energies as well.
       */
-      if (state->free_energy_format > 0) {
+      if (state->free_energy_format > (int64_t)0) {
 	print_free_energy(state,i);
       }
     } /* end for(i...) */
-    if (state->num_fixed_concs > 0) {
+    if (state->num_fixed_concs > (int64_t)0) {
       print_boundary_flux(state);
     } /* end if (state->num_fixed_concs ...) */
     if (success) {
