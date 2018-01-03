@@ -85,6 +85,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
     state->log_file[0]         = '\0';
     state->output_file[0]      = '\0';
     state->counts_out_file[0]  = '\0';
+    state->ode_concs_file[0]   = '\0';
     state->rxn_lklhd_file[0]   = '\0';
     state->free_energy_file[0] = '\0';
     state->restart_file[0]     = '\0';
@@ -178,6 +179,8 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	sscan_ok = sscanf(value,"%s",state->output_file);
       } else if (strncmp(key,"COUNTS_OUT_FILE",15) == 0) {
 	sscan_ok = sscanf(value,"%s",state->counts_out_file);
+      } else if (strncmp(key,"ODE_CONCS_FILE",14) == 0) {
+	sscan_ok = sscanf(value,"%s",state->ode_concs_file);
       } else if (strncmp(key,"RXN_LKLHD_FILE",14) == 0) {
 	sscan_ok = sscanf(value,"%s",state->rxn_lklhd_file);
       } else if (strncmp(key,"FREE_ENERGY_FILE",16) == 0) {
