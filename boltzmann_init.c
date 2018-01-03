@@ -45,6 +45,7 @@ specific language governing permissions and limitations under the License.
 #include "print_rxn_likelihoods_header.h"
 #include "print_free_energy_header.h"
 #include "flatten_state.h"
+#include "print_reactions_matrix.h"
 #include "free_boot_state.h"
 /*
 #define DBG_BOLTZMANN_INIT  
@@ -78,6 +79,7 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
   */
   struct state_struct *boot_state;
   struct state_struct *state;
+  struct state_struct *stateq;
   struct formation_energy_struct *formation_energies;
   struct vgrng_state_struct *vgrng_state;
   struct vgrng_state_struct *vgrng2_state;
@@ -335,9 +337,15 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
     /*
     *statep = boot_state;
     */
-    *statep = NULL;
+    stateq  = NULL;
     boot_state->workspace_base = NULL;
-    success = flatten_state(boot_state,statep);
+    success = flatten_state(boot_state,&stateq);
+    if (success) {
+      if (state->print_output) {
+	success = print_reactions_matrix(stateq);
+      }
+    }
+    *statep = stateq;
     if (success) {
       success = free_boot_state(&boot_state);
     }
