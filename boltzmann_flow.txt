@@ -1,0 +1,760 @@
+boltzmann.c is the main program
+
+  boltzmann_init // initializes state, reads input files
+
+    alloc0 // allocates space for the state struct, reactions_file buffer,
+	   // and reaction file keywords.
+
+      boltzmann_set_filename_ptrs // alloc0 allocates space for
+                                  // the filenames used in one
+	   		          // chunk. This routine 
+				  // sets the state fields that 
+				  // are pointers to the locations
+				  // of these filenames.
+             
+
+					 
+
+    read_params // reads the parameter file 
+                // (only argument in boltzman invocation)
+                // sets fields in the state structure
+ 
+    boltzmann_init_core // Initializes the rest of the state
+	                // structure also called by boltzmann_boot
+
+      io_size_init // Sets the output filenames, opens the outputfiles, 
+                   // if reactions file is in sbml, converts it 
+		   // to boltzmann format and sizes the reactions file.
+
+
+        create_output_filenames // Creates default file names based
+	                        // on the reaction file name for files
+				// not explicitly named in the parameter file.
+
+	open_output_files   // opens the log file, the counts_out file,
+	                    // the rxn_likelihood file, 
+			    // the free_energy ouput file, 
+			    // and the boundary_flux output file.
+	
+        sbml_to_boltzmann  // Converts an sbml reactions file into
+	                   // boltzmann format reactions file. 
+			   // It is preferrable to use the sblm2bo executable
+			   // to create the boltzmann format reactions file
+                           // to use as input rather than on the fly from 
+			   // this routine.
+                           // More documentation on this routine's children
+			   // later
+
+   	  size_ms2js_file  // Determine the number of lines in the ms2js_file, 
+                           // and total size of the file so as to set the 
+			   // num_modelseed_ids and length_ms2js_strings 
+			   // fields.
+
+
+	  size_kg2js_file  // Determine the number of lines in the kg2js_file,
+	                   // and total size of te file so as to set the
+			   // num_kegg_ids and length_kg2js_strings fields.
+
+	  sbml_alloc0      // allocate space for the sbml_state struct and
+	                   // allocate space for the file names used
+
+
+	  sbml_set_file_names // determine file names
+	                      // for the logfile, the output file names
+			      // and the input filenames used in 
+			      // translating sbml files.
+
+	  sbml_alloc2 // allocate the space needed to translate
+	              // Modelseed id's and Kegg id's to Json id's
+
+	  read_ms2js  // Read the Modelseed to Json id translation file
+	              // This file should be sorted on Modelseed id's
+
+            count_ntb // return the number of leading non-tab characters
+	              // in a string.
+
+	  read_kg2js // Read the Kegg to Json id translation file 
+	             // This file should be sorted on Kegg id's
+
+	  sort_json_ids  // Sort the json id's from a kg2js data struct 
+	                 // (kg2js_data). List of sorted string pointers is 
+			 // returned in state->json_ids.
+
+            merge_sorted_strings // merge two sorted lists of strings
+
+	  sbml_count_cmpts // Count the number of compartments in
+	                   // an sbml file.
+
+            sbml_find_section // advance sbml file pointer to matching
+                              // section tag, return 1 if found, 0 if not
+
+              count_ws // see below under parse_rxn_file_keyword
+
+
+	  sbml_count_species // Count the number of species in an 
+	                     // sbml file.
+            
+            sbml_find_section // See above under sbml_count_cmpts
+
+	  sbml_alloc1 // allocate space for sorting the sbml compartments
+	              // and storing the compartment text
+
+	  parse_sbml  // Parse an sbml file generating 
+	              // initial concentrations file, 
+		      // reactions data file,
+		      // and compartment sizes file
+
+            sbml_find_section // See above under sbml_count_cmpts
+
+            sbml_process_list_of_compartments // get compartment information
+	                                      // from sbml file.
+
+              count_ws  // see below under parse_rxn_file_keyword
+
+	      count_nws // see below under parse_rxn_file_keyword
+
+	      sbml_read_key_value // scan a buffer for keyword "=" "string" 
+	                          // triples returning full length allowing 
+				  // whitespace before keyword, 
+				  // between any of the three tokens and 
+				  // replacing all whitespace in string with 
+				  // underscores.
+
+                count_ws  // see below under parse_rxn_file_keyword
+
+	        count_nws // see below under parse_rxn_file_keyword
+
+	      sbml_lookup_compartment_attribute // translate a compatment
+	                                        // key to a numeric value.
+
+	      sbml_volume_units_conversion // Compute the conversion factor 
+	                                   // for units into liters.
+	      
+	      sort_compartments // See below under parse_reactions_file
+
+   	    sbml_process_list_of_species // get species information from
+	                                 // sbml file.
+              count_ws   // see below under parse_rxn_file_keyword
+              count_nws  // see below under parse_rxn_file_keyword
+
+	      sbml_start_species_def // Initialize the attributes of a 
+	                             // molecule(species)
+
+	      sbml_parse_species_key_value // Interpret the attribute 
+	                                   // value of a key_value attribute 
+					   // pair in a <species> tag. 
+					   // Returns the total length of 
+					   // the key and value pair in the 
+					   // line buffer.
+
+                sbml_read_key_value // See above under 
+		                    // sbml_process_list_of_compartments
+
+		sbml_lookup_species_attribute // translate a species key
+		                              // to a numeric position in
+					      // the list of keys.
+   
+                compartment_lookup // See below under read_compartment_sizes
+
+                sbml_process_substanceunits // Determine the intiial 
+		                            // concentration multiplier based
+					    // on the units.
+                                 					      
+	      sbml_generate_init_conc_line // Print an initial concentration 
+	                                   // line for the species in the 
+					   // init_concs file and add on to 
+					   // the species_to_json_id map. 
+
+                boltzmannize_string // Replace white space with underscores
+                                    // Remove double quotes, 
+				    // Replace &GT and &APOS with 
+				    // > and ' respectively
+				    
+		sbml_find_string // Return the index of string in a 
+		                 // strings array of length num_strings
+				 // The strings array is assumed to be 
+				 // sorted in strcmp order.
+				 // If the string is not found, -1 is returned.
+
+	    sbml_sort_species_trans // Sort specid,translation(to json_id) 
+	                            // string pointer pairs on the specid 
+				    // field.
+				    
+              sbml_merge_species_trans // Merge two sorted 
+	                               // species_id-translation lists
+	    
+	    sbml_process_list_of_reactions //Process the <listOfReactions> tag
+	                                   // contents, and generate the
+					   // reactions file
+            
+              count_ws   // see below under parse_rxn_file_keyword
+
+              count_nws  // see below under parse_rxn_file_keyword
+
+	      sbml_look_for_in_reaction_tag // Identify tags found within 
+	                                    // the reaction tag, 
+					    // including itself.
+					    // Returns an 8 bit presence 
+					    // indicator.
+
+	      sbml_process_reaction_tag // Process the fields of an sbml 
+	                                // <reaction> tag.
+
+                sbml_read_key_value // See above under 
+		                    // sbml_process_list_of_compartments
+
+                sbml_lookup_reaction_attribute // Translate a reaction key to
+		                               // a numeric position in a 
+					       // list of keys.
+
+                count_ws   // see below under parse_rxn_file_keyword
+
+                count_nws  // see below under parse_rxn_file_keyword
+				
+	      sbml_process_list_of_reactants_tag // Process the 
+	                                         // <listOfReactants> tag
+						 // setting up a left  
+						 // compartment if it is 
+						 // specified and print a
+						 // "LEFT" line in the
+						 // reactions file.       
+
+                count_ws   // see below under parse_rxn_file_keyword
+
+                count_nws  // see below under parse_rxn_file_keyword
+
+                sbml_read_key_value // See above under 
+		                    // sbml_process_list_of_compartments
+
+
+	      sbml_process_list_of_products_tag  // Process the 	  
+						 // <listOfProducts> tag 
+						 // setting up a right 	  
+						 // compartment if it is  
+						 // specified and print a 
+						 // "RIGHT" line in the
+						 // reactions file.       
+
+                count_ws   // see below under parse_rxn_file_keyword
+
+                count_nws  // see below under parse_rxn_file_keyword
+
+                sbml_read_key_value // See above under 
+		                    // sbml_process_list_of_compartments
+
+	      sbml_process_species_reference_tag // 
+
+                count_ws   // see below under parse_rxn_file_keyword
+
+                count_nws  // see below under parse_rxn_file_keyword
+
+                sbml_read_key_value // See above under 
+		                    // sbml_process_list_of_compartments
+
+                sbml_lookup_speciesref_attribute // translate as SpeciesRef
+		                                 // attribute into its numeric
+						 // position in a list
+						 
+	        sbml_find_string // See above under 
+		                 // sbml_generate_init_conc_line
+		
+
+
+	size_rxns_file     // Count the number of reactions in the reactions
+	                   // file, total length of the species names in
+			   // the file, total length of the compartment names
+			   // in the file, and total length of the reactions
+			   // file.
+
+          init_rxn_file_keywords // initializes the rxn_file_keyword_buffer
+	                         // field of state. 
+	                         // It generates a string
+				 // of all the keywords in a boltzmann
+				 // reaction file aligned on 8 byte boundaries
+				 // It also creates an array of keyword lengths
+				 // for use in parse_rxn_file_keyword
+          
+          parse_rxn_file_keyword // Looks up a keyword in the 
+	                         // rxn_file_keyword_buffer returning its
+				 // ordinal position in the list
+				 
+              count_ws           // Counts number of whitespace characters
+	                         // at the beginning of a string 
+				 // (asci numeric value <= 32 = 0x20)
+
+              count_nws          // Counts number of non-whitespace characters
+	                         // at the beginning of a string 
+				 // (asci numeric value > 32 = 0x20)
+
+          count_ws // see above under parse_rxn_file_keyword
+
+	  count_nws // see above under parse_rxn_file_keyword
+	  
+ 
+          count_molecules // Count the number of species occuring in 
+	                  // a "LEFT" or "RIGHT" line of a 
+			  // boltzmann format reactions file.
+
+            count_ws // see above under parse_rxn_file_keyword
+
+	    count_nws // see above under parse_rxn_file_keyword
+	  
+	    is_a_coef // determines whether the first part of a string
+	              // is all digits making it a coefficient instead
+                      // of a species in the reactions file.
+  
+      alloc2 // allocate space for all the strings in the species
+             // names and compartment names, pathway names, reaction titles
+	     // regulation-species names,  in the reaction file
+	     // and space for the reaction matrix structure (reactions_matrix)
+	     // and associated meta data (rxn_struct) stored in the reactions
+	     // field of the state_struct.
+
+      rxns_init // Read in the reactions file, building a dictionary
+                // of sorted species and compartments as well as
+		// the reactions matrix with stoichmetric coefficients.
+
+        parse_reactions_file // fills the unsorted_molecules
+	                     // and unsorted_compartments arrays of structs
+			     // in state, 
+			     // fills the rxn_title_text, pathway_text,
+			     // molecules_text and compartment_text buffers
+			     //  storing all of the string information in
+			     //  the reactions file (each string aligned
+			     //  within the buffer)
+			     // It saves the meta data about each reaction
+			     //  (dg0 etc.) and builds the
+			     //  reaction_matrix with molecule_indices,
+			     //  compartment indices,
+			     //  stoichmetric coefficients, and 
+			     //  string offsets for molecule names, for
+			     //  each species in each reaction.
+			     //  In the process in builds the rxn_ptrs
+			     //  array of offsets to the data corresponding
+			     //  to the first species in each reaction,
+			     //  subsequent information for species per
+			     //  reaction is stored contiguously, ala
+			     //  compressed row storage for sparse matrices.
+			     //  It also stores information about
+			     //  regulation species, -directions, -constants
+			     //  and -exponents from the reactions file.
+			     
+
+          parse_rxn_file_keyword // See above size_rxns_file
+
+	  count_ws // see above under parse_rxn_file_keyword
+
+	  count_nws // see above under parse_rxn_file_keyword
+	  
+	  is_a_coef // see aove under count_molecules
+
+          upcase    // converts all lower case characters to upper case
+	            // in a string (in place).
+
+				 
+	sort_compartments // Sort uppercased compartment names.
+
+	  merge_compartments // merge two sorted lists of compartment names
+
+	unique_compartments // Wrapper for unique_compartments_core that sets
+			    // the nunique_compartments and sum_compartment_len
+			    // fields of the state structure.
+
+          unique_compartments_core // remove duplicates in sorted list of 
+	                           // compartments set the 
+				   // compartment_indices fields in the 
+				   // reaction matrix. Count and return 
+				   // number of unique compartments and 
+				   // the sum of their aligned name lengths.
+				   // Also called by boltzmann_boot.
+
+	translate_compartments // Assign the proper compartment numbers to the
+	                       // unsorted molecules, using the 
+			       // compartment_indices field of the rxns_matrix
+			       // as set by call to unique_compartments.
+
+	sort_molecules // Sort the uppercased molecule names
+
+	  merge_molecules // merge two sorted lists of molecule names.
+
+	unique_molecules // Wrapper for unique_molecules_core that
+	                 // sets the nunique_molecules and sum_molecule_len
+			 // fields of the state structure.
+
+          unique_molecules_core // remove duplicates in sorted list of 
+	                        // molecules set the 
+				// molecules_indices fields in the 
+				// reaction matrix. Count and return 
+				// number of unique molecules and 
+				// the sum of their aligned name lengths.
+				// Also called by boltzmann_boot.
+
+      alloc3 // allocate space for the following vector fields 
+             // set in species_init
+             // (lengths in parens)
+             // in the state structure :
+             // compartment_pointers   	     (nunique_compartments + 1) 
+             // current_counts         	     (nunique_molecules)
+	     // bndry_flux_counts      	     (nunique_molecules)
+	     // count_to_conc          	     (nunique_molecules)
+	     // conc_to_count          	     (nunique_molecules)
+	     // dg0s                   	     (number_reactions)  
+	     // ke                     	     (number_reactions) 
+	     // kss                    	     (number_reactions)
+	     // kssr                   	     (number_reactions)
+	     // kss_eval               	     (nunique_molecules)
+	     // kss_uval               	     (nunique_molecules)
+	     // dg0tfs                 	     (nunique_molecules)
+	     // molecule_probabilities 	     (nunique_molecules)
+	     // molecule_chemical_potentials (nunique_molecules)
+
+      species_init // Initialize concentrations and compartment sizes
+                   // for a reactions file. Also translate
+		   // regulation metabolites.
+		   
+        set_compartment_ptrs // Set pointers to the first molecule in
+	                     // each compartment.
+
+	translate_regulation_metabolites // Translate the reg_species 
+					 // entries from pointers into the 
+					 // regulation_text array to species 
+					 // position, overwriting the 
+					 // reg_species entry with the
+					 // metabolite location in the 
+					 // concentration array.
+
+          molecules_lookup // Return the index of a molecule_name 
+	                   // in the unique_molecules sorted list
+			   // or -1 if not found.
+			   // Also called by read_initial_concentrations
+
+	read_compartment_sizes // read in the compartment volumes from
+	                       // from the compartment file.
+
+          compartment_lookup // Return the index of a compartment_name 
+	                     // in the unique_compartments sorted list
+			     // or -1 if not found.
+ 			     // Also called by read_initial_concentrations
+
+	  count_ws // see above under parse_rxn_file_keyword
+
+	  count_nws // see above under parse_rxn_file_keyword
+	  
+	read_initial_concentrations // read in initial concentrations,
+	                            // variable or fixed status of species
+				    // and kinetic steady state (kss)
+				    // experimental and user
+                                    // initial concentrations (if specified)
+				    
+          molecules_lookup // See above under translater_regulation_metabolites
+	  
+	  compartment_lookup // See above under read_compartment_sizes
+	  
+	  upcase // See above under parse_reactions_file
+
+	check_initial_concentrations // Check that all molecules in the 
+	                             // reactions file had entries in the
+				     // intial concentrations file. 
+
+
+      alloc4 // Allocate space for the molecules_matrix structure and its
+             // subfields and for the transpose_work space needed to form it.
+
+      form_molecules_matrix // form the molecules_matrix which is the
+                            // transpose of the reaction matrix.
+                            // This is needed by the approximate_delta_concs
+			    // routine used in the deq part.
+
+      energy_init // Initialize the delta g0's, kinetic energies, and kinetic
+                  // steady state coefficients.
+
+        compute_standard_energies // Compute the dg0tfs, 
+	                          // molecular_partition_probability
+				  // chemical potential for each species
+				  // and the reaction delta G0 for each 
+				  // reaction
+
+          size_pseudoisomer_file // Determine the number of entries in the 
+	                         // pseudoisomer_file, and the total size of
+				 // the file so as to set the 
+				 // num_pseudoisomers field, and the 
+				 // length_pseudoisomers_strings fields
+				 // in the state struct.
+
+          alloc5 // Allocate space for the formation_energies struct, and the
+	         // pseudoisomers_struct and its
+	         // pseudoisomer_strings, and sorted_pseudoisomer 
+		 // fields to hold data read from the pseudoisomer_dg0_file.
+
+	  parse_pseudoisomer_dg0f_file //Parses the energy of formation file,
+	                               // filling the pseudoisomers structure
+				       // (an array of pseudoisomer_struct's) 
+				       // and the pseudoiosomer_strings array.
+
+ 	    upcase // See above under parse_reactions_file
+	    			       
+            sharp_pos // return the location of the first # in a string,
+	              // -1 if no # in string
+	    
+	    blank_to_dash // Convert blanks in a string to dashes.
+
+
+	  alloc6 // Currently a noop, should be removed. Formerly used
+	         // to allocate space for the formation_energies_struct.
+
+	  compute_molecule_dg0tfs // Compute the dg0tf for all of the 
+	                          // molecules in the reactions file.
+				  // Wrapper for compute_molecule_dg0tf
+
+            compute_molecule_dg0tf // Compute the dg0tf for one species,
+	                           // comparing against all entries
+				   // in the pseudoisomer file.
+	    
+              pseudoisomer_dg0tf // Calcualte the standard transformed Gibbs 
+	                         // energy of formation of a pseudospecies of 
+				 // a compound at a
+				 // given pH and ionic strength, based on 
+				 // Eq. 4.4-10 in Alberty's book.
+
+ 	  compute_molecular_partiton_probability // Just what it says, for
+	                                         // each species.
+
+	  compute_chemical_potential // compute the chemical potential
+	                             // for each species based on the
+				     // molecular partition probability.
+
+	  compute_reaction_dg0 // Set the delta_g0 field for all of the 
+	                       // reactions based on energies of formation.
+
+	  unalloc6 // also a noop routine, could be removed.
+	
+	compute_ke // Compute the equilibrium constants for the reactions
+	           // from their dg0's
+
+        zero_solvent_coefficients // Zero the coefficients in the reaction 
+	                          // matrix corresponding to solvent 
+				  // molecules, but save them in the 
+				  // solvent_coefficients vector.
+
+	compute_kss // compute the steady state forward and reverse
+	            // reaction constants.
+
+
+      echo_inputs // Echo the paramters, reactions, molecules dictionary,
+                  // delta g0's, and the ke's to output files.
+
+
+      run_init // Initialize the activities and the random number generator,
+      	       // pack the state into a new state variable, flattened_state,
+	       // and free the fields of the boot state.
+
+        vgrng_init // Initialize the random number generator state struct
+	
+          vgrng    // Random number generator
+ 
+        print_rxn_likelihoods_header // print out line of f_ and r_ reaction
+	                             // titles (forward and reverse)
+				     // as column headers for the
+				     // reaction likelihoods output file.
+	
+	print_free_energy_header     // prints out header line for the
+	                             // system free energy output file
+                                     
+	flatten_state                // allocate space for a new state
+	                             // and copy pieces of the boot_state
+				     // into it or set the self-referential
+				     // pointers in state.
+
+          boltzmann_set_filename_ptrs // see above under alloc 0
+
+	print_reactions_matrix // print the reactions matrix out in 
+	                       // asci dense format (0's printed).
+
+          recover_solvent_coefficients // restore the solvent stoichiometric
+	                               // coefficients to the reactions matrix
+				       
+          zero_solvent_coefficients // Zero out the solvent stoichiometric
+	                            // coefficients in the reaction matrix
+
+	free_boot_state2 // frees space allocated in routines alloc2,
+	    		 // alloc3, alloc4, alloc5 and the workspace.
+
+    free_boot_state // frees the space allocated in alloc0 and 
+                    // the workspace and the boot_state itself.
+
+  boltzmann_run  // runs the simulation
+
+    flatten_state // See above under run_init
+    
+    update_rxn_log_likelihoods // update the forward and reverse reaction 
+                               // log likelihoods for all reactions.
+			       
+
+      rxn_log_likelihoods // update the forward or reverse reaction log
+                          // likelihoods for all reactions.
+
+			     
+        rxn_likelihoods // update the forward or reverse reaction likelihoods
+	                // for all reactions.
+			   
+          rxn_likelihood // update one forward or reverse reaction likelihood.
+			      
+    choose_rxn // Use random number generator and likelihoods to determine
+               // which reaction to fire.
+
+      
+      candidate_rxn // Generate a candidate reaction, and update reaction
+                    // counts based on it.
+      
+        update_regulations // update all regulated activities.
+
+	  update_regulation // update one regulated activity.
+
+        vgrng    // Random number generator
+
+	binary_search_l_u_b // Find least upper bound position in a 
+	                    // vector of sorted values for a specific value.
+
+        rxn_count_update // Update species counts based aon the chosen
+	                 // reaction firing.             
+	
+      bndry_flux_update // Update the boundary fluxes for species with
+                        // fixed concentrations (as specified in the
+			// initial_concentrations  file)
+
+      metropolis // Uses the metropolis method to accept or reject 
+                 // a candidate reaction for firing, and if the decision
+		 // is to accept it calls the bndry_flux_update routine.
+
+        update_regulation // See above under update_regulations
+
+        vgrng // See above under candidate_rxn
+		 
+        bndry_flux_update // see above under choose_rxn. Note
+	                  // metropolis only called if use_metropolis is
+			  // 1, in which cased bndry_flux_update is
+			  // not called from choose_rxn.
+
+    deq_run // use an ode solver with numerical approximations to
+            // a jacobian to more quickly approach steady state
+	    // concentratons instead of using the warmup loop.
+
+      flatten_state // See above under run_init
+      
+      alloc7.h      // allocates the following state fields
+                    // flux_vector (nunique_molecules)
+		    // flux_jacobian (nunique_molecules^2)
+		    // reactant_term (number_reactions)
+		    // product_term  (number_reactions)
+		    // p_over_r      (number_reactions)
+		    // r_over_p      (number_reactions)
+		    // concs         (number_reactions)
+
+      update_rxn_log_likelihoods // See above under boltzmann_run
+
+      ode_solver // wrapper routine for ode solvers, currently
+                 // only ode23tb supported.
+
+        ode23tb // Adaptation of Matlab ode23tb stiff ode solver
+	
+	  init_base_reactants // Allocate and initialize 
+	                      // base_reactant_indicator, and base_reactants 
+			      // vectors.
+
+          approximate_delta_concs // Approximate concentration derivatives
+	                          // w.r.t. time
+
+            lr_approximate_delta_concs // Approximate concentration derivatives
+	                               // wrt time using likelihood ratio
+				       // approximations
+
+              update_rxn_likelihoods   // Update the forward
+	                               // and reverse reaction likelihoods
+	                               // based on new concentration counts.
+				       
+                rxn_likelihoods        // compute forward or reverse reaction
+		                       // likelihood
+
+                  rxn_likelihood       // compute reaction likelihood for a
+		                       // single reaction
+
+            ce_approximate_delta_concs // Specialized routine computinge
+	                               // concentration derivatives wrt time
+				       // using reaction rate constants for
+				       // the coupledenzyme model reaction.
+				       // Used for testing and debugging
+				       // ode23tb
+
+          compute_flux_scaling // compute the product of the base reaction
+	                       // reactant concentrations and the base	
+			       // reaction forward rate constant.
+
+          ode_num_jac // routine to compute a numerical approximation
+	              // to the Jacobian of the ode system.
+		      // Call approximate_delta_concs.
+
+            num_jac_col // routine to compute one column of the numerical
+	                // Jacobian of the ode system
+
+	      compute_flux_scaling // See above under ode23tb
+
+	      approximate_delta_concs // See above under ode23tb
+ 
+          ode_it_solve // the routine that handles the backward step solve
+	               // for ode23tb.
+
+	    compute_flux_scaling // See above under ode23tb
+
+	    approximate_delta_concs // See above under ode23tb
+          
+            vec_abs // vector absolute value
+	    vec_div // vector-vector elementwise divide
+	    vec_mul // vector-vector elementwise multiply
+	    vec_max // vector-vector elementwise maximum
+   	    dscal_          // blas routine
+ 	    daxpy_          // blas routine
+            dcopy_          // blas routine
+ 	    dgetrs_         // lapack routine
+	    idamax_         // blas routine
+
+          ode_print_concs // routine to print species concentrations at
+	                  // ode time steps
+
+          dcopy_          // blas routine
+	  dnrm2_          // blas routine
+	  idamax_         // blas routine
+          dgemv_	  // blas routine
+	  dscal_          // blas routine
+	  daxpy_          // blas routine
+	  dgetrf_         // lapack routine
+	  dgetrs_         // lapack routine
+		         
+
+    compute_delta_g_forward_entropy_free_energy //
+       // Compute the delta G for the forward reactions, dg_forward,
+       // the system entropy, and the free_energy per reaction
+
+    print_counts // print species counts every count_view_freq 
+                 // iterations of the record loop
+
+    
+    print_likelihoods // print likelihoods per reaction every
+                      // lklhd_view_freq iterations of the record loop
+
+    save_likelihoods  // save the likelihoods in a transposed matrix for
+                      // output to the reactions_view file.
+
+    print_free_energy // print free energies per reaction every
+                      // fe_view_freq interations of the record loop
+
+    print_boundary_flux // at termination print the boundary fluxes of
+                        // the fixed concentration species.
+
+    print_restart_file  // at termination print a restart file with
+                        // current concentrations that could be use
+			// as an intialial_concentrations input file.
+
+    print_reactions_view // A termination print out information about
+                         // the reactions and their fire rate and
+			 // likelihoods over time
+    
