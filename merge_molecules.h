@@ -20,9 +20,9 @@ under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
-extern int merge_molecules(struct istring_elem_struct *list1,
-			   struct istring_elem_struct *list2,
-			   struct istring_elem_struct *mlist,
+extern int merge_molecules(struct molecule_struct *list1,
+			   struct molecule_struct *list2,
+			   struct molecule_struct *mlist,
 			   char *molecules_text,
 			   int l1,
 			   int l2);
