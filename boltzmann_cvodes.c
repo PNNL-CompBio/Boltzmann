@@ -25,6 +25,11 @@ int boltzmann_cvodes(struct state_struct *state, double *concs) {
 	       fprintf, fflush
   */
   struct cvodes_params_struct *cvodes_params;
+  /*
+    Allow use of ode_jacobian_choice = 0 to use ode23tb's numerical
+    jacobian approximation.
+  */
+  struct ode23tb_params_struct *ode23tb_params;
   void *cvode_mem;
   /*
     Some kind of nvector declaration here for y0 to be built from
@@ -41,6 +46,12 @@ int boltzmann_cvodes(struct state_struct *state, double *concs) {
   double *recip_diag_u;
   double *frow;
   double *srow;
+  double *dfdy;
+  double *fac;
+  double *thresh;
+  double *fdel;
+  double *fdiff;
+  double *dfdy_tmp;
   int    *dfdy_ia;
   int    *dfdy_ja;
   int    *dfdy_iat;
@@ -62,6 +73,7 @@ int boltzmann_cvodes(struct state_struct *state, double *concs) {
   double delt;
   double one_l;
   double zero_l;
+  double njthreshold;
 
   int64_t ode_rxn_view_freq;
   int64_t ode_rxn_view_step;
@@ -109,6 +121,9 @@ int boltzmann_cvodes(struct state_struct *state, double *concs) {
   ode_rxn_view_freq = state->ode_rxn_view_freq;
   print_output  = state->print_output;
   cvodes_params = (struct cvodes_params_struct *)state->cvodes_params;
+  if (jacobian_choice == 0) {
+    ode23tb_params = (struct ode23tb_params_struct *)state->ode23tb_params;
+  }
   lmm = cvodes_params->linear_multistep_method;
   iter = cvodes_params->iterative_method;
   cvode_mxsteps = cvodes_params->mxsteps;
@@ -164,13 +179,13 @@ int boltzmann_cvodes(struct state_struct *state, double *concs) {
   num_doubles = (nnz + nnz + nnzm + nnzl + nnzu + 4*ny);
   num_ints    = (num_doubles + 5*ny + 5);
   num_doubles = num_doubles + (num_ints + (num_ints & 1))/2;
-  drfc_len    = state->number_molecules;
+  drfc_len    = state->number_molecules * 2;
   ask_for = (num_doubles + drfc_len) << 3;
   drfc    = (double *)calloc(one_l,ask_for);
   if (drfc == NULL ) {
     success = 0;
     if (lfp) {
-      fprintf(lfp,"boltzmann_cvodes: Error unable to allocate %ld bytes for need jacobian workspace\n",ask_for);
+      fprintf(lfp,"boltzmann_cvodes: Error unable to allocate %ld bytes needed for  jacobian workspace\n",ask_for);
       fflush(lfp);
     }
   } else {
@@ -221,6 +236,35 @@ int boltzmann_cvodes(struct state_struct *state, double *concs) {
     cvodes_params->uindex       = uindex;
     cvodes_params->column_mask  = column_mask;
     cvodes_params->sindex       = sindex;
+  }
+  if (success) {
+    if (jacobian_choice == 0) {
+      num_doubles = ny*ny + 5*ny;
+      ask_for = num_doubles << 3;
+      dfdy = (double*)calloc(one_l,ask_for);
+      if (dfdy != NULL) {
+	fac  = (double*)&dfdy[ny*ny];
+	thresh = (double*)&fac[ny];
+	fdel   = (double*)&thresh[ny];
+	fdiff  = (double*)&fdel[ny];
+	dfdy_tmp = (double*)&fdiff[ny];
+	ode23tb_params->dfdy = dfdy;
+	ode23tb_params->fac  = fac;
+	ode23tb_params->thresh = thresh;
+	ode23tb_params->fdel   = fdel;
+	ode23tb_params->fdel   = fdel;
+	ode23tb_params->num_jac_first_time = 1;
+	ode23tb_params->nf     = 0;
+	njthreshold = state->nj_thresh;
+	vec_set_constant(ny,thresh,njthreshold);
+      } else {
+	success = 0;
+	if (lfp) {
+	  fprintf(lfp,"boltzmann_cvodes: Error unable to allocate %ld bytes needed for numeric approximation to jacobian workspace\n",ask_for);
+	  fflush(lfp);
+	}
+      }
+    }
   }
   if (success) {
     if (print_output == 0) {
