@@ -29,6 +29,8 @@ specific language governing permissions and limitations under the License.
 */
 #include "boltzmann_structs.h"
 
+#include "upcase.h"
+#include "blank_to_dash.h"
 #include "sharp_pos.h"
 
 #include "parse_pseudoisomer_dg0f_file.h"
