@@ -165,10 +165,10 @@ int lr8_approximate_delta_concs(struct state_struct *state,
     tp = 1.0;
     for (j=rxn_ptrs[i];j<rxn_ptrs[i+1];j++) {
       mi = molecule_indices[j];
-      molecule = (struct molecule_struct *)&molecules[mi];
-      ci = molecules->c_index;
-      compartment = (struct compartment_struct *)&compartments[ci];
       /*
+      molecule = (struct molecule_struct *)&molecules[mi];
+      ci = molecule->c_index;
+      compartment = (struct compartment_struct *)&compartments[ci];
       recip_volume       = compartment->recip_volume;
       */
       klim = rcoefficients[j];
