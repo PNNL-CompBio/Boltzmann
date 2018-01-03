@@ -23,4 +23,4 @@ specific language governing permissions and limitations under the License.
 extern void print_likelihoods(struct state_struct *state, 
 			      double entropy, 
 			      double dg_forward, 
-			      int step);
+			      int64_t step);
