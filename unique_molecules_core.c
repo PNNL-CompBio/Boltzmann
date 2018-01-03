@@ -38,7 +38,7 @@ int unique_molecules_core(int nzr,
     Remove duplicates from the sorted_molecules list
     and set the column_indices fields in the
     reactions_matrix appropriately.
-    Called by: unique_molecules, boltzmann_boot
+    Called by: unique_molecules, global_merge_molecules
     Calls:     strcmp (intrinsic)
   */
   struct molecule_struct *cur_molecule;
