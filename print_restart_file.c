@@ -63,7 +63,7 @@ int print_restart_file(struct state_struct *state) {
   cur_molecules = state->sorted_molecules;
   cur_cmpts     = state->sorted_cmpts;
   ccounts       = state->current_counts;
-  multiplier    = state->count_to_conc;
+  /*multiplier    = state->count_to_conc; */
   
   molecules_text = state->molecules_text;
   compartment_text = state->compartment_text;
@@ -95,6 +95,7 @@ int print_restart_file(struct state_struct *state) {
 	if (ci > 0) {
 	  cur_cmpt = (struct molecule_struct *)&(cur_cmpts[ci]);
 	  cmpt_string = (char*)&compartment_text[cur_cmpt->string];
+	  multiplier = cur_cmpt->count_to_conc;
 	}
       }
       if (cur_molecules->variable) {
