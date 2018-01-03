@@ -32,8 +32,8 @@ int rxn_conc_update(int rxn_no, int direction,
     Called by candidate_rxn.
     Calls:
   */
-  struct istring_elem_struct *sorted_molecules;
-  struct istring_elem_struct *molecule;
+  struct molecule_struct *sorted_molecules;
+  struct molecule_struct *molecule;
   double *current_concs;
   double *future_concs;
   int64_t *rxn_ptrs;
@@ -71,7 +71,7 @@ int rxn_conc_update(int rxn_no, int direction,
   if (direction > 0) {
     for (j=rxn_ptrs[rxn_no];j<rxn_ptrs[rxn_no+1];j++) {
       k = molecules_indices[j];
-      molecule = (struct istring_elem_struct *) &sorted_molecules[k];
+      molecule = (struct molecule_struct *) &sorted_molecules[k];
       if (molecule->variable) {
         future_concs[k] += (double)coefficients[j];
       }
@@ -82,7 +82,7 @@ int rxn_conc_update(int rxn_no, int direction,
   } else {
     for (j=rxn_ptrs[rxn_no];j<rxn_ptrs[rxn_no+1];j++) {
       k = molecules_indices[j];
-      molecule = (struct istring_elem_struct *) &sorted_molecules[k];
+      molecule = (struct molecule_struct *) &sorted_molecules[k];
       if (molecule->variable) {
         future_concs[k] -= (double)coefficients[j];
       }
