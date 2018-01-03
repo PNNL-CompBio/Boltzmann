@@ -252,7 +252,7 @@ int parse_side_line(char *rctnts_p,
 	if (rctnts[0] != '+') {
 	  fprintf(stderr,"parse_reactions_file: Error, missing + "
 		  "between reactants, reactions file line was \n%s\n",
-		  state->rxn_buffer);
+		  rctnts_p);
 	  fflush(stderr);
 	  success = 0;
 	  break;
