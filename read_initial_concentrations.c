@@ -175,9 +175,9 @@ int read_initial_concentrations(struct state_struct *state) {
   }
   state->num_fixed_concs = num_fixed_concs;
   if (state->concs_out_fp) {
-    fprintf(state->concs_out_fp,"init ");
+    fprintf(state->concs_out_fp,"init");
     for (i=0;i<nu_molecules;i++) {
-      fprintf(state->concs_out_fp," %le",concs[i]);
+      fprintf(state->concs_out_fp,"\t%le",concs[i]);
     }
     fprintf(state->concs_out_fp,"\n");
   } else {
