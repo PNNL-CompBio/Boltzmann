@@ -263,14 +263,20 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	sscan_ok = sscanf(value,"%s",state->output_dir);
       } else if (strncmp(key,"OUT_FILE",8) == 0) {
 	sscan_ok = sscanf(value,"%s",state->output_file);
+      } else if (strncmp(key,"LOG_FILE",8) == 0) {
+	sscan_ok = sscanf(value,"%s",state->log_file);
+      } else if (strncmp(key,"RXN_ECHO_FILE",13) == 0) {
+	sscan_ok = sscanf(value,"%s",state->rxn_echo_file);
+      } else if (strncmp(key,"RXN_MAT_FILE",12) == 0) {
+	sscan_ok = sscanf(value,"%s",state->rxn_mat_file);
+      } else if (strncmp(key,"DICTONARY_FILE",14) == 0) {
+	sscan_ok = sscanf(value,"%s",state->dictionary_file);
       } else if (strncmp(key,"COUNTS_OUT_FILE",15) == 0) {
 	sscan_ok = sscanf(value,"%s",state->counts_out_file);
       } else if (strncmp(key,"CONCS_OUT_FILE",15) == 0) {
 	sscan_ok = sscanf(value,"%s",state->concs_out_file);
-      } else if (strncmp(key,"ODE_CONCS_FILE",14) == 0) {
-	sscan_ok = sscanf(value,"%s",state->ode_concs_file);
-      } else if (strncmp(key,"ODE_COUNTS_FILE",15) == 0) {
-	sscan_ok = sscanf(value,"%s",state->ode_counts_file);
+      } else if (strncmp(key,"DG0KE_FILE",10) == 0) {
+	sscan_ok = sscanf(value,"%s",state->dg0ke_file);
       } else if (strncmp(key,"RXN_LKLHD_FILE",14) == 0) {
 	sscan_ok = sscanf(value,"%s",state->rxn_lklhd_file);
       } else if (strncmp(key,"FREE_ENERGY_FILE",16) == 0) {
@@ -281,6 +287,16 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	sscan_ok = sscanf(value,"%s",state->rxn_view_file);
       } else if (strncmp(key,"BNDRY_FLUX_FILE",15) == 0) {
 	sscan_ok = sscanf(value,"%s",state->bndry_flux_file);
+      } else if (strncmp(key,"ODE_CONCS_FILE",14) == 0) {
+	sscan_ok = sscanf(value,"%s",state->ode_concs_file);
+      } else if (strncmp(key,"ODE_COUNTS_FILE",15) == 0) {
+	sscan_ok = sscanf(value,"%s",state->ode_counts_file);
+      } else if (strncmp(key,"ODE_DCONCS_FILE",15) == 0) {
+	sscan_ok = sscanf(value,"%s",state->ode_dconcs_file);
+      } else if (strncmp(key,"ODE_LKLHD_FILE",14) == 0) {
+	sscan_ok = sscanf(value,"%s",state->ode_lklhd_file);
+      } else if (strncmp(key,"ODE_BFLUX_FILE",14) == 0) {
+	sscan_ok = sscanf(value,"%s",state->ode_bflux_file);
       /*
 	Following 2 lines added by DGT on 4/18/2013, Modified by DJB 6/2/2013
       */	
@@ -316,8 +332,6 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	cvodes_params->prec_fill = (int)state->cvodes_prec_fill;
       } else if (strncmp(key,"ODE_JACOBIAN_CHOICE",19) == 0) {
 	sscan_ok = sscanf(value,"%ld",&state->ode_jacobian_choice);
-      } else if (strncmp(key,"LOG_FILE",8) == 0) {
-	sscan_ok = sscanf(value,"%s",state->log_file);
       } else if (strncmp(key,"SOLVENT",7) == 0) {
 	sscan_ok = sscanf(value,"%s",state->solvent_string);
       } else if (strncmp(key,"ALIGN_LEN",9) == 0) {
