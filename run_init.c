@@ -2,6 +2,7 @@
 #include "vgrng_init.h"
 #include "print_rxn_likelihoods_header.h"
 #include "print_free_energy_header.h"
+#include "alloc7.h"
 #include "alloc8.h"
 #include "alloc9.h"
 #include "print_reactions_matrix.h"
