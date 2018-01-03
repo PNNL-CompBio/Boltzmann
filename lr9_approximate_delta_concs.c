@@ -9,9 +9,8 @@ int lr9_approximate_delta_concs(struct state_struct *state,
 				int choice) {
   /*
     Compute approximations to concentration changes wrt time, 
-    Based on thermodynamics formulation for concentraion rate
-    changes
-    using counts to compute tr, tp, pt, rt instead of concs.
+    Based on read in rate constants and molecule counts
+    using concs to compute tr, tp, pt, rt instead of counts.
 
     Get reference from Bill Cannon
     Called by: approximate_delta_concs
