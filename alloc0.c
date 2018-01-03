@@ -25,7 +25,7 @@ specific language governing permissions and limitations under the License.
 #include "boltzmann_set_filename_ptrs.h"
 
 #include "alloc0.h"
-int alloc0(struct state_struct **state) {
+int alloc0(struct state_struct **statep) {
   /*
     Allocate space for boltzmann_state data and the associated state
     file names. And the parameter file input buffer line, and
@@ -34,10 +34,8 @@ int alloc0(struct state_struct **state) {
     Calls    : calloc, fprintf, fflush (intrinsic)
   */
   struct state_struct bltzs;
-  struct state_struct *statep;
-  struct vgrng_state_struct vss;
+  struct state_struct *state;
   int64_t *rxn_file_keyword_lengths;
-  char    *rxn_buff;
   char    *rxn_keyword_buff;
   char    *solvent_string;
   char    **rxn_keywords;
@@ -51,7 +49,7 @@ int alloc0(struct state_struct **state) {
   int success;
 
   int num_rxn_file_keywords;
-  int rxn_file_keyword_len;
+  int keyword_buffer_length;
 
   ask_for           = (int64_t)sizeof(bltzs);
   one_l             = (int64_t)1;
@@ -59,9 +57,9 @@ int alloc0(struct state_struct **state) {
   max_param_line_len = (int64_t)4096;
   success           = 1;
   usage             = ask_for;
-  statep            = (struct state_struct *)calloc(one_l,ask_for);
-  *state            = statep;
-  if (statep == NULL) {
+  state             = (struct state_struct *)calloc(one_l,ask_for);
+  *statep           = state;
+  if (state == NULL) {
     success = 0;
     fprintf(stderr,
 	    "boltzmann: unable to allocate %lld bytes for state structure.\n",
@@ -73,13 +71,13 @@ int alloc0(struct state_struct **state) {
       Right now we only have 28 file_names 
       but we leave space for additional ones.
     */
-    statep->num_files = (int64_t)32;
-    num_state_files   = statep->num_files;
-    statep->max_filename_len = max_file_name_len;
+    state->num_files = (int64_t)32;
+    num_state_files   = state->num_files;
+    state->max_filename_len = max_file_name_len;
     ask_for = ((int64_t)num_state_files) * max_file_name_len;
     usage   += ask_for;
-    statep->params_file = (char *)calloc(one_l,ask_for);
-    if (statep->params_file == NULL) {
+    state->params_file = (char *)calloc(one_l,ask_for);
+    if (state->params_file == NULL) {
       success = 0;
       fprintf(stderr,
 	      "alloc0: unable to allocate %lld bytes for state file names.\n",
@@ -88,34 +86,34 @@ int alloc0(struct state_struct **state) {
     }
   }
   if (success) {
-    statep->max_filename_len   = max_file_name_len;
-    boltzmann_set_filename_ptrs(statep);
+    state->max_filename_len   = max_file_name_len;
+    boltzmann_set_filename_ptrs(state);
     /*
-    statep->reaction_file      = statep->params_file + max_file_name_len;
-    statep->init_conc_file     = statep->reaction_file + max_file_name_len;
-    statep->input_dir          = statep->init_conc_file + max_file_name_len;
-    statep->output_file        = statep->input_dir + max_file_name_len;
-    statep->log_file           = statep->output_file + max_file_name_len;
-    statep->output_dir         = statep->log_file + max_file_name_len;
-    statep->counts_out_file    = statep->output_dir + max_file_name_len;
-    statep->ode_concs_file     = statep->counts_out_file + max_file_name_len;
-    statep->rxn_lklhd_file     = statep->ode_concs_file + max_file_name_len;
-    statep->free_energy_file   = statep->rxn_lklhd_file + max_file_name_len;
-    statep->restart_file       = statep->free_energy_file + max_file_name_len;
-    statep->rxn_view_file      = statep->restart_file + max_file_name_len;
-    statep->bndry_flux_file    = statep->rxn_view_file + max_file_name_len;
-    statep->pseudoisomer_file  = statep->bndry_flux_file + max_file_name_len;
-    statep->compartment_file   = statep->pseudoisomer_file + max_file_name_len;
-    statep->sbml_file          = statep->compartment_file + max_file_name_len;
-    statep->ms2js_file         = statep->sbml_file + max_file_name_len;
-    statep->kg2js_file         = statep->ms2js_file + max_file_name_len;
+    state->reaction_file      = state->params_file + max_file_name_len;
+    state->init_conc_file     = state->reaction_file + max_file_name_len;
+    state->input_dir          = state->init_conc_file + max_file_name_len;
+    state->output_file        = state->input_dir + max_file_name_len;
+    state->log_file           = state->output_file + max_file_name_len;
+    state->output_dir         = state->log_file + max_file_name_len;
+    state->counts_out_file    = state->output_dir + max_file_name_len;
+    state->ode_concs_file     = state->counts_out_file + max_file_name_len;
+    state->rxn_lklhd_file     = state->ode_concs_file + max_file_name_len;
+    state->free_energy_file   = state->rxn_lklhd_file + max_file_name_len;
+    state->restart_file       = state->free_energy_file + max_file_name_len;
+    state->rxn_view_file      = state->restart_file + max_file_name_len;
+    state->bndry_flux_file    = state->rxn_view_file + max_file_name_len;
+    state->pseudoisomer_file  = state->bndry_flux_file + max_file_name_len;
+    state->compartment_file   = state->pseudoisomer_file + max_file_name_len;
+    state->sbml_file          = state->compartment_file + max_file_name_len;
+    state->ms2js_file         = state->sbml_file + max_file_name_len;
+    state->kg2js_file         = state->ms2js_file + max_file_name_len;
     */
 
-    statep->max_param_line_len = max_param_line_len;
+    state->max_param_line_len = max_param_line_len;
     ask_for                    = max_param_line_len << 1;
     usage                      += ask_for;
-    statep->param_buffer       = (char *)calloc(one_l,ask_for);
-    if (statep->param_buffer == NULL) {
+    state->param_buffer       = (char *)calloc(one_l,ask_for);
+    if (state->param_buffer == NULL) {
       success = 0;
       fprintf(stderr,
 	      "alloc0: unable to allocate %lld bytes for state->param_buffer.\n",
@@ -128,7 +126,7 @@ int alloc0(struct state_struct **state) {
     usage += ask_for;
     solvent_string = (char *)calloc(one_l,ask_for);
     if (solvent_string) {
-      statep->solvent_string = solvent_string;
+      state->solvent_string = solvent_string;
     } else {
       fprintf(stderr,"alloc0: Error unable to allocate %lld bytes of space "
 	      "for solvent_string\n",ask_for);
@@ -140,12 +138,13 @@ int alloc0(struct state_struct **state) {
     Allocate space for processing the reactions file.
   */
   if (success) {
-    rxn_file_keyword_len = 256;
-    ask_for = rxn_file_keyword_len;
+    keyword_buffer_length = (int64_t)256;
+    state->keyword_buffer_length = keyword_buffer_length;
+    ask_for = keyword_buffer_length;
     usage   += ask_for;
     rxn_keyword_buff = (char *)calloc(one_l,ask_for);
     if (rxn_keyword_buff) {
-      statep->rxn_file_keyword_buffer = rxn_keyword_buff;
+      state->rxn_file_keyword_buffer = rxn_keyword_buff;
     } else {
       fprintf(stderr,
 	      "alloc0: Error, unable to allocate %lld bytes for "
@@ -157,12 +156,12 @@ int alloc0(struct state_struct **state) {
   }
   if (success) {
     num_rxn_file_keywords = 13;
-    statep->num_rxn_file_keywords = num_rxn_file_keywords;
+    state->num_rxn_file_keywords = num_rxn_file_keywords;
     ask_for = ((int64_t)num_rxn_file_keywords) * ((int64_t)sizeof(char *));
     usage   += ask_for;
     rxn_keywords = (char **)calloc(one_l,ask_for);
     if (rxn_keywords) {
-      statep->rxn_file_keywords = rxn_keywords;
+      state->rxn_file_keywords = rxn_keywords;
     } else {
       fprintf(stderr,
 	      "alloc0: Error, unable to allocate %lld bytes for "
@@ -177,7 +176,7 @@ int alloc0(struct state_struct **state) {
     usage += ask_for;
     rxn_file_keyword_lengths = (int64_t *)calloc(one_l,ask_for);
     if (rxn_file_keyword_lengths) {
-      statep->rxn_file_keyword_lengths = rxn_file_keyword_lengths;
+      state->rxn_file_keyword_lengths = rxn_file_keyword_lengths;
     } else {
       fprintf(stderr,
 	      "alloc0: Error, unable to allocate %lld bytes for "
@@ -186,7 +185,7 @@ int alloc0(struct state_struct **state) {
       fflush(stderr);
       success = 0;
     }
-    statep->usage = usage;
+    state->usage = usage;
   }
   return(success);
 }
