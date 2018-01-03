@@ -170,6 +170,7 @@ struct state_struct {
   int64_t rxn_filename_base_length;
   int64_t base_reaction;
   int64_t number_base_reaction_reactants;
+  int64_t print_ode_concs;
 
   double  ideal_gas_r;
   double  temp_kelvin;
@@ -275,6 +276,7 @@ struct state_struct {
   char *log_file;          /* max_filename_len */
   char *output_dir;        /* max_filename_len */
   char *counts_out_file;   /* max_filename_len */
+  char *ode_concs_file;    /* max_filename_len */
   char *rxn_lklhd_file;    /* max_filename_len */
   char *free_energy_file;  /* max_filename_len */
   char *restart_file;      /* max_filename_len */
@@ -343,8 +345,11 @@ struct state_struct {
   FILE *conc_fp;
 
   FILE *out_fp;
-  FILE *counts_out_fp;
+  FILE *lfp;
 
+  FILE *counts_out_fp;
+  FILE *ode_concs_fp;
+  
   FILE *rxn_lklhd_fp;
   FILE *free_energy_fp;
 
@@ -354,8 +359,6 @@ struct state_struct {
   FILE *bndry_flux_fp;
   FILE *cmpt_fp;
 
-  FILE *lfp;
-  FILE *extrafp;
   /*
     Instrumentation.     
   */
