@@ -72,7 +72,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
     strcpy(state->concs_out_file,"./concs.out");
     strcpy(state->rxn_lklhd_file,"./rxns.lklhd");
     strcpy(state->free_energy_file,"./rxns.fe");
-    strcpy(state->restart_file,"./restart.in");
+    strcpy(state->restart_file,"./restart.concs");
     strcpy(state->rxn_view_file,"./rxns.view");
     strcpy(state->bndry_flux_file,"./boundary_flux.txt");
     strcpy(state->input_dir,"./");
