@@ -40,15 +40,28 @@ int64_t vgrng_init(struct vgrng_state_struct *vgrng_state, int n) {
   /*
     Initialize the pseudo random number generator state, 
     pseudo random (uniformly distributed) 31 bit integers.
-    Called by: boltzmann_init.
+    Called by: run_init.
   */
   mask = (((int64_t)1)<<32) - ((int64_t)1);
   vgrng_state->mask = mask;
   vgrng_state->fib_constant     = ((int64_t)1597258441) & mask;
   vgrng_state->lcg_constant     = ((int64_t)2584418167) & mask;
-  vgrng_state->fib_history[0]   = ((int64_t)6765109461) & mask;
-  vgrng_state->fib_history[1]   = ((int64_t)1771128657) & mask;
-  vgrng_state->lcg_history      = ((int64_t)4636875025) & mask;
+
+  /*
+    Don't let seeds be 0!
+  */
+  if (vgrng_state->fib_seed[0] == 0) {
+    vgrng_state->fib_seed[0] = (int64_t)6765109461;
+  }
+  if (vgrng_state->fib_seed[1] == 0) {
+    vgrng_state->fib_seed[1] = (int64_t)1771128657;
+  }
+  if (vgrng_state->lcg_seed == 0) {
+    vgrng_state->lcg_seed = (int64_t)4636875025;
+  }
+  vgrng_state->fib_history[0]   = vgrng_state->fib_seed[0] & mask;
+  vgrng_state->fib_history[1]   = vgrng_state->fib_seed[1] & mask;
+  vgrng_state->lcg_history      = vgrng_state->lcg_seed & mask;
   vgrng_state->fib_cur_ptr      = 1;
   sv = 0;
   for (i=0;i<n;i++) {
