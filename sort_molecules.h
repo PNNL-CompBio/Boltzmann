@@ -20,7 +20,7 @@ under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
-extern int sort_molecules(struct istring_elem_struct *unsorted_istrings,
-			  struct istring_elem_struct *sorted_istrings,
+extern int sort_molecules(struct molecule_struct *unsorted_molecules,
+			  struct molecule_struct *sorted_molecules,
 			  char *molecules_text,
 			  int n);
