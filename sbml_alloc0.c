@@ -44,6 +44,7 @@ int sbml_alloc0(struct sbml2bo_struct **state_p) {
   char *rxns_dat_file;
   char *cmpts_dat_file;
   char *ms2js_file;
+  char *id_name_file;
   char *log_file;
   char *ms2js_strings;
   int     max_file_name_len;
@@ -51,7 +52,11 @@ int sbml_alloc0(struct sbml2bo_struct **state_p) {
   int     num_files;
   int     padi;
   success = 1;
-  num_files = 6;
+  /*
+    Currently we have only seven files, but will allocate
+    space for an extra one.
+  */
+  num_files = 8;
   one_l   = (int64_t)1;
   max_file_name_len = 1024;
   ask_for = (int64_t)sizeof(state_instance);
@@ -82,11 +87,13 @@ int sbml_alloc0(struct sbml2bo_struct **state_p) {
     rxns_dat_file  = (char*)&concs_in_file[max_file_name_len];
     cmpts_dat_file = (char*)&rxns_dat_file[max_file_name_len];
     ms2js_file     = (char*)&cmpts_dat_file[max_file_name_len];
-    log_file       = (char*)&ms2js_file[max_file_name_len];
+    id_name_file   = (char*)&ms2js_file[max_file_name_len];
+    log_file       = (char*)&id_name_file[max_file_name_len];
     state->sbml_file      = sbml_file;
     state->concs_in_file  = concs_in_file;
     state->rxns_dat_file  = rxns_dat_file;
     state->cmpts_dat_file = cmpts_dat_file;
+    state->id_name_file   = id_name_file;
     state->log_file       = log_file;
     state->ms2js_file     = ms2js_file;
     state->num_reactions  = 0;
