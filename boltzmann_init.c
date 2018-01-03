@@ -50,6 +50,7 @@ specific language governing permissions and limitations under the License.
 #include "read_initial_concentrations.h"
 #include "form_molecules_matrix.h"
 #include "compute_ke.h"
+#include "print_rxn_likelihoods_header.h"
 /*
 #define DBG_BOLTZMANN_INIT  
 */
@@ -358,15 +359,7 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
     /*
       Print the header lines for the reaction likelihoods output file.
     */
-    fprintf(state->rxn_lklhd_fp,"iter\tentropy\tdg_forward\tforward_rxn_likelihood\treverse_rxn_likelihood\n");
-    fprintf(state->rxn_lklhd_fp,"iter\tentropy\tdg_forward");
-    reactions                   = state->reactions;
-    for (i=0;i<state->number_reactions;i++) {
-      fprintf(state->rxn_lklhd_fp,"\tf_%s\tr_%s",reactions->title,reactions->title);
-      reactions += 1; /* Caution address arithmetic */
-    }
-    fprintf(state->rxn_lklhd_fp,"\n");
-    fflush(state->rxn_lklhd_fp);
+    print_rxn_likelihoods_header(state);
   }
   if (success) {
     if (state->free_energy_format > 0) {
