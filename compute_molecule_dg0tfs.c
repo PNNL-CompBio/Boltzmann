@@ -81,10 +81,9 @@ int compute_molecule_dg0tfs(struct formation_energy_struct *fes){
   print_output             = (int)fes->print_output;
   if (print_output) {
     if (lfp) {
-      fprintf(lfp,"Output from compute_molecule_dg0tf.c:\n");
+      fprintf(lfp,"\nOutput from compute_molecule_dg0tfs.c:\n\n");
       fprintf(lfp, "index of molecule in sorted_molecules \t"
-	      "molecule name\t deltaG0_tf(kJ/mol) \t deltaG0_tf "
-	      "computed (1 for yes, 0 for no)\n");
+	      "molecule name\t deltaG0_tf(kJ/mol)\n");
     }
   }
   for (i=0;i<nu_molecules;i++) {
@@ -114,7 +113,7 @@ int compute_molecule_dg0tfs(struct formation_energy_struct *fes){
   fes->min_molecule_dg0tf = min_molecule_dg0tf;
   if (print_output) {
     if (lfp) {
-      fprintf(lfp,"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n");
+      fprintf(lfp,"\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n\n");
     }
   }
   return (success);
