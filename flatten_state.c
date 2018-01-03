@@ -82,7 +82,6 @@ int flatten_state(struct state_struct *boot_state,
   int64_t max_filename_len;
   int64_t num_files;
   int64_t solvent_pos;
-  int64_t incoming_data_size;
   int64_t dg_forward_offset;
   int64_t dg_forward_size;
   int64_t entropy_offset;
