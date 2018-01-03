@@ -261,7 +261,7 @@ int boltzmann_flatten_aux_data(struct state_struct *state,
 	free works.
       */
       ffilenames      = (char *)&aux_data[128];
-      filenames      = calloc(one_l,filenames_length);
+      filenames      = (char*)calloc(one_l,filenames_length);
       if (filenames == NULL) {
 	success = 0;
 	if (lfp) {
@@ -278,7 +278,7 @@ int boltzmann_flatten_aux_data(struct state_struct *state,
 	compartment_text_length + molecule_text_length +
 	regulation_text_length;
 
-	rxn_title_text = calloc(one_l,string_length);
+	rxn_title_text = (char *)calloc(one_l,string_length);
 	if (rxn_title_text == NULL) {
 	  success = 0;
 	  if (lfp) {
