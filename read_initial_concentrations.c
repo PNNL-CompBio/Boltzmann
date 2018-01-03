@@ -45,8 +45,11 @@ int read_initial_concentrations(struct state_struct *state) {
   double  conc;
   double  conc_multiple;
   double  c_multiple;
-  double  *concs;
+  double  multiplier;
+  double  avogadro;
+  double  half;
   double  *bndry_flux_concs;
+  double  *concs;
   int64_t molecules_buff_len;
   int64_t one_l;
   char *molecules_buffer;
@@ -55,6 +58,7 @@ int read_initial_concentrations(struct state_struct *state) {
   char *variable_c;
   char *compute_c;
   char *fgp;
+
   int success;
   int nzr;
 
@@ -78,9 +82,10 @@ int read_initial_concentrations(struct state_struct *state) {
   
   char vc[2];
   char cc[2];
-  int padj;
   
   FILE *conc_fp;
+  avogadro           = 6.02e23;
+  half               = 0.5;
   nu_molecules       = state->nunique_molecules;
   molecules_buff_len = state->max_param_line_len;
   molecules_buffer   = state->param_buffer;
@@ -165,6 +170,7 @@ int read_initial_concentrations(struct state_struct *state) {
     }
   }
   if (success) {
+    multiplier = conc_units * volume * avogadro;
     while (!feof(conc_fp)) {
       fgp = fgets(molecules_buffer,molecules_buff_len,conc_fp);
       if (fgp) {
@@ -239,7 +245,12 @@ int read_initial_concentrations(struct state_struct *state) {
 	  upcase(mol_len,molecule_name,molecule_name);
 	  si = molecules_lookup(molecule_name,ci,state);
 	  if ((si >=0) && si < nu_molecules) {
-	    concs[si] = conc;
+	    /*
+	      The following uses the nearest integer to (conc*multiplier)
+	      for the count field stored in the concs array, where
+	      multiplier is volume * units * Avogadro's number.
+	    */
+	    concs[si] = (double)((int64_t)((conc * multiplier) + half));
 	    molecule = (struct molecule_struct *)&sorted_molecules[si];
 	    molecule->variable = variable;
 	    molecule->compute_init_conc = compute_conc;
