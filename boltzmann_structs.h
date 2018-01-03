@@ -50,4 +50,5 @@ specific language governing permissions and limitations under the License.
 #include "pseudoisomer_struct.h"
 #include "t2js_struct.h"
 #include "sbml2bo_struct.h"
+#include "cvodes_params_struct.h"
 #endif
