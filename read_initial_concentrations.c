@@ -73,6 +73,7 @@ int read_initial_concentrations(struct state_struct *state) {
   char *compartment_name;
   char *variable_c;
   char *compute_c;
+  char *solvent_string;
   char *fgp;
 
   int nu_molecules;
@@ -94,7 +95,7 @@ int read_initial_concentrations(struct state_struct *state) {
   int nu_compartments;
   
   int success;
-  int padi;
+  int use_bulk_water;
 
   char vc[2];
   char cc[2];
@@ -118,6 +119,8 @@ int read_initial_concentrations(struct state_struct *state) {
   kss_e_val           = state->kss_e_val; 
   kss_u_val           = state->kss_u_val; 
   default_volume      = state->default_volume;
+  solvent_string      = state->solvent_string;
+  use_bulk_water      = state->use_bulk_water;
   bndry_flux_counts   = (double *)state->bndry_flux_counts;
   success = 1;
   one_l = (int64_t)1;
@@ -324,6 +327,9 @@ int read_initial_concentrations(struct state_struct *state) {
 	if (nscan >= 2) {
 	  upcase(mol_len,molecule_name);
 	  si = molecules_lookup(molecule_name,ci,state);
+	  if (strcmp(molecule_name,solvent_string) == 0) {
+	    solvent = 1;
+	  }
 	  if ((si >=0) && si < nu_molecules) {
 	    /*
 	      The following uses the nearest integer to (conc*multiplier)
@@ -360,6 +366,11 @@ int read_initial_concentrations(struct state_struct *state) {
 	    kss_e_val[si] = e_val;
 	    kss_u_val[si] = u_val;
 	    molecule = (struct molecule_struct *)&sorted_molecules[si];
+	    if (solvent) {
+	      if (use_bulk_water) {
+		variable = 0;
+	      }
+	    }
 	    molecule->variable = variable;
 	    molecule->compute_init_conc = compute_conc;
 	    molecule->solvent           = solvent;
