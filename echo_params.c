@@ -21,6 +21,8 @@ CONDITIONS OF ANY KIND, either express or implied. See the License for the
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
 #include "boltzmann_structs.h"
+#include "boltzmann_cvodes_headers.h"
+#include "cvodes_params_struct.h"
 #include "echo_params.h"
 int echo_params (FILE *lfp, struct state_struct *state) {
   /*
@@ -93,6 +95,7 @@ int echo_params (FILE *lfp, struct state_struct *state) {
     fprintf(lfp,"state->use_metropolis         = %ld\n",state->use_metropolis);
     fprintf(lfp,"state->use_regulation         = %ld\n",state->use_regulation);
     fprintf(lfp,"state->max_regs_per_rxn       = %ld\n",state->max_regs_per_rxn);
+    fprintf(lfp,"state->compute_sensitivities  = %ld\n",state->compute_sensitivities);
     fprintf(lfp,"state->base_reaction          = %ld\n",state->base_reaction);
     fprintf(lfp,"state->ode_solver_choice      = %ld\n",state->ode_solver_choice);
     fprintf(lfp,"state->delta_concs_choice     = %ld\n",state->delta_concs_choice);
