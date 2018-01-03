@@ -23,8 +23,10 @@ specific language governing permissions and limitations under the License.
 #include "boltzmann_structs.h"
 
 #include "alloc6.h"
-int alloc6(struct formation_energy_struct *formation_energies,
-	   int64_t *usage) {
+int alloc6(int nu_molecules,
+	   void **pointers,
+	   int64_t *usage,
+	   FILE *lfp) {
   /*
     Allocate space for the formation_energies struct fields needed
     after parsing the pseudoisomers file is complete. This space 
@@ -33,48 +35,56 @@ int alloc6(struct formation_energy_struct *formation_energies,
     Calls:     calloc
   */
   /*
-  int64_t ask_for;
   */
-  int64_t nu_molecules;
   /*
   int64_t enu_molecules;
-  */
+  int64_t ask_for;
   int64_t one_l;
+  int     *sorted_molecule_order;
+  int     *order_scratch;
+  */
   int success;
+  int padi;
   success = 1;
-  one_l   = (int64_t)1;
-  nu_molecules = formation_energies->nunique_molecules;
   /*
     allocate space for ordering molecule names.
     not used for now.
   */
   /*
-  if (success) {
-    enu_molecules = nu_molecules + (nu_molecules & one_l);
-    ask_for = enu_molecules * ((int64_t)sizeof(int));
-    *usage += ask_for;
-    formation_energies->sorted_molecule_order = (int*)calloc(one_l,ask_for);
-    if (formation_energies->sorted_molecule_order == NULL) {
-      fprintf(stderr,
-	      "alloc6: Unable to allocate %ld bytes for "
-	      "sorted_molecule_order\n",
+  one_l   = (int64_t)1;
+  enu_molecules = nu_molecules + (nu_molecules & one_l);
+  ask_for = enu_molecules * ((int64_t)sizeof(int));
+  *usage += ask_for;
+  sorted_molecule_order = (int*)calloc(one_l,ask_for);
+  if (sorted_molecule_order == NULL) {
+    success = 0;
+    if (lfp) {
+      fprintf(lfp,
+              "alloc6: Unable to allocate %ld bytes for "
+              "sorted_molecule_order\n",
 	      ask_for);
-      fflush(stderr);
-      success = 0;
+      fflush(lfp);
     }
   }    
   if (success) {
+    pointers[0] = (void*)sorted_molecule_order;
     ask_for += ask_for;
     *usage += ask_for;
-    formation_energies->order_scratch = (int*)calloc(one_l,ask_for);
-    if (formation_energies->order_scratch == NULL) {
-      fprintf(stderr,
-	      "alloc6: Unable to allocate %ld bytes for "
-	      "order_scratch\n",
-	      ask_for);
-      fflush(stderr);
+    order_scratch = (int*)calloc(one_l,ask_for);
+    if (order_scratch == NULL) {
       success = 0;
+      if (lfp) {
+         fprintf(lfp,
+  	         "alloc6: Unable to allocate %ld bytes for "
+	         "order_scratch\n",
+	         ask_for);
+         fflush(lfp);
+	 }
+      }
     }
+  }
+  if (success) {
+     pointers[1] = (void*)order_scratch;
   }
   */
   return(success);
