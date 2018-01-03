@@ -73,13 +73,13 @@ int read_initial_concentrations(struct state_struct *state) {
   char *fgp;
   
   FILE *conc_fp;
-  nu_molecules = state->unique_molecules;
+  nu_molecules       = state->unique_molecules;
   molecules_buff_len = state->rxn_buff_len;
   molecules_buffer   = state->rxn_buffer;
   molecule_name      = state->molecule_name;
   compartment_name   = state->compartment_name;
-  sorted_molecules  = state->sorted_molecules;
-  concs            = state->current_concentrations;
+  sorted_molecules   = state->sorted_molecules;
+  concs              = state->current_concentrations;
   success = 1;
   one_l = (int64_t)1;
   variable_c = (char *)&vc[0];
