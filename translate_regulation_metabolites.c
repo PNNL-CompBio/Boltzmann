@@ -11,9 +11,9 @@ int translate_regulation_metabolites(struct state_struct *state) {
     Called by: species_init.
     Calls:     molecules_lookup, fprintf, fflush
   */
-  struct rxn_struct *reactions;
-  struct rxn_struct *reaction;
-  struct rxn_matrix_struct *rxns_matrix;
+  struct reaction_struct *reactions;
+  struct reaction_struct *reaction;
+  struct reactions_matrix_struct *rxns_matrix;
   int64_t *reg_species;
   int64_t *compartment_indices;
   char    *regulation_text;
