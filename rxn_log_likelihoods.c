@@ -33,9 +33,8 @@ specific language governing permissions and limitations under the License.
 #include "rxn_likelihoods.h"
 
 #include "rxn_log_likelihoods.h"
-int rxn_log_likelihoods(double *free_energy, 
-			double *concs, 
-			double *rxn_likelihood,
+int rxn_log_likelihoods(double *concs, 
+			double *rxn_likelihood_values,
 			double *log_rxn_likelihood,
 			struct state_struct *state,
 			int rxn_direction) {
@@ -46,7 +45,7 @@ int rxn_log_likelihoods(double *free_energy,
 	than 1 is raised to that power).
     In the process we may want the rxn_likelihood as well though frequently as
     when called from free_energy_changes we only want the logs, so 
-    rxn_likelihood and log_rxn_likelihood are allowed to be the same 
+    rxn_likelihood_values and log_rxn_likelihood are allowed to be the same 
     vector in that case.
 
     We want to do this in a stable fashion and we want to avoid division
@@ -69,11 +68,11 @@ int rxn_log_likelihoods(double *free_energy,
   int padi;
 
   nrxns         = state->number_reactions;
-  success       = rxn_likelihoods(free_energy,concs,rxn_likelihood,state,
+  success       = rxn_likelihoods(concs,rxn_likelihood_values,state,
 				  rxn_direction);
   if (success) {
     for (i=0;i<nrxns;i++) {
-      log_rxn_likelihood[i] = log(rxn_likelihood[i]);
+      log_rxn_likelihood[i] = log(rxn_likelihood_values[i]);
     }
   }
   return(success);
