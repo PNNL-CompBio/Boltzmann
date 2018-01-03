@@ -48,6 +48,9 @@ int echo_params (FILE *lfp, struct state_struct *state) {
     fprintf(lfp,"state->bndry_flux_file        = %s\n",state->bndry_flux_file);
     fprintf(lfp,"state->pseudoisomer_file      = %s\n",
 	    state->pseudoisomer_file);
+    fprintf(lfp,"state->solvent_string         = %s\n",
+	    state->solvent_string);
+    
     fprintf(lfp,"state->output_dir     	       = %s\n",state->output_dir);
     fprintf(lfp,"state->align_len              = %ld\n",state->align_len);
     fprintf(lfp,"state->max_filename_len       = %ld\n",state->max_filename_len);
