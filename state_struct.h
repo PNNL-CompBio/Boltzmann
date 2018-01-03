@@ -39,6 +39,7 @@ struct state_struct {
   char *log_file;
   char *concs_out_file;
   char *rxn_lklhd_file;
+  char *free_energy_file;
   char *output_dir;
   char *rxn_buffer;
   char *conc_buffer;
@@ -100,7 +101,11 @@ struct state_struct {
   int  *cmpts_map;
 
   int  number_reactions;
-  int  padi;
+  /* free energy_format, 0 for none, 1 for negative log likelihoods,
+     2 for KJ/mol, 3 for Kcal/mol.
+  */
+  int  free_energy_format;
+  
 
   int  number_compartments;
   int  unique_compartments;
@@ -128,6 +133,7 @@ struct state_struct {
   FILE *out_fp;
   FILE *concs_out_fp;
   FILE *rxn_lklhd_fp;
+  FILE *free_energy_fp;
   FILE *lfp;
 }
 ;
