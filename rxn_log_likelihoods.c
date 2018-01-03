@@ -37,7 +37,8 @@ int rxn_log_likelihoods(double *free_energy,
 			double *concs, 
 			double *rxn_likelihood,
 			double *log_rxn_likelihood,
-			struct state_struct *state) {
+			struct state_struct *state,
+			int rxn_direction) {
   /*
     Compute the logs of the equilibrium constants and reaction quotients Q_p 
     ( = the ratio of reactant concentrations to product concentration with 
@@ -68,7 +69,8 @@ int rxn_log_likelihoods(double *free_energy,
   int padi;
 
   nrxns         = state->number_reactions;
-  success       = rxn_likelihoods(free_energy,concs,rxn_likelihood,state);
+  success       = rxn_likelihoods(free_energy,concs,rxn_likelihood,state,
+				  rxn_direction);
   if (success) {
     for (i=0;i<nrxns;i++) {
       log_rxn_likelihood[i] = log(rxn_likelihood[i]);
