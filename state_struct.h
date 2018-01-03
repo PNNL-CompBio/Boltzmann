@@ -139,6 +139,7 @@ struct state_struct {
   int64_t free_energy_format;
   int64_t rxn_view_freq;
   int64_t rxn_view_hist_length;
+  int64_t ode_rxn_view_freq;
   int64_t lklhd_view_freq;
   int64_t count_view_freq;
   int64_t fe_view_freq;
