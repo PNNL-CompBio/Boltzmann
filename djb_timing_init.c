@@ -68,11 +68,13 @@ void djb_timing_init(char *timings_list_indx) {
   fprintf (stdout, "djb_timing_init: &timing_data = %px\n",&timing_data);
   fflush(stdout);
   */
-  if (&timing_data == NULL) {
+  /*
+  if (timing_data == NULL) {
     fprintf(stderr," Error: in timing_init: timing_data pointer is NULL.\n");
     fprintf(stderr,
 	    " You need to include \"timing.h\" in your main program.\n");
   } else {
+  */
     if (timing_data.initialized != TIMING_INITIALIZED) {
       timing_data.initialized = TIMING_INITIALIZED;
       timing_data.global_start_count=0;
@@ -173,7 +175,9 @@ void djb_timing_init(char *timings_list_indx) {
       }
       timing_data.timings[DJB_TIMING_INIT].acc_time = stopt - start;
     } 
+    /*
   }
+    */
 }
 
 
