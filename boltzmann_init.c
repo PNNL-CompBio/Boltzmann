@@ -171,24 +171,6 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
     */
     success = parse_reactions_file(state,state->reaction_file);
   }
-  if (success) {
-    if (print_output) {
-      /*
-	Echo the reactions to the log file.
-      */
-      rxn_echo_fp = fopen("rxns.echo","w+");
-      if (rxn_echo_fp == NULL) {
-	fprintf(stderr,
-		"echo_reactions_file: Error could not open rxns.echo file.\n");
-	success = 0;
-      }
-      if (success) {
-	success = echo_reactions_file(state,rxn_echo_fp);
-	fclose(rxn_echo_fp);
-      }
-
-    }
-  }
   /*
     First we need to sort the compartments.
   */
@@ -271,6 +253,24 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
     if (state->use_pseudoisomers) {
       formation_energies = NULL;
       success = compute_standard_energies(state,&formation_energies);
+    }
+  }
+  if (success) {
+    if (print_output) {
+      /*
+	Echo the reactions to the log file.
+      */
+      rxn_echo_fp = fopen("rxns.echo","w+");
+      if (rxn_echo_fp == NULL) {
+	fprintf(stderr,
+		"echo_reactions_file: Error could not open rxns.echo file.\n");
+	success = 0;
+      }
+      if (success) {
+	success = echo_reactions_file(state,rxn_echo_fp);
+	fclose(rxn_echo_fp);
+      }
+
     }
   }
   /*
