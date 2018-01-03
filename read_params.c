@@ -41,6 +41,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
   double epsilon;
   double min_conc;
   double default_volume_candidate;
+  double flux_scaling;
   int64_t max_param_line_len;
   int64_t ode_solver_choice;
   int64_t delta_concs_choice;
@@ -128,6 +129,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
     state->default_volume      = 1.0e-15;
     state->recip_default_volume = 1.0e15;
     state->ode_t_final         = 10.0;
+    state->flux_scaling        = 0.0;
     /*
     state->min_conc            = 1.0e-52;
     */
@@ -235,16 +237,18 @@ int read_params (char *param_file_name, struct state_struct *state) {
       } else if (strncmp(key,"TEMP_KELVIN",11) == 0) {
 	sscan_ok = sscanf(value,"%le",&(state->temp_kelvin));
       } else if (strncmp(key,"KF_BASE_REACTION",16) == 0) {
-    /*
-        Note that flux_scaling is K_f(base_rxn_reaction)*(product of reactant 
-        concentrations in base reaction).
-    */
+        /*
+          Note that flux_scaling is K_f(base_rxn_reaction)*(product of reactant 
+          concentrations in base reaction).
+        */
 	sscan_ok = sscanf(value,"%le",&(state->kf_base_reaction));
-	/*
-	  Bill says we don't let users modify Avogadro's number
+      /*
+        Bill says we don't let users modify Avogadro's number
       } else if (strncmp(key,"AVOGADRO",8) == 0) {
 	sscan_ok = sscanf(value,"%le",&(state->avogadro));
-	*/
+      */
+      } else if (strncmp(key,"FLUX_SCALING",12) == 0) {
+	sscan_ok = sscanf(value,"%le",&(state->flux_scaling));
       /*
 	Following four lines addd by DGT on 4/15/2013
       */
