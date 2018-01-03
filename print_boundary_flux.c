@@ -20,16 +20,6 @@ under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <strings.h>
-#include <float.h>
-#include <math.h>
-#include <signal.h>
-#include <unistd.h>
-
-#include "djb_timing_b.h"
 #include "boltzmann_structs.h"
 
 #include "print_boundary_flux.h"
@@ -37,7 +27,7 @@ void print_boundary_flux(struct state_struct *state) {
   /*
     Print out the boundary fluxes, one molecule:compartment flux per line.
     
-    Called by: boltzmann_run_sim
+    Called by: boltzmann_run
     Calls:     fprintf
 
     Arguments:
