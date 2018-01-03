@@ -14,6 +14,7 @@ int create_output_filenames(struct state_struct *state) {
   char *log_filename;
   char *output_filename;
   char *counts_out_filename;
+  char *ode_concs_filename;
   char *rxn_lklhd_filename;
   char *free_energy_filename;
   char *restart_filename;
@@ -35,6 +36,7 @@ int create_output_filenames(struct state_struct *state) {
   log_filename         = state->log_file;
   output_filename      = state->output_file;
   counts_out_filename  = state->counts_out_file;
+  ode_concs_filename   = state->ode_concs_file;
   rxn_lklhd_filename   = state->rxn_lklhd_file;
   free_energy_filename = state->free_energy_file;
   restart_filename     = state->restart_file;
@@ -73,8 +75,8 @@ int create_output_filenames(struct state_struct *state) {
     }
   }
   if (success) {
-    if ((rxn_filename_base_length + 7) > state->max_filename_len) {
-      rxn_filename_base_length = state->max_filename_len - 8;
+    if ((rxn_filename_base_length + 11) > state->max_filename_len) {
+      rxn_filename_base_length = state->max_filename_len - 12;
       /*
 	Probably should print a warning mewssage here.
       */
@@ -97,6 +99,10 @@ int create_output_filenames(struct state_struct *state) {
     if (counts_out_filename[0] == '\0') {
       strncpy(counts_out_filename,rxn_filename,rxn_filename_base_length);
       strcpy((char*)&counts_out_filename[rxn_filename_base_length],".count");
+    }
+    if (ode_concs_filename[0] == '\0') {
+      strncpy(ode_concs_filename,rxn_filename,rxn_filename_base_length);      
+      strcpy((char*)&ode_concs_filename[rxn_filename_base_length],".ode_concs");
     }
     if (rxn_lklhd_filename[0] == '\0') {
       strncpy(rxn_lklhd_filename,rxn_filename,rxn_filename_base_length);
