@@ -200,6 +200,7 @@ struct state_struct {
   double  conc_units;
   double  ntotal_opt;
   double  ntotal_exp;
+  double  ode_t_final;
   /*
     Note that flux_scaling is K_f(base_rxn_reaction)*(product of reactant 
     concentrations in base reaction).
