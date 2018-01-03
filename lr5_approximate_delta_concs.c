@@ -39,18 +39,11 @@ int lr5_approximate_delta_concs(struct state_struct *state,
   struct  molecule_struct *molecule;
   struct  molecules_matrix_struct *molecules_matrix;
   struct  reactions_matrix_struct *rxn_matrix;
-  double  *product_term;
-  double  *reactant_term;
   double  *forward_rxn_likelihoods;
   double  *reverse_rxn_likelihoods; 
   double  *counts;
   double  *conc_to_count;
   double  flux_scaling;
-  double  frb;
-  double  lrb;
-  double  recip_frb;
-  double  forward;
-  double  backward;
   double  lr_total;
   double  recip_lr_total;
   int64_t *molecules_ptrs;
@@ -67,8 +60,8 @@ int lr5_approximate_delta_concs(struct state_struct *state,
   int i;
   int j;
 
-  int mi;
   int success;
+  int padi;
 
   FILE *lfp;
   FILE *efp;
