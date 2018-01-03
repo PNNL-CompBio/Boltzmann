@@ -42,6 +42,7 @@ specific language governing permissions and limitations under the License.
 #include "reverse_rxn_conc_update.h"
 #include "rxn_log_likelihoods.h"
 #include "print_restart_file.h"
+#include "print_reactions_view.h"
 
 #include "boltzmann_run_sim.h"
 int boltzmann_run_sim(struct state_struct *state) {
@@ -77,6 +78,10 @@ int boltzmann_run_sim(struct state_struct *state) {
   double *c_loglr;
   double *forward_rxn_likelihood;
   double *reverse_rxn_likelihood;
+  double *rxn_view_data;
+  double *rxn_view_p;
+  double *rrxn_view_data;
+  double *rrxn_view_p;
   double cal_gm_per_joule;
   /*
   double *lthermo;
@@ -100,6 +105,15 @@ int boltzmann_run_sim(struct state_struct *state) {
   int j;
   int forward;
 
+  int view_step;
+  int view_pos;
+
+  int view_freq;
+  int lthf;
+
+  int lthl;
+  int padi;
+
   FILE *lfp;
   FILE *concs_out_fp;
   FILE *rxn_lklhd_fp;
@@ -117,6 +131,8 @@ int boltzmann_run_sim(struct state_struct *state) {
   cconcs         = state->current_concentrations;
   fconcs         = state->future_concentrations;
   m_rt           = state->m_rt;
+  rxn_view_data  = state->rxn_view_likelihoods;
+  rrxn_view_data  = state->rev_rxn_view_likelihoods;
   cal_gm_per_joule = state->cal_gm_per_joule;
   /*
   lthermo        = state->l_thermo;
@@ -128,6 +144,10 @@ int boltzmann_run_sim(struct state_struct *state) {
   uni_multiplier = vgrng_state->uni_multiplier;
   concs_out_fp   = state->concs_out_fp;
   rxn_lklhd_fp   = state->rxn_lklhd_fp;
+  lthf           = state->lthf;
+  lthl           = state->lthl;
+  view_pos       = 0;
+  view_step      = lthf;
   for (i=0;i<n_warmup_steps;i++) {
     /*
       Compute the reaction likelihoods - forward_rxn_likelihood, 
@@ -305,6 +325,24 @@ int boltzmann_run_sim(struct state_struct *state) {
 	fprintf(state->rxn_lklhd_fp,"\t%le",reverse_rxn_likelihood[j]);
       }
       fprintf(state->rxn_lklhd_fp,"\n");
+      if (lthf > 0) {
+	view_step = view_step - 1;
+	/*
+	  Save the likelihoods on a per reaction basis.
+	*/
+	if ((view_step == 0) || (i == n_record_steps-1)) {
+	  rxn_view_p = (double *)&rxn_view_data[view_pos];
+	  rrxn_view_p = (double *)&rrxn_view_data[view_pos];
+	  for (j = 0; j < num_rxns;j++) {
+	    *rxn_view_p = forward_rxn_likelihood[j];
+	    *rrxn_view_p = reverse_rxn_likelihood[j];
+	    rxn_view_p += lthl; /* Caution address arithmetic here. */
+	    rrxn_view_p += lthl; /* Caution address arithmetic here. */
+	  }
+	  view_step = lthf;
+	  view_pos += 1;
+	}
+      }
       /*
 	If user has requested print out free energies as well.
       */
@@ -334,6 +372,11 @@ int boltzmann_run_sim(struct state_struct *state) {
     } /* end for(i...) */
     if (success) {
       success = print_restart_file(state);
+    }
+    if (success) {
+      if (lthf > 0) {
+	success = print_reactions_view(state);
+      }
     }
   }
   return(success);
