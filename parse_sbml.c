@@ -60,12 +60,13 @@ int parse_sbml(struct sbml2bo_struct *state) {
   FILE *concs_fp;
   FILE *cmpts_fp;
   FILE *rxns_fp;
+  FILE *id_name_fp;
   FILE *error_fp;
 
   /*
     Allocation and local pointers.
   */
-  sbml_buffer = (char *)&(sbml_buffer[0]);
+  sbml_buffer = (char *)&(sbml_buffer_c[0]);
   sbml_buffer_len = 2048;
   lfp         = state->log_fp;
   if (lfp == NULL) {
@@ -115,6 +116,17 @@ int parse_sbml(struct sbml2bo_struct *state) {
     }
   }
   if (success) {
+    state->rxns_fp = rxns_fp;
+    id_name_fp = fopen(state->id_name_file,"w");
+    if (id_name_fp == NULL) {
+      fprintf(error_fp,"parse_sbml: unable to open _names.lis file, %s\n",
+	      state->id_name_file);
+      fflush(error_fp);
+      success = 0;
+    }
+  }
+  if (success) {
+    state->id_name_fp = id_name_fp;
     success = sbml_find_section(sbml_fp,sbml_buffer,
 				sbml_buffer_len,
 				"<listOfCompartments>");
@@ -133,6 +145,7 @@ int parse_sbml(struct sbml2bo_struct *state) {
 					  sbml_buffer_len,state);
   }
   if (success) {
+    fclose(id_name_fp);
     fclose(concs_fp);
     success = sbml_find_section(sbml_fp,sbml_buffer,
 				sbml_buffer_len,"<listOfReactions>");
