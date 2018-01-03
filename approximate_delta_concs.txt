@@ -1,0 +1,105 @@
+Definitions of s[j], m[i,j], F, (d s[j]/dt)_i 
+Let s[j] represent the concentration of species j.
+Let m[i,j] represent the stoichmetric coeficient of species j in reaction i.
+
+if m[i,j] is < 0 then species j is on the left hand side of reaction i 
+   (it is a reactant), if m[i,j] > 0 then species j is a product of reaction i.
+   if m[i,j] == 0 then species j is the solvent molecule or not involved
+   in reaction i.
+
+ (d s[j]/dt)_i be the change in concentration of species j due to reacion i,
+
+let the base reaction number be base_rxn (in 0..number_reactions - 1)
+
+    let reactant_term[i] = product of species concentrations that have
+                           negative stoichimetric coefficients for reaction i.
+
+    and product_term[i]  = product of species concentrations that have
+                           positive stoichimetric coefficients for reaction i
+			   			   
+    If reactant_term[i] = 0, the reaction can not fire in the
+                                 forward direction because at least
+		   	         one of its reactants is missing
+				                           
+    Similarly,
+    If product_term[i] = 0, the reaction cannot fire in the reverse direction
+                            because at least one of its reactants is missing.
+ 
+
+F is the flux scaling constant: 
+  If the state->flux_scaling is 0 then
+    F = kf_base_reaction * product of base reaction product of reactant species
+        concentrations,
+  else 
+    F is taken to be state->flux_scaling. 
+
+  This is controlled by the parameters
+  FLUX_SCALING and KF_BASE_REACTION
+
+Then the difference in the lr*_approximate_delta_concs routines is the formula 
+used to compute (d s[j]/dt)_i.
+
+  Note if m[i,j] == 0 then either species j is the solvent or 
+       it is not involved in reaction i and (d s[j]/dt)_i = 0
+
+  For each of the descriptions below, the formula is given for
+  m[i,j] < 0 :: species j is a reactant (on the left side) in reaction i.
+  if m[i,j] > 0 then species j is a product (on the right side) in reaction i,
+    and the contribution (d s[j]/dt)_i has the opposite sign as for a
+    reactant species.
+
+
+For lr_approximate_delta_concs (DELTA_CONCS_CHOICE 0)
+
+  if (m[i,j] < 0) :
+    (d s[j]/dt)_i =  F * (-forward(i) + reverse(i))
+
+       where forward(i) = if (reactant_term[i]  > 0)  {
+                            forward_lkhld[i]/forward_lklhd[base_rxn]
+  	   	          } else {
+  		            0
+  		          }
+       and   reverse(i) = if (product_term[i] > 0) {
+  		            reverse_lklkhd[base_rxn]
+  		          } else {
+  		            0
+                          }
+
+for lr1_approximate_delta_concs (DELTA_CONCS_CHOICE 1)     
+    (d s[j]/dt)_i =  F * (-forward(i) + reverse(i))
+
+    where forward(i) = forward_lklhd[i]/forward_lklhd[base_rxn]
+    and   reverse(i) = forward_lklhd[i]*reverse_lklhd[i]/forward_lklhd[base_rxn]
+
+    and we don't worry about  reactant_term[i] or product_term[i] == 0;
+
+For lr3_approximate_delta_concs (DELTA_CONCS_CHOICE 3)
+    (d s[j]/dt)_i =  F * (-forward(i) + reverse(i))
+    where forward(i) and reverse(i) are as for lr1_approximate_delta_concs
+    above, but set to 0 if the corresponding reactant_term[i] or 
+    product_term[i] is 0.
+
+
+For lr2_aproximate_delta_concs (DELTA_CONCS_CHOICE 2)
+    (d s[j]/dt)_i =  F * (-forward(i) + reverse(i))
+
+    where forward(i) = if (reactant_term[i] > 0) {
+                          forward_lklhd[i]/forward_lklhd[base_reaction]
+		       } else {
+		          0
+		       }
+ 
+    and reverse(i)   = if (product_term[i] > 0) {
+                          reverse_lklhd[i]
+		       } else {
+		          0
+		       }
+
+For ce_approximate_delta_concs (DELTA_CONCS_CHOICE 42)
+    (d s[j]/dt)_i =  F * (-forward(i) + reverse(i))
+
+     where forward(i) = k_forward[i] * reactant_term[i]
+     and   reverse(i) = k_reverse[i] * product_term[i]
+     
+     where k_forward[i] and k_reverse[i] are the specified 
+     kinetic reaction rate constants.
