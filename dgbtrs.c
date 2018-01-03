@@ -265,9 +265,9 @@ void dgbtrs_(char *transp, int *np, int *klp, int *kup, int *nrhsp,
   tchar  = 'T';
   cchar  = 'C';
   kl_p_ku = kl + ku;
-  notran = lsame_(&trans,&nchar);
-  tran   = lsame_(&trans,&tchar);
-  conj   = lsame_(&trans,&cchar);
+  notran = lsame_(&trans,&nchar,1,1);
+  tran   = lsame_(&trans,&tchar,1,1);
+  conj   = lsame_(&trans,&cchar,1,1);
   valid_arg1 = notran || tran || conj;
   info = 0;
   if (! valid_arg1) {
@@ -420,7 +420,7 @@ void dgbtrs_(char *transp, int *np, int *klp, int *kup, int *nrhsp,
 	      lm = kl;
 	    }
 	    dgemv_(&tchar,&lm,&nrhs,&m_one,&b[j+1+ldb],&ldb,
-		   &ab[j_ldab + kd + 1],&i_one,&one,&b[j+ldb],&ldb);
+		   &ab[j_ldab + kd + 1],&i_one,&one,&b[j+ldb],&ldb,1);
 	    l = ipiv[j];
 	    if (l != j) {
 	      dswap_(&nrhs,&b[l+ldb],&ldb,&b[j+ldb],&ldb);
