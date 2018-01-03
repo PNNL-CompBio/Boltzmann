@@ -16,7 +16,6 @@ int translate_regulation_metabolites(struct state_struct *state) {
   struct rxn_matrix_struct *rxns_matrix;
   int64_t *reg_species;
   int64_t *compartment_indices;
-  int64_t num_reactions;
   char    *regulation_text;
   char    *metabolite;
   
@@ -25,7 +24,9 @@ int translate_regulation_metabolites(struct state_struct *state) {
 
   int num_rxns;
   int reg_pos;
+
   int reg_base;
+  int rmet_num;
 
   int i;
   int j;
@@ -36,17 +37,13 @@ int translate_regulation_metabolites(struct state_struct *state) {
   int met_pos;
   int met_num;
 
-  int rmet_num;
-  int padi;
-
-
   FILE *lfp;
   FILE *efp;
   success = 1;
   if (state->use_regulation) {
     lfp                 = state->lfp;
     max_regs_per_rxn    = (int)state->max_regs_per_rxn;
-    num_rxns            = state->number_reactions;
+    num_rxns            = (int)state->number_reactions;
     reactions           = state->reactions;
     regulation_text     = state->regulation_text;
     reg_species         = state->reg_species;
@@ -56,7 +53,7 @@ int translate_regulation_metabolites(struct state_struct *state) {
     reg_pos          = 0;
     reg_base         = 0;
     reaction         = reactions;
-    for (i=0;i<num_reactions;i++) {
+    for (i=0;i<num_rxns;i++) {
       lc = reaction->left_compartment;
       rc = reaction->right_compartment;
       lc = compartment_indices[lc];
