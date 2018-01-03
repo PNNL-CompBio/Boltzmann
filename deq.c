@@ -40,6 +40,8 @@ struct timing_struct timing_data;
 #define BOLTZMANN_DBG 1
 #include "boltzmann_init.h"
 #include "deq_run.h"
+#include "print_counts.h"
+#include "print_restart_file.h"
 int main(int argc, char **argv)
 {
   /*
@@ -74,6 +76,7 @@ int main(int argc, char **argv)
     success = deq_run(state);
     j = 1;
     print_counts(state,j);
+    print_restart_file(state);
   }
   TIMING_STOP(TOTAL_TIME);
   TIMING_PRINT(stdout);
