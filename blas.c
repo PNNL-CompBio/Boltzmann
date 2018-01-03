@@ -1,4 +1,4 @@
-#include "boltzmann_structs.h"
+#include "system_includes.h"
 
 #include "blas.h"
 void dscal(int *nx, double *a_p, double *x, int *inc) {
@@ -50,7 +50,7 @@ double dnrm2(int *nx, double *x, int *inc) {
 }
 
 
-void dgemv(int *trans, int *m_p, int *n_p, double *alpha_p, double *a, 
+void dgemv(char *trans, int *m_p, int *n_p, double *alpha_p, double *a, 
 	   int *lda_p, double *x, int *incx_p, double *beta_p, 
 	   double *y, int *incy_p) {
    /*
@@ -108,4 +108,74 @@ void daxpy(int *n_p, double *alpha_p, double *x, int *incx_p,
   for (i=0;i<n;i++) {
     y[i] = y[i] + alpha * x[i];
   }
+}
+
+double ddot(int *n_p, double *x, int *incx_p, double *y, int *incy_p) {
+  double dtemp;
+  double *xt;
+  double *yt;
+  int n;
+  int incx;
+  int incy;
+  int i;
+  n = *n_p;
+  incx = *incx_p;
+  incy = *incy_p;
+  xt = x;
+  yt = y;
+  dtemp = 0.0;
+  if ((incx == 1) && (incy == 1)) {
+    for (i=0;i<n;i++) {
+      dtemp += (*xt) * (*yt);
+      xt += 1; /* Address arithmetic */
+      yt += 1; /* Address arithmetic */
+    }
+  } else {
+    if (incx < 0) {
+      xt = &x[(1-n)*incx];
+    }
+    if (incy < 0) {
+      yt = &y[(1-n)*incy];
+    }
+    for (i=0;i<n;i++) {
+      dtemp += (*xt) * (*yt);
+      xt += incx; /* Address arithmetic */
+      yt += incy; /* Address arithmetic */
+    }
+  }
+  return(dtemp);
+}
+int idamax(int *n_p, double *dx, int *incx_p) {
+  int n;
+  int incx;
+  int i;
+  int ix;
+  int max_loc;
+  double dxmax;
+  max_loc = -1;
+  n = *n_p;
+  incx = *incx_p;
+  max_loc = -1;
+  if (n > 0) {
+    max_loc = 0;
+    dxmax = fabs(dx[0]);
+    if (incx > 1) {
+      ix = incx;
+      for (i=1;i<n;i++) {
+	if (fabs(dx[ix]) > dxmax) {
+	  dxmax = fabs(dx[ix]);
+	  max_loc = i;
+	}
+	ix += incx;
+      }
+    } else {
+      for (i=1;i<n;i++) {
+	if (fabs(dx[i]) > dxmax) {
+	  dxmax = fabs(dx[i]);
+	  max_loc = i;
+	}
+      }
+    }
+  }
+  return (max_loc);
 }
