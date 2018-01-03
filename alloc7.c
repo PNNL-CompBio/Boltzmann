@@ -30,7 +30,7 @@ int alloc7(struct state_struct *state) {
     Allocate space for a flux vector ( lenth = num_species)
     The Jacobian of the flux vector (length = num_species * num_species);
     the reactant_term vector (length = num_rxns), 
-    product_term_vector (length = num_rxns),  p_over_r, r_over_p both of 
+    product_term_vector (length = num_rxns),  r_over_p, p_over_r both of 
     length num_rxns, and concs of length num_species.
     Called by: deq_run
     Calls:     calloc, fprintf, fflush,
