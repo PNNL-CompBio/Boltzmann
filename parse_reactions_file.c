@@ -89,8 +89,6 @@ int parse_reactions_file(struct state_struct *state,
   int64_t *coefficients;
   int64_t *reg_species;
   int64_t rxn_buff_len;
-  int64_t total_length;
-  int64_t molecules_len;
   int64_t rxn_title_len;
   int64_t pathway_len;
   int64_t compartment_len;
@@ -103,8 +101,6 @@ int parse_reactions_file(struct state_struct *state,
   int64_t regulation_pos;
   int64_t align_len; 
   int64_t align_mask; 
-  int64_t len;
-  int64_t sll;
   int64_t reg_base;
   int64_t nr;
   char *rxn_buffer;
@@ -124,6 +120,8 @@ int parse_reactions_file(struct state_struct *state,
   char *pathway;
   char *metabolite;
 
+  size_t word1_len;
+
   int success;
   int rxns;
 
@@ -131,39 +129,29 @@ int parse_reactions_file(struct state_struct *state,
   int regulations;
 
   int ws_chars;
-  int nws_chars;
-
   int line_type;
+
   int kl;
-
   int cmpts;
-  int pos;
 
-  int skip;
   int sl;
-
   int ns;
+
   int j;
-
   int mol_pos;
+
   int mol_pos_lim;
-
   int padding;
-  int ci;
 
-  int colon_loc;
   int side;
-
   int word1;
+
   int i;
-
   int max_regs_per_rxn;
+
   int reg_count;
-
   int reg_pos;
-  int padi;
 
-  size_t word1_len;
 
   FILE *rxn_fp;
   FILE *lfp;
