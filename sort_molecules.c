@@ -20,26 +20,19 @@ under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <strings.h>
-#include <float.h>
-#include <signal.h>
-#include <unistd.h>
 
 #include "boltzmann_structs.h"
 #include "merge_molecules.h"
 
 #include "sort_molecules.h"
-int sort_molecules(struct istring_elem_struct **unsorted_molecules,
-		   struct istring_elem_struct **sorted_molecules,
+int sort_molecules(struct istring_elem_struct *unsorted_molecules,
+		   struct istring_elem_struct *sorted_molecules,
 		   char *molecules_text,
 		   int n) {
   /*
     Sort the uppercase istring names.
-    Called by: boltzman_init
-    Calls    : merge_molecules
+    Called by: boltzmann_init, boltzmann_boot, rxn_map_init
+    Calls    : merge_molecules, memmove
 
     for now we use a simple merge sort, with strcmp as the
     comparator function. In the future might want to bin sort
@@ -52,7 +45,10 @@ int sort_molecules(struct istring_elem_struct **unsorted_molecules,
   struct istring_elem_struct *u_molecules;
   struct istring_elem_struct *s_molecules;
   struct istring_elem_struct *temp;
+  struct istring_elem_struct ies;
 
+  int64_t move_size;
+  
   int success;
   int step;
 
@@ -62,8 +58,8 @@ int sort_molecules(struct istring_elem_struct **unsorted_molecules,
   int ln;
   int j;
   success = 1;
-  u_molecules = *unsorted_molecules;
-  s_molecules = *sorted_molecules;
+  u_molecules = unsorted_molecules;
+  s_molecules = sorted_molecules;
   
   if (n > 2) {
     for (step = 1; step < n; step += step) {
@@ -86,6 +82,8 @@ int sort_molecules(struct istring_elem_struct **unsorted_molecules,
 	  s_molecules[j].string   = u_molecules[j].string;
 	  s_molecules[j].m_index  = u_molecules[j].m_index;
 	  s_molecules[j].c_index  = u_molecules[j].c_index;
+	  s_molecules[j].variable = u_molecules[j].variable;
+	  s_molecules[j].g_index  = u_molecules[j].g_index;
 	}
       }
       temp            = s_molecules;
@@ -93,7 +91,14 @@ int sort_molecules(struct istring_elem_struct **unsorted_molecules,
       u_molecules     = temp;
     }
   }
+  /*
   *sorted_molecules   = u_molecules;
   *unsorted_molecules = s_molecules;
+  */
+  if (u_molecules != sorted_molecules) {
+    move_size = ((int64_t)n) * ((int64_t)sizeof(ies));
+    memmove(s_molecules,u_molecules,move_size);
+  }
   return(success);
 }
+
