@@ -11,7 +11,7 @@ SERIAL_OBJS1 = boltzmann_init.o alloc0.o alloc0_a.o boltzmann_set_filename_ptrs.
 SERIAL_OBJS2 = energy_init.o compute_standard_energies.o size_pseudoisomer_file.o alloc5.o parse_pseudoisomer_dg0f_file.o blank_to_dash.o sharp_pos.o alloc6.o compute_molecule_dg0tfs.o compute_molecule_dg0tf.o pseudoisomer_dg0tf.o compute_molecular_partition_probability.o compute_chemical_potential.o compute_reaction_dg0.o unalloc6.o compute_ke.o zero_solvent_coefficients.o compute_kss.o echo_inputs.o echo_params.o echo_reactions_file.o print_molecules_dictionary.o print_dg0_ke.o recover_solvent_coefficients.o vgrng_init.o vgrng.o print_rxn_likelihoods_header.o print_free_energy_header.o run_init.o alloc8.o alloc9.o print_reactions_matrix.o 
 
 
-SERIAL_OBJS3 = boltzmann_run.o update_rxn_log_likelihoods.o rxn_log_likelihoods.o rxn_likelihoods.o rxn_likelihood.o choose_rxn.o candidate_rxn.o binary_search_l_u_b.o update_regulations.o update_regulation.o rxn_count_update.o bndry_flux_update.o metropolis.o rxn_likelihood_postselection.o compute_delta_g_forward_entropy_free_energy.o boltzmann_watch.o print_rxn_choice.o print_counts.o print_likelihoods.o save_likelihoods.o print_free_energy.o print_boundary_flux.o print_restart_file.o print_reactions_view.o
+SERIAL_OBJS3 = boltzmann_build_agent_data_block.o boltzmann_run.o boltzmann_load_agent_data.o update_rxn_log_likelihoods.o rxn_log_likelihoods.o rxn_likelihoods.o rxn_likelihood.o choose_rxn.o candidate_rxn.o binary_search_l_u_b.o update_regulations.o update_regulation.o rxn_count_update.o bndry_flux_update.o metropolis.o rxn_likelihood_postselection.o compute_delta_g_forward_entropy_free_energy.o boltzmann_watch.o print_rxn_choice.o print_counts.o print_likelihoods.o save_likelihoods.o print_free_energy.o print_boundary_flux.o print_restart_file.o print_reactions_view.o boltzmann_save_agent_data.o
 
 
 SERIAL_OBJS4 = rxn_map_init.o rxn_map_parse_start_stop_line.o rxn_map_run.o alloc4.o form_molecules_matrix.o
@@ -32,7 +32,7 @@ KFM_OBJS  = kegg_from_modelseed.o count_ws.o count_ntb.o count_nor.o check_for_w
 
 KPM_OBJS = modelseed_2_json.o count_ws.o count_ntb.o count_nws.o 
 
-SAVE_LOAD_OBJS = boltzmann_save_state.o boltzmann_flatten_state.o boltzmann_flatten_alloc.o compute_flattened_state_size.o boltzmann_flatten_external.o boltzmann_flatten_aux_name.o boltzmann_flatten_scalars.o boltzmann_flatten_alloc1.o boltzmann_flatten_oneway_data.o boltzmann_flatten_reactions.o boltzmann_flatten_molecules.o boltzmann_flatten_compartments.o boltzmann_flatten_rmatrix.o boltzmann_flatten_mmatrix.o boltzmann_flatten_oneway_vecs.o boltzmann_flatten_twoway_data.o boltzmann_flatten_vgrng_state.o boltzmann_load_state.o boltzmann_save_aux_data.o boltzmann_flatten_aux_data.o boltzmann_load_aux_data.o
+SAVE_LOAD_OBJS = boltzmann_save_state.o boltzmann_flatten_state.o boltzmann_flatten_alloc.o compute_flattened_state_size.o boltzmann_flatten_external.o boltzmann_flatten_aux_name.o boltzmann_flatten_scalars.o boltzmann_flatten_alloc1.o boltzmann_flatten_oneway_data.o boltzmann_flatten_reactions.o boltzmann_flatten_molecules.o boltzmann_flatten_compartments.o boltzmann_flatten_rmatrix.o boltzmann_flatten_mmatrix.o boltzmann_flatten_oneway_vecs.o boltzmann_flatten_twoway_data.o boltzmann_flatten_vgrng_state.o boltzmann_load_state.o boltzmann_save_aux_data.o boltzmann_flatten_aux_data.o boltzmann_load_aux_data.o boltzmann_free_state.o
 
 ms2js_ids: $(KPM_OBJS)
 	$(CLINKER) -O0 -o ms2js_ids $(KPM_OBJS)
@@ -94,7 +94,7 @@ libboltzmann.a: $(SERIAL_OBJS1)  $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SERIAL_OBJS4)
 #	$(AR) $(ARFLAGS) libboltzmann.a fill_meta_data.o
 #	$(AR) $(ARFLAGS) libboltzmann.a write_super_state.o
 #	$(AR) $(ARFLAGS) libboltzmann.a copy_local_states.o
-#	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_mmap_superstate.o	
+#	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_mmap_superstate.o
 #	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_boot_check.o
 #	$(AR) $(ARFLAGS) libboltzmann.a flatten_super_state.o
 #	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_rep_state_i.o
@@ -175,6 +175,9 @@ libboltzmann.a: $(SERIAL_OBJS1)  $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SERIAL_OBJS4)
 #	$(AR) $(ARFLAGS) libboltzmann.a free_boot_state2.o
 #	$(AR) $(ARFLAGS) libboltzmann.a free_boot_state.o
 	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_run.o
+	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_load_agent_data.o
+	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_build_agent_data_block.o
+	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_save_agent_data.o
 	$(AR) $(ARFLAGS) libboltzmann.a update_rxn_log_likelihoods.o
 	$(AR) $(ARFLAGS) libboltzmann.a choose_rxn.o
 	$(AR) $(ARFLAGS) libboltzmann.a bndry_flux_update.o
@@ -206,7 +209,7 @@ libboltzmann.a: $(SERIAL_OBJS1)  $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SERIAL_OBJS4)
 #	$(AR) $(ARFLAGS) libboltzmann.a size_file.o
 #	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_load.o
 #	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_global_molecule_count.o
-#	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_max_local_state_size.o  
+#	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_max_local_state_size.o
 #	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_length_state_i.o
 #	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_number_of_reaction_files.o
 #	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_size_superstate.o
@@ -215,10 +218,10 @@ libboltzmann.a: $(SERIAL_OBJS1)  $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SERIAL_OBJS4)
 	$(AR) $(ARFLAGS) libboltzmann.a form_molecules_matrix.o
 	$(AR) $(ARFLAGS) libboltzmann.a rxn_map_parse_start_stop_line.o
 	$(AR) $(ARFLAGS) libboltzmann.a rxn_map_run.o
-	$(AR) $(ARFLAGS) libboltzmann.a sbml_to_boltzmann.o 
+	$(AR) $(ARFLAGS) libboltzmann.a sbml_to_boltzmann.o
 	$(AR) $(ARFLAGS) libboltzmann.a size_ms2js_file.o
 	$(AR) $(ARFLAGS) libboltzmann.a size_kg2js_file.o
-	$(AR) $(ARFLAGS) libboltzmann.a sbml_alloc0.o 
+	$(AR) $(ARFLAGS) libboltzmann.a sbml_alloc0.o
 	$(AR) $(ARFLAGS) libboltzmann.a sbml_alloc2.o 
 	$(AR) $(ARFLAGS) libboltzmann.a read_ms2js.o
 	$(AR) $(ARFLAGS) libboltzmann.a read_kg2js.o
@@ -337,9 +340,11 @@ libboltzmann.a: $(SERIAL_OBJS1)  $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SERIAL_OBJS4)
 	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_save_aux_data.o
 	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_flatten_aux_data.o
 	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_load_aux_data.o
+	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_free_state.o
 #	$(AR) $(ARFLAGS) libboltzmann.a fill_flux_pieces.o
 #	$(AR) $(ARFLAGS) libboltzmann.a flatten_state.o
 	
+
 boltzmann_test_save_load: boltzmann_test_save_load.o $(MMAP_OBJS) $(TIMING_LIB) libboltzmann.a
 	$(CLINKER) $(LFLAGS) -o boltzmann_test_save_load boltzmann_test_save_load.o $(SERIAL_OBJS1) $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SERIAL_OBJS4) $(SBML_OBJS) $(SERIAL_OBJS7) $(SAVE_LOAD_OBJS) $(MMAP_OBJS) $(TIMING_LIB) $(LIBS)
 
@@ -668,8 +673,17 @@ print_reactions_matrix.o: $(SERIAL_INCS) print_reactions_matrix.c print_reaction
 #free_boot_state.o: $(SERIAL_INCS) free_boot_state.c free_boot_state.h
 #	$(CC) $(DCFLAGS) $(TFLAGS) -c free_boot_state.c
 	
-boltzmann_run.o: $(SERIAL_INCS) boltzmann_run.c boltzmann_run.h update_rxn_log_likelihoods.h choose_rxn.h compute_delta_g_forward_entropy_free_energy.h print_rxn_choice.h print_counts.h boltzmann_watch.h print_boundary_flux.h print_restart_file.h print_reactions_view.h deq_run.h vec_set_constant.h blas.h
+boltzmann_run.o: $(SERIAL_INCS) boltzmann_run.c boltzmann_run.h update_rxn_log_likelihoods.h choose_rxn.h compute_delta_g_forward_entropy_free_energy.h print_rxn_choice.h print_counts.h boltzmann_watch.h print_boundary_flux.h print_restart_file.h print_reactions_view.h deq_run.h vec_set_constant.h blas.h boltzmann_load_agent_data.h boltzmann_save_agent_data.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_run.c
+
+boltzmann_load_agent_data.o: boltzmann_load_agent_data.c boltzmann_load_agent_data.h $(SERIAL_INCS) boltzmann_flatten_vgrng_state.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_load_agent_data.c
+
+boltzmann_save_agent_data.o: boltzmann_save_agent_data.c boltzmann_save_agent_data.h $(SERIAL_INCS) boltzmann_flatten_vgrng_state.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_save_agent_data.c
+
+boltzmann_build_agent_data_block.o: boltzmann_build_agent_data_block.c boltzmann_build_agent_data_block.h $(SERIAL_INCS) boltzmann_save_agent_data.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_build_agent_data_block.c
 
 bwarmup_run.o: $(SERIAL_INCS) bwarmup_run.c bwarmup_run.h update_rxn_log_likelihoods.h choose_rxn.h compute_delta_g_forward_entropy_free_energy.h print_rxn_choice.h print_counts.h print_restart_file.h deq_run.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c bwarmup_run.c
@@ -1098,11 +1112,10 @@ dlaswp.o: dlaswp.c dlaswp.h system_includes.h
 dgetrs.o: dgetrs.c dgetrs.h system_includes.h lsame.h dlaswp.h dtrsm.h
 	 $(CC) $(DCFLAGS) $(TFLAGS) -c dgetrs.c
 
-boltzmann_test_save_load.o: boltzmann_test_save_load.c $(SERIAL_INCS) boltzmann_init.h boltzmann_save_state.h boltzmann_save_aux_data.h boltzmann_load_state.h boltzmann_load_aux_data.h open_output_files.h
+boltzmann_test_save_load.o: boltzmann_test_save_load.c $(SERIAL_INCS) boltzmann_init.h boltzmann_save_state.h boltzmann_save_aux_data.h boltzmann_load_state.h boltzmann_load_aux_data.h open_output_files.h boltzmann_free_state.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_test_save_load.c
 			    
-
-boltzmann_save_state.o: boltzmann_save_state.c boltzmann_save_state.h $(SERIAL_INCS) boltzmann_flatten_state.h
+boltzmann_save_state.o: boltzmann_save_state.c boltzmann_save_state.h $(SERIAL_INCS) boltzmann_flatten_state.h boltzmann_build_agent_data_block.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_save_state.c
 
 boltzmann_flatten_state.o: boltzmann_flatten_state.c boltzmann_flatten_state.h $(SERIAL_INCS) boltzmann_flatten_alloc.h boltzmann_flatten_external.h boltzmann_flatten_aux_name.h boltzmann_flatten_scalars.h boltzmann_flatten_alloc1.h boltzmann_flatten_oneway_data.h boltzmann_flatten_twoway_data.h 
@@ -1153,7 +1166,7 @@ boltzmann_flatten_twoway_data.o: boltzmann_flatten_twoway_data.c boltzmann_flatt
 boltzmann_flatten_vgrng_state.o: boltzmann_flatten_vgrng_state.c boltzmann_flatten_vgrng_state.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_flatten_vgrng_state.c
 
-boltzmann_load_state.o: boltzmann_load_state.c boltzmann_load_state.h $(SERIAL_INCS) boltzmann_flatten_state.h
+boltzmann_load_state.o: boltzmann_load_state.c boltzmann_load_state.h $(SERIAL_INCS) boltzmann_flatten_state.h boltzmann_build_agent_data_block.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_load_state.c
 
 boltzmann_save_aux_data.o: boltzmann_save_aux_data.c boltzmann_save_aux_data.h $(SERIAL_INCS) boltzmann_flatten_aux_data.h
