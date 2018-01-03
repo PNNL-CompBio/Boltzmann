@@ -25,7 +25,7 @@ specific language governing permissions and limitations under the License.
 
 #include "count_ws.h"
 #include "count_nws.h"
-
+#include "upcase.h"
 #include "parse_rxn_file_keyword.h"
 
 int parse_rxn_file_keyword(char *rxn_buffer,struct state_struct *state){
@@ -40,11 +40,15 @@ int parse_rxn_file_keyword(char *rxn_buffer,struct state_struct *state){
   int64_t *keyword_len;
   int i;
   int num_rxn_file_keywords;
+
   int line_type;
   int kl;
+
   int skip;
   int ki;
+
   FILE *lfp;
+  FILE *efp;
   line_type = -1;
   keywords = state->rxn_file_keywords;
   keyword_len = state->rxn_file_keyword_lengths;
@@ -52,6 +56,7 @@ int parse_rxn_file_keyword(char *rxn_buffer,struct state_struct *state){
   skip = count_ws(rxn_buffer);
   keyword = (char *)&rxn_buffer[skip];
   kl   = count_nws(keyword);
+  upcase(kl,keyword);
   /*
     Check for comment lines (starting with a #)
   */
