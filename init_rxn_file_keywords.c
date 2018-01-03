@@ -45,21 +45,29 @@ void init_rxn_file_keywords(struct state_struct *state) {
   keywords       = state->rxn_file_keywords;
   keyword_len    = state->rxn_file_keyword_lengths;
   strcpy(keyword_buffer,
-	 "REACTIONPATHWAY COMPARTMENT     LEFT    RIGHT   DGZERO  DGZERO-UNITS    //     ");
+	 "REACTIONPATHWAY COMPARTMENT     LEFT_COMPARTMENT");
+  strcpy((char *)&keyword_buffer[48],
+	 "RIGHT_COMPARTMENT       LEFT    RIGHT   DGZERO  ");
+  strcpy((char *)&keyword_buffer[96],
+	 "DGZERO-UNITS    //             ");
   keywords[0] = (char*)(&keyword_buffer[0]);
   keywords[1] = (char*)(&keyword_buffer[8]);
   keywords[2] = (char*)(&keyword_buffer[16]);
   keywords[3] = (char*)(&keyword_buffer[32]);
-  keywords[4] = (char*)(&keyword_buffer[40]);
-  keywords[5] = (char*)(&keyword_buffer[48]);
-  keywords[6] = (char*)(&keyword_buffer[56]);
-  keywords[7] = (char*)(&keyword_buffer[72]);
+  keywords[4] = (char*)(&keyword_buffer[48]);
+  keywords[5] = (char*)(&keyword_buffer[72]);
+  keywords[6] = (char*)(&keyword_buffer[80]);
+  keywords[7] = (char*)(&keyword_buffer[88]);
+  keywords[8] = (char*)(&keyword_buffer[96]);
+  keywords[9] = (char*)(&keyword_buffer[112]);
   keyword_len[0]     = (int64_t)8;
   keyword_len[1]     = (int64_t)7;
   keyword_len[2]     = (int64_t)11;
-  keyword_len[3]     = (int64_t)4;
-  keyword_len[4]     = (int64_t)5;
-  keyword_len[5]     = (int64_t)6;
-  keyword_len[6]     = (int64_t)12;
-  keyword_len[7]     = (int64_t)2;
+  keyword_len[3]     = (int64_t)16;
+  keyword_len[4]     = (int64_t)17;
+  keyword_len[5]     = (int64_t)4;
+  keyword_len[6]     = (int64_t)5;
+  keyword_len[7]     = (int64_t)6;
+  keyword_len[8]     = (int64_t)12;
+  keyword_len[9]     = (int64_t)2;
 }
