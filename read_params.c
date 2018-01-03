@@ -77,34 +77,35 @@ int read_params (char *param_file_name, struct state_struct *state) {
     strcpy(state->rxn_view_file,"./rxns.view");
     strcpy(state->bndry_flux_file,"./boundary_flux.txt");
     */
-    state->init_conc_file[0]   = '\0';
-    state->log_file[0]         = '\0';
-    state->output_file[0]      = '\0';
-    state->counts_out_file[0]  = '\0';
-    state->ode_concs_file[0]   = '\0';
-    state->rxn_lklhd_file[0]   = '\0';
-    state->free_energy_file[0] = '\0';
-    state->restart_file[0]     = '\0';
-    state->rxn_view_file[0]    = '\0';
-    state->bndry_flux_file[0]  = '\0';
-    state->compartment_file[0] = '\0';
-    state->sbml_file[0]        = '\0';
-    state->rxn_echo_file[0]    = '\0';
-    state->rxn_mat_file[0]     = '\0';
-    state->dg0ke_file[0]       = '\0';
-    state->dictionary_file[0]  = '\0';
-    state->ode_flux_file[0]    = '\0';
-    state->ode_bflux_file[0]   = '\0';
-    state->ode_lklhd_file[0]   = '\0';
-    state->net_lklhd_file[0]   = '\0';
+    state->init_conc_file[0]   	= '\0';
+    state->log_file[0]         	= '\0';
+    state->output_file[0]      	= '\0';
+    state->counts_out_file[0]  	= '\0';
+    state->ode_concs_file[0]   	= '\0';
+    state->rxn_lklhd_file[0]   	= '\0';
+    state->free_energy_file[0] 	= '\0';
+    state->restart_file[0]     	= '\0';
+    state->rxn_view_file[0]    	= '\0';
+    state->bndry_flux_file[0]  	= '\0';
+    state->compartment_file[0] 	= '\0';
+    state->sbml_file[0]        	= '\0';
+    state->rxn_echo_file[0]    	= '\0';
+    state->rxn_mat_file[0]     	= '\0';
+    state->dg0ke_file[0]       	= '\0';
+    state->dictionary_file[0]  	= '\0';
+    state->ode_dconcs_file[0]   = '\0';
+    state->ode_bflux_file[0]    = '\0';
+    state->ode_lklhd_file[0]    = '\0';
+    state->net_lklhd_file[0]    = '\0';
     state->nl_bndry_flx_file[0] = '\0';
+    state->concs_out_file[0]    = '\0';
     /*
       Following line Added by DGT on 4/18/2013
      */
     strcpy(state->solvent_string,"H2O");
     strcpy(state->input_dir,"./");
     strcpy(state->output_dir,"./");
-    state->align_len        = (int64_t)16;
+    state->align_len        = (int64_t)64;
     state->max_filename_len = (int64_t)4096;
     state->max_param_line_len = (int64_t)4096;
     state->align_mask       = state->align_len - (int64_t)1;
@@ -156,6 +157,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
     state->base_reaction       = (int64_t)0;
     state->ode_solver_choice   = (int64_t)0;
     state->delta_concs_choice  = (int64_t)0;
+    state->concs_or_counts     = (int64_t)3;
 
     state->default_initial_count = (int64_t)0;
     param_buffer       = state->param_buffer;
@@ -190,6 +192,8 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	sscan_ok = sscanf(value,"%s",state->output_file);
       } else if (strncmp(key,"COUNTS_OUT_FILE",15) == 0) {
 	sscan_ok = sscanf(value,"%s",state->counts_out_file);
+      } else if (strncmp(key,"CONCS_OUT_FILE",15) == 0) {
+	sscan_ok = sscanf(value,"%s",state->concs_out_file);
       } else if (strncmp(key,"ODE_CONCS_FILE",14) == 0) {
 	sscan_ok = sscanf(value,"%s",state->ode_concs_file);
       } else if (strncmp(key,"RXN_LKLHD_FILE",14) == 0) {
@@ -297,6 +301,8 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	if (state->lklhd_view_freq < 0) {
 	  state->lklhd_view_freq = 1;
 	}
+      } else if (strncmp(key,"CONCS_OR_COUNTS",15) == 0) {
+	sscan_ok = sscanf(value,"%lld",&(state->concs_or_counts));
       } else if (strncmp(key,"FE_VIEW_FREQ",12) == 0) {
 	sscan_ok = sscanf(value,"%lld",&(state->fe_view_freq));
 	if (state->fe_view_freq < 0) {
