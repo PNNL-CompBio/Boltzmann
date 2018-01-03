@@ -29,7 +29,7 @@ void print_counts(struct state_struct *state, int64_t step) {
     Prints out the current counts field of the state structure
     in a tab delimited row terminated by a newline.
 
-    Called by boltzmann_run
+    Called by boltzmann_run, deq
 
     Arguments:
     
