@@ -29,11 +29,11 @@ specific language governing permissions and limitations under the License.
 #include <unistd.h>
 
 #include "boltzmann_structs.h"
+#include "rxn_likelihood.h"
 
 #include "rxn_likelihoods.h"
-int rxn_likelihoods(double *free_energy, 
-		    double *concs, 
-		    double *rxn_likelihood,
+int rxn_likelihoods(double *concs, 
+		    double *rxn_likelihood_values,
 		    struct state_struct *state,
 		    int rxn_direction) {
   /*
@@ -41,9 +41,7 @@ int rxn_likelihoods(double *free_energy,
     to product concentration with any concentration where the stoichiometric
     coefficient is greater than 1 is raised to that power, and multiply by
     the reaction equilibrium constant ke.
-    This could also be call rxn_likelihood?
-    For some reason in the matlab code its actually called current_free_energy,
-    but that just seems wrong.
+    This could also call rxn_likelihood? YES.
 
     We want to do this in a stable fashion and we want to avoid division
     by zero. So to accomplish this in a stable fashion, the expectation
@@ -56,111 +54,17 @@ int rxn_likelihoods(double *free_energy,
     successive quotients which we would expect to be well scaled.
 
     Called by: rxn_log_likelihoods
-    Calls      fprintf, fflush, log (intrinsic)
-  */
-  struct rxn_matrix_struct *rxns_matrix;
-  /*
-  struct species_matrix_struct species_matrix;
-  */
-  double *ke;
-  double small_nonzero;
-  double  conc;
-  double  left_concs;
-  double  right_concs;
-  double  t_concs;
-  /*
-  double  top;
-  double  bot;
-  */
-  double  eq_k;
-  int64_t coeff;
-  int64_t *rcoef;
-  int64_t *rxn_ptrs;
-  int64_t *molecules_indices;
-  /*
-  int64_t *scoef;
-  int64_t *molecules_ptrs;
-  int64_t *rxn_indices;
+    Calls      rxn_likelihood
   */
   int success;
   int nrxns;
 
   int i;
-  int j;
-
-  int k;
   int padi;
-  left_concs = 1.0;
-  right_concs = 1.0;
-
   success           = 1;
   nrxns             = state->number_reactions;
-  small_nonzero     = state->small_nonzero;
-  rxns_matrix       = state->reactions_matrix;
-  rxn_ptrs          = rxns_matrix->rxn_ptrs;
-  rcoef             = rxns_matrix->coefficients;
-  molecules_indices = rxns_matrix->molecules_indices;
-  ke                = state->ke;
   for (i=0;i<nrxns;i++) {
-    left_concs        = 1.0;
-    right_concs       = 1.0;
-    for (j=rxn_ptrs[i];j<rxn_ptrs[i+1];j++) {
-      coeff = rcoef[j];
-      conc  = concs[molecules_indices[j]];
-      if (coeff < 0) {
-	for (k=0;k<(0-coeff);k++) {
-	  left_concs = left_concs * (conc-k);	
-	} 
-      } else {
-	for (k=0;k<coeff;k++) {
-	  right_concs = right_concs * (conc-k);
-;	
-	} 
-      }
-    }
-    eq_k = ke[i];
-    if (rxn_direction < 0) {
-      eq_k = 1/eq_k;
-      t_concs = right_concs;
-      right_concs = left_concs;
-      left_concs  = t_concs;
-    }
-    /*
-    if (free_energy[i] < 0) {
-      top = right_concs;
-      bot = left_concs;
-      if (eq_k != 0.0) {
-	eq_k = 1.0/eq_k;
-      } else {
-	fprintf(stderr,"rxn_ratio: equilbrium constant %d was zero\n",
-		i);
-	fflush(stderr);
-	success = 0;
-	break;
-      }
-    } else {
-      top = left_concs;
-      bot = right_concs;
-    }
-    if (top < 1) {
-      top = small_nonzero;
-    }
-    if (bot < 1) {
-      bot = small_nonzero;
-    }
-    rxn_ratio[i] = eq_k * (top / bot);
-    */
-    if ((left_concs < 1.0) && (right_concs > 1.0)) {
-      /*left_concs = small_nonzero;*/
-      left_concs = 1.0;
-      rxn_likelihood[i] = 0;
-    } else {
-      if (right_concs < 1.0) {
-	/*right_concs = small_nonzero;*/
-	right_concs = 1.0;
-      }
-      rxn_likelihood[i] = eq_k * (left_concs/ right_concs);
-    }
+    rxn_likelihood_values[i] = rxn_likelihood(concs,state,rxn_direction,i);
   } /* end for(i...) */
   return(success);
 }
