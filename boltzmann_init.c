@@ -36,13 +36,14 @@ specific language governing permissions and limitations under the License.
 #include "translate_compartments.h"
 #include "sort_molecules.h"
 #include "unique_molecules.h"
-#include "zero_solvent_coefficients.h"
 #include "print_molecules_dictionary.h"
 #include "alloc3.h"
 #include "set_compartment_ptrs.h"
 #include "read_initial_concentrations.h"
 #include "compute_standard_energies.h"
 #include "compute_ke.h"
+#include "print_dg0_ke.h"
+#include "zero_solvent_coefficients.h"
 #include "print_rxn_likelihoods_header.h"
 #include "print_free_energy_header.h"
 #include "flatten_state.h"
@@ -230,16 +231,6 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
     success = unique_molecules(state);
   }
   /*
-    At this juncture we have echoed the reactions file if requested and
-    need to zero out the coefficients in the reaction matrix that
-    correspond to the solvent molecule (by default H2O) so as not to
-    have it influence the computation of likelihoods, nor change
-    concentration (see rxn_likelihood.c and comment in rxn_conc_update.c)
-  */
-  if (success) {
-    success = zero_solvent_coefficients(state);
-  }
-  /*
     Now we need to allocate space for the concentrations,
     and read in the intial concentrations.
   */
@@ -296,6 +287,21 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
   */
   if (success) {
     success = compute_ke(state);
+  }
+  if (success) {
+    if (print_output) {
+      success = print_dg0_ke(state);
+    }
+  }
+  /*
+    At this juncture we have echoed the reactions file if requested and
+    need to zero out the coefficients in the reaction matrix that
+    correspond to the solvent molecule (by default H2O) so as not to
+    have it influence the computation of likelihoods, nor change
+    concentration (see rxn_likelihood.c and comment in rxn_conc_update.c)
+  */
+  if (success) {
+    success = zero_solvent_coefficients(state);
   }
   if (success) {
     /*
