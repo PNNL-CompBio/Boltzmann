@@ -38,8 +38,8 @@ int read_initial_concentrations(struct state_struct *state) {
 	       upcase,
                fopen, fgets, fclose, fprintf, fflush (intrinsic)
   */
-  struct istring_elem_struct *sorted_molecules;
-  struct istring_elem_struct *molecule;
+  struct molecule_struct *sorted_molecules;
+  struct molecule_struct *molecule;
   double  conc;
   double  conc_multiple;
   double  c_multiple;
@@ -175,7 +175,7 @@ int read_initial_concentrations(struct state_struct *state) {
 	  si = molecules_lookup(molecule_name,ci,state);
 	  if ((si >=0) && si < nu_molecules) {
 	    concs[si] = conc;
-	    molecule = (struct istring_elem_struct *)&sorted_molecules[si];
+	    molecule = (struct molecule_struct *)&sorted_molecules[si];
 	    molecule->variable = variable;
 	    molecule->compute_init_conc = compute_conc;
 	    molecule->conc_multiple     = conc_multiple;
