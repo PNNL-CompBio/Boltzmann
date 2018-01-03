@@ -78,6 +78,8 @@ int boltzmann_run(struct state_struct *state) {
   double *no_op_likelihood;
   int    *rxn_fire;
   char   *cmpt_string;
+  double *dg0s;
+  double *free_energy;
 
   int success;
   int number_reactions;
@@ -112,6 +114,7 @@ int boltzmann_run(struct state_struct *state) {
   FILE *lfp;
   success = 1;
   nstate = state;
+  state->workspace_base = NULL;
   success = flatten_state(state,&nstate);
   n_warmup_steps    	 = (int)state->warmup_steps;
   n_record_steps    	 = (int)state->record_steps;
@@ -134,6 +137,16 @@ int boltzmann_run(struct state_struct *state) {
   rxn_view_step        	 = 1;
   conc_view_step         = 1;
   lklhd_view_step 	 = 1;
+  /*
+    Initialize the free_energy to be the delta_g0.
+  */
+  if (success) {
+    dg0s = state->dg0s;
+    free_energy  = state->free_energy;
+    for (i=0;i<state->number_reactions;i++) {
+      free_energy[i] = dg0s[i];
+    }
+  }
   for (i=0;i<n_warmup_steps;i++) {
     /*
       Compute the reaction likelihoods: forward_rxn_likelihood, 
