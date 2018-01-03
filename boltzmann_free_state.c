@@ -234,12 +234,6 @@ int boltzmann_free_state(struct state_struct *state) {
     if (state->reg_species != NULL) {
       free((void*)state->reg_species);
     }
-    if (state->vgrng_state != NULL) {
-      free((void*)state->vgrng_state);
-    }
-    if (state->vgrng2_state != NULL) {
-      free((void*)state->vgrng2_state);
-    }
     /*
       alloc0_a
     */
@@ -263,6 +257,15 @@ int boltzmann_free_state(struct state_struct *state) {
     }
     if (state->rxn_file_keyword_lengths != NULL) {
       free((void*)state->rxn_file_keyword_lengths);
+    }
+    if (state->vgrng_state != NULL) {
+      free((void*)state->vgrng_state);
+    }
+    if (state->vgrng2_state != NULL) {
+      free((void*)state->vgrng2_state);
+    }
+    if (state->cvodes_params != NULL) {
+      free((void*)state->cvodes_params);
     }
     free((void*)state);
   }
