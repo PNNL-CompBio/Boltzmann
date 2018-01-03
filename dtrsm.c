@@ -4,8 +4,9 @@
 
 #include "dtrsm.h"
 void dtrsm_(char *side_p, char *uplo_p, char *transa_p, char *diag_p,
-	   int *m_p, int *n_p, double *alpha_p, double *a,
-	   int *lda_p, double *b, int *ldb_p) {
+	    int *m_p, int *n_p, double *alpha_p, double *a,
+	    int *lda_p, double *b, int *ldb_p, 
+	    int side_len, int uplo_len, int trans_len, int diag_len) {
   /*
     Adapted from LAPACK dtrsm.f
     DTRSM  solves one of the matrix equations
@@ -191,22 +192,22 @@ void dtrsm_(char *side_p, char *uplo_p, char *transa_p, char *diag_p,
   /*
     Test the input parameters.
   */
-  lside = lsame_(&side,&l_char);
+  lside = lsame_(&side,&l_char,1,1);
   if (lside) {
     nrowa = m;
   } else {
     nrowa = n;
   }
-  nounit   = lsame_(&diag,&n_char);
-  upper    = lsame_(&uplo,&u_char);
-  lower    = lsame_(&uplo,&l_char);
-  notrans  = lsame_(&transa,&n_char);
-  trans    = lsame_(&transa,&t_char);
-  conjt    = lsame_(&transa,&c_char);
-  notudiag = lsame_(&diag,&n_char);
-  udiag    = lsame_(&diag,&u_char);
+  nounit   = lsame_(&diag,&n_char,1,1);
+  upper    = lsame_(&uplo,&u_char,1,1);
+  lower    = lsame_(&uplo,&l_char,1,1);
+  notrans  = lsame_(&transa,&n_char,1,1);
+  trans    = lsame_(&transa,&t_char,1,1);
+  conjt    = lsame_(&transa,&c_char,1,1);
+  notudiag = lsame_(&diag,&n_char,1,1);
+  udiag    = lsame_(&diag,&u_char,1,1);
   info = 0;
-  rside = lsame_(&side,&r_char);
+  rside = lsame_(&side,&r_char,1,1);
   if ((lside == 0) && (rside == 0)) {
     info = 1;
   } else {
