@@ -84,7 +84,6 @@ int read_params (char *param_file_name, struct state_struct *state) {
     state->ideal_gas_r      = 0.00198858775;
     state->temp_kelvin      = 298.15;
     state->cal_gm_per_joule = 4.184;
-    state->rxn_buff_len     = (int64_t)4194304;
     state->warmup_steps     = (int64_t)1000;
     state->record_steps     = (int64_t)1000;
     state->free_energy_format = (int64_t)0;
@@ -95,8 +94,8 @@ int read_params (char *param_file_name, struct state_struct *state) {
     state->print_output       = (int64_t)0;
     param_buffer       = state->param_buffer;
     max_param_line_len = state->max_param_line_len;
-    key                = state->param_key;
-    value              = state->param_value;
+    key                = param_buffer + max_param_line_len; /* address arithmetic */
+    value              = key + (max_param_line_len >> 1);
     /*
       read in parameters.
     */
@@ -136,8 +135,6 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	  state->align_len = 16;
 	}
 	state->align_mask = state->align_len - 1;
-      } else if (strncmp(key,"RXN_BUFF_LEN",9) == 0) {
-	sscan_ok = sscanf(value,"%ld",&(state->rxn_buff_len));
       } else if (strncmp(key,"IDEAL_GAS_R",11) == 0) {
 	sscan_ok = sscanf(value,"%le",&(state->ideal_gas_r));
       } else if (strncmp(key,"TEMP_KELVIN",11) == 0) {
