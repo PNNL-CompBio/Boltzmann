@@ -121,7 +121,9 @@ int ode_num_jac(struct state_struct *state,
   dfdy_tmp      = (double*)&fdiff[ny];
   forward_rxn_likelihoods = (double*)&dfdy_tmp[ny];
   reverse_rxn_likelihoods = (double*)&forward_rxn_likelihoods[nrxns];
+  /*
 #define DBG 1
+  */
 #ifdef DBG
   if (lfp) {
     fprintf(lfp,"ode_num_jac_top ------------------------------------\n");
