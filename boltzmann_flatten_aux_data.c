@@ -79,11 +79,14 @@ int boltzmann_flatten_aux_data(struct state_struct *state,
   int64_t molecule_text_length;
   int64_t regulation_text_length;
   int64_t aux_length;
+  int64_t string_length;
   int64_t one_l;
 
   char *aux_data;
   char *strpos;
   char *filenames;
+  char *ffilenames;
+  char *fstrings;
   char *rxn_title_text;
   char *pathway_text;
   char *compartment_text;
@@ -252,23 +255,54 @@ int boltzmann_flatten_aux_data(struct state_struct *state,
       state->regulation_text_length = regulation_text_length;
       filenames_length = num_files * filename_length;
 
-      filenames      = (char *)&aux_data[128];
-      //* Caution address arithmetic next 5 statments.
-      rxn_title_text = filenames + filenames_length;
-      pathway_text = rxn_title_text + reaction_titles_length; 
-      compartment_text = pathway_text + pathway_text_length;
-      molecules_text = compartment_text + compartment_text_length;
-      regulation_text = molecules_text + molecule_text_length;
+      /*
+	Here we need to allocate separate space for 
+	filenames, and the other text struct, so that
+	free works.
+      */
+      ffilenames      = (char *)&aux_data[128];
+      filenames      = calloc(one_l,filenames_length);
+      if (filenames == NULL) {
+	success = 0;
+	if (lfp) {
+	  fprintf(lfp,"boltzmann_flatten_aux_data: Error on a load, unable to allocate %ld bytes for filenames\n",filenames_length);
+	  fflush(lfp);
+	}
+      }
+      if(success) { 
+	memcpy(filenames,ffilenames,filenames_length);
+	state->params_file      = filenames;
+	boltzmann_set_filename_ptrs(state);
+	
+	string_length  = reaction_titles_length + pathway_text_length +
+	compartment_text_length + molecule_text_length +
+	regulation_text_length;
 
-      state->params_file      = filenames;
+	rxn_title_text = calloc(one_l,string_length);
+	if (rxn_title_text == NULL) {
+	  success = 0;
+	  if (lfp) {
+	    fprintf(lfp,"boltzmann_flatten_aux_data: Error on a load, unable to allocate %ld bytes for string data\n",string_length);
+	    fflush(lfp);
+	  }
+	}
+	if (success) {
+	  //* Caution address arithmetic next5 statments.
+  fstrings = ffilenames + filenames_length;
+	  memcpy(rxn_title_text,fstrings,string_length);
 
-      boltzmann_set_filename_ptrs(state);
 
-      state->rxn_title_text   = rxn_title_text;
-      state->pathway_text     = pathway_text;
-      state->compartment_text = compartment_text;
-      state->molecules_text   = molecules_text;
-      state->regulation_text  = regulation_text;
+	  pathway_text = rxn_title_text + reaction_titles_length; 
+	  compartment_text = pathway_text + pathway_text_length;
+	  molecules_text = compartment_text + compartment_text_length;
+	  regulation_text = molecules_text + molecule_text_length;
+	  state->rxn_title_text   = rxn_title_text;
+	  state->pathway_text     = pathway_text;
+	  state->compartment_text = compartment_text;
+	  state->molecules_text   = molecules_text;
+	  state->regulation_text  = regulation_text;
+	}
+      }
     }
   }
   return(success);
