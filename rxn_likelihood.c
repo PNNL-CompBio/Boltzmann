@@ -149,18 +149,15 @@ double rxn_likelihood(double *counts,
       for (k=0;k<(0-coeff);k++) {
 
 	left_concs = left_concs * ((count-k) * volume_recip);
-	/*	
 	left_counts = left_counts * (count-k);
-	*/
+
       } 
     } else {
       if (coeff > 0) {
 	for (k=1;k<=coeff;k++) {
 
 	  right_concs = right_concs * (count+k) * volume_recip;
-	  /*
 	  right_counts = right_counts * (count+k);
-	  */
 	} 
       }
       /*
@@ -175,9 +172,12 @@ double rxn_likelihood(double *counts,
   if (left_concs < 0.0) {
     left_concs = 0.0;
   }
+  if (left_counts < 0.0) {
+    left_counts = 0;
+  }
   /*
-  likelihood = eq_k * (left_counts/right_counts);
-  */
   likelihood = eq_k * (left_concs/right_concs);
+  */
+  likelihood = eq_k * (left_counts/right_counts);
   return(likelihood);
 }
