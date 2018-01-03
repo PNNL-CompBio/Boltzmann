@@ -42,13 +42,8 @@ int compute_ke(struct state_struct *state) {
   double dg0;
   double *dg0s;
   double *ke;
-  double rt;
   double m_r_rt;
-  double m_rt;
-  double joules_per_cal;
   double cals_per_joule;
-  double ideal_gas_r;
-  double temp_kelvin;
 
   int success;
   int nrxns;
