@@ -51,10 +51,12 @@ struct state_struct {
   char *compartment_text;
   char *molecules_text;
   char *molecule_name;
+  char *compartment_name;
   char *raw_molecules_text;
   char **rxn_file_keywords;
   int64_t *rxn_file_keyword_lengths;
   int64_t *transpose_work;
+  int64_t *compartment_ptrs;
   int64_t reaction_file_length;
   int64_t align_len;
   int64_t align_mask;
@@ -92,19 +94,25 @@ struct state_struct {
   double  *reverse_rxn_likelihood;
   double  *rxn_likelihood_ps;
   double  *ke;
-  double  *current_log_rxn_ratio;
-  double  *next_log_rxn_ratio;
+  double  *current_rxn_log_likelihood_ratio;
+  double  *future_rxn_log_likelihood_ratio;
   double  *l_thermo;
   int  *cmpts_map;
 
   int  number_reactions;
+  int  padi;
+
   int  number_compartments;
+  int  unique_compartments;
 
   int  number_molecules;
   int  unique_molecules;
 
   int  max_molecule_len;
   int  min_molecule_len;
+
+  int  max_compartment_len;
+  int  min_compartment_len;
 
   int  molecules_or_conc;
   int  num_rxn_file_keywords;
