@@ -29,7 +29,7 @@ specific language governing permissions and limitations under the License.
 
 #include "compute_reaction_dg0.h"
 
-int compute_reaction_dg0(struct formation_energy_struct *fes){
+int compute_reaction_dg0(struct state_struct *state){
   /*
     Set the delta_g0 field for all of the reactions
     based on energies of formation.
@@ -76,22 +76,20 @@ int compute_reaction_dg0(struct formation_energy_struct *fes){
 
   success = 1;
   
-  reactions       	   = fes->reactions;
+  reactions       	   = state->reactions;
   reaction                 = reactions;
-  rxns_matrix    	   = fes->reactions_matrix;
-  print_output             = fes->print_output;
+  rxns_matrix    	   = state->reactions_matrix;
+  print_output             = state->print_output;
   rxn_ptrs       	   = rxns_matrix->rxn_ptrs;
   molecules_indices        = rxns_matrix->molecules_indices;
   coefficients   	   = rxns_matrix->coefficients;
   matrix_text    	   = rxns_matrix->text;
-  nrxns                    = (int)fes->number_reactions;
-  molecules_text           = fes->molecules_text;
+  nrxns                    = (int)state->number_reactions;
+  molecules_text           = state->molecules_text;
   
-  molecule_dg0tfs          = fes->molecule_dg0tfs;
+  molecule_dg0tfs          = state->molecule_dg0tfs;
 
-  //num_cpds = (int)fes->num_pseudoisomers;
-
-  lfp                  = fes->log_fp;
+  lfp                  = state->lfp;
   print_output         = print_output && lfp;
   if (print_output) {
     fprintf(lfp, "Output from compute_reaction_dg0.c: \n");
@@ -113,10 +111,6 @@ int compute_reaction_dg0(struct formation_energy_struct *fes){
     for (j=rxn_ptrs[rxns];j<rxn_ptrs[rxns+1];j++) {
       k = molecules_indices[j];
       coeff = coefficients[j];
-      /* 
-	Doug wonders if this shouldn't be chemical potential?
-	else why do we bother with chemical potential at all?
-      */
       m_dg0_tf = molecule_dg0tfs[k];
       mto = matrix_text[j];
       molecule = (char*)&molecules_text[mto];
