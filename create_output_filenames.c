@@ -31,6 +31,7 @@ int create_output_filenames(struct state_struct *state) {
   char *dg0ke_filename;
   char *dictionary_filename;
   char *aux_data_filename;
+  char *ode_counts_filename;
   int64_t output_filename_base_length;
   int output_filename_length;
   int success;
@@ -46,6 +47,7 @@ int create_output_filenames(struct state_struct *state) {
   counts_out_filename  = state->counts_out_file;
   concs_out_filename   = state->concs_out_file;
   ode_concs_filename   = state->ode_concs_file;
+  ode_counts_filename  = state->ode_counts_file;
   net_lklhd_filename   = state->net_lklhd_file;
   nl_bndry_flx_filename = state->nl_bndry_flx_file;
   rxn_lklhd_filename   = state->rxn_lklhd_file;
@@ -135,6 +137,10 @@ int create_output_filenames(struct state_struct *state) {
     if (ode_concs_filename[0] == '\0') {
       strncpy(ode_concs_filename,output_filename,output_filename_base_length);      
       strcpy((char*)&ode_concs_filename[output_filename_base_length],".ode_concs");
+    }
+    if (ode_counts_filename[0] == '\0') {
+      strncpy(ode_counts_filename,output_filename,output_filename_base_length);      
+      strcpy((char*)&ode_counts_filename[output_filename_base_length],".ode_counts");
     }
     strncpy(ode_dconcs_filename,output_filename,output_filename_base_length);
     strcpy((char*)&ode_dconcs_filename[output_filename_base_length],".ode_dconcs");
