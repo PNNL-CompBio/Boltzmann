@@ -49,6 +49,8 @@ int lr9_approximate_delta_concs(struct state_struct *state,
   double  *activities;
   double  *forward_lklhd;
   double  *reverse_lklhd;
+  double  *forward_rc;
+  double  *reverse_rc;
   double  *rfc;
   double  *ke;
   double  *rke;
@@ -62,8 +64,8 @@ int lr9_approximate_delta_concs(struct state_struct *state,
   double  tr;
   double  tp;
   double  conc_mi;
-  double  thermo_adj;
   /*
+  double  thermo_adj;
   double  recip_volume;
   double  recip_avogadro;
   */
@@ -116,6 +118,8 @@ int lr9_approximate_delta_concs(struct state_struct *state,
   rxn_ptrs         = rxn_matrix->rxn_ptrs;
   molecule_indices = rxn_matrix->molecules_indices;
   rcoefficients    = rxn_matrix->coefficients;
+  forward_rc       = state->forward_rc;
+  reverse_rc       = state->reverse_rc;
   ke               = state->ke;
   rke              = state->rke;
   rfc              = state->product_term;
@@ -161,53 +165,73 @@ int lr9_approximate_delta_concs(struct state_struct *state,
 	 reactants the rfc contribution is subtracted, and for products it
 	 is added.
   */
+  /*
+    First check to see if forward and reverse rate constants have
+    been supplied for all reactions, if not fail.
+  */
   for (i=0;i<num_rxns;i++) {
-    pt = 1.0;
-    rt = 1.0;
-    tr = 1.0;
-    tp = 1.0;
-    for (j=rxn_ptrs[i];j<rxn_ptrs[i+1];j++) {
-      mi = molecule_indices[j];
-      molecule = (struct molecule_struct *)&molecules[mi];
-      ci = molecules->c_index;
-      compartment = (struct compartment_struct *)&compartments[ci];
-      /*
-      recip_volume       = compartment->recip_volume;
-      */
-      klim = rcoefficients[j];
-      conc_mi = concs[mi];
-      if (klim < 0) {
-	for (k=0;k<(-klim);k++) {
-	  rt = rt * conc_mi;
-	}
-      } else {
-	if (klim > 0) {
-	  for (k=0;k<klim;k++) {
-	    pt = pt * conc_mi;
-	  }
-	}
+    if (forward_rc[i] < 0.0) {
+      if (lfp) {
+	success = 0;
+	fprintf(lfp,"lr9_approximate_delta_concs: Error forward rate constant not supplied for reaction %d\n",i);
+	fflush(lfp);
       }
     }
-    /*
-      Save likelihoods for printing.
-    */
-    if (pt != 0.0) {
-      forward_lklhd[i] = ke[i] * (rt/pt);
-    } else {
-      forward_lklhd[i] = 1.0;
+    if (reverse_rc[i] < 0.0) {
+      success = 0;
+      if (lfp) {
+	fprintf(lfp,"lr9_approximate_delta_concs: Error reverse rate constant not supplied for reaction %d\n",i);
+	fflush(lfp);
+      }
     }
-    if (rt != 0.0) {  
-      reverse_lklhd[i] = rke[i] * (pt/rt);
-    } else {
-      reverse_lklhd[i] = 1.0;
-    }
-    /*
-    rfc[i] = (ke[i] * (rt/tp)) - (rke[i] * (pt/tr));
-    NB if use_activities is not set activities[i] will be 1.0 for all i.
-    */
-    rfc[i] = (ke[i] * rt - rke[i] * pt) * activities[i];
   }
-  if (success) {
+  if (success) {   
+    for (i=0;i<num_rxns;i++) {
+      pt = 1.0;
+      rt = 1.0;
+      tr = 1.0;
+      tp = 1.0;
+      for (j=rxn_ptrs[i];j<rxn_ptrs[i+1];j++) {
+	mi = molecule_indices[j];
+	molecule = (struct molecule_struct *)&molecules[mi];
+	ci = molecules->c_index;
+	compartment = (struct compartment_struct *)&compartments[ci];
+	/*
+	  recip_volume       = compartment->recip_volume;
+	*/
+	klim = rcoefficients[j];
+	conc_mi = concs[mi];
+	if (klim < 0) {
+	  for (k=0;k<(-klim);k++) {
+	    rt = rt * conc_mi;
+	  }
+	} else {
+	  if (klim > 0) {
+	    for (k=0;k<klim;k++) {
+	      pt = pt * conc_mi;
+	    }
+	  }
+	}
+      } /* end for (j ... ) */
+      /*
+	Save likelihoods for printing.
+      */
+      if (pt != 0.0) {
+	forward_lklhd[i] = ke[i] * (rt/pt);
+      } else {
+	forward_lklhd[i] = 1.0;
+      }
+      if (rt != 0.0) {  
+	reverse_lklhd[i] = rke[i] * (pt/rt);
+      } else {
+	reverse_lklhd[i] = 1.0;
+      }
+      /*
+	rfc[i] = (ke[i] * (rt/tp)) - (rke[i] * (pt/tr));
+	NB if use_activities is not set activities[i] will be 1.0 for all i.
+      */
+      rfc[i] = (forward_rc[i] * rt - reverse_rc[i] * pt) * activities[i];
+    } /* end for (i..._) */
     molecule = molecules;
     for (i=0;i<num_species;i++) {
       fluxi = 0.0;
@@ -226,7 +250,7 @@ int lr9_approximate_delta_concs(struct state_struct *state,
     } /* end for (i...) */
   } /* end if success */
 #ifdef DBG
-  if (lfp) {
+    if (lfp) {
     fprintf(lfp,"Mol_index\t   conc   \t    flux\n");
     for (i=0;i<num_species;i++) {
       fprintf(lfp,"%d\t%le\t%le\n",
