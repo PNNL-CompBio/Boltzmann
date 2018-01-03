@@ -51,6 +51,7 @@ specific language governing permissions and limitations under the License.
 #include "form_molecules_matrix.h"
 #include "compute_ke.h"
 #include "print_rxn_likelihoods_header.h"
+#include "print_free_energy_header.h"
 /*
 #define DBG_BOLTZMANN_INIT  
 */
@@ -364,25 +365,14 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
   if (success) {
     if (state->free_energy_format > 0) {
       /*
-	Print header lines for the free energy file.
+	Print the header lines for the free energy output file.
       */
-      if (state->free_energy_format == 1) {
-	fprintf(state->free_energy_fp,"negative_log_likelihoods\n");
-      } else if (state->free_energy_format == 2) {
-	fprintf(state->free_energy_fp,"free energy (KJ/mol)\n");
-      } else if (state->free_energy_format == 3) {
-	fprintf(state->free_energy_fp,"free energy (Kcal/mol)\n");
-      }
-      fprintf(state->free_energy_fp,"iter");
-      reactions                   = state->reactions;
-      for (i=0;i<state->number_reactions;i++) {
-	fprintf(state->free_energy_fp,"\t%s",reactions->title);
-	reactions += 1; /* Caution address arithmetic */
-      }
-      fprintf(state->free_energy_fp,"\n");
-      fflush(state->free_energy_fp);
+      print_free_energy_header(state);
     }
   }
+  /*
+    Intialize the free_energys to be the delta g_0's.
+  */
   if (success) {
     dg0s = state->dg0s;
     free_energy  = state->free_energy;
