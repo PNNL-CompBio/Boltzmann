@@ -23,13 +23,12 @@ specific language governing permissions and limitations under the License.
 
 #include "boltzmann_structs.h"
 
-#include "sbml2bo_structs.h"
-
 #include "count_ws.h"
 #include "count_nws.h"
 #include "sbml_key_value.h"
 #include "sbml_lookup_species_attribute.h"
 #include "compartment_lookup.h"
+#include "translate_ms_2_js.h"
 
 #include "sbml_process_list_of_species.h"
 int sbml_process_list_of_species(FILE *sbml_fp,
@@ -47,6 +46,7 @@ int sbml_process_list_of_species(FILE *sbml_fp,
   */
   struct state_struct pseudo_state;
   struct compartment_struct *compartment;
+  struct ms2js_struct *ms2js_data;
   char comp_c[1024];
   char species_c[1024];
   char units_c[1024];
@@ -56,6 +56,7 @@ int sbml_process_list_of_species(FILE *sbml_fp,
   char *value;
   char *comp;
   char *species;
+  char *tspecies;
   char *units;
   char bcf[8];
   char vc[8];
@@ -92,6 +93,10 @@ int sbml_process_list_of_species(FILE *sbml_fp,
   int tag;
   int ci;
 
+  int translate_from_modelseed;
+  int padi;
+   
+
   FILE *lfp;
   FILE *error_fp;
   FILE *concs_fp;
@@ -100,6 +105,7 @@ int sbml_process_list_of_species(FILE *sbml_fp,
   pseudo_state.compartment_text = state->compartment_text;
   pseudo_state.sorted_cmpts = state->sorted_compartments;
   pseudo_state.nunique_compartments = state->num_cmpts;
+  ms2js_data  = state->ms2js_data;
   success     = 1;
   key         = (char *)&(key_c[0]);
   value       = (char *)&(value_c[0]);
@@ -117,7 +123,12 @@ int sbml_process_list_of_species(FILE *sbml_fp,
   nanomole  = 1.e-9;
   picomole  = 1.e-12;
   femtomole = 1.e-15;
-  
+  /*
+    For now we hardware translate_from_modelseed to be 1,
+    assuming the sbml files are using the modelseed id's.
+    Could become a parameter later.
+  */
+  translate_from_modelseed = 1;
 
   lfp         = state->log_fp;
   concs_fp    = state->concs_fp;
@@ -189,7 +200,7 @@ int sbml_process_list_of_species(FILE *sbml_fp,
             in_species_tag = 0;
             /*
 	      Generate line for concs.in file.
-	      First convert the amount to a concentrations.
+	      First convert the amount to a concentration.
             */
             if (comp[0] != '\0') {
 	      /*
@@ -197,14 +208,14 @@ int sbml_process_list_of_species(FILE *sbml_fp,
 	      */
 	      init_amt *= multiplier * recip_volume;
 	      fprintf(concs_fp,"%s:%s\t%ld\t%1s\n",
-		      species,comp,init_amt,vc[variable]);
+		      tspecies,comp,init_amt,vc[variable]);
             } else {
 	      /*
 		Compartment did not exist.
 	      */
 	      init_amt *= default_recip_volume;
 	      fprintf(concs_fp,"%s\t%ld\t%1s\n",
-		      species,init_amt,vc[variable]);
+		      tspecies,init_amt,vc[variable]);
             }
 	    multiplier = 1.0;
 	    recip_volume = default_recip_volume;
@@ -264,6 +275,22 @@ int sbml_process_list_of_species(FILE *sbml_fp,
 		    Species id
 		  */
 		  strcpy(species,value);
+		  if (translate_from_modelseed) {
+		    tspecies = translate_ms_2_js(ms2js_data,species);
+		    if (tspecies == NULL) {
+		      if (lfp) {
+			fprintf(lfp,"sbml_process_list_of_species: Warning:"
+				" species %s did not have a json translation"
+				" using as is.\n",
+				species);
+			fflush(lfp);
+		      }
+		      tspecies = species;
+		    }
+		  } else {
+		    tspecies = species;
+		  }
+
 		  break;
 		case 5:
 		  /*
