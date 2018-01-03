@@ -26,7 +26,7 @@ specific language governing permissions and limitations under the License.
 void print_likelihoods(struct state_struct *state, 
 		       double entropy, 
 		       double dg_forward, 
-		       int step) {
+		       int64_t step) {
   /*
     print the likelihoods
     Prints out the entropy, the delta_g0, and likelihood field of the 
@@ -52,7 +52,7 @@ void print_likelihoods(struct state_struct *state,
     dg_forward    DSI      double presicion scalar reprenting the 
                            delta_g0 for the forward reactions.
 
-    step          ISI      step number, >= 0.
+    step          JSI      8 byte integer step number, >= 0.
                   
     
   */
@@ -71,7 +71,7 @@ void print_likelihoods(struct state_struct *state,
   activities        	 = state->activities;
 
   if (rxn_lklhd_fp) {
-    fprintf(rxn_lklhd_fp,"%d\t%le\t%le",step,entropy,dg_forward);
+    fprintf(rxn_lklhd_fp,"%ld\t%le\t%le",step,entropy,dg_forward);
     for (j=0;j<number_reactions;j++) {
       fprintf(rxn_lklhd_fp,"\t%le",forward_rxn_likelihood[j]*activities[j]);
       fprintf(rxn_lklhd_fp,"\t%le",reverse_rxn_likelihood[j]*activities[j]);
