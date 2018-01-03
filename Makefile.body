@@ -5,7 +5,7 @@ EXECS        = boltzmann boltzmann_boot_test deq lapack_test sbml2bo kegg_ms_ids
 
 SERIAL_INCS = boltzmann_structs.h boot_state_struct.h super_state_struct.h super_state_pointers_struct.h state_struct.h reaction_struct.h reactions_matrix_struct.h molecules_matrix_struct.h molecule_struct.h compartment_struct.h vgrng_state_struct.h pseudoisomer_struct.h stack_level_elem_struct.h sbml2bo_struct.h t2js_struct.h $(TIMING_DEPS) $(LUNWIND_DEPS)
 
-SERIAL_OBJS1 = boltzmann_init.o alloc0.o boltzmann_set_filename_ptrs.o read_params.o boltzmann_init_core.o io_size_init.o create_output_filenames.o open_output_files.o size_rxns_file.o init_rxn_file_keywords.o parse_rxn_file_keyword.o count_ws.o count_nws.o count_molecules.o is_a_coef.o alloc2.o rxns_init.o parse_reactions_file.o upcase.o parse_side_line.o find_colon.o sort_compartments.o merge_compartments.o unique_compartments.o unique_compartments_core.o translate_compartments.o sort_molecules.o merge_molecules.o unique_molecules.o unique_molecules_core.o alloc3.o species_init.o set_compartment_ptrs.o set_count_trans.o translate_regulation_metabolites.o molecules_lookup.o read_compartment_sizes.o read_initial_concentrations.o compartment_lookup.o check_initial_concentrations.o
+SERIAL_OBJS1 = boltzmann_init.o alloc0.o alloc0_a.o boltzmann_set_filename_ptrs.o read_params.o boltzmann_init_core.o io_size_init.o create_output_filenames.o open_output_files.o size_rxns_file.o init_rxn_file_keywords.o parse_rxn_file_keyword.o count_ws.o count_nws.o count_molecules.o is_a_coef.o alloc2.o rxns_init.o parse_reactions_file.o upcase.o parse_side_line.o find_colon.o sort_compartments.o merge_compartments.o unique_compartments.o unique_compartments_core.o translate_compartments.o sort_molecules.o merge_molecules.o unique_molecules.o unique_molecules_core.o alloc3.o species_init.o set_compartment_ptrs.o set_count_trans.o translate_regulation_metabolites.o molecules_lookup.o read_compartment_sizes.o read_initial_concentrations.o compartment_lookup.o check_initial_concentrations.o
 
 SERIAL_OBJS2 = energy_init.o compute_standard_energies.o size_pseudoisomer_file.o alloc5.o parse_pseudoisomer_dg0f_file.o blank_to_dash.o sharp_pos.o alloc6.o compute_molecule_dg0tfs.o compute_molecule_dg0tf.o pseudoisomer_dg0tf.o compute_molecular_partition_probability.o compute_chemical_potential.o compute_reaction_dg0.o unalloc6.o compute_ke.o zero_solvent_coefficients.o compute_kss.o echo_inputs.o echo_params.o echo_reactions_file.o print_molecules_dictionary.o print_dg0_ke.o recover_solvent_coefficients.o vgrng_init.o vgrng.o print_rxn_likelihoods_header.o print_free_energy_header.o run_init.o alloc8.o alloc9.o print_reactions_matrix.o 
 
@@ -99,6 +99,7 @@ libboltzmann.a: $(SERIAL_OBJS1)  $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SERIAL_OBJS4)
 	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_rep_state_i.o
 	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_init.o
 	$(AR) $(ARFLAGS) libboltzmann.a alloc0.o
+	$(AR) $(ARFLAGS) libboltzmann.a alloc0_a.o
 	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_set_filename_ptrs.o
 	$(AR) $(ARFLAGS) libboltzmann.a read_params.o
 	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_init_core.o
@@ -412,8 +413,11 @@ bwarmup: $(MMAP_OBJS) $(TIMING_LIB) bwarmup.o libboltzmann.a
 boltzmann_init.o: $(SERIAL_INCS) boltzmann_init.c boltzmann_init.h alloc0.h read_params.h boltzmann_init_core.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_init.c
 
-alloc0.o: $(SERIAL_INCS) alloc0.c alloc0.h boltzmann_set_filename_ptrs.h
+alloc0.o: $(SERIAL_INCS) alloc0.c alloc0.h alloc0_a.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c alloc0.c
+
+alloc0_a.o: $(SERIAL_INCS) alloc0_a.c alloc0_a.h boltzmann_set_filename_ptrs.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c alloc0_a.c
 
 boltzmann_set_filename_ptrs.o: $(SERIAL_INCS) boltzmann_set_filename_ptrs.c boltzmann_set_filename_ptrs.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_set_filename_ptrs.c
