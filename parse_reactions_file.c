@@ -151,7 +151,7 @@ int parse_reactions_file(struct state_struct *state) {
   FILE *lfp;
   success = 1;
   seek_offset = (int64_t)0;
-  rxn_buff_len = state->rxn_buff_len;
+  rxn_buff_len = state->max_param_line_len<<1;
   lfp          = state->lfp;
   rxn_fp       = state->rxn_fp;
   align_len    = state->align_len;
@@ -167,7 +167,7 @@ int parse_reactions_file(struct state_struct *state) {
       Seek to beginning of file.
     */
     fseek(rxn_fp,seek_offset,SEEK_SET);
-    rxn_buffer = state->rxn_buffer;
+    rxn_buffer = state->param_buffer;
     keywords   = state->rxn_file_keywords;
     keyword_lens = state->rxn_file_keyword_lengths;
     rxns    = 0;
