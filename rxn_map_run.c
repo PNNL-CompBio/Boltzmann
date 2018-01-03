@@ -35,8 +35,11 @@ struct timing_struct timing_data;
 */
 #include "rxn_map_run.h"
 int rxn_map_run(struct state_struct *state,
-		struct molecules_matrix_struct *molecules_matrix,
 		int mi, int mj) {
+  /*
+    Called by: rxn_map
+  */
+  struct molecules_matrix_struct *molecules_matrix;
   struct reactions_matrix_struct *rxn_matrix;
   struct molecule_struct *sorted_molecules;
   struct compartment_struct *sorted_compartments;
@@ -108,6 +111,7 @@ int rxn_map_run(struct state_struct *state,
 
 
   */
+  molecules_matrix    = state->molecules_matrix;
   rxn_matrix          = state->reactions_matrix;
   sorted_molecules    = state->sorted_molecules;
   sorted_compartments = state->sorted_compartments;
