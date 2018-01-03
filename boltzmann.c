@@ -40,7 +40,10 @@ struct timing_struct timing_data;
 */
 #define BOLTZMANN_DBG 1
 #include "boltzmann_init.h"
+#include "boltzmann_build_agent_data_block.h"
 #include "boltzmann_run.h"
+#include "print_boundary_flux.h"
+#include "print_restart_file.h"
 int main(int argc, char **argv)
 {
   /*
@@ -49,6 +52,7 @@ int main(int argc, char **argv)
       boltzmann_run
   */
   struct state_struct *state;
+  void *agent_data;
   char *param_file_name;
   int success;
   int padi;
@@ -68,9 +72,12 @@ int main(int argc, char **argv)
     param_file_name = NULL;
   }
   success = boltzmann_init(param_file_name,&state);
+  if (success) {
+    boltzmann_build_agent_data_block(state,&agent_data);
+  }
   TIMING_STOP(INITIALIZE);
   if (success) {
-    success = boltzmann_run(state);
+    success = boltzmann_run(state,agent_data);
   }
   if (state->print_output == 0) {
     if (state->num_fixed_concs > (int64_t)0) {
