@@ -51,7 +51,7 @@ int update_regulation (struct state_struct *state, int rxn) {
   reg_species         = state->reg_species;
   reg_drctn           = state->reg_drctn;
   sorted_molecules    = state->sorted_molecules;
-  sorted_cmpts        = state->sorted_cmpts;
+  sorted_cmpts        = state->sorted_compartments;
   activities          = state->activities;
   
   activity = 1.0;
