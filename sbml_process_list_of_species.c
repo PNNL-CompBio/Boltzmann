@@ -52,11 +52,13 @@ int sbml_process_list_of_species(FILE *sbml_fp,
   char units_c[1024];
   char *key_c[1024];
   char *value_c[1024];
+  char *species_name_c[1024];
   char *key;
   char *value;
   char *comp;
   char *species;
   char *tspecies;
+  char *species_name;
   char *units;
   char bcf[8];
   char vc[8];
@@ -101,6 +103,7 @@ int sbml_process_list_of_species(FILE *sbml_fp,
   FILE *error_fp;
   FILE *concs_fp;
   FILE *extra_fp;
+  FILE *id_name_fp;
 
   pseudo_state.compartment_text = state->compartment_text;
   pseudo_state.sorted_cmpts = state->sorted_compartments;
@@ -111,6 +114,7 @@ int sbml_process_list_of_species(FILE *sbml_fp,
   value       = (char *)&(value_c[0]);
   comp        = (char *)&(comp_c[0]);
   species     = (char *)&(species_c[0]);
+  species_name = (char *)&(species_name_c[0]);
   units       = (char *)&(units_c[0]);
   bc          = (char *)&bcf[0];
   vc[0]       = 'F';
@@ -132,6 +136,7 @@ int sbml_process_list_of_species(FILE *sbml_fp,
 
   lfp         = state->log_fp;
   concs_fp    = state->concs_fp;
+  id_name_fp  = state->id_name_fp;
   if (lfp == NULL) {
     error_fp = stderr;
   } else {
@@ -151,6 +156,7 @@ int sbml_process_list_of_species(FILE *sbml_fp,
     fprintf(concs_fp,"CONC_UNITS 1.0e-9\n");
     comp[0] = '\0';
     species[0] = '\0';
+    species_name[0] = '\0';
     init_amt=0;
     units[0] = '\0';
     variable     = 1;
@@ -195,28 +201,37 @@ int sbml_process_list_of_species(FILE *sbml_fp,
           /*
             check for end tag.
           */
-          if (strncmp(line,"/>",2)==0) {
+          if ((strncmp(line,"/>",2)==0) || (line[0] == '>')) {
             ns = 0;
             in_species_tag = 0;
             /*
 	      Generate line for concs.in file.
 	      First convert the amount to a concentration.
+	      Also for sbml files that have names where the only
+	      real chemical species information is stored 
+	      (i.e. the YLI_y7.2.xml file) we need to print
+	      a (species_id, species_name) file for analysis and
+	      assignment of json id's.
             */
             if (comp[0] != '\0') {
 	      /*
 		We had a non null compartment.
 	      */
 	      init_amt *= multiplier * recip_volume;
-	      fprintf(concs_fp,"%s:%s\t%ld\t%1s\n",
+	      fprintf(concs_fp,"%s:%s\t%le\t%c\n",
 		      tspecies,comp,init_amt,vc[variable]);
             } else {
 	      /*
 		Compartment did not exist.
 	      */
 	      init_amt *= default_recip_volume;
-	      fprintf(concs_fp,"%s\t%ld\t%1s\n",
+	      fprintf(concs_fp,"%s\t%le\t%c\n",
 		      tspecies,init_amt,vc[variable]);
             }
+	    if (species_name[0] != '\0') {
+	      fprintf(id_name_fp,"%s\t%s\n",species,species_name);
+	      species_name[0] = '\0';
+	    }
 	    multiplier = 1.0;
 	    recip_volume = default_recip_volume;
           } else {
@@ -300,6 +315,16 @@ int sbml_process_list_of_species(FILE *sbml_fp,
 		  break;
 		case 6:
 		  /*
+		    Species name
+		    Here this is not part of the sbml standard
+		    but the xml file we got this was the only
+		    place the actual chemical name was mentioned.
+		    The 
+		  */
+		  strcpy(species_name,value);
+		  break;
+		case 7:
+		  /*
 		    substanceUnits
 		  */
 		  strcpy(units,value);
@@ -336,7 +361,7 @@ int sbml_process_list_of_species(FILE *sbml_fp,
 		} /* end switch */  
 	      } else {
 		fprintf(error_fp,"sbml_process_list_of_species: "
-			"Error found unexpacted key :%s\n",key);
+			"Error found unexpected key :%s\n",key);
 		fflush(error_fp);
 	      }
             } /* end else we found a keyword=value triple. */
