@@ -58,17 +58,9 @@ int boltzmann_run(struct state_struct *state) {
 	       print_reactions_view
   */
   struct state_struct *nstate;
-  int64_t choice;
-  double dchoice;
-  double uni_multiplier;
-  double vall;
-  double rvall;
-  double scaling;
   double dg_forward;
-  double sum_likelihood;
   double r_sum_likelihood;
   double entropy;
-  double scaled_likelihood;
   double *forward_rxn_likelihood;
   double *reverse_rxn_likelihood;
   double *current_counts;
@@ -77,7 +69,6 @@ int boltzmann_run(struct state_struct *state) {
   double *activities;
   double *no_op_likelihood;
   int    *rxn_fire;
-  char   *cmpt_string;
   double *dg0s;
   double *free_energy;
   int64_t i;
