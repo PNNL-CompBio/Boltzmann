@@ -181,6 +181,9 @@ struct state_struct {
   int64_t cvodes_params_size;
   int64_t ode_jacobian_choice;
   int64_t cvodes_prec_fill;
+  int64_t ode_stop_norm; /* 0 for infinity(max), 1 for 1(sum abs), 2 for 2 */
+  int64_t ode_stop_rel;  /* 0 for absolute  1 for relative */
+  int64_t ode_stop_style; /*0 for off, 1 for vector, 2 for element_wise */
   /*
     offsets used to self-describe this state vector.
     only needed for parallel version multiple instantiations
@@ -235,6 +238,18 @@ struct state_struct {
     compute_moleculear_partition_probability.
   */
   double  min_molecule_dg0tf;
+  /*
+    derivative threshold, value at which derivative if less than is set to 0.
+  */
+  double deriv_thresh;
+  /*
+    ode stopping threshold: when the derivative vector norm is less than
+    ode_stop_thresh, terminate the ode method even if the ode_t_final has
+    not yet been reached. See also ode_stop_norm, ode_stop_rel, and 
+    ode stop_style
+  */
+  double ode_stop_thresh; 
+
   int64_t *workspace_base;
 
   /* two way data (modified) */
