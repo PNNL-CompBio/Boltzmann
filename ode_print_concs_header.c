@@ -41,7 +41,7 @@ void ode_print_concs_header(struct state_struct *state) {
   int i;
   int ci;
   int nu_molecules;
-  int padi;
+  int solvent_pos;
   FILE *ode_concs_fp;
   FILE *lfp;
   nu_molecules     = state->nunique_molecules;
@@ -51,6 +51,7 @@ void ode_print_concs_header(struct state_struct *state) {
   compartment_text = state->compartment_text;
   ode_concs_file   = state->ode_concs_file;
   lfp              = state->lfp;
+  solvent_pos      = state->solvent_pos;
 
   ode_concs_fp = fopen(ode_concs_file,"w+");
   state->ode_concs_fp  = ode_concs_fp;
@@ -63,13 +64,15 @@ void ode_print_concs_header(struct state_struct *state) {
   } else {
     fprintf(ode_concs_fp,"Time");
     for (i=0;i<nu_molecules;i++) {
-      ci = cur_molecule->c_index;
-      molecule = (char*)&molecules_text[cur_molecule->string];
-      fprintf(ode_concs_fp,"\t%s",molecule);
-      if (ci >= 0) {
-	cur_cmpt   = (struct compartment_struct *)&(cur_cmpts[ci]);
-	cmpt_string = (char*)&compartment_text[cur_cmpt->string];
-	fprintf(ode_concs_fp,":%s",cmpt_string);
+      if (i != solvent_pos) {
+      	ci = cur_molecule->c_index;
+      	molecule = (char*)&molecules_text[cur_molecule->string];
+      	fprintf(ode_concs_fp,"\t%s",molecule);
+      	if (ci > 0) {
+      		cur_cmpt   = (struct compartment_struct *)&(cur_cmpts[ci]);
+      		cmpt_string = (char*)&compartment_text[cur_cmpt->string];
+      		fprintf(ode_concs_fp,":%s",cmpt_string);
+      	} 
       }
       cur_molecule += 1; /* caution address arithmetic.*/
     }
