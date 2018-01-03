@@ -74,6 +74,8 @@ int rxn_map_init(char *param_file_name, struct state_struct **statep,
   int64_t *transpose_work;
   int success;
   int print_output;
+  int one;
+  int padi;
 
   FILE *start_stop_fp;
   FILE *rxn_echo_fp;
@@ -85,7 +87,8 @@ int rxn_map_init(char *param_file_name, struct state_struct **statep,
     allocate space for the state struct.
     Allocate space for the reactions line buffer, and the rxn_file keywords.
   */
-  success = alloc0(statep);
+  one = 1;
+  success = alloc0(statep,one);
   if (success) {
     /*
       Read the input parameters file.
@@ -155,7 +158,7 @@ int rxn_map_init(char *param_file_name, struct state_struct **statep,
     sorting.
   */
   if (success) {
-    success = alloc2(state);
+    success = alloc2(state,one);
   }
   if (success) {
     /*
