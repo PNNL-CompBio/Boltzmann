@@ -40,14 +40,12 @@ int alloc0(struct state_struct **statep, int setup) {
   struct state_struct *state;
   int64_t *rxn_file_keyword_lengths;
   char    *rxn_keyword_buff;
-  char    *solvent_string;
   char    **rxn_keywords;
   int64_t max_file_name_len;
   int64_t max_param_line_len;
   int64_t ask_for;
   int64_t one_l;
   int64_t usage;
-  int64_t num_state_files;
 
   int success;
 
@@ -65,11 +63,12 @@ int alloc0(struct state_struct **statep, int setup) {
   if (state == NULL) {
     success = 0;
     fprintf(stderr,
-	    "boltzmann: unable to allocate %lld bytes for state structure.\n",
+	    "boltzmann: unable to allocate %ld bytes for state structure.\n",
 	    ask_for);
     fflush(stderr);
   }
   if (setup) {
+    state->version_no = 4547; // Checkin revision of state_struct.h
     /*
       Allocate space for filename strings and solvent string
       These are considered auxilliary strings, needed only for setup
@@ -93,7 +92,7 @@ int alloc0(struct state_struct **statep, int setup) {
       if (state->param_buffer == NULL) {
 	success = 0;
 	fprintf(stderr,
-		"alloc0: unable to allocate %lld bytes for state->param_buffer.\n",
+		"alloc0: unable to allocate %ld bytes for state->param_buffer.\n",
 		ask_for);
 	fflush(stderr);
       } 
@@ -111,7 +110,7 @@ int alloc0(struct state_struct **statep, int setup) {
 	state->rxn_file_keyword_buffer = rxn_keyword_buff;
       } else {
 	fprintf(stderr,
-		"alloc0: Error, unable to allocate %lld bytes for "
+		"alloc0: Error, unable to allocate %ld bytes for "
 		"rxn_file_keyword_buffer\n",
 		ask_for);
 	fflush(stderr);
@@ -128,7 +127,7 @@ int alloc0(struct state_struct **statep, int setup) {
 	state->rxn_file_keywords = rxn_keywords;
       } else {
 	fprintf(stderr,
-		"alloc0: Error, unable to allocate %lld bytes for "
+		"alloc0: Error, unable to allocate %ld bytes for "
 		"rxn_file_keywords\n",
 		ask_for);
 	fflush(stderr);
@@ -143,7 +142,7 @@ int alloc0(struct state_struct **statep, int setup) {
 	state->rxn_file_keyword_lengths = rxn_file_keyword_lengths;
       } else {
 	fprintf(stderr,
-		"alloc0: Error, unable to allocate %lld bytes for "
+		"alloc0: Error, unable to allocate %ld bytes for "
 		"rxn_file_keyword_lengths\n",
 		ask_for);
 	fflush(stderr);
