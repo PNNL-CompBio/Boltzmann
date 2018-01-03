@@ -168,11 +168,14 @@ int deq_run(struct state_struct *state) {
     ode_reverse_lklhds (length = num_rxns)
     kf_rel (length = num_rxns),
     kr_rel (length = num_rxns)
-  */
+    This is now called in run_init.
   if (success) {
     success = alloc7(state);
   }
+  */
   /*
+    At some point we might want to pull these initializations into
+    run_init as well.
     Initialize the free_energy to be the delta_g0.
   */
   if (success) {
