@@ -46,9 +46,9 @@ int flatten_state(struct state_struct *boot_state,
   struct vgrng_state_struct vss;
   struct molecule_struct ies;
   struct compartment_struct ces;
-  struct rxn_struct rs;
-  struct rxn_matrix_struct rms;
-  struct rxn_matrix_struct *reactions_matrix;
+  struct reaction_struct rs;
+  struct reactions_matrix_struct rms;
+  struct reactions_matrix_struct *reactions_matrix;
   struct molecules_matrix_struct mms;
   struct molecules_matrix_struct *molecules_matrix;
   int64_t *new_state_l;
@@ -357,7 +357,7 @@ int flatten_state(struct state_struct *boot_state,
   file_names_pad          = (align_len - (file_names_size & align_mask)) & align_mask;
   file_names_size         = (file_names_size + file_names_pad) >> log2_word_len;
   rxn_title_offset        = file_names_offset + file_names_size;
-  rxn_title_size          = boot_state->rxn_title_text_length >> log2_word_len;
+  rxn_title_size          = boot_state->reaction_titles_length >> log2_word_len;
   pathway_offset          = rxn_title_offset + rxn_title_size;
   pathway_size            = boot_state->pathway_text_length >> log2_word_len;
   compartment_offset      = pathway_offset + pathway_size;
@@ -446,10 +446,10 @@ int flatten_state(struct state_struct *boot_state,
       new_state->workspace_base        = workspace_base;
       new_state->workspace_offset      = workspace_offset;
       new_state->workspace_length      = workspace_length;
-      new_state->sorted_molecules_offset_in_bytes = sorted_molecules_offset_in_bytes;
-      new_state->sorted_compartments_offset_in_bytes = sorted_compartments_offset_in_bytes;
-      new_state->molecules_text_offset_in_bytes = molecules_text_offset_in_bytes;
-      new_state->compartments_text_offset_in_bytes = compartments_text_offset_in_bytes;
+      new_state->sorted_molecules_offset = sorted_molecules_offset_in_bytes;
+      new_state->sorted_compartments_offset = sorted_compartments_offset_in_bytes;
+      new_state->molecules_text_offset = molecules_text_offset_in_bytes;
+      new_state->compartment_text_offset = compartments_text_offset_in_bytes;
       load_from_boot = 1;
     } else {
       fprintf(stderr,"flatten_state: Error unable to allocate %lld bytes for new_state\n",ask_for);
@@ -485,8 +485,6 @@ int flatten_state(struct state_struct *boot_state,
     /*
       Set pointers.
     */
-    new_state->dg_forward_p = (double*)&new_state_l[dg_forward_offset];
-    new_state->entropy_p = (double*)&new_state_l[entropy_offset];
     new_state->current_counts = (double*)&new_state_l[current_counts_offset];
     new_state->bndry_flux_counts = (double *)&new_state_l[bndry_flux_counts_offset];
     new_state->net_lklhd_bndry_flux = (double*)&new_state_l[net_lklhd_bndry_flux_offset];
@@ -513,8 +511,8 @@ int flatten_state(struct state_struct *boot_state,
     new_state->reg_species   = (int64_t*)&new_state_l[reg_species_offset];
 
 
-    new_state->reactions   = (struct rxn_struct *)&new_state_l[reactions_offset];
-    new_state->reactions_matrix = (struct rxn_matrix_struct*)&new_state_l[reactions_matrix_offset];
+    new_state->reactions   = (struct reaction_struct *)&new_state_l[reactions_offset];
+    new_state->reactions_matrix = (struct reactions_matrix_struct*)&new_state_l[reactions_matrix_offset];
     reactions_matrix = new_state->reactions_matrix;
     reactions_matrix->rxn_ptrs = (int64_t *)&new_state_l[rxn_ptrs_offset];
     reactions_matrix->molecules_indices = (int64_t *)&new_state_l[molecules_indices_offset];
@@ -525,10 +523,10 @@ int flatten_state(struct state_struct *boot_state,
     new_state->molecules_matrix = (struct molecules_matrix_struct*)&new_state_l[molecules_matrix_offset];
     molecules_matrix = new_state->molecules_matrix;
     molecules_matrix->molecules_ptrs = (int64_t*)&new_state_l[molecules_ptrs_offset];
-    molecules_matrix->rxn_indices    = (int64_t*)&new_state_l[rxn_indices_offset];
+    molecules_matrix->reaction_indices    = (int64_t*)&new_state_l[rxn_indices_offset];
     molecules_matrix->coefficients   = (int64_t*)&new_state_l[mlcls_coeffs_offset];
     new_state->sorted_molecules = (struct molecule_struct*)&new_state_l[sorted_molecules_offset];
-    new_state->sorted_cmpts = (struct compartment_struct*)&new_state_l[sorted_cmpts_offset];
+    new_state->sorted_compartments = (struct compartment_struct*)&new_state_l[sorted_cmpts_offset];
     new_state->params_file  = (char*)&new_state_l[file_names_offset];
     new_state->max_filename_len = max_filename_len;
     boltzmann_set_filename_ptrs(new_state);
@@ -547,7 +545,7 @@ int flatten_state(struct state_struct *boot_state,
       new_state->no_op_likelihood = (double *)&workspace_base_l[no_op_likelihood_offset];
       new_state->rxn_view_likelihoods = (double *)&workspace_base_l[rxn_view_offset];
       new_state->rev_rxn_view_likelihoods = (double *)&workspace_base_l[rev_rxn_view_offset];
-      new_state->rxn_fire = (int *)&workspace_base_l[rxn_fire_offset];
+      new_state->rxn_fire = (int64_t *)&workspace_base_l[rxn_fire_offset];
       new_state->rxn_mat_row  = (int *)&workspace_base_l[rxn_mat_offset];
     }
   }
@@ -601,8 +599,8 @@ int flatten_state(struct state_struct *boot_state,
       memcpy(new_state->molecules_matrix->molecules_ptrs,
 	      boot_state->molecules_matrix->molecules_ptrs,move_size);
       move_size = number_molecules * sizeof(int64_t);
-      memcpy(new_state->molecules_matrix->rxn_indices,
-	     boot_state->molecules_matrix->rxn_indices,move_size);
+      memcpy(new_state->molecules_matrix->reaction_indices,
+	     boot_state->molecules_matrix->reaction_indices,move_size);
       memcpy(new_state->molecules_matrix->coefficients,
              boot_state->molecules_matrix->coefficients,move_size);
 
@@ -613,14 +611,14 @@ int flatten_state(struct state_struct *boot_state,
       memcpy(new_state->sorted_molecules,
 	     boot_state->sorted_molecules,move_size);
       move_size = unique_compartments * sizeof(ces);
-      memcpy(new_state->sorted_cmpts,
-	     boot_state->sorted_cmpts,move_size);
+      memcpy(new_state->sorted_compartments,
+	     boot_state->sorted_compartments,move_size);
       move_size = num_files * max_filename_len;
       memcpy(new_state->params_file,
 	     boot_state->params_file,move_size);
       move_size  = (int64_t)64;
       memcpy(new_state->solvent_string,boot_state->solvent_string,move_size);
-      move_size = boot_state->rxn_title_text_length;
+      move_size = boot_state->reaction_titles_length;
       memcpy(new_state->rxn_title_text,
 	     boot_state->rxn_title_text,move_size);
       move_size = boot_state->pathway_text_length;
