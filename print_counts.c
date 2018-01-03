@@ -23,7 +23,7 @@ specific language governing permissions and limitations under the License.
 #include "boltzmann_structs.h"
 
 #include "print_counts.h"
-void print_counts(struct state_struct *state, int step) {
+void print_counts(struct state_struct *state, int64_t step) {
   /* 
     print the molecule counts.
     Prints out the current counts field of the state structure
@@ -41,7 +41,7 @@ void print_counts(struct state_struct *state, int step) {
 					    counts_out_fp
                            no fields of state are modified.
 
-    step          ISI      step number, -1 for initial step.
+    step          JSI      eight byte integer step number, -1 for initial step.
                   
     
   */
@@ -57,10 +57,10 @@ void print_counts(struct state_struct *state, int step) {
   current_counts         = state->current_counts;
   solvent_pos            = (int)state->solvent_pos;
   if (counts_out_fp) {
-    if (step < 0) {
+    if (step < (int64_t)0) {
       fprintf(counts_out_fp,"init");
     } else {
-      fprintf(counts_out_fp,"%d",step);
+      fprintf(counts_out_fp,"%ld",step);
     }
     for (j=0;j<unique_molecules;j++) {
       if (j != solvent_pos) {
