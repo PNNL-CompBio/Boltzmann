@@ -306,14 +306,6 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
   /*
     Compute the reaction kss's.
   */
-  if (success) {
-    success = compute_kss(state);
-  }
-  if (success) {
-    if (print_output) {
-      success = print_dg0_ke(state);
-    }
-  }
   /*
     At this juncture we have echoed the reactions file if requested and
     need to zero out the coefficients in the reaction matrix that
@@ -323,6 +315,14 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
   */
   if (success) {
     success = zero_solvent_coefficients(state);
+  }
+  if (success) {
+    success = compute_kss(state);
+  }
+  if (success) {
+    if (print_output) {
+      success = print_dg0_ke(state);
+    }
   }
   if (success) {
     /*
@@ -369,7 +369,7 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
   }
   if (success) {
     if (boot_state->print_output) {
-      boot_state->rxn_view_hist_length = ((int64_t)(boot_state->record_steps + boot_state->rxn_view_freq -1)/boot_state->rxn_view_freq) + (int64_t)1;
+      boot_state->rxn_view_hist_length = ((int64_t)(boot_state->record_steps + boot_state->rxn_view_freq -2)/boot_state->rxn_view_freq) + (int64_t)1;
     } else {
       boot_state->rxn_view_hist_length = 0;
     }
