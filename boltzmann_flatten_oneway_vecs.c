@@ -17,6 +17,7 @@ int boltzmann_flatten_oneway_vecs(struct state_struct *state,
   int64_t nunique_molecules;
   int64_t rxn_len;
   int64_t mlcl_len;
+  int65_t cs_len;
 
   void *dg0s;
   void *ke;
@@ -38,12 +39,13 @@ int boltzmann_flatten_oneway_vecs(struct state_struct *state,
   void *molecule_chemical_potentials;
   void *count_to_conc;
   void *conc_to_count;
+  void *coeff_sum;
 
   int success;
   int word_pos;
 
   int oneway_vecs_len;
-
+  int cs_words;
   
   success = 1;
   nunique_molecules = state->nunique_molecules;
@@ -55,9 +57,11 @@ int boltzmann_flatten_oneway_vecs(struct state_struct *state,
 
   rxn_len           = number_reactions * sizeof(double);
   mlcl_len          = nunique_molecules * sizeof(double);
+  cs_words          = (number_reactions + (number_reactions & 1))/2;
+  cs_len            = cs_words * sizeof(double);
 
   oneway_vecs_len = (int64_t)2 + (13 * number_reactions) + 
-    (7*nunique_molecules);
+    (7*nunique_molecules) + cs_words;
   word_pos += 1;
   if (direction == 0) {
     lfstate[word_pos] = oneway_vecs_len;
@@ -240,7 +244,15 @@ int boltzmann_flatten_oneway_vecs(struct state_struct *state,
     /*
       NB we need to leave word_pos pointing at the last word set.
     */
-    word_pos += (nunique_molecules-1);
+    word_pos += nunique_molecules;
+
+    coeff_sum = (void*)&dfstate[word_pos];
+    if (direction == 0) {
+      memcpy(coeff_sum,state->coeff_sum,cs_len);
+    } else {
+      memcpy(state->coeff_sum,coeff_sum,cs_len);
+    }
+    word_pos += cs_words - 1;
   } /* end if (success) */
   *word_pos_p = word_pos;
   return(success);
