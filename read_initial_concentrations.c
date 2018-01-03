@@ -84,6 +84,7 @@ int read_initial_concentrations(struct state_struct *state) {
   char cc[2];
   
   FILE *conc_fp;
+  FILE *counts_out_fp;
   avogadro           = state->avogadro;
   half               = 0.5;
   nu_molecules       = state->nunique_molecules;
@@ -296,18 +297,19 @@ int read_initial_concentrations(struct state_struct *state) {
     }
     state->num_fixed_concs = num_fixed_concs;
     /*
-      Print the initial concentrations to the concentrations output file.
+      Print the initial counts to the counts output file.
     */
     if (state->print_output) {
-      if (state->concs_out_fp) {
-	fprintf(state->concs_out_fp,"init");
+      counts_out_fp = state->counts_out_fp;
+      if (counts_out_fp) {
+	fprintf(counts_out_fp,"init");
 	for (i=0;i<nu_molecules;i++) {
-	  fprintf(state->concs_out_fp,"\t%le",concs[i]);
+	  fprintf(counts_out_fp,"\t%le",concs[i]);
 	}
-	fprintf(state->concs_out_fp,"\n");
+	fprintf(counts_out_fp,"\n");
       } else {
 	fprintf(stderr,
-		"read_initial_concentrations: Error concs_out_fp not open\n");
+		"read_initial_concentrations: Error counts_out_fp not open\n");
 	fflush(stderr);
 	success = 0;
       }
