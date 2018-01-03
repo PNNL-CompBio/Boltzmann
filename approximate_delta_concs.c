@@ -1,19 +1,17 @@
 #include "boltzmann_structs.h"
 
-#include "update_rxn_likelihoods.h"
 #include "lr_approximate_delta_concs.h"
 #include "lr1_approximate_delta_concs.h"
 #include "lr2_approximate_delta_concs.h"
 #include "lr3_approximate_delta_concs.h"
+#include "lr4_approximate_delta_concs.h"
+#include "lr5_approximate_delta_concs.h"
 #include "ce_approximate_delta_concs.h"
 
 #include "approximate_delta_concs.h"
 
-int approximate_delta_concs(struct state_struct *state, double *counts,
-			    double *forward_rxn_likelihoods,
-			    double *reverse_rxn_likelihoods, 
-			    double *flux, double flux_scaling,
-			    int base_rxn, int choice) {
+int approximate_delta_concs(struct state_struct *state, double *concs,
+			    double *flux, int choice) {
   /*
     Compute approximations to concentartion changes wrt time
     0 for lr_approximate_delta_concs, based on likelihood rations.
@@ -37,27 +35,16 @@ int approximate_delta_concs(struct state_struct *state, double *counts,
 					   and lfp,
 				      
 
-    counts			D1I   molecule counts vector of length 
+    concs			D1I   molecule concentrations vector of length 
                                       nunique_moleucles
-    forward_rxn_likelihoods     D1W   scratch vector of length number_reactions
-    reverse_rxn_likelihoods     D1W   scratch vector of length number_reactions
 
     flux                        D1O   vector of length  unique_molecules
                                       of concentration change per unit time.
 				      Set by this routine.
 
-    flux_scaling                  D0I   forward rate constant for base
-                                      reaction multplied by base reaction
-				      reactant concentration prodeuct.
-				      
-    base_rxn                    I0I   Base reaction number (usually 0)
-
     choice                      I0I   0 for lr_approximate_delta_concs
                                       2 for ce_approximate_delta_concs
 
-    Note that flux_scaling is K_f(base_rxn_reaction)*(product of reactant 
-    concentrations in base reaction).
-	    molecule = (struct molecule_struct *)&sorted_molecules[si];
   */
   double alt_flux_scaling;
   int success;
@@ -71,61 +58,50 @@ int approximate_delta_concs(struct state_struct *state, double *counts,
     /*
       Default Likelihood ratio approximation.
     */
-    success = lr_approximate_delta_concs(state, 
-					 counts,
-					 forward_rxn_likelihoods,
-					 reverse_rxn_likelihoods, 
-					 flux, 
-					 flux_scaling,
-					 base_rxn, 
+    success = lr_approximate_delta_concs(state,
+					 concs,
+					 flux,
 					 choice);
     break;
   case 1:
-    success = lr1_approximate_delta_concs(state, 
-					 counts,
-					 forward_rxn_likelihoods,
-					 reverse_rxn_likelihoods, 
-					 flux, 
-					 flux_scaling,
-					 base_rxn, 
-					 choice);
+    success = lr1_approximate_delta_concs(state,
+					  concs,
+					  flux,
+					  choice);
     break;
   case 2:
-    success = lr2_approximate_delta_concs(state, 
-					 counts,
-					 forward_rxn_likelihoods,
-					 reverse_rxn_likelihoods, 
-					 flux, 
-					 flux_scaling,
-					 base_rxn, 
-					 choice);
+    success = lr2_approximate_delta_concs(state,
+					  concs,
+					  flux,
+					  choice);
     break;
   case 3:
-    success = lr3_approximate_delta_concs(state, 
-					 counts,
-					 forward_rxn_likelihoods,
-					 reverse_rxn_likelihoods, 
-					 flux, 
-					 flux_scaling,
-					 base_rxn, 
-					 choice);
+    success = lr3_approximate_delta_concs(state,
+					  concs,
+					  flux,
+					  choice);
+    break;
+  case 4:
+    success = lr4_approximate_delta_concs(state,
+					  concs,
+					  flux,
+					  choice);
+
+    break;
+  case 5:
+    success = lr5_approximate_delta_concs(state,
+					  concs,
+					  flux, 
+					  choice);
+
     break;
   case 42:
     /*
       Use debugging flavor with kinetic rate constants for coupledenzyme.in
     */
-    if (state->flux_scaling == 0.0) {
-      alt_flux_scaling = 1.0;
-    } else {
-      alt_flux_scaling = flux_scaling;
-    }
     success = ce_approximate_delta_concs(state, 
-					 counts,
-					 forward_rxn_likelihoods,
-					 reverse_rxn_likelihoods, 
+					 concs,
 					 flux, 
-					 alt_flux_scaling,
-					 base_rxn, 
 					 choice);
     break;
   default :
