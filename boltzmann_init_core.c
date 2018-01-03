@@ -11,7 +11,7 @@
 #include "run_init.h"
 
 #include "boltzmann_init_core.h"
-int boltzmann_init_core(struct state_struct *boot_state, struct state_struct **flattened_state) {
+int boltzmann_init_core(struct state_struct *state) {
 /*
     Initialize the reactions and data structures for boltzmann, after
     a state variable has been allocated and the parameters read.
@@ -28,11 +28,9 @@ int boltzmann_init_core(struct state_struct *boot_state, struct state_struct **f
 	       echo_inputs
 	       run_init
   */
-  struct state_struct *state;
   int success;
   int print_output;
 
-  state   = boot_state;
   print_output = state->print_output;
   success = io_size_init(state);
   /*
@@ -98,7 +96,7 @@ int boltzmann_init_core(struct state_struct *boot_state, struct state_struct **f
     }
   }
   if (success) {
-    success = run_init(state,flattened_state);
+    success = run_init(state);
   }
   return(success);
 }
