@@ -37,8 +37,8 @@ int sbml_alloc2(struct sbml2bo_struct *state,
   struct ms2js_struct *ms2js_data;
   int64_t ask_for;
   int64_t one_l;
-  int64_t *ms_ids;
-  int64_t *js_ids;
+  char **ms_ids;
+  char **js_ids;
   char *sbml_file;
   char *concs_in_file;
   char *rxns_dat_file;
@@ -51,6 +51,7 @@ int sbml_alloc2(struct sbml2bo_struct *state,
   int     num_files;
   int     padi;
   success = 1;
+  one_l   = (int64_t)1;
   ask_for = (int64_t)sizeof(ms2js_instance);
   ms2js_data = (struct ms2js_struct*)calloc(one_l,ask_for);
   if (ms2js_data == NULL) {
@@ -74,7 +75,9 @@ int sbml_alloc2(struct sbml2bo_struct *state,
   }
   if (success) {
     ms2js_data->ms_ids = ms_ids;
-    ms2js_data->js_ids = ms_ids + (ask_for >> 1); /* Caution address arithmetic */
+    ms2js_data->js_ids = (char **)&ms_ids[num_modelseed_ids]; /* Caution address arithmetic */
+    ms2js_data->num_modelseed_ids = num_modelseed_ids;
+    ms2js_data->length_ms2js_strings = length_ms2js_strings;
   }
   return(success);
 }
