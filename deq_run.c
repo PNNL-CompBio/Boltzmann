@@ -32,7 +32,7 @@ specific language governing permissions and limitations under the License.
 */
 #include "alloc7.h"
 #include "init_base_reactants.h"
-#include "update_rxn_log_likelihoods.h"
+#include "init_relative_rates.h"
 #include "ode_print_concs_header.h"
 #include "ode_print_flux_header.h"
 #include "ode_print_bflux_header.h"
@@ -58,7 +58,7 @@ int deq_run(struct state_struct *state) {
     Calls:     flatten_state,
 	       alloc7,
 	       init_base_reactants,
-	       update_rxn_log_likelihoods
+	       init_relative_rates,
 	       ode_solver
   */ 
   struct state_struct *nstate;
@@ -77,8 +77,6 @@ int deq_run(struct state_struct *state) {
   double *flux_vector;
   double *reactant_term;
   double *product_term;
-  double *p_over_r;
-  double *r_over_p;
   double *concs;
   double *conc_to_count;
   double *count_to_conc;
@@ -178,10 +176,10 @@ int deq_run(struct state_struct *state) {
     ode_counts (length = num_species)
     reactant_term vector (length = num_rxns), 
     product_term_vector (length = num_rxns),  
-    p_over_r, (length = num_rxns),  
-    r_over_p, (length = num_rxns),  
     ode_forward_lklhds (length = num_rxns)
     ode_reverse_lklhds (length = num_rxns)
+    kf_rel (length = num_rxns),
+    kr_rel (length = num_rxns)
   */
   if (success) {
     success = alloc7(state);
@@ -193,8 +191,6 @@ int deq_run(struct state_struct *state) {
     flux_vector = state->flux_vector;
     reactant_term = state->reactant_term;
     product_term  = state->product_term;
-    p_over_r       = state->p_over_r;
-    r_over_p       = state->r_over_p;
     concs          = state->ode_concs;
     dg0s = state->dg0s;
     free_energy  = state->free_energy;
@@ -208,6 +204,15 @@ int deq_run(struct state_struct *state) {
   */
   if (success) {
     success = init_base_reactants(state);
+  }
+  /*
+    Fill the relative forward and reverse reaction rate vectors,
+    kf_rel, and kr_rel. For use in the lr6_appproximate_delta_concs.
+  */
+  if (success) {
+    if (state->delta_concs_choice == 6) {
+      success = init_relative_rates(state);
+    }
   }
   /*
     Compute concentrations from counts;
