@@ -5,7 +5,7 @@ LUNWIND_DEPS = luwtb.h luwtb1.h luwtb2.h
 
 SERIAL_INCS = boltzmann_structs.h state_struct.h rxn_struct.h rxn_matrix_struct.h molecules_matrix_struct.h vgrng_state_struct.h $(TIMING_DEPS) $(LUNWIND_DEPS)
 
-SERIAL_OBJS = boltzmann_drv.o boltzmann_init.o alloc0.o read_params.o vgrng_init.o vgrng.o alloc1.o echo_params.o size_rxns_file.o init_rxn_file_keywords.o parse_rxn_file_keyword.o count_molecules.o count_ws.o count_nws.o is_a_coef.o alloc2.o parse_reactions_file.o upcase.o echo_reactions_file.o sort_istrings.o merge_istrings.o unique_molecules.o print_molecules_dictionary.o alloc3.o read_initial_concentrations.o molecules_lookup.o form_molecules_matrix.o compute_ke.o boltzman_run_sim.o free_energry_changes.o log_rxn_ratios.o rxn_ratios.o binary_search_l_u_b.o forward_rxn_conc_update.o reverse_rxn_conc_update.o
+SERIAL_OBJS = boltzmann_drv.o boltzmann_init.o alloc0.o read_params.o vgrng_init.o vgrng.o alloc1.o echo_params.o size_rxns_file.o init_rxn_file_keywords.o parse_rxn_file_keyword.o count_molecules.o count_ws.o count_nws.o is_a_coef.o alloc2.o parse_reactions_file.o upcase.o echo_reactions_file.o sort_istrings.o merge_istrings.o unique_molecules.o print_molecules_dictionary.o alloc3.o read_initial_concentrations.o molecules_lookup.o form_molecules_matrix.o compute_ke.o boltzmann_run_sim.o free_energy_changes.o log_rxn_ratios.o rxn_ratios.o binary_search_l_u_b.o forward_rxn_conc_update.o reverse_rxn_conc_update.o
 
 boltzmann: $(SERIAL_OBJS) $(MMAP_OBJS) $(TIMING_LIB)
 	$(CLINKER) $(LFLAGS) -o boltzmann $(SERIAL_OBJS) $(MMAP_OBJS) $(TIMING_LIB)
@@ -106,10 +106,10 @@ binary_search_l_u_b.o: $(SERIAL_INCS) binary_search_l_u_b.c binary_search_l_u_b.
 	$(CC) $(DCFLAGS) $(TFLAGS) -c binary_search_l_u_b.c
 
 forward_rxn_conc_update.o: $(SERIAL_INCS) forward_rxn_conc_update.c forward_rxn_conc_update.h
-	$(CC) $(DCFLAGS) $(TFLAGS) -c forward_rxn_con_update.c
+	$(CC) $(DCFLAGS) $(TFLAGS) -c forward_rxn_conc_update.c
 
 reverse_rxn_conc_update.o: $(SERIAL_INCS) reverse_rxn_conc_update.c reverse_rxn_conc_update.h
-	$(CC) $(DCFLAGS) $(TFLAGS) -c reverse_rxn_con_update.c
+	$(CC) $(DCFLAGS) $(TFLAGS) -c reverse_rxn_conc_update.c
 
 clean:
 	-/bin/rm -f *.o *~ $(EXECS)
