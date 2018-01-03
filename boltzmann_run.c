@@ -119,7 +119,7 @@ int boltzmann_run(struct state_struct *state) {
   n_warmup_steps    	 = (int)state->warmup_steps;
   n_record_steps    	 = (int)state->record_steps;
   number_reactions       = (int)state->number_reactions;
-  unique_molecules     	 = (int)state->unique_molecules;
+  unique_molecules     	 = (int)state->nunique_molecules;
   current_concentrations = state->current_concentrations;
   future_concentrations  = state->future_concentrations;
   bndry_flux_concs  	 = state->bndry_flux_concs;
