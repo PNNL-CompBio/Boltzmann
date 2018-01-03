@@ -39,6 +39,7 @@ int alloc0(struct state_struct **state) {
   int64_t *rxn_file_keyword_lengths;
   char    *rxn_buff;
   char    *rxn_keyword_buff;
+  char    *solvent_string;
   char    **rxn_keywords;
   int64_t max_file_name_len;
   int64_t max_param_line_len;
@@ -112,6 +113,19 @@ int alloc0(struct state_struct **state) {
 	      ask_for);
       fflush(stderr);
     } 
+  }
+  if (success) {
+    ask_for = ((int64_t)64) * sizeof(char);
+    usage += ask_for;
+    solvent_string = (char *)calloc(one_l,ask_for);
+    if (solvent_string) {
+      statep->solvent_string = solvent_string;
+    } else {
+      fprintf(stderr,"alloc0: Error unable to allocatge %ld bytes of space "
+	      "for solvent_string\n",ask_for);
+      fflush(stderr);
+      success = 0;
+    }
   }
   /*
     Allocate space for processing the reactions file.
