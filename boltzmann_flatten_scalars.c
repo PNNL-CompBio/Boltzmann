@@ -380,10 +380,16 @@ int boltzmann_flatten_scalars(struct state_struct *state,
   } else {
     state->ode_stop_style = lflattened[word_pos];
   }
+  word_pos += 1; /* 93 */
+  if (direction == 0) {
+    lflattened[word_pos] = state->compute_sensitivities;
+  } else {
+    state->compute_sensitivities = lflattened[word_pos];
+  }
   /*
     Leave a litle extra space, round up to 62 data words 
   */
-  word_pos += 4;
+  word_pos += 3;
   if (direction == 0) {
     lflattened[word_pos] = 40;
   }
