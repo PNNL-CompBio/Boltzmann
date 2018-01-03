@@ -423,8 +423,8 @@ int flatten_state(struct state_struct *boot_state,
     new_state->output_file = new_state->input_dir + max_filename_len;
     new_state->log_file = new_state->output_file + max_filename_len;
     new_state->output_dir = new_state->log_file + max_filename_len;
-    new_state->concs_out_file = new_state->output_dir + max_filename_len;
-    new_state->rxn_lklhd_file = new_state->concs_out_file + max_filename_len;
+    new_state->counts_out_file = new_state->output_dir + max_filename_len;
+    new_state->rxn_lklhd_file = new_state->counts_out_file + max_filename_len;
     new_state->free_energy_file = new_state->rxn_lklhd_file + max_filename_len;
     new_state->restart_file = new_state->free_energy_file + max_filename_len;
     new_state->rxn_view_file = new_state->restart_file + max_filename_len;
