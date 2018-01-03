@@ -441,7 +441,7 @@ int flatten_state(struct state_struct *boot_state,
       new_state->compartments_text_offset_in_bytes = compartments_text_offset_in_bytes;
       load_from_boot = 1;
     } else {
-      fprintf(stderr,"flatten_state: Error unable to allocate %ld bytes for new_state\n",ask_for);
+      fprintf(stderr,"flatten_state: Error unable to allocate %lld bytes for new_state\n",ask_for);
       fflush(stderr);
       success = 0;
     }
@@ -462,7 +462,7 @@ int flatten_state(struct state_struct *boot_state,
       } else {
 	new_state->workspace_base = 0;
 	success = 0;
-	fprintf(stderr,"flatten_state: could not allocate %ld bytes "
+	fprintf(stderr,"flatten_state: could not allocate %lld bytes "
 		"for workspace\n",ask_for);
 	fflush(stderr);
       }
