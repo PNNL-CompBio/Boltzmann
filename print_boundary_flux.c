@@ -52,7 +52,10 @@ void print_boundary_flux(struct state_struct *state) {
   struct istring_elem_struct *sorted_cmpts;
   struct istring_elem_struct *cur_cmpt;
   double *bndry_flux_concs;
+  char *molecules_text;
+  char *compartment_text;
   char *cmpt_string;
+  char *molecule_str;
   FILE *bndry_flux_fp;
 
   int ci;
@@ -66,7 +69,8 @@ void print_boundary_flux(struct state_struct *state) {
   sorted_cmpts     = state->sorted_cmpts;
   unique_molecules = state->unique_molecules;
   bndry_flux_concs = state->bndry_flux_concs;
-
+  molecules_text   = state->molecules_text;
+  compartment_text = state->compartment_text;
   if (bndry_flux_fp) {
     fprintf(bndry_flux_fp,"final flux\n");
     molecule    = sorted_molecules;
@@ -78,17 +82,18 @@ void print_boundary_flux(struct state_struct *state) {
 	oi = ci;
 	if (ci >= 0) {
 	  cur_cmpt = (struct istring_elem_struct *)&(sorted_cmpts[ci]);
-	  cmpt_string = cur_cmpt->string;
+	  cmpt_string = (char *)&compartment_text[cur_cmpt->string];
 	} else {
 	  cmpt_string = NULL;
 	}
       }
       if (molecule->variable == 0) {
+	molecule_str = (char *)&molecules_text[molecule->string];
 	if (ci >= 0) {
-	  fprintf(bndry_flux_fp,"%s:%s\t%le\n",molecule->string,
+	  fprintf(bndry_flux_fp,"%s:%s\t%le\n",molecule_str,
 		  cmpt_string,bndry_flux_concs[j]);
 	} else {
-	  fprintf(bndry_flux_fp,"%s\t%le\n",molecule->string,
+	  fprintf(bndry_flux_fp,"%s\t%le\n",molecule_str,
 		  bndry_flux_concs[j]);
 	}
       }
