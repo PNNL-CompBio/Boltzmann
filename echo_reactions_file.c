@@ -79,7 +79,7 @@ int echo_reactions_file(struct state_struct *state) {
     molecules_indices = rxns_matrix->molecules_indices;
     coefficients   = rxns_matrix->coefficients;
     matrix_text    = rxns_matrix->text;
-    for (rxns=0;rxns < state->number_reactions;rxns++) {
+    for (rxns=0;rxns < (int)state->number_reactions;rxns++) {
       if (reaction->title) {
 	fprintf(rxn_echo_fp,"REACTION\t%s\n",reaction->title);
       }
