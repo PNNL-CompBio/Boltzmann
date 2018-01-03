@@ -1,4 +1,6 @@
 #include "boltzmann_structs.h"
+#include "boltzmann_cvodes_headers.h"
+#include "cvodes_params_struct.h"
 
 #include "lr7_approximate_delta_concs.h"
 
@@ -36,6 +38,7 @@ int lr7_approximate_delta_concs(struct state_struct *state,
     choice                      IOI   Not used by this routine.
 
   */
+  struct  cvodes_params_struct *cvodes_params;
   struct  molecule_struct *molecules;
   struct  molecule_struct *molecule;
   struct  compartment_struct *compartments;
@@ -52,12 +55,13 @@ int lr7_approximate_delta_concs(struct state_struct *state,
   double  tp;
   double  conc_mi;
   double  thermo_adj;
+  double  volume;
   double  recip_volume;
+  double  avogadro;
   double  recip_avogadro;
   double  fluxi;
   double  keq_adj;
   double  rkeq_adj;
-  double  volume;
   double  multiplier;
   int64_t *molecules_ptrs;
   int64_t *rxn_indices;
@@ -82,6 +86,9 @@ int lr7_approximate_delta_concs(struct state_struct *state,
 
   int k;
   int klim;
+
+  int compute_sensitivities;
+  int ode_solver_choice;
 
   int sum_coeff;
   int padi;
@@ -111,7 +118,18 @@ int lr7_approximate_delta_concs(struct state_struct *state,
   ke               = state->ke;
   rke              = state->rke;
   rfc              = state->product_term;
+  avogadro         = state->avogadro;
   recip_avogadro   = state->recip_avogadro;
+  ode_solver_choice = state->ode_solver_choice;
+  compute_sensitivities = state->compute_sensitivities;
+  if ((ode_solver_choice == 1) && compute_sensitivities) {
+    cvodes_params = state->cvodes_params;
+    ke = cvodes_params->p;
+    rke = cvodes_params->rp;
+    for (i=0;i<num_rxns;i++) {
+      rke[i] = 1.0/ke[i];
+    }
+  }
   /*
   flux_scaling     = compute_flux_scaling(state,concs);
   */
@@ -171,10 +189,10 @@ int lr7_approximate_delta_concs(struct state_struct *state,
     multiplier = 1.0;
     sum_coeff = coeff_sum[i];
     if (sum_coeff > 0) {
-      multiplier = recip_volume;
+      multiplier = recip_volume * recip_avogadro;
     } else {
       if (sum_coeff < 0) {
-	multiplier = volume;
+	multiplier = volume * avogadro;
 	sum_coeff = - sum_coeff;
       } 
     }
