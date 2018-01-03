@@ -55,24 +55,11 @@ int compute_molecule_dg0tf(double ph,
     the number of unique molecules. Will work on that later.
   */
   struct pseudoisomer_struct *pseudoisomer;
-  char *json_cpd_name;
-
-  int success;
-  int cmp1;
-
-  int i;
-  int index;
-
-
-  int priority_level;
-  int count1,count2;
-  
-  int check;
-  int padi;
-
   double deltag0;
   double nh, z;
+  /*
   double min;
+  */
   double sum;
   
   double dgtc;
@@ -81,6 +68,21 @@ int compute_molecule_dg0tf(double ph,
   
   /*
   double deltag_temp[50];
+  */
+  char *json_cpd_name;
+
+  int success;
+  int cmp1;
+
+  int i;
+  int check;
+
+  int priority_level;
+  int count1,count2;
+
+  /*
+  int index;
+  int padi;
   */
 
   success = 1;
