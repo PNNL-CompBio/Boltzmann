@@ -279,11 +279,11 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
     success = compute_ke(state);
   }
   if (success) {
-    fprintf(state->rxn_lklhd_fp,"iter entropy dg_forward forward_rxn_likelihoods\n");
-    fprintf(state->rxn_lklhd_fp,"iter entropy dg_forward");
+    fprintf(state->rxn_lklhd_fp,"iter\tentropy\tdg_forward\tforward_rxn_likelihood\treverse_rxn_likelihood\n");
+    fprintf(state->rxn_lklhd_fp,"iter\tentropy\tdg_forward");
     reactions                   = state->reactions;
     for (i=0;i<state->number_reactions;i++) {
-      fprintf(state->rxn_lklhd_fp," %s",reactions->title);
+      fprintf(state->rxn_lklhd_fp,"\tf_%s\tr_%s",reactions->title,reactions->title);
       reactions += 1; /* Caution address arithmetic */
     }
     fprintf(state->rxn_lklhd_fp,"\n");
@@ -301,7 +301,7 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
       fprintf(state->free_energy_fp,"iter");
       reactions                   = state->reactions;
       for (i=0;i<state->number_reactions;i++) {
-	fprintf(state->free_energy_fp," %s",reactions->title);
+	fprintf(state->free_energy_fp,"\t%s",reactions->title);
 	reactions += 1; /* Caution address arithmetic */
       }
       fprintf(state->free_energy_fp,"\n");
