@@ -33,8 +33,7 @@ specific language governing permissions and limitations under the License.
 #include "boltzmann_structs.h"
 #include "vgrng.h"
 #include "binary_search_l_u_b.h"
-#include "forward_rxn_conc_update.h"
-#include "reverse_rxn_conc_update.h"
+#include "rxn_conc_update.h"
 
 #include "candidate_rxn.h"
 int candidate_rxn(struct state_struct *state, double *scalingp) {
@@ -45,9 +44,7 @@ int candidate_rxn(struct state_struct *state, double *scalingp) {
     Called by : choose_rxn
     Calls     : vgrng, 
                 binary_search_l_u_b,
-		forward_rxn_conc_update,
-		reverse_rxn_conc_update
-    
+		rxn_conc_update
   */
   struct vgrng_state_struct *vgrng_state;
   double *rxn_likelihood_ps;
@@ -61,10 +58,16 @@ int candidate_rxn(struct state_struct *state, double *scalingp) {
   int64_t choice;
   int num_rxns;
   int num_rxns_t2;
+
   int num_rxns_t2_p1;
   int success;
+
   int rxn_choice;
   int j;
+
+  int direction;
+  int padi;
+
   success = 1;
   rxn_likelihood_ps      = state->rxn_likelihood_ps;
   num_rxns               = state->number_reactions;
@@ -108,10 +111,12 @@ int candidate_rxn(struct state_struct *state, double *scalingp) {
   */
   rxn_choice = binary_search_l_u_b(rxn_likelihood_ps,dchoice,num_rxns_t2_p1);
   if (rxn_choice < num_rxns) {
-    success = forward_rxn_conc_update(rxn_choice,state);
+    direction = 1;
+    success = rxn_conc_update(rxn_choice,direction,state);
   } else {
     if (rxn_choice < num_rxns_t2) {
-      success = reverse_rxn_conc_update(rxn_choice-num_rxns,state);
+      direction = -1;
+      success = rxn_conc_update(rxn_choice-num_rxns,direction,state);
     } /* else do nothing, no change */
   }
   return (rxn_choice);
