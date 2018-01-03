@@ -33,7 +33,7 @@ specific language governing permissions and limitations under the License.
 int is_a_coef(int sl, char *line) {
   /*
     Determine whether the first sl characters of line are all digits
-    Called by: count_species
+    Called by: count_molecules
   */
   int i;
   int result;
