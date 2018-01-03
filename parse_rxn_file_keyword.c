@@ -71,8 +71,12 @@ int parse_rxn_file_keyword(char *rxn_buffer,struct state_struct *state){
   if (line_type < 0) {
     lfp = state->lfp;
     if (lfp) {
-      fprintf(lfp,"parse_rxn_file_keyword: Unrecognized keyword\n%s\n",
+      if (strncmp(rxn_buffer,"COMMENT",7) != 0) {
+	if (rxn_buffer[0] != '#') {
+	  fprintf(lfp,"parse_rxn_file_keyword: Unrecognized keyword\n%s\n",
 	      rxn_buffer);
+	}
+      }
     }
   }
   return(line_type);
