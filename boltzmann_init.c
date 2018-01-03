@@ -39,26 +39,8 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
 	       free_boot_state
   */
   struct state_struct *boot_state;
-  struct state_struct *state;
-  struct state_struct *stateq;
-  struct formation_energy_struct *formation_energies;
-  struct vgrng_state_struct *vgrng_state;
-  struct vgrng_state_struct *vgrng2_state;
-  double *dg0s;
-  double *free_energy;
-  double *activities;
-  int64_t vgrng_start;
-  int64_t i;
-
   int success;
-  int vgrng_start_steps;
-
-  int print_output;
   int padi;
-  
-  FILE *rxn_echo_fp;
-  FILE *bndry_flux_fp;
-  FILE *lfp;
   /*
     allocate space for the state struct.
     Allocate space for the reactions line buffer, and the rxn_file keywords.
