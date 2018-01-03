@@ -100,6 +100,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
     state->joules_per_cal      = 4.184;
     state->epsilon             = 0.0000001;
     state->avogadro            = 6.022214179e23;
+    state->recip_avogadro      = 1.0/state->avogadro;
     state->cals_per_joule      = 1.0/state->joules_per_cal;
     state->warmup_steps        = (int64_t)1000;
     state->record_steps        = (int64_t)1000;
