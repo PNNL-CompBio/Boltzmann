@@ -34,7 +34,7 @@ specific language governing permissions and limitations under the License.
 int print_molecules_dictionary(struct state_struct *state) {
   /*
     Print the  unique molecules in sorted order.
-    Called by: boltzmann
+    Called by: boltzmann_init
     Calls:     fopen, fprintf, fclose (intrinsic)
   */
   struct rxn_struct *reactions;
