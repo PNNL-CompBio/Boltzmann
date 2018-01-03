@@ -101,6 +101,7 @@ struct state_struct {
   double  *ke;
   double  *current_rxn_log_likelihood_ratio;
   double  *future_rxn_log_likelihood_ratio;
+  double  *activities;
   double  *l_thermo;
   double  *rxn_view_likelihoods;
   double  *rev_rxn_view_likelihoods;
@@ -144,7 +145,7 @@ struct state_struct {
   int  lthl;
 
   int  num_fixed_concs;
-  int  padi;
+  int  use_activities;
 
 #ifdef TIMING_ON
   struct timing_struct timing_data;
