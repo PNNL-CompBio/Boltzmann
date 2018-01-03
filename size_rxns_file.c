@@ -214,9 +214,9 @@ int size_rxns_file(struct state_struct *state) {
     cmpts = 1;
   }
   state->number_compartments = cmpts;
-  state->molecules_len = molecules_len;
-  state->pathway_len = pathway_len;
-  state->compartment_len = compartment_len;
-  state->rxn_title_len = rxn_title_len;
+  state->molecules_space = molecules_len;
+  state->pathway_space = pathway_len;
+  state->compartment_space = compartment_len;
+  state->rxn_title_space = rxn_title_len;
   return(success);
 }
