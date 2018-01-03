@@ -31,10 +31,10 @@ int read_ms2js(struct sbml2bo_struct *sbml_state) {
   /*
     read the moduleseed to json id file translations, assumed to be
     sorted on moduleseed id's.
-    Called by: sbml_to_boltzmann.
+    Called by: sbml2bo, sbml_to_boltzmann.
     Calls:     count_ntb, strcpy, fopen, fgets, fclose
   */
-  struct ms2js_struct *ms2js_data;
+  struct t2js_struct *ms2js_data;
   FILE *ms2js_fp;
   char *ms2js_file;
   char *ms2js_string;
@@ -60,15 +60,15 @@ int read_ms2js(struct sbml2bo_struct *sbml_state) {
   ms2js_fp = fopen(ms2js_file,"r");
   alignment = sbml_state->alignment;
   align_mask = sbml_state->align_mask;
-  num_modelseed_ids = ms2js_data->num_modelseed_ids;
+  num_modelseed_ids = ms2js_data->num_ids;
   if (ms2js_fp == NULL) {
     success = 0;
   }
   if (success) {
-    ms_ids = ms2js_data->ms_ids;
-    js_ids = ms2js_data->js_ids;
+    ms_ids = ms2js_data->dictionary_ids;
+    js_ids = ms2js_data->json_ids;
     line = (char*)&line_buffer[0];
-    ms2js_string = ms2js_data->ms2js_strings;
+    ms2js_string = ms2js_data->strings;
     for (i=0;i<num_modelseed_ids;i++) {
       fgets(line,line_len,ms2js_fp);
       id_string = line;
