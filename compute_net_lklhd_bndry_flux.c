@@ -23,7 +23,9 @@ specific language governing permissions and limitations under the License.
 #include "boltzmann_structs.h"
 
 #include "compute_net_lklhd_bndry_flux.h"
-void compute_net_lklhd_bndry_flux(struct state_struct *state) {
+void compute_net_lklhd_bndry_flux(struct state_struct *state,
+				  double *net_likelihood, 
+				  double *net_lklhd_bndry_flux) {
   /*
     Compute the net likehood boundary fluxes for fixed concentration
     species.
@@ -44,8 +46,6 @@ void compute_net_lklhd_bndry_flux(struct state_struct *state) {
   struct  compartment_struct *sorted_cmpts;
   struct  compartment_struct *cur_cmpt;
   double  bndry_flux;
-  double  *net_likelihood;
-  double  *net_lklhd_bndry_flux;
   int64_t *molecules_ptrs;
   int64_t *rxn_indices;
   int64_t *coefficients;
@@ -60,8 +60,6 @@ void compute_net_lklhd_bndry_flux(struct state_struct *state) {
   sorted_molecules  = state->sorted_molecules;
   unique_molecules  = state->nunique_molecules;
   molecules_matrix  = state->molecules_matrix;
-  net_likelihood    = state->net_likelihood;
-  net_lklhd_bndry_flux = state->net_lklhd_bndry_flux;
   molecules_ptrs    = molecules_matrix->molecules_ptrs;
   rxn_indices       = molecules_matrix->rxn_indices;
   coefficients      = molecules_matrix->coefficients;
@@ -72,8 +70,7 @@ void compute_net_lklhd_bndry_flux(struct state_struct *state) {
       /*
 	Loop over reactions in which the molecule is involved
 	summing the net_likelihoods of those where it is produced.
-	Doug wonders whether we ought to alsow subtract the
-	net likelihoods of those where it is consumed.
+	(also implies subtracting the net likelihoods where it is consumed).
       */
       bndry_flux = 0.0;
       for (j=molecules_ptrs[i];j<molecules_ptrs[i+1];j++) {
@@ -82,13 +79,11 @@ void compute_net_lklhd_bndry_flux(struct state_struct *state) {
 	if (coef > 0) {
 	  bndry_flux += net_likelihood[rxn];
 	} 
-	/*
 	else {
 	  if (coef < 0) {
 	    bndry_flux -= net_likelihood[rxn];
 	  }
         }
-        */
       }
       net_lklhd_bndry_flux[i] = bndry_flux;
     }
