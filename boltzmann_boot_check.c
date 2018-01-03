@@ -33,13 +33,16 @@ specific language governing permissions and limitations under the License.
 
 #include "djb_timing_b.h"
 #include "boltzmann_structs.h"
+#include "flatten_super_state.h"
 #include "boltzmann_rep_state_i.h"
 #include "echo_reactions_file.h"
 /*
 #define DBG_BOLTZMANN_BOOT_CHECK 1  
 */
 #include "boltzmann_boot_check.h"
-int boltzmann_boot_check(int64_t *super_statep, FILE *lfp) {
+int boltzmann_boot_check(struct super_state_struct *super_statep, FILE *lfp) {
+  struct  super_state_pointers_struct ssps;
+  struct  super_state_pointers_struct *super_state_pointers;
   struct  state_struct *lstate;
   double  *concs;
   int64_t *super_statel;
@@ -58,17 +61,11 @@ int boltzmann_boot_check(int64_t *super_statep, FILE *lfp) {
   int64_t i;
   int64_t loffset;
   int64_t lsize;
-  int64_t molecule_map_starts_offset;
-  int64_t molecule_map_offset;
-  int64_t compartment_map_offset;
-  int64_t molecule_names_offset;
-  int64_t compartment_names_offset;
-  int64_t molecules_text_offset;
-  int64_t compartments_text_offset;
   int64_t map_index;
   int64_t molecule;
   int64_t compartment;
   int64_t one_l;
+  int64_t ask_for;
   
   int     success;
   int     j;
@@ -76,76 +73,82 @@ int boltzmann_boot_check(int64_t *super_statep, FILE *lfp) {
   one_l   = (int64_t)1;
   super_statec = (char*)super_statep;
   super_statel = (int64_t*)super_statep;
-  num_reaction_files = super_statel[0];
-  state_offsets_sizes = &super_statel[super_statel[12]];
-  molecule_map_starts_offset  = super_statel[13];
-  molecule_map_offset      = super_statel[14];
-  molecule_names_offset    = super_statel[15];
-  compartment_map_offset   = super_statel[16];
-  compartment_names_offset = super_statel[17];
-  molecules_text_offset    = super_statel[18];
-  compartments_text_offset = super_statel[19];
-  molecule_map_starts      = &super_statel[molecule_map_starts_offset];
-  molecule_map             = &super_statel[molecule_map_offset];
-  compartment_map          = &super_statel[compartment_map_offset];
-  molecule_names           = &super_statel[molecule_names_offset];
-  compartment_names        = &super_statel[compartment_names_offset];
-  molecules_text           = &super_statec[molecules_text_offset];
-  compartments_text        = &super_statec[compartments_text_offset];
-  local_molecules          = &molecule_map[0];
-  local_compartments       = &compartment_map[0];
-  if (lfp) {
-    for (i=0;i<num_reaction_files;i++) {
-      /*
-	Allocate space for a copy of the state_struct for the i'th
-	reaction file, returning pointer to it in lstate, and
-	initialize it and set its self pointers for use in
-	printing out concentrations.
-      */
-      success = boltzmann_rep_state_i(super_statep,(int)i,&lstate);
-      if (success) {
+  num_reaction_files = super_statep->number_of_reaction_files;
+  ask_for = sizeof(ssps);
+  super_state_pointers = (struct super_state_pointers_struct *)calloc(one_l,ask_for);
+  if (super_state_pointers != NULL) {
+    success = flatten_super_state(super_statep,super_state_pointers);
+  } else {
+    fprintf(stderr,"boltzmann_boot_check: Error, unable to allocate %ld "
+	    "bytes for super_state_pointers\n",ask_for);
+    fflush(stderr);
+    success = 0;
+  }
+  if (success) {
+    state_offsets_sizes      = super_state_pointers->state_offsets_sizes;
+    molecule_map_starts      = super_state_pointers->molecule_map_starts;
+    molecule_map             = super_state_pointers->molecule_map;
+    compartment_map          = super_state_pointers->compartment_map;
+    molecule_names           = super_state_pointers->molecule_names;
+    compartment_names        = super_state_pointers->compartment_names;
+    molecules_text           = super_state_pointers->molecules_text;
+    compartments_text        = super_state_pointers->compartments_text;
+    local_molecules          = &molecule_map[0];
+    local_compartments       = &compartment_map[0];
+    if (lfp) {
+      for (i=0;i<num_reaction_files;i++) {
 	/*
-	  Print out the reactions in the i'th reaction file from
-	  its state structre.
+	  Allocate space for a copy of the state_struct for the i'th
+	  reaction file, returning pointer to it in lstate, and
+	  initialize it and set its self pointers for use in
+	  printing out concentrations.
 	*/
-	fprintf (lfp,"reaction file: %s, state size = %ld\n",
-		 lstate->reaction_file,lsize);
-	success = echo_reactions_file(lstate,lfp);
-      }
-      /*
-	Now print out the intial concentrations using the
-	global molecules_map  and compartments_map vectors
-        to translate local molecules and compartment numbers
-	to the global dictionary.
-      */
-      if (success) {
-	/*
-	  map_index = map_indices[i];
-	  local_molecules = &molecule_map[map_index];
-	  local_compartments = &compartment_map[map_index];
-	*/
-	concs = lstate->current_concentrations;
-	fprintf (lfp,"\n\n Initial concentrations from %s\n",
-		 lstate->init_conc_file);
-	for (j=0;j<lstate->nunique_molecules;j++) {
-	  molecule    = *local_molecules;
-	  compartment = *local_compartments;
-	  if (compartment > 0) {
-	    fprintf(lfp,"%s:%s\t%le\n",
-		    (char*)&molecules_text[molecule_names[molecule]],
-		    (char*)&compartments_text[compartment_names[compartment]],
-		    concs[j]);
-	  } else {
-	    fprintf(lfp,"%s\t%le\n",
-		    (char*)&molecules_text[molecule_names[molecule]],
-		    concs[j]);
-	  }
-	  local_molecules += 1; /* Caution address arithmetic */
-	  local_compartments += 1; /* Caution address arithmetic */
+	lstate = NULL;
+	success = boltzmann_rep_state_i(super_statep,(int)i,&lstate);
+	if (success) {
+	  /*
+	    Print out the reactions in the i'th reaction file from
+	    its state structre.
+	  */
+	  fprintf (lfp,"reaction file: %s, state size = %ld\n",
+		   lstate->reaction_file,lsize);
+	  success = echo_reactions_file(lstate,lfp);
 	}
-	fprintf(lfp,"\n---------------------------------\n");
-      }
-      free(lstate);
+	/*
+	  Now print out the intial concentrations using the
+	  global molecules_map  and compartments_map vectors
+	  to translate local molecules and compartment numbers
+	  to the global dictionary.
+	*/
+	if (success) {
+	  /*
+	    map_index = map_indices[i];
+	    local_molecules = &molecule_map[map_index];
+	    local_compartments = &compartment_map[map_index];
+	  */
+	  concs = lstate->current_concentrations;
+	  fprintf (lfp,"\n\n Initial concentrations from %s\n",
+		   lstate->init_conc_file);
+	  for (j=0;j<lstate->nunique_molecules;j++) {
+	    molecule    = *local_molecules;
+	    compartment = *local_compartments;
+	    if (compartment > 0) {
+	      fprintf(lfp,"%s:%s\t%le\n",
+		      (char*)&molecules_text[molecule_names[molecule]],
+		      (char*)&compartments_text[compartment_names[compartment]],
+		      concs[j]);
+	    } else {
+	      fprintf(lfp,"%s\t%le\n",
+		      (char*)&molecules_text[molecule_names[molecule]],
+		      concs[j]);
+	    }
+	    local_molecules += 1; /* Caution address arithmetic */
+	    local_compartments += 1; /* Caution address arithmetic */
+	  }
+	  fprintf(lfp,"\n---------------------------------\n");
+	}
+	free(lstate);
+      } /* end for(i...) */
     }
   }
   return(success);
