@@ -74,6 +74,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
     strcpy(state->free_energy_file,"./rxns.fe");
     strcpy(state->restart_file,"./restart.in");
     strcpy(state->rxn_view_file,"./rxns.view");
+    strcpy(state->bndry_flux_file,"./boundary_flux.txt");
     strcpy(state->input_dir,"./");
     strcpy(state->output_dir,"./");
     state->align_len        = (int64_t)16;
@@ -122,6 +123,8 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	sscan_ok = sscanf(value,"%s",state->restart_file);
       } else if (strncmp(key,"RXN_VIEW_FILE",13) == 0) {
 	sscan_ok = sscanf(value,"%s",state->rxn_view_file);
+      } else if (strncmp(key,"BNDRY_FLUX_FILE",15) == 0) {
+	sscan_ok = sscanf(value,"%s",state->bndry_flux_file);
       } else if (strncmp(key,"LOG_FILE",8) == 0) {
 	sscan_ok = sscanf(value,"%s",state->log_file);
       } else if (strncmp(key,"ALIGN_LEN",9) == 0) {
