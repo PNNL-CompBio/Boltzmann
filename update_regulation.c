@@ -1,10 +1,14 @@
 #include "boltzmann_structs.h"
 #include "update_regulation.h"
-int update_regulation (struct state_struct *state, int rxn) {
+int update_regulation (struct state_struct *state, int rxn,
+		       double *counts_or_concs, int count_or_conc) {
   /*
     Compute the activity for a regulated reaction.
     Called by: update_regulations, metropolis
     Calls:     log, exp, fprintf, fflush
+    Recently add a  counts_or_concs vector and a count_or_conc indicator,
+    which is 1 if counts_or_concs is a vector of counts, and 0, if
+    it is a vector of concentrations.
   */
   struct molecule_struct *sorted_molecules;  
   struct molecule_struct *molecule;  
@@ -20,11 +24,13 @@ int update_regulation (struct state_struct *state, int rxn) {
   double direction;
   double ndirection;
   double constant;
-  double exponent;
+  double power;
   double activity;
   double conc;
+  double count;
   double exp_arg;
-  double c_to_exp;
+  double conc_to_power;
+  double constant_to_power;
   double denom;
   double numer;
   int64_t *reg_species;
@@ -32,7 +38,6 @@ int update_regulation (struct state_struct *state, int rxn) {
   int64_t reg_base;
   int64_t loop_lim;
   int64_t species;
-  int64_t count;
   int64_t i;
   int64_t one_l;
 
@@ -66,9 +71,9 @@ int update_regulation (struct state_struct *state, int rxn) {
     if (species < 0) break;
     direction = reg_drctn[i];
     ndirection = 1.0 - direction;
-    count = current_counts[species];
-    if (count > 0.0) {
-      molecule = (struct molecule_struct *)&sorted_molecules[rxn];
+    count = counts_or_concs[species];
+    if (count_or_conc == 1) {
+      molecule = (struct molecule_struct *)&sorted_molecules[species];    
       c_index   = molecule->c_index;
       if (c_index >= 0) {
 	compartment = (struct compartment_struct *)&sorted_cmpts[c_index];
@@ -77,38 +82,60 @@ int update_regulation (struct state_struct *state, int rxn) {
       } else {
 	conc = count;
       }
-      if (conc <=0) {
+    } else {
+      conc = count;
+    }
+    if (conc < 0) {
+      success = 0;
+      if (lfp) {
+	fprintf(lfp,"update_regulation non positive conc for reaction %d, regulation %lld, species %lld\n",rxn,i,species);
+	fflush(lfp);
+      }
+    }
+    if (success) {
+      power = reg_exponent[i];
+      constant = reg_constant[i];
+      if (constant <=0) {
 	success = 0;
 	if (lfp) {
-	  fprintf(lfp,"update_regulation non positive multiplier for compartment %d, reaction was %d\n",c_index,rxn);
-	  fflush(lfp);
+	  fprintf(lfp,"update_regulation non positive regulation constant for reaction %d, regulation %lld\n",rxn,i);
 	}
+	fflush(lfp);
       }
-      if (success) {
-	exponent = reg_exponent[i];
-	constant = reg_constant[i];
-	exp_arg  = exponent * log(conc);
-	c_to_exp = exp(exp_arg);
-	numer = (ndirection * constant) + (direction * c_to_exp);
-	denom = constant + c_to_exp;
+    }
+    if (success) {
+      if (conc > 0) {
+	/*
+	  we want to use conc^exponent and constant^exponent as the pieces.
+	  Here instead of using the pow function which is very inefficient
+	  we us a^x  = exp(x*log(a))
+	*/
+	exp_arg  = power * log(conc);
+	conc_to_power = exp(exp_arg);
+	exp_arg  = power * log(constant);
+	constant_to_power = exp(exp_arg);
+	numer = (ndirection * constant_to_power) + (direction * conc_to_power);
+	denom = constant_to_power + conc_to_power;
 	if (denom != 0.0) {
 	  activity *= (numer/denom);
 	}
+      } else { 
+	/*
+	  No regulator concentration so regulation does not happen.
+	  If regulator is a positive regulator, activity is 0,
+	  if its a negative regulator activity is 1.
+	*/
+	activity *= ndirection;
       }
-    } else { 
-      /*
-	No regulator so regulation does not happen.
-	If regulator is a positive regulator, activity is 0,
-	if its a negative regulator activity is 1.
-      */
-      activity *= ndirection;
     }
   } /* end for (i...) */
+  /*
   if (activity > 0.5) {
     activity = 1.0;
   } else {
     activity = 0.0;
   }
+  */
   activities[rxn] = activity;
   return (success);
 }
