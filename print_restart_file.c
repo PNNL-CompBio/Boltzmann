@@ -63,8 +63,8 @@ int print_restart_file(struct state_struct *state) {
   cconcs        = state->current_concentrations;
   molecules_text = state->molecules_text;
   compartment_text = state->compartment_text;
-  vbs[0]        = 'C';
-  vbs[1]        = '\0';
+  vbs[0]        = 'F';
+  vbs[1]        = 'V';
   vbsc          = (char *)&vbs[0];
   vbsv          = (char *)&vbs[1];
   restart_file  = state->restart_file;
@@ -93,12 +93,12 @@ int print_restart_file(struct state_struct *state) {
       } else {
 	vbsp = vbsc;
       }
+      molecule = (char*)&molecules_text[cur_molecules->string];
       if (ci > 0) {
-	molecule = (char*)&molecules_text[cur_molecules->string];
-	fprintf(restart_fp," %s:%s\t%le\t%s\n",
+	fprintf(restart_fp," %s:%s\t%le\t%c\n",
 		molecule,cmpt_string,cconcs[i],vbsp);
       } else {
-	fprintf(restart_fp," %s\t%le\t%s\n",
+	fprintf(restart_fp," %s\t%le\t%c\n",
 		molecule,cconcs[i],vbsp);
       }
       cur_molecules += 1; /* Caution address arithmetic. */
