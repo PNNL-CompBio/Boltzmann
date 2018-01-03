@@ -16,6 +16,7 @@ int update_regulation (struct state_struct *state, int rxn) {
   double *reg_drctn;
   double *current_counts;
   double *activities;
+  double *enzyme_level;
   double direction;
   double ndirection;
   double constant;
@@ -53,8 +54,12 @@ int update_regulation (struct state_struct *state, int rxn) {
   sorted_molecules    = state->sorted_molecules;
   sorted_cmpts        = state->sorted_compartments;
   activities          = state->activities;
-  
+  enzyme_level        = state->enzyme_level;
+
+  /*
   activity = 1.0;
+  */
+  activity = enzyme_level[rxn];
   loop_lim = reg_base+max_regs_per_rxn;
   for (i=reg_base;((i<loop_lim) && success);i++) {
     species = reg_species[i];
@@ -92,7 +97,7 @@ int update_regulation (struct state_struct *state, int rxn) {
       }
     } else { 
       /*
-	No regulator so regulator does not happen.
+	No regulator so regulation does not happen.
 	If regulator is a positive regulator, activity is 0,
 	if its a negative regulator activity is 1.
       */
