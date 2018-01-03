@@ -44,7 +44,7 @@ int parse_pseudoisomer_dg0f_file(struct pseudoisomer_struct *pseudoisomers,
     structure (an array of pseudoisomer_struct's) and the 
     pseudoiosomer_strings array.
     Called by: formation_energy_rxn_dg0fs
-    Calls:     sharp_pos, fopen, fgets, strcpy, fprintf, fflush, sscanf, 
+    Calls:     sharp_pos, fopen, fgets, strcpy, fprintf, fflush, sscanf,
                fclose
   */
   struct pseudoisomer_struct *pseudoisomer;
