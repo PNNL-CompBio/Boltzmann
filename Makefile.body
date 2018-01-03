@@ -1,18 +1,22 @@
 TIMING_DEPS = timingi.h djb_timing_b.h djb_timing.h
 LUNWIND_DEPS = luwtb.h luwtb1.h luwtb2.h
+EXECS        = boltzmann boltmann_boot_test
 
-SERIAL_INCS = boltzmann_structs.h super_state_struct.h super_state_pointers_struct.h state_struct.h rxn_struct.h rxn_matrix_struct.h molecules_matrix_struct.h molecule_struct.h compartment_struct.h vgrng_state_struct.h pseudoisomer_struct.h formation_energy_struct.h stack_level_elem_struct.h sbml2bo_struct.h t2js_struct.h $(TIMING_DEPS) $(LUNWIND_DEPS) 
+SERIAL_INCS = boltzmann_structs.h boot_state_struct.h super_state_struct.h super_state_pointers_struct.h state_struct.h rxn_struct.h rxn_matrix_struct.h molecules_matrix_struct.h molecule_struct.h compartment_struct.h vgrng_state_struct.h pseudoisomer_struct.h formation_energy_struct.h stack_level_elem_struct.h sbml2bo_struct.h t2js_struct.h $(TIMING_DEPS) $(LUNWIND_DEPS)
 
-SERIAL_OBJS1 = boltzmann_boot.o boltzmann_mmap_superstate.o flatten_super_state.o boltzmann_boot_check.o boltzmann_rep_state_i.o boltzmann_init.o alloc0.o boltzmann_set_filename_ptrs.o read_params.o open_output_files.o vgrng_init.o vgrng.o echo_params.o size_rxns_list.o size_rxns_file.o init_rxn_file_keywords.o parse_rxn_file_keyword.o count_molecules.o count_ws.o count_nws.o is_a_coef.o alloc2.o parse_reactions_file.o parse_side_line.o upcase.o find_colon.o echo_reactions_file.o sort_molecules.o merge_molecules.o unique_molecules.o unique_molecules_core.o print_dg0_ke.o zero_solvent_coefficients.o recover_solvent_coefficients.o sort_compartments.o merge_compartments.o unique_compartments.o unique_compartments_core.o translate_compartments.o print_molecules_dictionary.o alloc3.o set_compartment_ptrs.o read_initial_concentrations.o read_compartment_sizes.o compartment_lookup.o molecules_lookup.o compute_ke.o compute_kss.o print_rxn_likelihoods_header.o print_free_energy_header.o flatten_state.o print_reactions_matrix.o free_boot_state.o free_boot_state2.o sort_global_compartments.o sort_global_molecules.o
+SERIAL_OBJS1 = boltzmann_init.o alloc0.o boltzmann_set_filename_ptrs.o read_params.o boltzmann_init_core.o io_size_init.o create_output_filenames.o open_output_files.o size_rxns_file.o init_rxn_file_keywords.o parse_rxn_file_keyword.o count_ws.o count_nws.o count_molecules.o is_a_coef.o alloc2.o rxns_init.o parse_reactions_file.o upcase.o parse_side_line.o find_colon.o sort_compartments.o merge_compartments.o unique_compartments.o unique_compartments_core.o translate_compartments.o sort_molecules.o merge_molecules.o unique_molecules.o unique_molecules_core.o alloc3.o species_init.o set_compartment_ptrs.o translate_regulation_metabolites.o molecules_lookup.o read_compartment_sizes.o read_initial_concentrations.o compartment_lookup.o check_initial_concentrations.o
 
-SERIAL_OBJS1_5 = compute_standard_energies.o size_pseudoisomer_file.o alloc5.o parse_pseudoisomer_dg0f_file.o sharp_pos.o blank_to_dash.o alloc6.o compute_molecule_dg0tfs.o compute_molecule_dg0tf.o pseudoisomer_dg0tf.o compute_molecular_partition_probability.o compute_chemical_potential.o compute_reaction_dg0.o unalloc6.o check_initial_concentrations.o
+	     SERIAL_OBJS2 = energy_init.o compute_standard_energies.o size_pseudoisomer_file.o alloc5.o parse_pseudoisomer_dg0f_file.o blank_to_dash.o sharp_pos.o alloc6.o compute_molecule_dg0tfs.o compute_molecule_dg0tf.o pseudoisomer_dg0tf.o compute_molecular_partition_probability.o compute_chemical_potential.o compute_reaction_dg0.o unalloc6.o compute_ke.o zero_solvent_coefficients.o compute_kss.o echo_inputs.o echo_params.o echo_reactions_file.o print_molecules_dictionary.o print_dg0_ke.o print_reactions_matrix.o recover_solvent_coefficients.o run_init.o vgrng_init.o vgrng.o print_rxn_likelihoods_header.o print_free_energy_header.o flatten_state.o free_boot_state2.o free_boot_state.o
 
-SERIAL_OBJS2 = boltzmann_run.o update_rxn_log_likelihoods.o choose_rxn.o bndry_flux_update.o candidate_rxn.o metropolis.o rxn_likelihood.o rxn_likelihood_postselection.o rxn_log_likelihoods.o rxn_likelihoods.o binary_search_l_u_b.o rxn_count_update.o compute_delta_g_forward_entropy_free_energy.o print_counts.o print_likelihoods.o save_likelihoods.o print_free_energy.o print_boundary_flux.o print_restart_file.o print_reactions_view.o
 
-#SERIAL_OBJS3 = 
-SERIAL_OBJS3 = rxn_map_init.o rxn_map_parse_start_stop_line.o rxn_map_run.o alloc4.o form_molecules_matrix.o
+SERIAL_OBJS3 = boltzmann_run.o update_rxn_log_likelihoods.o rxn_log_likelihoods.o rxn_likelihoods.o rxn_likelihood.o choose_rxn.o candidate_rxn.o binary_search_l_u_b.o update_regulations.o update_regulation.o rxn_count_update.o bndry_flux_update.o metropolis.o rxn_likelihood_postselection.o compute_delta_g_forward_entropy_free_energy.o print_counts.o print_likelihoods.o save_likelihoods.o print_free_energy.o print_boundary_flux.o print_restart_file.o print_reactions_view.o
 
-SERIAL_OBJS4 = boltzmann_global_to_local_counts.o boltzmann_global_to_local_fluxes.o boltzmann_local_to_global_counts.o boltzmann_local_to_global_fluxes.o size_file.o boltzmann_load.o boltzmann_number_of_reaction_files.o boltzmann_global_molecule_count.o boltzmann_length_state_i.o boltzmann_max_local_state_size.o boltzmann_size_superstate.o
+
+SERIAL_OBJS4 = rxn_map_init.o rxn_map_parse_start_stop_line.o rxn_map_run.o alloc4.o form_molecules_matrix.o
+
+SERIAL_OBJS5 = boltzmann_boot.o boot_init.o boot_alloc0.o boot_alloc1.o boot_io_init.o size_rxns_list.o boot_alloc2.o parse_rxn_list_line.o save_and_count_local_state.o boot_alloc3.o catenate_compartments_and_molecules.o global_merge_and_map_compartments.o sort_global_compartments.o global_merge_molecules.o sort_global_molecules.o boot_alloc4.o condense_strings.o fill_meta_data.o write_super_state.o copy_local_states.o boltzmann_mmap_superstate.o boltzmann_boot_check.o flatten_super_state.o boltzmann_rep_state_i.o
+
+SERIAL_OBJS6 = boltzmann_global_to_local_counts.o boltzmann_global_to_local_fluxes.o boltzmann_local_to_global_counts.o boltzmann_local_to_global_fluxes.o size_file.o boltzmann_load.o boltzmann_number_of_reaction_files.o boltzmann_global_molecule_count.o boltzmann_length_state_i.o boltzmann_max_local_state_size.o boltzmann_size_superstate.o
 
 
 SBML_OBJS = sbml_to_boltzmann.o size_ms2js_file.o size_kg2js_file.o sbml_alloc0.o sbml_set_file_names.o sbml_alloc2.o read_ms2js.o read_kg2js.o sort_json_ids.o merge_sorted_strings.o sbml_count_cmpts.o sbml_count_species.o sbml_alloc1.o parse_sbml.o sbml_find_section.o sbml_process_list_of_compartments.o count_ws.o count_nws.o sbml_read_key_value.o sbml_lookup_compartment_attribute.o sbml_volume_units_conversion.o sort_compartments.o merge_compartments.o sbml_process_list_of_species.o sbml_start_species_def.o sbml_parse_species_key_value.o sbml_lookup_species_attribute.o sbml_process_substanceunits.o sbml_generate_init_conc_line.o boltzmannize_string.o sbml_find_string.o sbml_sort_species_trans.o sbml_merge_species_trans.o sbml_process_list_of_reactions.o sbml_look_for_in_reaction_tag.o sbml_process_reaction_tag.o sbml_lookup_reaction_attribute.o sbml_process_list_of_reactants_tag.o  sbml_process_list_of_products_tag.o sbml_process_species_reference_tag.o sbml_lookup_speciesref_attribute.o compartment_lookup.o count_ntb.o
@@ -27,7 +31,7 @@ KPM_OBJS = count_ws.o count_ntb.o count_nws.o
 ms2js_ids: $(KPM_OBJS)
 	$(CLINKER) -O0 -o ms2js_ids $(KPM_OBJS)
 
-#modelseed_2_json.o: modelseed_2_json.c ${SERIAL_INCS}
+#modelseed_2_json.o: modelseed_2_json.c $(SERIAL_INCS)
 #	$(CC) $(DCFLAGS) $(TFLAGS) -c modelseed_2_json.c 
 		 		    
 
@@ -61,9 +65,28 @@ check_for_ws.o: check_for_ws.c check_for_ws.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c check_for_ws.c
 		
 
-libboltzmann.a: $(SERIAL_OBJS1) $(SERIAL_OBJS1_5) $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SERIAL_OBJS4) ${SBML_OBJS} $(KFM_OBJS) $(KFP_OBJS) $(KPM_OBJS)
+libboltzmann.a: $(SERIAL_OBJS1)  $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SERIAL_OBJS4) $(SERIAL_OBJS5) $(SERIAL_OBJS6) $(SBML_OBJS) $(KFM_OBJS) $(KFP_OBJS) $(KPM_OBJS)
 	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_boot.o
-	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_mmap_superstate.o
+	$(AR) $(ARFLAGS) libboltzmann.a boot_init.o
+	$(AR) $(ARFLAGS) libboltzmann.a boot_alloc0.o
+	$(AR) $(ARFLAGS) libboltzmann.a boot_alloc1.o
+	$(AR) $(ARFLAGS) libboltzmann.a boot_io_init.o
+	$(AR) $(ARFLAGS) libboltzmann.a size_rxns_list.o
+	$(AR) $(ARFLAGS) libboltzmann.a boot_alloc2.o
+	$(AR) $(ARFLAGS) libboltzmann.a parse_rxn_list_line.o
+	$(AR) $(ARFLAGS) libboltzmann.a save_and_count_local_state.o
+	$(AR) $(ARFLAGS) libboltzmann.a boot_alloc3.o
+	$(AR) $(ARFLAGS) libboltzmann.a catenate_compartments_and_molecules.o
+	$(AR) $(ARFLAGS) libboltzmann.a global_merge_and_map_compartments.o
+	$(AR) $(ARFLAGS) libboltzmann.a sort_global_compartments.o
+	$(AR) $(ARFLAGS) libboltzmann.a global_merge_molecules.o
+	$(AR) $(ARFLAGS) libboltzmann.a sort_global_molecules.o
+	$(AR) $(ARFLAGS) libboltzmann.a boot_alloc4.o
+	$(AR) $(ARFLAGS) libboltzmann.a condense_strings.o
+	$(AR) $(ARFLAGS) libboltzmann.a fill_meta_data.o
+	$(AR) $(ARFLAGS) libboltzmann.a write_super_state.o
+	$(AR) $(ARFLAGS) libboltzmann.a copy_local_states.o
+	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_mmap_superstate.o	
 	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_boot_check.o
 	$(AR) $(ARFLAGS) libboltzmann.a flatten_super_state.o
 	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_rep_state_i.o
@@ -71,43 +94,42 @@ libboltzmann.a: $(SERIAL_OBJS1) $(SERIAL_OBJS1_5) $(SERIAL_OBJS2) $(SERIAL_OBJS3
 	$(AR) $(ARFLAGS) libboltzmann.a alloc0.o
 	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_set_filename_ptrs.o
 	$(AR) $(ARFLAGS) libboltzmann.a read_params.o
+	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_init_core.o
+	$(AR) $(ARFLAGS) libboltzmann.a io_size_init.o
+	$(AR) $(ARFLAGS) libboltzmann.a create_output_filenames.o
 	$(AR) $(ARFLAGS) libboltzmann.a open_output_files.o
-	$(AR) $(ARFLAGS) libboltzmann.a vgrng_init.o
-	$(AR) $(ARFLAGS) libboltzmann.a vgrng.o
-	$(AR) $(ARFLAGS) libboltzmann.a echo_params.o
-	$(AR) $(ARFLAGS) libboltzmann.a size_rxns_list.o
 	$(AR) $(ARFLAGS) libboltzmann.a size_rxns_file.o
 	$(AR) $(ARFLAGS) libboltzmann.a init_rxn_file_keywords.o
 	$(AR) $(ARFLAGS) libboltzmann.a parse_rxn_file_keyword.o
 	$(AR) $(ARFLAGS) libboltzmann.a count_molecules.o
 	$(AR) $(ARFLAGS) libboltzmann.a count_ws.o
 	$(AR) $(ARFLAGS) libboltzmann.a count_nws.o
-	$(AR) $(ARFLAGS) libboltzmann.a count_ntb.o
-	$(AR) $(ARFLAGS) libboltzmann.a count_nor.o
-	$(AR) $(ARFLAGS) libboltzmann.a check_for_ws.o
 	$(AR) $(ARFLAGS) libboltzmann.a is_a_coef.o
 	$(AR) $(ARFLAGS) libboltzmann.a alloc2.o
+	$(AR) $(ARFLAGS) libboltzmann.a rxns_init.o
 	$(AR) $(ARFLAGS) libboltzmann.a parse_reactions_file.o
 	$(AR) $(ARFLAGS) libboltzmann.a parse_side_line.o
 	$(AR) $(ARFLAGS) libboltzmann.a upcase.o
 	$(AR) $(ARFLAGS) libboltzmann.a find_colon.o
-	$(AR) $(ARFLAGS) libboltzmann.a echo_reactions_file.o
-	$(AR) $(ARFLAGS) libboltzmann.a sort_molecules.o
-	$(AR) $(ARFLAGS) libboltzmann.a merge_molecules.o
-	$(AR) $(ARFLAGS) libboltzmann.a unique_molecules.o
-	$(AR) $(ARFLAGS) libboltzmann.a unique_molecules_core.o
 	$(AR) $(ARFLAGS) libboltzmann.a sort_compartments.o
 	$(AR) $(ARFLAGS) libboltzmann.a merge_compartments.o
 	$(AR) $(ARFLAGS) libboltzmann.a unique_compartments.o
 	$(AR) $(ARFLAGS) libboltzmann.a unique_compartments_core.o
 	$(AR) $(ARFLAGS) libboltzmann.a translate_compartments.o
-	$(AR) $(ARFLAGS) libboltzmann.a print_molecules_dictionary.o
+	$(AR) $(ARFLAGS) libboltzmann.a sort_molecules.o
+	$(AR) $(ARFLAGS) libboltzmann.a merge_molecules.o
+	$(AR) $(ARFLAGS) libboltzmann.a unique_molecules.o
+	$(AR) $(ARFLAGS) libboltzmann.a unique_molecules_core.o
 	$(AR) $(ARFLAGS) libboltzmann.a alloc3.o
+	$(AR) $(ARFLAGS) libboltzmann.a species_init.o
 	$(AR) $(ARFLAGS) libboltzmann.a set_compartment_ptrs.o
-	$(AR) $(ARFLAGS) libboltzmann.a read_initial_concentrations.o
-	$(AR) $(ARFLAGS) libboltzmann.a read_compartment_sizes.o
-	$(AR) $(ARFLAGS) libboltzmann.a compartment_lookup.o
+	$(AR) $(ARFLAGS) libboltzmann.a translate_regulation_metabolites.o
 	$(AR) $(ARFLAGS) libboltzmann.a molecules_lookup.o
+	$(AR) $(ARFLAGS) libboltzmann.a read_compartment_sizes.o
+	$(AR) $(ARFLAGS) libboltzmann.a read_initial_concentrations.o
+	$(AR) $(ARFLAGS) libboltzmann.a compartment_lookup.o
+	$(AR) $(ARFLAGS) libboltzmann.a check_initial_concentrations.o
+	$(AR) $(ARFLAGS) libboltzmann.a energy_init.o
 	$(AR) $(ARFLAGS) libboltzmann.a compute_standard_energies.o
 	$(AR) $(ARFLAGS) libboltzmann.a size_pseudoisomer_file.o
 	$(AR) $(ARFLAGS) libboltzmann.a alloc5.o
@@ -123,18 +145,23 @@ libboltzmann.a: $(SERIAL_OBJS1) $(SERIAL_OBJS1_5) $(SERIAL_OBJS2) $(SERIAL_OBJS3
 	$(AR) $(ARFLAGS) libboltzmann.a compute_reaction_dg0.o
 	$(AR) $(ARFLAGS) libboltzmann.a unalloc6.o
 	$(AR) $(ARFLAGS) libboltzmann.a compute_ke.o
-	$(AR) $(ARFLAGS) libboltzmann.a compute_kss.o
-	$(AR) $(ARFLAGS) libboltzmann.a print_dg0_ke.o
 	$(AR) $(ARFLAGS) libboltzmann.a zero_solvent_coefficients.o
+	$(AR) $(ARFLAGS) libboltzmann.a compute_kss.o
+	$(AR) $(ARFLAGS) libboltzmann.a echo_inputs.o
+	$(AR) $(ARFLAGS) libboltzmann.a echo_params.o
+	$(AR) $(ARFLAGS) libboltzmann.a echo_reactions_file.o
+	$(AR) $(ARFLAGS) libboltzmann.a print_molecules_dictionary.o
+	$(AR) $(ARFLAGS) libboltzmann.a print_dg0_ke.o
+	$(AR) $(ARFLAGS) libboltzmann.a print_reactions_matrix.o
 	$(AR) $(ARFLAGS) libboltzmann.a recover_solvent_coefficients.o
+	$(AR) $(ARFLAGS) libboltzmann.a run_init.o
+	$(AR) $(ARFLAGS) libboltzmann.a vgrng_init.o
+	$(AR) $(ARFLAGS) libboltzmann.a vgrng.o
 	$(AR) $(ARFLAGS) libboltzmann.a print_rxn_likelihoods_header.o
 	$(AR) $(ARFLAGS) libboltzmann.a print_free_energy_header.o
-	$(AR) $(ARFLAGS) libboltzmann.a check_initial_concentrations.o
 	$(AR) $(ARFLAGS) libboltzmann.a flatten_state.o
-	$(AR) $(ARFLAGS) libboltzmann.a free_boot_state.o
 	$(AR) $(ARFLAGS) libboltzmann.a free_boot_state2.o
-	$(AR) $(ARFLAGS) libboltzmann.a sort_global_compartments.o
-	$(AR) $(ARFLAGS) libboltzmann.a sort_global_molecules.o
+	$(AR) $(ARFLAGS) libboltzmann.a free_boot_state.o
 	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_run.o
 	$(AR) $(ARFLAGS) libboltzmann.a update_rxn_log_likelihoods.o
 	$(AR) $(ARFLAGS) libboltzmann.a choose_rxn.o
@@ -146,6 +173,8 @@ libboltzmann.a: $(SERIAL_OBJS1) $(SERIAL_OBJS1_5) $(SERIAL_OBJS2) $(SERIAL_OBJS3
 	$(AR) $(ARFLAGS) libboltzmann.a rxn_log_likelihoods.o
 	$(AR) $(ARFLAGS) libboltzmann.a rxn_likelihoods.o
 	$(AR) $(ARFLAGS) libboltzmann.a binary_search_l_u_b.o
+	$(AR) $(ARFLAGS) libboltzmann.a update_regulations.o
+	$(AR) $(ARFLAGS) libboltzmann.a update_regulation.o
 	$(AR) $(ARFLAGS) libboltzmann.a rxn_count_update.o
 	$(AR) $(ARFLAGS) libboltzmann.a compute_delta_g_forward_entropy_free_energy.o
 	$(AR) $(ARFLAGS) libboltzmann.a print_counts.o
@@ -156,7 +185,6 @@ libboltzmann.a: $(SERIAL_OBJS1) $(SERIAL_OBJS1_5) $(SERIAL_OBJS2) $(SERIAL_OBJS3
 	$(AR) $(ARFLAGS) libboltzmann.a print_boundary_flux.o
 	$(AR) $(ARFLAGS) libboltzmann.a print_restart_file.o
 	$(AR) $(ARFLAGS) libboltzmann.a print_reactions_view.o
-	$(AR) $(ARFLAGS) libboltzmann.a print_reactions_matrix.o
 	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_global_to_local_counts.o
 	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_global_to_local_fluxes.o
 	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_local_to_global_counts.o
@@ -202,14 +230,19 @@ libboltzmann.a: $(SERIAL_OBJS1) $(SERIAL_OBJS1_5) $(SERIAL_OBJS2) $(SERIAL_OBJS3
 	$(AR) $(ARFLAGS) libboltzmann.a sbml_find_string.o
 	$(AR) $(ARFLAGS) libboltzmann.a sbml_sort_species_trans.o
 	$(AR) $(ARFLAGS) libboltzmann.a sbml_merge_species_trans.o
-	$(AR) $(ARFLAGS) libboltzmann.a sbml_process_list_of_reactions.o 
-	$(AR) $(ARFLAGS) libboltzmann.a sbml_look_for_in_reaction_tag.o 
-	$(AR) $(ARFLAGS) libboltzmann.a sbml_process_reaction_tag.o 
-	$(AR) $(ARFLAGS) libboltzmann.a sbml_lookup_reaction_attribute.o 
+	$(AR) $(ARFLAGS) libboltzmann.a sbml_process_list_of_reactions.o
+	$(AR) $(ARFLAGS) libboltzmann.a sbml_look_for_in_reaction_tag.o
+	$(AR) $(ARFLAGS) libboltzmann.a sbml_process_reaction_tag.o
+	$(AR) $(ARFLAGS) libboltzmann.a sbml_lookup_reaction_attribute.o
 	$(AR) $(ARFLAGS) libboltzmann.a sbml_process_list_of_reactants_tag.o
 	$(AR) $(ARFLAGS) libboltzmann.a sbml_process_list_of_products_tag.o
 	$(AR) $(ARFLAGS) libboltzmann.a sbml_process_species_reference_tag.o
-	$(AR) $(ARFLAGS) libboltzmann.a sbml_lookup_speciesref_attribute.o 
+	$(AR) $(ARFLAGS) libboltzmann.a sbml_lookup_speciesref_attribute.o
+	$(AR) $(ARFLAGS) libboltzmann.a count_ntb.o
+	$(AR) $(ARFLAGS) libboltzmann.a count_nlb.o
+	$(AR) $(ARFLAGS) libboltzmann.a count_nor.o
+	$(AR) $(ARFLAGS) libboltzmann.a check_for_ws.o
+
 
 boltzmann_boot_test: boltzmann_boot_test.o libboltzmann.a
 	$(CLINKER) $(LFLAGS) -o boltzmann_boot_test boltzmann_boot_test.o $(TIMING_LIB) $(LIBS)
@@ -217,43 +250,87 @@ boltzmann_boot_test: boltzmann_boot_test.o libboltzmann.a
 boltzmann_boot_test.o: boltzmann_boot_test.c boltzmann_boot.h boltzmann_boot_check.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_boot_test.c
 
-boltzmann_boot.o: boltzmann_boot.c boltzmann_boot.h alloc0.h read_params.h open_output_files.h vgrng_init.h echo_params.h size_rxns_list.h size_rxns_file.h alloc2.h parse_reactions_file.h echo_reactions_file.h sort_compartments.h unique_compartments.h unique_compartments_core.h translate_compartments.h sort_molecules.h unique_molecules.h unique_molecules_core.h print_dg0_ke.h zero_solvent_coefficients.h print_molecules_dictionary.h alloc3.h set_compartment_ptrs.h read_initial_concentrations.h read_compartment_sizes.h check_initial_concentrations.h compute_ke.h compute_kss.h print_rxn_likelihoods_header.h print_free_energy_header.h flatten_state.h free_boot_state2.h sort_global_compartments.h sort_global_molecules.h count_ws.h count_nws.h boltzmann_mmap_superstate.h flatten_super_state.h $(SERIAL_INCS)
+
+
+boltzmann_boot.o: $(SERIAL_INCS) boltzmann_boot.c boltzmann_boot.h alloc0.h read_params.h boot_init.h parse_rxn_list_line.h save_and_count_local_state.h boot_alloc3.h catenate_compartments_and_molecules.h global_merge_and_map_compartments.h global_merge_molecules.h boot_alloc4.h condense_strings.h fill_meta_data.h write_super_state.h boltzmann_mmap_superstate.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_boot.c
 
+boot_init.o: $(SERIAL_INCS) boot_init.c boot_init.h boot_alloc0.h boot_alloc1.h boot_io_init.h size_rxns_list.h boot_alloc2.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c boot_init.c
+
+boot_alloc0.o: $(SERIAL_INCS) boot_alloc0.c boot_alloc0.h 
+	$(CC) $(DCFLAGS) $(TFLAGS) -c boot_alloc0.c
+
+boot_alloc1.o: $(SERIAL_INCS) boot_alloc1.c boot_alloc1.h 
+	$(CC) $(DCFLAGS) $(TFLAGS) -c boot_alloc1.c
+
+boot_io_init.o: $(SERIAL_INCS) boot_io_init.c boot_io_init.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c boot_io_init.c
+
+size_rxns_list.o: $(SERIAL_INCS) size_rxns_list.c size_rxns_list.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c size_rxns_list.c
+
+boot_alloc2.o: $(SERIAL_INCS) boot_alloc2.c boot_alloc2.h 
+	$(CC) $(DCFLAGS) $(TFLAGS) -c boot_alloc2.c
+
+parse_rxn_list_line.o: $(SERIAL_INCS) parse_rxn_list_line.c parse_rxn_list_line.h count_ws.h count_nws.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c parse_rxn_list_line.c
+
+save_and_count_local_state.o: $(SERIAL_INCS) save_and_count_local_state.c save_and_count_local_state.h 
+	$(CC) $(DCFLAGS) $(TFLAGS) -c save_and_count_local_state.c
+
+boot_alloc3.o: $(SERIAL_INCS) boot_alloc3.c boot_alloc3.h 
+	$(CC) $(DCFLAGS) $(TFLAGS) -c boot_alloc3.c
+
+catenate_compartments_and_molecules.o: $(SERIAL_INCS) catenate_compartments_and_molecules.c catenate_compartments_and_molecules.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c catenate_compartments_and_molecules.c
+
+global_merge_and_map_compartments.o: $(SERIAL_INCS) global_merge_and_map_compartments.c global_merge_and_map_compartments.h sort_global_compartments.h unique_compartments_core.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c global_merge_and_map_compartments.c
+
+sort_global_compartments.o: $(SERIAL_INCS) sort_global_compartments.c sort_global_compartments.h merge_compartments.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c sort_global_compartments.c
+
+global_merge_molecules.o: $(SERIAL_INCS) global_merge_molecules.c global_merge_molecules.h sort_global_molecules.h unique_molecules_core.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c global_merge_molecules.c
+
+sort_global_molecules.o: $(SERIAL_INCS) sort_global_molecules.c sort_global_molecules.h merge_molecules.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c sort_global_molecules.c
+
+boot_alloc4.o: $(SERIAL_INCS) boot_alloc4.c boot_alloc4.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c boot_alloc4.c
+
+condense_strings.o: $(SERIAL_INCS) condense_strings.c condense_strings.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c condense_strings.c
+
+fill_meta_data.o: $(SERIAL_INCS) fill_meta_data.c fill_meta_data.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c fill_meta_data.c
+
+write_super_state.o: $(SERIAL_INCS) write_super_state.c write_super_state.h copy_local_states.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c write_super_state.c
+
+copy_local_states.o: $(SERIAL_INCS) copy_local_states.c copy_local_states.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c copy_local_states.c
+		     
 boltzmann_mmap_superstate.o: boltzmann_mmap_superstate.c boltzmann_mmap_superstate.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_mmap_superstate.c
 
 boltzmann_boot_check.o: boltzmann_boot_check.c boltzmann_boot_check.h flatten_super_state.h boltzmann_rep_state_i.h echo_reactions_file.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_boot_check.c
 
+flatten_super_state.o: $(SERIAL_INCS) flatten_super_state.c flatten_super_state.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c flatten_super_state.c
+
 boltzmann_rep_state_i.o: boltzmann_rep_state_i.c boltzmann_rep_state_i.h flatten_state.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_rep_state_i.c
 
-rxn_map: $(MMAP_OBJS) $(TIMING_LIB) rxn_map.o libboltzmann.a
-	$(CLINKER) $(LFLAGS) -o rxn_map rxn_map.o $(SERIAL_OBJS1) $(SERIAL_OBJS1_5) $(SERIAL_OBJS3) $(MMAP_OBJS) $(TIMING_LIB) $(LIBS)
-
-rxn_map.o: rxn_map.c rxn_map_init.h rxn_map_parse_start_stop_line.h rxn_map_run.h $(SERIAL_INCS)
-	$(CC) $(DCFLAGS) $(TFLAGS) -c rxn_map.c
-
-rxn_map_init.o: rxn_map_init.c rxn_map_init.h $(SERIAL_INCS) alloc0.h read_params.h echo_params.h size_rxns_file.h alloc2.h parse_reactions_file.h echo_reactions_file.h sort_compartments.h unique_compartments.h translate_compartments.h sort_molecules.h unique_molecules.h print_molecules_dictionary.h alloc3.h set_compartment_ptrs.h read_initial_concentrations.h read_compartment_sizes.h check_initial_concentrations.h vgrng_init.h vgrng.h print_rxn_likelihoods_header.h print_free_energy_header.h alloc4.h form_molecules_matrix.h
-	$(CC) $(DCFLAGS) $(TFLAGS) -c rxn_map_init.c
-
-rxn_map_parse_start_stop_line.o: rxn_map_parse_start_stop_line.c rxn_map_parse_start_stop_line.h count_ws.h count_nws.h find_colon.h compartment_lookup.h molecules_lookup.h $(SERIAL_INCS)
-	$(CC) $(DCFLAGS) $(TFLAGS) -c rxn_map_parse_start_stop_line.c
-	
-rxn_map_run.o: rxn_map_run.c rxn_map_run.h $(SERIAL_INCS)
-	$(CC) $(DCFLAGS) $(TFLAGS) -c rxn_map_run.c
-	
-alloc4.o: alloc4.c alloc4.h $(SERIAL_INCS)
-	$(CC) $(DCFLAGS) $(TFLAGS) -c alloc4.c
-
 boltzmann: $(MMAP_OBJS) $(TIMING_LIB) boltzmann.o libboltzmann.a
-	$(CLINKER) $(LFLAGS) -o boltzmann boltzmann.o $(SERIAL_OBJS1) $(SERIAL_OBJS1_5) $(SERIAL_OBJS2) $(MMAP_OBJS) $(TIMING_LIB) $(LIBS)
+	$(CLINKER) $(LFLAGS) -o boltzmann boltzmann.o $(SERIAL_OBJS1) $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(MMAP_OBJS) $(TIMING_LIB) $(LIBS)
 
 boltzmann.o: $(SERIAL_INCS) boltzmann.c boltzmann_init.h boltzmann_run.h 
 	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann.c
 
-boltzmann_init.o: $(SERIAL_INCS) boltzmann_init.c boltzmann_init.h alloc0.h read_params.h open_output_files.h vgrng_init.h vgrng.h echo_params.h size_rxns_file.h alloc2.h parse_reactions_file.h echo_reactions_file.h sort_compartments.h unique_compartments.h translate_compartments.h sort_molecules.h unique_molecules.h print_molecules_dictionary.h alloc3.h set_compartment_ptrs.h read_initial_concentrations.h read_compartment_sizes.h check_initial_concentrations.h vgrng_init.h vgrng.h compute_standard_energies.h compute_ke.h compute_kss.h print_rxn_likelihoods_header.h print_free_energy_header.h flatten_state.h free_boot_state.h print_reactions_matrix.h
+boltzmann_init.o: $(SERIAL_INCS) boltzmann_init.c boltzmann_init.h alloc0.h read_params.h boltzmann_init_core.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_init.c
 
 alloc0.o: $(SERIAL_INCS) alloc0.c alloc0.h boltzmann_set_filename_ptrs.h
@@ -265,22 +342,19 @@ boltzmann_set_filename_ptrs.o: $(SERIAL_INCS) boltzmann_set_filename_ptrs.c bolt
 read_params.o: $(SERIAL_INCS) read_params.c read_params.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c read_params.c
 
+boltzmann_init_core.o: $(SERIAL_INCS) boltzmann_init_core.c boltzmann_init_core.h io_size_init.h alloc2.h rxns_init.h alloc3.h species_init.h energy_init.h echo_inputs.h run_init.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_init_core.c
+
+io_size_init.o: $(SERIAL_INCS) io_size_init.c io_size_init.h create_output_filenames.h open_output_files.h sbml_to_boltzmann.h size_rxns_file.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c io_size_init.c
+
+create_output_filenames.o: $(SERIAL_INCS) create_output_filenames.c create_output_filenames.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c create_output_filenames.c
+
 open_output_files.o: $(SERIAL_INCS) open_output_files.c open_output_files.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c open_output_files.c
 
-vgrng_init.o: $(SERIAL_INCS) vgrng_init.c vgrng_init.h vgrng.h
-	$(CC) $(DCFLAGS) $(TFLAGS) -c vgrng_init.c
-	
-vgrng.o: $(SERIAL_INCS) vgrng.c vgrng.h
-	$(CC) $(DCFLAGS) $(TFLAGS) -c vgrng.c
-
-echo_params.o: $(SERIAL_INCS) echo_params.c echo_params.h
-	$(CC) $(DCFLAGS) $(TFLAGS) -c echo_params.c
-	
-size_rxns_list.o: $(SERIAL_INCS) size_rxns_list.c size_rxns_list.h
-	$(CC) $(DCFLAGS) $(TFLAGS) -c size_rxns_list.c
-	
-size_rxns_file.o: $(SERIAL_INCS) size_rxns_file.c size_rxns_file.h init_rxn_file_keywords.h parse_rxn_file_keyword.h count_molecules.h count_ws.h
+size_rxns_file.o: $(SERIAL_INCS) size_rxns_file.c size_rxns_file.h init_rxn_file_keywords.h parse_rxn_file_keyword.h count_molecules.h count_ws.h count_nws.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c size_rxns_file.c
 	
 init_rxn_file_keywords.o: $(SERIAL_INCS) init_rxn_file_keywords.c init_rxn_file_keywords.h
@@ -298,13 +372,19 @@ count_ws.o: $(SERIAL_INCS) count_ws.c count_ws.h
 count_nws.o: $(SERIAL_INCS) count_nws.c count_nws.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c count_nws.c
 
+is_a_coef.o: $(SERIAL_INCS) is_a_coef.c is_a_coef.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c is_a_coef.c
+
 alloc2.o: $(SERIAL_INCS) alloc2.c alloc2.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c alloc2.c
+
+rxns_init.o: $(SERIAL_INCS) rxns_init.c rxns_init.h parse_reactions_file.h sort_compartments.h unique_compartments.h translate_compartments.h sort_molecules.h unique_molecules.h 
+	$(CC) $(DCFLAGS) $(TFLAGS) -c rxns_init.c
 
 parse_reactions_file.o: $(SERIAL_INCS) parse_reactions_file.h parse_reactions_file.c parse_rxn_file_keyword.h count_ws.h count_nws.h upcase.h is_a_coef.h parse_side_line.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c parse_reactions_file.c
 
-parse_side_line.o: $(SERIAL_INCS) parse_side_line.h parse_side_line.c count_ws.h count_nws.h upcase.h is_a_coef.h
+parse_side_line.o: $(SERIAL_INCS) parse_side_line.h parse_side_line.c count_ws.h count_nws.h upcase.h is_a_coef.h find_colon.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c parse_side_line.c
 
 upcase.o: upcase.c upcase.h
@@ -313,38 +393,8 @@ upcase.o: upcase.c upcase.h
 find_colon.o: find_colon.c find_colon.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c find_colon.c
 
-echo_reactions_file.o: $(SERIAL_INCS) echo_reactions_file.h echo_reactions_file.c
-	$(CC) $(DCFLAGS) $(TFLAGS) -c echo_reactions_file.c
-
-sort_molecules.o: $(SERIAL_INCS) sort_molecules.c sort_molecules.h merge_molecules.h
-	$(CC) $(DCFLAGS) $(TFLAGS) -c sort_molecules.c
-
-sort_global_molecules.o: $(SERIAL_INCS) sort_global_molecules.c sort_global_molecules.h merge_molecules.h
-	$(CC) $(DCFLAGS) $(TFLAGS) -c sort_global_molecules.c
-
-merge_molecules.o: $(SERIAL_INCS) merge_molecules.c merge_molecules.h
-	$(CC) $(DCFLAGS) $(TFLAGS) -c merge_molecules.c
-
-unique_molecules.o: $(SERIAL_INCS) unique_molecules.c unique_molecules.h unique_molecules_core.h
-	$(CC) $(DCFLAGS) $(TFLAGS) -c unique_molecules.c
-
-unique_molecules_core.o: $(SERIAL_INCS) unique_molecules_core.c unique_molecules_core.h
-	$(CC) $(DCFLAGS) $(TFLAGS) -c unique_molecules_core.c
-
-print_dg0_ke.o: $(SERIAL_INCS) print_dg0_ke.c print_dg0_ke.h
-	$(CC) $(DCFLAGS) $(TFLAGS) -c print_dg0_ke.c
-
-zero_solvent_coefficients.o: $(SERIAL_INCS) zero_solvent_coefficients.c zero_solvent_coefficients.h
-	$(CC) $(DCFLAGS) $(TFLAGS) -c zero_solvent_coefficients.c
-
-recover_solvent_coefficients.o: $(SERIAL_INCS) recover_solvent_coefficients.c recover_solvent_coefficients.h
-	$(CC) $(DCFLAGS) $(TFLAGS) -c recover_solvent_coefficients.c
-
 sort_compartments.o: $(SERIAL_INCS) sort_compartments.c sort_compartments.h merge_compartments.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c sort_compartments.c
-
-sort_global_compartments.o: $(SERIAL_INCS) sort_global_compartments.c sort_global_compartments.h merge_compartments.h
-	$(CC) $(DCFLAGS) $(TFLAGS) -c sort_global_compartments.c
 
 merge_compartments.o: $(SERIAL_INCS) merge_compartments.c merge_compartments.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c merge_compartments.c
@@ -358,32 +408,46 @@ unique_compartments_core.o: $(SERIAL_INCS) unique_compartments_core.c unique_com
 translate_compartments.o: $(SERIAL_INCS) translate_compartments.c translate_compartments.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c translate_compartments.c
 
-print_molecules_dictionary.o: $(SERIAL_INCS) print_molecules_dictionary.c print_molecules_dictionary.h
-	$(CC) $(DCFLAGS) $(TFLAGS) -c print_molecules_dictionary.c
+sort_molecules.o: $(SERIAL_INCS) sort_molecules.c sort_molecules.h merge_molecules.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c sort_molecules.c
+
+merge_molecules.o: $(SERIAL_INCS) merge_molecules.c merge_molecules.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c merge_molecules.c
+
+unique_molecules.o: $(SERIAL_INCS) unique_molecules.c unique_molecules.h unique_molecules_core.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c unique_molecules.c
+
+unique_molecules_core.o: $(SERIAL_INCS) unique_molecules_core.c unique_molecules_core.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c unique_molecules_core.c
 
 alloc3.o: $(SERIAL_INCS) alloc3.c alloc3.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c alloc3.c
 
+species_init.o: $(SERIAL_INCS) species_init.c species_init.h set_compartment_ptrs.h translate_regulation_metabolites.h read_compartment_sizes.h read_initial_concentrations.h check_initial_concentrations.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c species_init.c
+
 set_compartment_ptrs.o: $(SERIAL_INCS) set_compartment_ptrs.c set_compartment_ptrs.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c set_compartment_ptrs.c
 
-read_initial_concentrations.o: $(SERIAL_INCS) read_initial_concentrations.c read_initial_concentrations.h compartment_lookup.h molecules_lookup.h
-	$(CC) $(DCFLAGS) $(TFLAGS) -c read_initial_concentrations.c
-
-read_compartment_sizes.o: $(SERIAL_INCS) read_compartment_sizes.c read_compartment_sizes.h compartment_lookup.h molecules_lookup.h
-	$(CC) $(DCFLAGS) $(TFLAGS) -c read_compartment_sizes.c
-
-check_initial_concentrations.o: $(SERIAL_INCS) check_initial_concentrations.c check_initial_concentrations.h 
-	$(CC) $(DCFLAGS) $(TFLAGS) -c check_initial_concentrations.c
+translate_regulation_metabolites.o: $(SERIAL_INCS) translate_regulation_metabolites.c translate_regulation_metabolites.h molecules_lookup.h
 
 molecules_lookup.o: $(SERIAL_INCS) molecules_lookup.c molecules_lookup.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c molecules_lookup.c
 
+read_compartment_sizes.o: $(SERIAL_INCS) read_compartment_sizes.c read_compartment_sizes.h compartment_lookup.h molecules_lookup.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c read_compartment_sizes.c
+
+read_initial_concentrations.o: $(SERIAL_INCS) read_initial_concentrations.c read_initial_concentrations.h compartment_lookup.h molecules_lookup.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c read_initial_concentrations.c
+
 compartment_lookup.o: $(SERIAL_INCS) compartment_lookup.c compartment_lookup.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c compartment_lookup.c
 
-form_molecules_matrix.o: $(SERIAL_INCS) form_molecules_matrix.c form_molecules_matrix.h
-	$(CC) $(DCFLAGS) $(TFLAGS) -c form_molecules_matrix.c
+check_initial_concentrations.o: $(SERIAL_INCS) check_initial_concentrations.c check_initial_concentrations.h 
+	$(CC) $(DCFLAGS) $(TFLAGS) -c check_initial_concentrations.c
+
+energy_init.o: $(SERIAL_INCS) energy_init.c energy_init.h compute_standard_energies.h compute_ke.h zero_solvent_coefficients.h compute_kss.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c energy_init.c
 
 compute_standard_energies.o: $(SERIAL_INCS) compute_standard_energies.c compute_standard_energies.h size_pseudoisomer_file.h alloc5.h parse_pseudoisomer_dg0f_file.h alloc6.h compute_molecule_dg0tfs.h compute_molecular_partition_probability.h compute_chemical_potential.h compute_reaction_dg0.h unalloc6.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c compute_standard_energies.c
@@ -430,8 +494,41 @@ unalloc6.o: $(SERIAL_INCS) unalloc6.c unalloc6.h
 compute_ke.o: $(SERIAL_INCS) compute_ke.c compute_ke.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c compute_ke.c
 
+zero_solvent_coefficients.o: $(SERIAL_INCS) zero_solvent_coefficients.c zero_solvent_coefficients.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c zero_solvent_coefficients.c
+
 compute_kss.o: $(SERIAL_INCS) compute_kss.c compute_kss.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c compute_kss.c
+
+echo_inputs.o: $(SERIAL_INCS) echo_inputs.c echo_inputs.h echo_params.h echo_reactions_file.h print_molecules_dictionary.h print_dg0_ke.h print_reactions_matrix.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c echo_inputs.c
+
+echo_params.o: $(SERIAL_INCS) echo_params.c echo_params.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c echo_params.c
+
+echo_reactions_file.o: $(SERIAL_INCS) echo_reactions_file.h echo_reactions_file.c
+	$(CC) $(DCFLAGS) $(TFLAGS) -c echo_reactions_file.c
+
+print_molecules_dictionary.o: $(SERIAL_INCS) print_molecules_dictionary.c print_molecules_dictionary.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c print_molecules_dictionary.c
+
+print_dg0_ke.o: $(SERIAL_INCS) print_dg0_ke.c print_dg0_ke.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c print_dg0_ke.c
+
+print_reactions_matrix.o: $(SERIAL_INCS) print_reactions_matrix.c print_reactions_matrix.h zero_solvent_coefficients.h recover_solvent_coefficients.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c print_reactions_matrix.c
+
+recover_solvent_coefficients.o: $(SERIAL_INCS) recover_solvent_coefficients.c recover_solvent_coefficients.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c recover_solvent_coefficients.c
+
+run_init.o: $(SERIAL_INCS) run_init.c run_init.h vgrng_init.h print_rxn_likelihoods_header.h print_free_energy_header.h flatten_state.h 
+	$(CC) $(DCFLAGS) $(TFLAGS) -c run_init.c
+
+vgrng_init.o: $(SERIAL_INCS) vgrng_init.c vgrng_init.h vgrng.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c vgrng_init.c
+	
+vgrng.o: $(SERIAL_INCS) vgrng.c vgrng.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c vgrng.c
 
 print_rxn_likelihoods_header.o: $(SERIAL_INCS) print_rxn_likelihoods_header.c print_rxn_likelihoods_header.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c print_rxn_likelihoods_header.c
@@ -442,18 +539,11 @@ print_free_energy_header.o: $(SERIAL_INCS) print_free_energy_header.c print_free
 flatten_state.o: $(SERIAL_INCS) flatten_state.c flatten_state.h boltzmann_set_filename_ptrs.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c flatten_state.c
 
-print_reactions_matrix.o: $(SERIAL_INCS) print_reactions_matrix.c print_reactions_matrix.h zero_solvent_coefficients.h recover_solvent_coefficients.h
-	$(CC) $(DCFLAGS) $(TFLAGS) -c print_reactions_matrix.c
-
-
-flatten_super_state.o: $(SERIAL_INCS) flatten_super_state.c flatten_super_state.h
-	$(CC) $(DCFLAGS) $(TFLAGS) -c flatten_super_state.c
-
-free_boot_state.o: $(SERIAL_INCS) free_boot_state.c free_boot_state.h
-	$(CC) $(DCFLAGS) $(TFLAGS) -c free_boot_state.c
-	
 free_boot_state2.o: $(SERIAL_INCS) free_boot_state2.c free_boot_state2.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c free_boot_state2.c
+	
+free_boot_state.o: $(SERIAL_INCS) free_boot_state.c free_boot_state.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c free_boot_state.c
 	
 boltzmann_run.o: $(SERIAL_INCS) boltzmann_run.c boltzmann_run.h update_rxn_log_likelihoods.h choose_rxn.h compute_delta_g_forward_entropy_free_energy.h print_counts.h print_likelihoods.h save_likelihoods.h print_free_energy.h print_boundary_flux.h print_restart_file.h print_reactions_view.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_run.c
@@ -461,13 +551,13 @@ boltzmann_run.o: $(SERIAL_INCS) boltzmann_run.c boltzmann_run.h update_rxn_log_l
 update_rxn_log_likelihoods.o: $(SERIAL_INCS) update_rxn_log_likelihoods.c update_rxn_log_likelihoods.h rxn_log_likelihoods.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c update_rxn_log_likelihoods.c
 
-choose_rxn.o: ${SERIAL_INCS} choose_rxn.c choose_rxn.h candidate_rxn.h metropolis.h bndry_flux_update.h
+choose_rxn.o: $(SERIAL_INCS) choose_rxn.c choose_rxn.h candidate_rxn.h metropolis.h bndry_flux_update.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c choose_rxn.c
 
-candidate_rxn.o: $(SERIAL_INCS) candidate_rxn.c candidate_rxn.h vgrng.h binary_search_l_u_b.h rxn_count_update.h rxn_count_update.h
+candidate_rxn.o: $(SERIAL_INCS) candidate_rxn.c candidate_rxn.h vgrng.h binary_search_l_u_b.h update_regulations.h rxn_count_update.h rxn_count_update.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c candidate_rxn.c
 
-metropolis.o: ${SERIAL_INCS} metropolis.c metropolis.h rxn_likelihood_postselection.h bndry_flux_update.h vgrng.h
+metropolis.o: $(SERIAL_INCS) metropolis.c metropolis.h rxn_likelihood_postselection.h bndry_flux_update.h vgrng.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c metropolis.c
 
 rxn_likelihood.o: $(SERIAL_INCS) rxn_likelihood.c rxn_likelihood.h
@@ -485,13 +575,19 @@ rxn_likelihood_postselection.o: $(SERIAL_INCS) rxn_likelihood_postselection.c rx
 binary_search_l_u_b.o: $(SERIAL_INCS) binary_search_l_u_b.c binary_search_l_u_b.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c binary_search_l_u_b.c
 
+update_regualtions.o: $(SERIAL_INCS) update_regualtions.c update_regualtions.h update_regulation.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c update_regulations.c
+		      
+update_regualtion.o: $(SERIAL_INCS) update_regualtion.c update_regualtion.h 
+	$(CC) $(DCFLAGS) $(TFLAGS) -c update_regulations.c
+
 rxn_count_update.o: $(SERIAL_INCS) rxn_count_update.c rxn_count_update.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c rxn_count_update.c
 
 bndry_flux_update.o: $(SERIAL_INCS) bndry_flux_update.c bndry_flux_update.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c bndry_flux_update.c
 
-compute_delta_g_forward_entropy_free_energy.o: $(SERIAL_INCS) compute_delta_g_forward_entropy_free_energy.c compute_delta_g_forward_entropy_free_energy.h
+compute_delta_g_forward_entropy_free_energy.o: $(SERIAL_INCS) compute_delta_g_forward_entropy_free_energy.c compute_delta_g_forward_entropy_free_energy.h update_regulations.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c compute_delta_g_forward_entropy_free_energy.c
 
 print_counts.o: $(SERIAL_INCS) print_counts.c print_counts.h
@@ -514,6 +610,11 @@ print_restart_file.o: $(SERIAL_INCS) print_restart_file.c print_restart_file.h
 
 print_reactions_view.o: $(SERIAL_INCS) print_reactions_view.c print_reactions_view.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c print_reactions_view.c
+
+
+form_molecules_matrix.o: $(SERIAL_INCS) form_molecules_matrix.c form_molecules_matrix.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c form_molecules_matrix.c
+
 
 
 boltzmann_global_to_local_counts.o: boltzmann_global_to_local_counts.c boltzmann_global_to_local_counts.h flatten_super_state.h flatten_state.h $(SERIAL_INCS)
