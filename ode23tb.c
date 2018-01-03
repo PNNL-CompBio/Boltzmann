@@ -1,26 +1,35 @@
 #include "boltzmann_structs.h"
 
 #include "approximate_delta_concs.h"
-/*#include "ce_approximate_delta_concs.h" */
-/*#include "lr_approximate_delta_concs.h" */
 #include "ode_num_jac.h"
 #include "ode_it_solve.h"
 #include "ode_print_concs.h"
 #include "ode_print_dconcs.h"
-#include "ode_print_lklhds.h"
-/*#include "ode_print_bflux.h"*/
 #include "blas.h"
 #include "lapack.h"
+#include "ode23tb_normyp_o_wt.h"
+#include "ode23tb_limit_h.h"
+#include "ode23tb_init_wt.h"
+#include "ode23tb_update_wt.h"
+#include "vec_set_constant.h"
+#include "ode23tb_build_factor_miter.h"
+#include "ode23tb_max_abs_ratio.h"
+#include "ode23tb_nonneg_err.h"
+#include "ode23tb_enforce_nonneg.h"
+/*
+#include "ode_print_lklhds.h"
+#include "ode_print_bflux.h"
 #include "compute_net_likelihoods.h"
 #include "compute_net_lklhd_bndry_flux.h"
 #include "print_net_likelihood_header.h"
 #include "print_net_lklhd_bndry_flux_header.h"
 #include "print_net_likelihoods.h"
 #include "print_net_lklhd_bndry_flux.h"
-
+*/
 /*
 #define DBG 1
 */
+
 #ifdef DBG 
 #include "print_concs_dconcs.h"
 #endif
@@ -33,7 +42,7 @@ int ode23tb (struct state_struct *state, double *concs,
   /*
     NB. This is adapted from the ode23tb matlab code .
     Our mass matrix is the identity matrix.
-    species concentrations = y0, species concentration changes wrt time = f0,
+    species concentrations = y, species concentration changes wrt time = f0,
     species concentration = counts .* count_to_conc
     htry is first conc step size, set to zero to set via approximation.
     nonnegative should be set to 1 to specify that concs must be positive.
@@ -45,52 +54,45 @@ int ode23tb (struct state_struct *state, double *concs,
     Called by: ode_solver
     Calls:     approximate_delta_concs, ode_num_jac, ode_it_solve,
                print_concs_dconcs, ode_print_dconcs
-	       dnrm2_, dgemv_, dscal_, idamax_
+	       dcopy_, dnrm2_, dgemv_, dscal_, idamax_
 	       sizeof, calloc, sqrt, pow, fabs, dgetrf_, dgetrs_
 
   */
   double *dfdy; /* length nunique_molecules * nunique_molecules */
   double *miter; /* length nunique_molecules * nunique_molecules */
-  double *y0; /* length nunique_molecules */
   double *y;  /* length nunique_molecules */
-  double *y1; /* length nunique_molecules */
   double *y2; /* length nunique_molecules */
   double *ynew; /* length nunique_molecules */
   double *yp; /* length nunique_molecules */
-  double *absy; /* length nunique_molecules */
-  double *f; /* length nunique_molecules */
   double *f0; /* length nunique_molecules */
-  double *f1; /* length nunique_molecules */
+  /*double *f1;*/ /* length nunique_molecules */
   double *z;  /* length nunique_molecules */
   double *z2; /* length nunique_molecules */
-  double *z3; /* length nunique_molecules; */
   double *znew; /* length nunique_molecules; */
   double *it_solve_rhs; /* length nunique_molecules */
   double *it_solve_del; /* length nunique_molecules */
   double *it_solve_scr; /* length nunique_molecules */
-  double *est1; /* length nunique_molecules */
-  double *est2; /* length nunique_molecules */
+  double *est; /* length nunique_molecules */
   double *fac; /* length nunique_molecules */
   double *thresh; /* length nunique_molecules */
   double *delfdelt; /* length nunique_molecules */
-  double *wti; /* length nunique_molecules */
+  double *wt; /* length nunique_molecules */
   double *pivot; /* length nunique_molecules */
   double *net_lklhd_bndry_flux;    /* length unique_molecules.*/
   double *fdel; /* length unique_molecules */                
   double *fdiff; /* length unique_molecules */
   double *dfdy_tmp; /* length unique_molecules */
-  double *forward_rxn_likelihoods; /* length nrxns */
-  double *reverse_rxn_likelihoods; /* length nrxns */
-  double *net_likelihoods;          /* length nrxns */
+
+  /*double *forward_rxn_likelihoods;*/ /* length nrxns */
+  /*double *reverse_rxn_likelihoods;*/ /* length nrxns */
+  /*double *net_likelihoods;        */ /* length nrxns */
 
   double *count_to_conc; /* length unique_molecules */
   double *conc_to_count; /* length unique_molecules */
   double *dbl_ptr;
   double t0;
   double t;
-  double t1;
   double t2;
-  double tdel;
   double tnew;
   double htspan;
   double tfinal;
@@ -116,16 +118,16 @@ int ode23tb (struct state_struct *state, double *concs,
   double tdir;
   double rh;
   double recip_70p;
-  double flux_scaling;
-  double flux_scaling1;
+  /*
+  double t1;
+  double tdel;
   double abst;
   double abst_p_h;
   double upper_bound_step;
   double recip_tdel;
+  */
   double scalar;
   double recip_cube_root_rtol;
-  double wt;
-  double wt2;
   double normy;
   double normyp;
   double normy2;
@@ -137,19 +139,16 @@ int ode23tb (struct state_struct *state, double *concs,
   double abslasth;
   double h_ratio;
   double rate;
-  double errnn;
   double rtol;
   double norm_delfdelt;
-  double err1_est;
-  double err2_est;
+  double errnn_scale;
   double rtol_o_err;
   double min_conc;
-  double yp_o_wt;
-  double max_yp_o_wt;
   double norm_delfdelt_o_wt;
-  double norm_delfdelt_o_wti;
   double dzero;
-  double mdh;
+  double znew_coeff[4];
+  double ynew_coeff[5];
+  double est_coeff[4];
 
   int64_t ask_for;
   int64_t one_l;
@@ -169,6 +168,9 @@ int ode23tb (struct state_struct *state, double *concs,
 
   int *ipivot;                  /* overlaid on pivot space */
 
+  int    ifour;
+  int    ifive;
+
   int ny;
   int first_time;
 
@@ -176,7 +178,10 @@ int ode23tb (struct state_struct *state, double *concs,
   int not_done;
 
   int success;
+  int two_ny;  
+  /*
   int nl_success;
+  */
 
   int need_new_j;
   int need_new_m;
@@ -188,7 +193,7 @@ int ode23tb (struct state_struct *state, double *concs,
   int mcurrent;
 
 
-  int one;
+  int done;
   int nrhs;
 
   int nrxns;
@@ -203,23 +208,23 @@ int ode23tb (struct state_struct *state, double *concs,
   int iter_count;
   int nnrejectstep;
 
+#ifdef DBG
   int origin;
-  int done;
+  int padj;
+#endif
+
 
   int nysq;
   int info;
 
-  int ode_solver_choice;
   int delta_concs_choice;
-
   int nnreset_znew;
-  int padi;
 
   char  trans_chars[8];
   char  *trans;
 
   FILE *lfp;
-  FILE *efp;
+  FILE *ode_dconcs_fp;
   success = 1;
   t0      = 0.0;
   /*
@@ -237,19 +242,28 @@ int ode23tb (struct state_struct *state, double *concs,
   nsolves  = 0;
   rtol     = 0.001;
   dzero    = 0.0;
+  nnreset_znew  = 0;
   count_to_conc = state->count_to_conc;
   conc_to_count = state->conc_to_count;
   ny            = state->nunique_molecules;
+  two_ny        = ny + ny;
+  nysq          = ny * ny;
   delta_concs_choice = (int)state->delta_concs_choice;
   nrxns         = state->number_reactions;
+  /*
   min_conc      = state->min_conc;
+  */
+  min_conc      = 0.0;
   lfp           = state->lfp;
+  ode_dconcs_fp = state->ode_dconcs_fp;
   ode_rxn_view_freq = state->ode_rxn_view_freq;
-  nysq          = ny * ny;
   trans_chars[0] = 'N';
   trans_chars[1] = 'T';
   trans_chars[3] = 'C';
   trans = &trans_chars[0];
+  ifour         = 4;
+  ifive         = 5;
+  inc1          = 1;
   /*
     Allocate double space needed for scratch vectors and matrices.
     actually 31*ny but we'll throw in an extra 9 ny for future needs.
@@ -266,39 +280,36 @@ int ode23tb (struct state_struct *state, double *concs,
       }
     }
   }
+
   if (success) {
     miter     = &dfdy[nysq];
     y         = &miter[nysq];
-    y1        = &y[ny];
-    y2        = &y1[ny];
-    ynew      = &y2[ny];
+    z         = &y[ny];
+    y2        = &z[ny];
+    z2        = &y2[ny];
+    znew      = &z2[ny];
+    ynew      = &znew[ny];
     yp        = &ynew[ny];
-    absy      = &yp[ny];
-    f         = &absy[ny];
-    f0        = &f[ny];
-    f1        = &f0[ny];
-    z         = &f1[ny];
-    z2        = &z[ny];
-    z3        = &z2[ny];
-    znew      = &z3[ny];
-    it_solve_rhs = &znew[ny];
+    f0        = &yp[ny];
+    it_solve_rhs = &f0[ny];
     it_solve_del = &it_solve_rhs[ny];
     it_solve_scr = &it_solve_del[ny];
-    est1        = &it_solve_scr[ny];
-    est2        = &est1[ny];
-    fac         = &est2[ny];
+    est         = &it_solve_scr[ny];
+    fac         = &est[ny];
     thresh      = &fac[ny];
     delfdelt    = &thresh[ny];
-    wti         = &delfdelt[ny];
-    pivot       = &wti[ny];
+    wt          = &delfdelt[ny];
+    pivot       = &wt[ny];
     ipivot      = (int*)pivot;
     net_lklhd_bndry_flux = &pivot[ny];
     fdel                  = &net_lklhd_bndry_flux[ny];
     fdiff                 = &fdel[ny];
     dfdy_tmp              = &fdiff[ny];
+    /*
     net_likelihoods         = &dfdy_tmp[ny];
     forward_rxn_likelihoods = state->ode_forward_lklhds;
     reverse_rxn_likelihoods = state->ode_reverse_lklhds;
+    */
     /*
       We need to move from stochastic counts to contiuous counts
       so as not to have zero concentrations.
@@ -310,16 +321,14 @@ int ode23tb (struct state_struct *state, double *concs,
     threshold = 1.0e-3;
     njthreshold = 1.0e-6;
     
-    
-    for (i=0;i<ny;i++) {
-      y[i] = concs[i];
-      thresh[i] = njthreshold;
-    }
+    dcopy_(&ny,concs,&inc1,y,&inc1);
+    vec_set_constant(ny,thresh,njthreshold);
     t= t0;
     if (print_concs) {
       ode_print_concs(state,t,y);
     }
   }
+
   if (success) {
     approximate_delta_concs(state,y,f0,delta_concs_choice);
     if (ode_rxn_view_freq > 0) {
@@ -332,20 +341,12 @@ int ode23tb (struct state_struct *state, double *concs,
     t0 = 0;
     nf = 0;
     first_time = 1;
-    /*
-    ode_num_jac(state,dfdy,t0,y0,f0,fac,thresh,&nf,first_time);
-    ode_num_jac(state,first_time,
-		dfdy,t0,y,f0,fac,thresh,ode_num_jac_scratch, &nf);
-
-    */
     ode_num_jac(state,first_time,
 		dfdy,t0,y,f0,fac,thresh,
 		fdel,
 		fdiff,
 		dfdy_tmp,
 		&nf);
-
-
     first_time = 0;
     nfevals += nf;
     jcurrent = 1;
@@ -370,7 +371,20 @@ int ode23tb (struct state_struct *state, double *concs,
     p31       = 1.5 + root2;
     p32       = 2.5 + (root2 + root2);
     p33       = -(6.0 + (4.5*root2));
-    inc1      = 1;
+    znew_coeff[0] = -p33;
+    znew_coeff[1] =  p31;
+    znew_coeff[2] =  p33;
+    znew_coeff[3] =  p32;
+    ynew_coeff[0] =  1.0;
+    ynew_coeff[1] =  gg;
+    ynew_coeff[2] =  0.0;
+    ynew_coeff[3] =  gg;
+    ynew_coeff[4] =  d;
+    est_coeff[0] =  c1;
+    est_coeff[1] =  0.0;
+    est_coeff[2] =  c2;
+    est_coeff[3] =  c3;
+
     /*
     recip_70p = 1.0/0.7;
     to match matlab we use
@@ -381,11 +395,6 @@ int ode23tb (struct state_struct *state, double *concs,
     */
     recip_cube_root_rtol = 10.0; 
     dcopy_(&ny,f0,&inc1,yp,&inc1);
-    /*
-    for (i=0;i<ny;i++) {
-      yp[i] = f0[i];
-    }
-    */
     hmin      = 0;
     hmax      = 1;
     if (normcontrol) {
@@ -407,76 +416,44 @@ int ode23tb (struct state_struct *state, double *concs,
       /*
       wt = max(normy,threshold);
       */
-      if (normcontrol) {
-	wt2 = normy;
-	if (threshold > wt2) {
-	  wt2 = threshold;
-	}
-	for (i=0;i<ny;i++) {
-	  wti[i] = wt2;
-	}
-	rh = (recip_70p * (normyp/wt2)) * recip_cube_root_rtol;
-      } else {
-	max_yp_o_wt = 0.0;
-	for (i=0;i<ny;i++) {
-	  wt = fabs(y[i]);
-	  if (threshold > wt) {
-	    wt = threshold;
-	  }
-	  wti[i] = wt;
-	  yp_o_wt = fabs(yp[i])/wt;
-	  if (yp_o_wt > max_yp_o_wt) {
-	    max_yp_o_wt = yp_o_wt;
-	  }
-	}
-	rh = recip_70p * max_yp_o_wt * recip_cube_root_rtol;
-      }
+      ode23tb_init_wt(normcontrol, ny,normy,threshold, 
+		      y, wt);
       /*
-      absh = min(hmax, htspan);
-      */
-      absh = htspan;
-      if (absh > hmax) {
-	absh = hmax;
-      }
-      if ((absh * rh) > 1.0) {
-	absh = 1.0/rh;
-      }
-      /*
-      absh = max(absh,hmin);
-      */
-      if (hmin > absh) {
-	absh = hmin;
-      }
+        these would be used to set h for tdel, but dfdy does not
+	depend on t, hence tdel is not needed.
 
+      ode23tb_init_h(normcontrol, ny, normy, normyp, threshold, recip_70p,
+		     recip_cube_root_rtol, htspan, hmin, hmax, tdir, 
+		     yp, wt,  &h, &absh)
+       		     
+      */
       /*
 	Estimate error of first order Taylor seris, 0.5*h^2*y''(t)
-        and use rule of thumb to select step sizze for second order method.
+        and use rule of thumb to select step size for second order method.
       */
-      h = tdir * absh;
+      /*
       abst = fabs(t);
       abst_p_h = fabs(t+h);
-      /*
       upper_bound_step = sqrt_eps * max(abst,abst_p_h);
-      */
       upper_bound_step = abst_p_h;
       if (abst > upper_bound_step) {
 	upper_bound_step = abst;
       }
       upper_bound_step = upper_bound_step * sqrt_eps;
+      */
 
       /*
       tdel = (t + (tdir * min(upper_bound_step,absh))) - t;
-      */
       tdel = upper_bound_step;
       if (absh < tdel) {
 	tdel = absh;
       }
       tdel = tdir * tdel;
       tdel = (t + tdel) - t;
+      */
       /*
 	f1   = flux at t+tdel, y
 	conc = count/volume
-      */
       approximate_delta_concs(state,y,f1,delta_concs_choice);
       if (ode_rxn_view_freq > 0) {
 	t1 = t + tdel;
@@ -484,74 +461,59 @@ int ode23tb (struct state_struct *state, double *concs,
       }
       nfevals += 1;
       recip_tdel = 1.0/tdel;
-      for (i=0;i<ny;i++) {
+      */
 	/*
+      for (i=0;i<ny;i++) {
 	dfdt[i] = (f1[i] - f0[i]) * recip_tdel;
 	delfdelt[i] = dfdt[i];
 	delfdelt[i] = (f1[i] - f0[i]) * recip_tdel;
-	*/
-	delfdelt[i] = 0.0;
       }
+	*/
+      /*
+	Because f1 = f0 as approxiomate_delta_concs has nodependency on t,
+	and y has not changed value delfdelt is 0.
+      */
+      vec_set_constant(ny,delfdelt,dzero);
       /*
 	delfdelt = dfdt + dfdy * yp
       */
       scalar = 1.0;
-      dgemv_(trans,&ny,&ny,&scalar,dfdy,&ny,yp,&inc1,&scalar,delfdelt,&inc1);
+      dgemv_(trans,&ny,&ny,&scalar,dfdy,&ny,yp,&inc1,&dzero,delfdelt,&inc1);
+
+      norm_delfdelt = dnrm2_(&ny,delfdelt,&inc1);
   
-      if (normcontrol) {
-	norm_delfdelt = dnrm2_(&ny,delfdelt,&inc1);
-	norm_delfdelt_o_wt = norm_delfdelt/wt2;
-      } else {
-	norm_delfdelt_o_wt = 0.0;
-	for (i=0;i<ny;i++) {
-	  norm_delfdelt_o_wti = fabs(delfdelt[i])/wti[i];
-	  if (norm_delfdelt_o_wti > norm_delfdelt_o_wt) {
-	    norm_delfdelt_o_wt = norm_delfdelt_o_wti;
-	  }
-	}
-      }
+      norm_delfdelt_o_wt = ode23tb_normyp_o_wt(normcontrol,ny,norm_delfdelt,
+					       delfdelt,wt);
       rh = (recip_70p * sqrt(.5*norm_delfdelt_o_wt)) * recip_cube_root_rtol;
+      
       /*
       absh = min(hmax,htspan);
       */
       absh = htspan;
-      if (hmax < absh) {
-	absh = hmax;
-      }
-      if ((absh *rh) > 1.0) {
-	absh = 1.0/rh;
-      }
-      /*
-      absh = max(absh,hmin);
-      */
-      if (hmin > absh) {
-	absh = hmin;
-      }
+      ode23tb_limit_h(hmax,hmin,rh,tdir,&absh,&h);
     } else {
       /*
       htry is not 0.0 but specified.
       absh = min(hmax,max(hmin,htry));
       */
+      rh = 1.0/hmax;
       absh = htry;
-      if (hmin > absh) {
-	absh = hmin;
-      }
-      if (hmax < absh) {
-	absh = hmax;
-      }
+      ode23tb_limit_h(hmax,hmin,rh,tdir,&absh,&h);
     }
-    h = tdir * absh;
+    dcopy_(&ny,yp,&inc1,z,&inc1);
+    dscal_(&ny,&h,z,&inc1);
+    /*
     for (i=0;i<ny;i++) {
       z[i] = h*yp[i];
     }
+    */
     /*
       Set up to print net likelihoods and net-likelihood-boundary fluxes
     */
     if (ode_rxn_view_freq > 0) {
       /* 
 	If tracking net likelihoods and fluxes, set up to
-	print the first iteration, and open and print headers to 
-	the .nl_flux and .nlklhd files.
+	print the first iteration, 
       */
       ode_rxn_view_step = one_l;
     }
@@ -562,25 +524,26 @@ int ode23tb (struct state_struct *state, double *concs,
     not_done = 1;
     done     = 0;
     info = 0;
+    rh = 1.0/hmax;
     while (not_done) {
       hmin = 16.0*eps*fabs(t);
       abslasth = absh;
       /*
       absh = min(hmax, max(hmin,absh));
       */
-      if (absh < hmin) {
-	absh = hmin;
-      }
-      if (hmax < absh) {
-	absh = hmax;
-      }
-      h = tdir * absh;
+      ode23tb_limit_h(hmax,hmin,rh,tdir,&absh,&h);
+      /*
+	Check for last step.
+      */
       if ((1.1*absh) >= fabs(tfinal - t)) {
 	h = tfinal - t;
 	absh = fabs(h);
 	not_done = 0;
 	done     = 1;
       }
+      /*
+	Rescale z, if timestep changed.
+      */
       if (absh != abslasth) {
 	h_ratio = absh/abslasth;
 	dscal_(&ny,&h_ratio,z,&inc1);
@@ -596,36 +559,31 @@ int ode23tb (struct state_struct *state, double *concs,
 	/*
 	wt = max(normy,threshold);
 	*/
-	if (normcontrol) {
-	  wt2 = normy;
-	  if (threshold > wt2) {
-	    wt2 = threshold;
-	  }
-	  for (i=0;i<ny;i++) {
-	    wti[i] = wt2;
-	  }
-	} else {
-	  for (i=0;i<ny;i++) {
-	    wt = fabs(y[i]);
-	    if (threshold > wt) {
-	      wt = threshold;
-	    }
-	    wti[i] = wt;
-	  }
-	}
+#ifdef DBG
+	fprintf(ode_dconcs_fp,"top of inner loop\n");
+	fflush(ode_dconcs_fp);
+#endif
+	ode23tb_init_wt(normcontrol, ny,normy,threshold, 
+			y, wt);
 	if (need_new_j) {
 	  /*
 	    Recompute the jacobian at current y, and f (yp)
-	    compute f0. at current y.
+	    compute f0 and dfdy. at current y. f0 is set here.
+	    This might becom ode23tb_new_dfdy
 	  */
 	  approximate_delta_concs(state,y,f0,delta_concs_choice);
 	  if (ode_rxn_view_freq > 0) {
+#ifdef DBG
+	    fprintf(ode_dconcs_fp,"Inner_loop,New j needed, f0 recomputed\n");
+	    fflush(ode_dconcs_fp);
+#endif
 	    ode_print_dconcs(state,t,f0);
+	    
 	  }
 	  /*
 	    Compute new Jacobian, dfdy.
 	  ode_num_jac(state,first_time,dfdy,t,y,f0,fac,thresh,
-		      ode_num_jac_scratch, &nf);
+		      ode_num_jac_scratch, &nf); dfdy is set here.
 	  */
 	  ode_num_jac(state,first_time,dfdy,t,y,f0,fac,thresh,
 		      fdel,
@@ -645,61 +603,44 @@ int ode23tb (struct state_struct *state, double *concs,
 	}
 	if (need_new_lu) {
 	  /*
-	    This could be its own subroutine say ode_build_miter:
+	    This could be its own subroutine say ode23tb_build_factor_miter:
 	  */
-	  /*
-	    Set miter to be all 0.
-	  */
-	  dscal_(&nysq,&dzero,miter,&inc1);
-	  /*
-	    Set miter to be the identity matrix.
-	  */
-	  for (i=0;i<nysq;i += (ny+1)) {
-	    miter[i] = 1.0;
-	  }
-	  /*
-	    set miter to be I - (d*h)*dfdy
-	  */
-	  mdh = 0.0 - (d*h);
-	  daxpy_(&nysq,&mdh,dfdy,&inc1,miter,&inc1);
-	  /*
-	    Now we need to factor miter with say dgetrf (lapack routines)
-	    overwrites miter with its factorization, generating
-	    a pivot vector, ipivot,
-	    as arguments to ode_it_solve, 
-	  */
-	  info = 0;
-	  dgetrf_(&ny,&ny,miter,&ny,ipivot,&info);
-	  if (info != 0) {
-	    if (lfp) {
-	      fprintf(lfp,"ode23tb: dgetrf_ call failed with info = %d\n",
-		      info);
-	      fflush(lfp);
-	    }
+#ifdef DBG
+	  fprintf(ode_dconcs_fp,"Inner loop needs new_lu\n");
+#endif
+	  success = ode23tb_build_factor_miter(ny,nysq,d,h,dfdy,
+					       miter,ipivot,&info,lfp);
+	  if (success == 0) {
 	    break;
 	  }
 	  ndecomps = ndecomps + 1;
 	  rate = 0.0;
 	  need_new_lu = 0;
-	}
+	} /* end if need_new_lu */
 	/*
 	  Stage 1.
 	*/
+#ifdef DBG
+	fprintf(ode_dconcs_fp,"Inner loop Stage 1\n");
+#endif
+
+	
 	t2 = t + alpha*h;
+
+	/*
+	  The following copy copies y in to y2 and z into z2,
+	  takes advantage of the fact that the vectors 
+	  y,z,y2,z2 are stored consecutively in that order (see
+	  above partitioning of workspace.
+	*/
+	dcopy_(&two_ny,y,&inc1,y2,&inc1);
+	daxpy_(&ny,&alpha,z,&inc1,y2,&inc1);
+	/*
 	for (i=0;i<ny;i++) {
 	  y2[i] = y[i] + (alpha * z[i]);
-	  if (y2[i] < min_conc) {
-	    if (lfp) {
-	      fprintf(lfp,"ode23tb: Warning y2[%d] was < 0, setting to %le\n",
-		      i,min_conc);
-	    } else {
-	      fprintf(lfp,"ode23tb: Warning y2[%d] was < %le, setting to %le\n",
-		      i,min_conc,min_conc);
-	    }
-	    y2[i] = min_conc;
-	  }
 	  z2[i] = z[i];
 	}
+	*/
 	/*
 #ifdef DBG
 	if (lfp) {
@@ -709,10 +650,15 @@ int ode23tb (struct state_struct *state, double *concs,
 	}
 #endif
 	*/
+#ifdef DBG
+	fprintf(ode_dconcs_fp,"Calling ode_it_solve in stage 1 to modify y2,z2\n");
+	fflush(ode_dconcs_fp);
+#endif
+
 	iter_count = 0;
 	itfail1 = ode_it_solve(state,miter,ipivot,t2,y2,z2,
 			       it_solve_del,it_solve_rhs,it_solve_scr,
-			       d,h,rtol,wti,&rate, &iter_count);
+			       d,h,rtol,wt,&rate, &iter_count);
 	/*
 #ifdef DBG
 	if (lfp) {
@@ -727,45 +673,48 @@ int ode23tb (struct state_struct *state, double *concs,
 	itfail2 = 0;
 	if (itfail1 == 0) {
 	  /* Stage 2. */
-	  if (normcontrol) {
-	    normy2 = dnrm2_(&ny,y2,&inc1);
-	    /*
-	      wt     = max(wt,normy2)
-	    */
-	    if (normy2 > wt2) {
-	      wt2 = normy2;
-	      for (i=0;i<ny;i++) {
-		wti[i] = wt2;
-	      }
-	    }
-	  } else {
-	    for (i=0;i<ny;i++) {
-	      wt = fabs(y2[i]);
-	      if (wt > wti[i]) {
-		wti[i] = wt;
-	      }
-	    }
-	  }
+#ifdef DBG
+	  fprintf(ode_dconcs_fp,"Inner loop Stage 2\n");
+#endif
+	  normy2 = dnrm2_(&ny,y2,&inc1);
+	  ode23tb_update_wt(normcontrol, ny,normy2,y2, wt);
+
 	  tnew = t + h;
 	  if (done) {
 	    tnew = tfinal;
 	  }
-	  for (i=0;i<ny;i++) {
-	    znew[i] = (p31 * z[i]) + (p32*z2[i]) + (p33 * (y2[i]-y[i]));
-	    ynew[i] = y[i] + (gg * (z[i] + z2[i])) + (d*znew[i]);
-	    if (ynew[i] < min_conc) {
-	      if (lfp) {
-		if (ynew[i] < 0) {
-		  fprintf(lfp,"ode23tb: Warning ynew[%d] was < 0, setting to %le\n",
-			  i,min_conc);
-		} else {
-		  fprintf(lfp,"ode23tb: Warning ynew[%d] was < %le, setting to %le\n",
-			  i,min_conc,min_conc);
-		}
-	      }
-	      ynew[i] = min_conc;
-	    }
-	  }
+#ifdef DBG
+	  fprintf(ode_dconcs_fp,"Stage 2, Computing new ynew,znew\n");
+	  fflush(ode_dconcs_fp);
+#endif
+	  /*
+	    The following loop may be done via gemv operations
+	    if the vectors y,z,y2,z2,ynew,znew are stored consecutively.
+	    ynew and znew cannotbe computed simultaneously as
+	    ynew depends on znew.
+
+	    znew = -p33 * y + p31 * z + p33 * y2 + p32 * z2 = 
+
+                              -p33
+                               p31
+	       (y,z,y2,z2) * ( p32)
+	                       p33
+
+                                        
+                                       1.0 
+                                        gg 
+            ynew = (y,z,y2,z2,znew) * ( 0   )
+                                        gg     
+				        d 	      
+	  */                                  
+	  scalar = 1.0;
+	  //vec_set_constant(ny,znew,dzero);
+	  dgemv_(trans,&ny,&ifour,&scalar,y,&ny,znew_coeff,&inc1,
+		 &dzero,znew,&inc1);
+	  //vec_set_constant(ny,ynew,dzero);
+	  dgemv_(trans,&ny,&ifive,&scalar,y,&ny,ynew_coeff,&inc1,
+		 &dzero,ynew,&inc1);
+	  
 	  iter_count = 0;
 	  /*
 #ifdef DBG
@@ -777,9 +726,13 @@ int ode23tb (struct state_struct *state, double *concs,
 	  }
 #endif
 	  */
+#ifdef DBG
+	  fprintf(ode_dconcs_fp,"Stage 2, calling ode_it_solve to modify ynew,znew\n");
+	  fflush(ode_dconcs_fp);
+#endif
 	  itfail2 = ode_it_solve(state,miter,ipivot,tnew,ynew,znew,
 				 it_solve_del,it_solve_rhs,it_solve_scr,
-				 d,h,rtol,wti,&rate,&iter_count);
+				 d,h,rtol,wt,&rate,&iter_count);
 	  nfevals += iter_count;
 	  nsolves += iter_count;
 	  /*
@@ -794,6 +747,10 @@ int ode23tb (struct state_struct *state, double *concs,
 	  */
 	} /* end if (itfail1 == 0) */
 	if (itfail1 || itfail2) {
+#ifdef DBG
+	  fprintf(ode_dconcs_fp,"Ode_it_solve failure, itfail1 == %d, itfail2 == %d\n",itfail1, itfail2);
+	  fflush(ode_dconcs_fp);
+#endif
 	  nofailed = 0;
 	  nfailed += 1;
 	  if (jcurrent & mcurrent) {
@@ -802,10 +759,13 @@ int ode23tb (struct state_struct *state, double *concs,
 		fprintf(lfp,"ode23tb: Error integration tolerance not met, t= %le, hmin = %le\n",t,hmin);
 		fflush(lfp);
 	      }
+	      tolerance_met = 0;
+	      /*
+		Set flags to break out of inner and main loop.
+	      */
 	      not_done          = 0;
 	      done              = 1;
 	      unsuccessful_step = 0;
-	      tolerance_met = 0;
 	    } else {
 	      abslasth = absh;
 	      /*
@@ -828,105 +788,85 @@ int ode23tb (struct state_struct *state, double *concs,
 	  }
 	} else {
 	  /* stage 1 and 2 succeeded, estimate local truncation error.*/
+#ifdef DBG
+	  fprintf(ode_dconcs_fp,"Inner loop stage1 and stage2 converged\n");
+	  fflush(ode_dconcs_fp);
+#endif
 	  if (normcontrol) {
 	    normynew = dnrm2_(&ny,ynew,&inc1);
+	  }
+	  ode23tb_update_wt(normcontrol,ny,normynew,ynew,wt);
 	  /*
-	  wt2 = max(wt,normynew);
+	    est = c1 *z + c2 * z2 + c3*znew
+
+                                        c1
+                                         0
+	          (z,y2,z2,znew) *     ( c2 )
+		                        c3
 	  */
-	    if (normynew > wt2) {
-	      wt2 = normynew;
-	    }
-	    for (i=0;i<ny;i++) {
-	      wti[i] = wt2;
-	    }
-	  } else {
-	    normynew = 0.0;
-	    for (i=0;i<ny;i++) {
-	      wt = fabs(ynew[i]);
-	      if (wt > normynew) {
-		normynew= wt;
-	      }
-	      if (wt > wti[i]) {
-		wti[i] = wt;
-	      }
-	    }
-	  }
-	  err1 = 0.0;
-	  for (i=0;i<ny;i++) {
-	    err1_est = (c1 * z[i]) + (c2 * z2[i]) + (c3 * znew[i]); 
-	    est1[i] = err1_est;
-            /*
-	    err1 = max(fabs(est1[i]/wt),err1);
-	    */
-	    err1_est = fabs(err1_est/wti[i]);
-	    if (err1_est > err1) {
-	      err1 = err1_est;
-	    }
-	  }
+	  //vec_set_constant(ny,est,dzero);
+	  dgemv_(trans,&ny,&ifour,&scalar,z,&ny,est_coeff,&inc1,
+		 &dzero,est,&inc1);
+
+	  err1 = ode23tb_max_abs_ratio(ny,est,wt);
 	  /*
 	    Here we need to solve miter * est2 = est1
 	    With calls to something like dgetrs_
 	  */
 	  nrhs = 1;
+	  /*
 	  dcopy_(&ny,est1,&inc1,est2,&inc1);
-	  dgetrs_(trans,&ny,&nrhs,miter,&ny,ipivot,est2,&ny,&info);
+	  */
+	  dgetrs_(trans,&ny,&nrhs,miter,&ny,ipivot,est,&ny,&info);
 	  if (info != 0) {
 	    if (lfp) {
-	      fprintf(lfp,"ode23tb: dgetrs_ call failed with info = %d\n",
+	      fprintf(lfp,"ode23tb: dgetrs_ call to compute est, failed with info = %d\n",
 		      info);
 	      fflush(lfp);
 	    }
 	    break;
 	  }
 	  nsolves += 1;
-	  err2 = 0.0;
-	  for (i=0;i<ny;i++) {
-	    err2_est = fabs(est2[i]/wti[i]);
-	    if (err2_est > err2) {
-	      err2 = err2_est;
-	    }
-	  }
+	  err2 = ode23tb_max_abs_ratio(ny,est,wt);
 	  err = err1/16.0;
 	  if (err2 > err) {
 	    err = err2;
 	  }
-	  nnrejectstep = 0;
-	  errnn = 0.0;
+	  /*
+	    Evaluate the error from nonnegativity violations
+	  */
 	  if (nonnegative) {
-	    if (err <= rtol) {
-	      for (i=0;i<ny;i++) {
-		if (ynew[i] < 0.0) {
-		  errnn += (ynew[i] * ynew[i]);
-		}
-	      }
-	      errnn = sqrt(errnn);
-	      if (normcontrol) {
-		errnn = errnn/wt2;
-	      } else {
-		errnn  = errnn/threshold;
-	      }
-	      if (errnn > rtol) {
-		err = errnn;
-		nnrejectstep = 1;
-	      }
+	    if (normcontrol) {
+	      errnn_scale = 1.0/wt[0];
+	    } else {
+	      errnn_scale  = 1.0/threshold;
 	    }
-	  } /* end if nonnegative */
+	    ode23tb_nonneg_err(ny,ynew,rtol,errnn_scale,
+			       &err,&nnrejectstep);
+	  }
 	  if (err > rtol) {
 	    /*
 	      Step failed.
 	    */
+#ifdef DBG
+	    fprintf(ode_dconcs_fp,"Inner loop step failed err = %ld\n",err);
+	    fflush(ode_dconcs_fp);
+#endif
 	    nfailed = nfailed + 1;
 	    if (absh <= hmin) {
 	      if (lfp) {
 		fprintf(lfp,"ode23tb: Error Integration tol not met, t= %le, hmin = %le\n",t,hmin);
 		fflush(lfp);
 	      }
+	      tolerance_met  =   0;
+	      /*
+		set flags to break out of loop.
+	      */
 	      not_done       =   0;
 	      done           =   1;
-	      tolerance_met  =   0;
 	      unsuccessful_step = 0;
 	    } else {
-	      /* step succeeded. */
+	      /* reduce step size */
 	      nofailed = 0;
 	      abslasth = absh;
 	      if (nnrejectstep) {
@@ -953,9 +893,7 @@ int ode23tb (struct state_struct *state, double *concs,
 	      }
 	      h = tdir * absh;
 	      h_ratio = absh/abslasth;
-	      for (i=0;i<ny;i++) {
-		z[i] *= h_ratio;
-	      }
+	      dscal_(&ny,&h_ratio,z,&inc1);
 	      need_new_lu = 1;
 	      not_done = 1;
 	      done     = 0;
@@ -967,83 +905,49 @@ int ode23tb (struct state_struct *state, double *concs,
 	  }
 	} /* end else iterative solves succeeded. */
       } /* end while (unsuccessful_step && tolerance_met) */
-      if (info != 0) {
-	break;
-      }
-
-      nsteps = nsteps + 1;
-      nnreset_znew = 0;
-      if (nonnegative) {
-	for (i=0;i<ny;i++) {
-	  z3[i] = znew[i];
-	  if (ynew[i] < 0.0) {
-	    ynew[i] = 0.0;
-	    z3[i] = 0.0;
-	    nnreset_znew = 1;
-	  }
-	}
-	if (nnreset_znew) {
-	  if (normcontrol) {
-	    normynew = dnrm2_(&ny,ynew,&inc1);
-	  } else {
-	    normynew = fabs(ynew[idamax_(&ny,ynew,&inc1)-1]);
-	  }
-	}
-      }
-      /* 
-	Advance the integration one step. 
-      */
-      if (nnreset_znew) {
-	for (i=0;i<ny;i++) {
-	  znew[i] = z3[i];
-	}
-      }
-      t = tnew;
-      for (i=0;i<ny;i++) {
-	y[i] = ynew[i];
-	z[i] = znew[i];
-	if (y[i] < min_conc) {
-	  if (lfp) {
-	    if (y[i] < 0) {
-	      fprintf(lfp,"ode23tb: Warning y[%d] was < 0, setting to %le\n",
-		      i,min_conc);
-	    } else {
-	      fprintf(lfp,"ode23tb: Warning y[%d] was < %le, setting to %le\n",
-		      i,min_conc,min_conc);
-	    }
-	  }
-	  y[i] = min_conc;
-	}
-      }
-      if (ode_rxn_view_freq > 0) {
-	ode_rxn_view_step -= one_l;
-	if (ode_rxn_view_step == zero_l) {
-	  /*
-          nl_success = compute_net_likelihoods(state,forward_rxn_likelihoods,
-					       reverse_rxn_likelihoods,
-					       net_likelihoods);
-	  if (nl_success) {
-	    print_net_likelihoods(state,net_likelihoods,t);
-	    compute_net_lklhd_bndry_flux(state,net_likelihoods,
-					 net_lklhd_bndry_flux);
-	    print_net_lklhd_bndry_flux(state,net_lklhd_bndry_flux,t);
-	  }
-	  */
-	  ode_print_concs(state,t,y);
-	  ode_print_lklhds(state,t,forward_rxn_likelihoods,
-			   reverse_rxn_likelihoods);
-	  ode_rxn_view_step = ode_rxn_view_freq;
-	  approximate_delta_concs(state,y,f0,delta_concs_choice);
-	  ode_print_dconcs(state,t,f0);
-	}
-      }
+		
+#ifdef DBG
+      fprintf(ode_dconcs_fp," After inner_loop, info = %d\n",info);
+      fflush(ode_dconcs_fp);
+#endif
       if (not_done) {
+	nsteps = nsteps + 1;
+	nnreset_znew = 0;
+	if (nonnegative) {
+	  ode23tb_enforce_nonneg(ny,normcontrol,ynew,znew,&normynew);
+	}
+	/* 
+	  Advance the integration one step. 
+	*/
+#ifdef DBG
+	fprintf(ode_dconcs_fp,"Advancing integration copy ynew,znew to y,z\n");
+	fflush(ode_dconcs_fp);
+#endif
+	t = tnew;
+	dcopy_(&ny,ynew,&inc1,y,&inc1);
+	dcopy_(&ny,znew,&inc1,z,&inc1);
+	if (ode_rxn_view_freq > 0) {
+	  ode_rxn_view_step -= one_l;
+	  if (ode_rxn_view_step == zero_l) {
+	    ode_print_concs(state,t,y);
+	    /*
+	      ode_print_lklhds(state,t,forward_rxn_likelihoods,
+			   reverse_rxn_likelihoods);
+	    */
+	    approximate_delta_concs(state,y,f0,delta_concs_choice);
+	    ode_print_dconcs(state,t,f0);
+	    ode_rxn_view_step = ode_rxn_view_freq;
+	  }
+	}
 	if (normcontrol) {
 	  normy = normynew;
 	} 
 	jcurrent = 0;
 	mcurrent = 1;
 	if (nofailed) {
+	  /*
+	    Modify step size if inner steps succeeded.
+	  */
 	  q = pow((err/rtol),third);
 	  h_ratio = hmax/absh;
 	  if (0.7 < (q * h_ratio)) {
@@ -1063,13 +967,16 @@ int ode23tb (struct state_struct *state, double *concs,
 	    dscal_(&ny,&h_ratio,z,&inc1);
 	    need_new_lu = 1;
 	  }
-	}
-      }
+	} /* end if nofailed */
+      } /* end if (not_done) */
+#ifdef DBG
+      fprintf(ode_dconcs_fp,"Bottom of main_loop\n");
+      fflush(ode_dconcs_fp);
+#endif      
     } /* end while (not_done) MAIN loop */
   } /* end if success - allocation succeeded */
-  for(i=0;i<ny;i++) {
-    concs[i] = y[i];
-  }
+
+  dcopy_(&ny,y,&inc1,concs,&inc1);
   return (success);
 }
 
