@@ -84,10 +84,10 @@ int flatten_state(struct state_struct *boot_state,
   int64_t dg_forward_size;
   int64_t entropy_offset;
   int64_t entropy_size;
-  int64_t current_concentrations_offset;
-  int64_t current_concentrations_size;
-  int64_t bndry_flux_concs_offset;
-  int64_t bndry_flux_concs_size;
+  int64_t current_counts_offset;
+  int64_t current_counts_size;
+  int64_t bndry_flux_counts_offset;
+  int64_t bndry_flux_counts_size;
   int64_t vgrng_offset;
   int64_t vgrng_size;
   int64_t vgrng_pad;
@@ -96,6 +96,12 @@ int flatten_state(struct state_struct *boot_state,
   int64_t dg0s_size;
   int64_t ke_offset;
   int64_t ke_size;
+  int64_t kss_size;
+  int64_t kss_offset;
+  int64_t kss_e_val_size;
+  int64_t kss_e_val_offset;
+  int64_t kss_u_val_size;
+  int64_t kss_u_val_offset;
   int64_t molecule_dg0tfs_offset;
   int64_t molecule_dg0tfs_size;
   int64_t molecule_probabilities_offset;
@@ -140,8 +146,8 @@ int flatten_state(struct state_struct *boot_state,
   int64_t file_names_pad;
   int64_t rxn_title_offset;
   int64_t rxn_title_size;
-  int64_t future_concs_offset;
-  int64_t future_concs_size;
+  int64_t future_counts_offset;
+  int64_t future_counts_size;
   int64_t free_energy_offset;
   int64_t free_energy_size;
   int64_t forward_rxn_offset;
@@ -190,12 +196,12 @@ int flatten_state(struct state_struct *boot_state,
   dg_forward_size    = 1;
   entropy_offset     = dg_forward_offset + dg_forward_size;
   entropy_size       = 1;
-  current_concentrations_offset = entropy_offset + entropy_size;
-  current_concentrations_size   = unique_molecules + (unique_molecules & 1);
-  bndry_flux_concs_offset       = current_concentrations_offset +
-    current_concentrations_size;
-  bndry_flux_concs_size         = current_concentrations_size;
-  vgrng_offset                  = bndry_flux_concs_offset + bndry_flux_concs_size;
+  current_counts_offset = entropy_offset + entropy_size;
+  current_counts_size   = unique_molecules + (unique_molecules & 1);
+  bndry_flux_counts_offset       = current_counts_offset +
+    current_counts_size;
+  bndry_flux_counts_size         = current_counts_size;
+  vgrng_offset                  = bndry_flux_counts_offset + bndry_flux_counts_size;
   vgrng_size                    = (int64_t)sizeof(vss);
   vgrng_pad = ((align_len - (vgrng_size & align_mask)) & align_mask);
   vgrng_size = (vgrng_size + vgrng_pad) >> log2_word_len;
@@ -216,7 +222,14 @@ int flatten_state(struct state_struct *boot_state,
   dg0s_size            = number_reactions + (number_reactions & 1);
   ke_offset            = dg0s_offset + dg0s_size;
   ke_size              = dg0s_size;
-  molecule_dg0tfs_offset = ke_offset + ke_size;
+  kss_offset           = ke_offset + ke_size;
+  kss_size             = ke_size + ke_size;
+  kss_e_val_size       = unique_molecules + (unique_molecules & 1);
+  kss_e_val_offset     = kss_offset + kss_size;
+  kss_u_val_size       = kss_e_val_size;
+  kss_u_val_offset     = kss_e_val_offset + kss_e_val_size;
+  
+  molecule_dg0tfs_offset = kss_u_val_offset + kss_u_val_size;
   molecule_dg0tfs_size = unique_molecules;
   molecule_probabilities_offset =  molecule_dg0tfs_offset + molecule_dg0tfs_size;
   molecule_probabilities_size   = unique_molecules;
@@ -227,9 +240,9 @@ int flatten_state(struct state_struct *boot_state,
 
   activities_offset    = molecule_chemical_potentials_offset +
     molecule_chemical_potentials_size;
-  activities_size      = current_concentrations_size;
+  activities_size      = current_counts_size;
 
-  reactions_offset     = activities_offset + current_concentrations_size;
+  reactions_offset     = activities_offset + current_counts_size;
   reactions_size       = (int64_t)sizeof(rs) * number_reactions; 
   reactions_pad        = (align_len - (reactions_size & align_mask)) & align_mask;
   reactions_size       = (reactions_size + reactions_pad) >> log2_word_len;
@@ -290,11 +303,14 @@ int flatten_state(struct state_struct *boot_state,
     workspace_offset       = auxiliary_data_offset;
   }
   */
+  /*
+    Here we are just computing the size of the workspace.
+  */
   workspace_base          = boot_state->workspace_base;
   workspace_offset        = (int64_t)0;
-  future_concs_offset     = workspace_offset;
-  future_concs_size       = unique_molecules + (unique_molecules&1);
-  free_energy_offset      = future_concs_offset + future_concs_size;
+  future_counts_offset     = workspace_offset;
+  future_counts_size       = unique_molecules + (unique_molecules&1);
+  free_energy_offset      = future_counts_offset + future_counts_size;
   free_energy_size        = number_reactions + (number_reactions &1);
   forward_rxn_offset      = free_energy_offset + free_energy_size;
   forward_rxn_size        = free_energy_size;
@@ -393,12 +409,16 @@ int flatten_state(struct state_struct *boot_state,
     */
     new_state->dg_forward_p = (double*)&new_state_l[dg_forward_offset];
     new_state->entropy_p = (double*)&new_state_l[entropy_offset];
-    new_state->current_concentrations = (double*)&new_state_l[current_concentrations_offset];
-    new_state->bndry_flux_concs = (double *)&new_state_l[bndry_flux_concs_offset];
+    new_state->current_counts = (double*)&new_state_l[current_counts_offset];
+    new_state->bndry_flux_counts = (double *)&new_state_l[bndry_flux_counts_offset];
     new_state->vgrng_state = (struct vgrng_state_struct *)&new_state_l[vgrng_offset];
     new_state->vgrng2_state = (struct vgrng_state_struct *)&new_state_l[vgrng2_offset];
     new_state->dg0s = (double*)&new_state_l[dg0s_offset];
     new_state->ke   = (double*)&new_state_l[ke_offset];
+    new_state->kss  = (double*)&new_state_l[kss_offset];
+    new_state->kssr = (double*)&new_state_l[kss_offset+ke_size];
+    new_state->kss_e_val  = (double*)&new_state_l[kss_e_val_offset];
+    new_state->kss_u_val  = (double*)&new_state_l[kss_u_val_offset];
     new_state->molecule_dg0tfs   = (double*)&new_state_l[molecule_dg0tfs_offset];
     new_state->molecule_probabilities   = (double*)&new_state_l[molecule_probabilities_offset];
     new_state->molecule_chemical_potentials   = (double*)&new_state_l[molecule_chemical_potentials_offset];
@@ -434,7 +454,7 @@ int flatten_state(struct state_struct *boot_state,
     new_state->pathway_text   = (char *)&new_state_l[pathway_offset];
     new_state->compartment_text   = (char *)&new_state_l[compartment_offset];
     new_state->molecules_text   = (char *)&new_state_l[molecules_offset];
-    new_state->future_concentrations = (double *)&workspace_base_l[future_concs_offset];
+    new_state->future_counts = (double *)&workspace_base_l[future_counts_offset];
     new_state->free_energy = (double *)&workspace_base_l[free_energy_offset];
     new_state->forward_rxn_likelihood = (double *)&workspace_base_l[forward_rxn_offset];
     new_state->reverse_rxn_likelihood = (double *)&workspace_base_l[reverse_rxn_offset];
@@ -452,14 +472,17 @@ int flatten_state(struct state_struct *boot_state,
   if (success) {
     if (load_from_boot) {
       move_size = unique_molecules * sizeof(double);
-      memcpy(new_state->current_concentrations,boot_state->current_concentrations,move_size);
+      memcpy(new_state->current_counts,boot_state->current_counts,move_size);
       move_size = (int64_t)sizeof(vss);
       memcpy(new_state->vgrng_state,boot_state->vgrng_state,move_size);
       memcpy(new_state->vgrng2_state,boot_state->vgrng2_state,move_size);
       move_size = number_reactions*sizeof(double);
       memcpy(new_state->dg0s,boot_state->dg0s,move_size);
       memcpy(new_state->ke,boot_state->ke,move_size);
+      memcpy(new_state->kss,boot_state->kss,move_size);
       move_size = unique_molecules * sizeof(double);
+      memcpy(new_state->kss_e_val,boot_state->kss_e_val,move_size);
+      memcpy(new_state->kss_u_val,boot_state->kss_u_val,move_size);
       memcpy(new_state->molecule_dg0tfs,boot_state->molecule_dg0tfs,move_size);
       memcpy(new_state->molecule_probabilities,
 	     boot_state->molecule_probabilities,move_size);
