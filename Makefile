@@ -84,7 +84,10 @@ INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
 LDFLAGS = 
 LIBOBJS = 
-LIBS = libboltzmann.a
+#OPT_FLAGS = -g -O0 -Wall
+#
+### End User configurable options ###
+LIBS = libboltzmann.a -lm 
 LTLIBOBJS = 
 MAKEINFO = ${SHELL} /home/dbaxter/boltzmann/trunk/missing --run makeinfo
 MKDIR_P = /bin/mkdir -p
@@ -149,19 +152,20 @@ top_srcdir = .
 CLINKER = gcc
 AR = ar
 ARFLAGS = -crv
-#OPT_FLAGS = -g -O2
-OPT_FLAGS = -g -O0 -Wall
-#EXECS        = boltzmann boltzmann_boot_test deq lapack_test sbml2bo kegg_ms_ids ms2js_ids kegg_ids bwarmup boltzmann_test_save_load
+OPT_FLAGS = -O2 -fPIC
 EXECS = boltzmann deq lapack_test sbml2bo kegg_ms_ids ms2js_ids kegg_ids bwarmup boltzmann_test_save_load
 DBG_FLAGS = -O0 -g -Wall
 NO_OPT_FLAGS = -O0 -g -Wall
 DCFLAGS = ${CFLAGS}
-TFLAGS = 
 LFLAGS = -g -lm
 TIMING_LIB = 
 TIMING_DEP = 
+TFLAGS = 
 TIMING_DEPS = timingi.h djb_timing_b.h djb_timing.h
 LUNWIND_DEPS = luwtb.h luwtb1.h luwtb2.h
+#EXECS defined in Makefile.head
+#EXECS        = boltzmann boltzmann_boot_test deq lapack_test sbml2bo kegg_ms_ids ms2js_ids kegg_ids bwarmup boltzmann_test_save_load
+#EXECS        = boltzmann deq lapack_test sbml2bo kegg_ms_ids ms2js_ids kegg_ids bwarmup boltzmann_test_save_load
 SERIAL_INCS = boltzmann_structs.h boot_state_struct.h super_state_struct.h super_state_pointers_struct.h state_struct.h reaction_struct.h reactions_matrix_struct.h molecules_matrix_struct.h molecule_struct.h compartment_struct.h vgrng_state_struct.h pseudoisomer_struct.h stack_level_elem_struct.h sbml2bo_struct.h t2js_struct.h $(TIMING_DEPS) $(LUNWIND_DEPS)
 SERIAL_OBJS1 = boltzmann_init.o alloc0.o alloc0_a.o boltzmann_set_filename_ptrs.o read_params.o boltzmann_init_core.o io_size_init.o create_output_filenames.o open_output_files.o size_rxns_file.o init_rxn_file_keywords.o parse_rxn_file_keyword.o count_ws.o count_nws.o count_molecules.o is_a_coef.o alloc2.o alloc2_a.o rxns_init.o parse_reactions_file.o upcase.o parse_side_line.o find_colon.o sort_compartments.o merge_compartments.o unique_compartments.o unique_compartments_core.o translate_compartments.o sort_molecules.o merge_molecules.o unique_molecules.o unique_molecules_core.o alloc3.o species_init.o set_compartment_ptrs.o set_count_trans.o translate_regulation_metabolites.o molecules_lookup.o read_compartment_sizes.o read_initial_concentrations.o compartment_lookup.o check_initial_concentrations.o
 SERIAL_OBJS2 = energy_init.o compute_standard_energies.o size_pseudoisomer_file.o alloc5.o parse_pseudoisomer_dg0f_file.o blank_to_dash.o sharp_pos.o alloc6.o compute_molecule_dg0tfs.o compute_molecule_dg0tf.o pseudoisomer_dg0tf.o compute_molecular_partition_probability.o compute_chemical_potential.o compute_reaction_dg0.o unalloc6.o compute_ke.o zero_solvent_coefficients.o compute_kss.o echo_inputs.o echo_params.o echo_reactions_file.o print_molecules_dictionary.o print_dg0_ke.o recover_solvent_coefficients.o vgrng_init.o vgrng.o print_rxn_likelihoods_header.o print_free_energy_header.o run_init.o alloc8.o alloc9.o print_reactions_matrix.o 
