@@ -26,7 +26,7 @@ int ode_it_solve(struct state_struct *state,
     computes a result in z, and also modifies y.
     Returns 0 on successful iteration, 1 on a fail.
     Called by: ode23tb
-    Calls:     approximate_fluxes;
+    Calls:     approximate_fluxes, fabs;
   */
   double kappa;
   double errit;
@@ -60,6 +60,8 @@ int ode_it_solve(struct state_struct *state,
   int iter_count;
   int padi;
 
+  int nsteps;
+  int origin;
 
   max_iter     = 5;
   kappa        = 0.5;
@@ -76,7 +78,7 @@ int ode_it_solve(struct state_struct *state,
   rate   = *rate_p;
   iter_count = *iter_count_p;
   for (i=0;i<ny;i++) {
-    cand_nrm = 100 * eps * abs(y[i]) * recip_wt;
+    cand_nrm = 100 * eps * fabs(y[i]) * recip_wt;
     if (cand_nrm > minnrm) {
       minnrm = cand_nrm;
     }
@@ -89,6 +91,16 @@ int ode_it_solve(struct state_struct *state,
     approximate_fluxes(state,y_count,forward_rxn_likelihoods, 
 		       reverse_rxn_likelihoods,
 		       znew,flux_scaling,base_rxn);
+#ifdef DBG
+    if (lfp) {
+      fprintf(lfp,"ode_it_solve: after call to approximate_fluxes:\n");
+      nsteps = 0;
+      origin = -1;
+      print_concs_fluxes(state,ny,znew,y,y_count,
+			 forward_rxn_likelihoods,
+			 reverse_rxn_likelihoods,t,h,nsteps,origin);
+#endif    
+
     newnrm = 0.0;
     for (i=0;i<ny;i++) {
       znew[i] = h * znew[i];
@@ -106,11 +118,11 @@ int ode_it_solve(struct state_struct *state,
 	znew[i] = z[i] + del[i];
       }
       z[i]    = znew[i];
-      del_scale = abs(y[i]);
+      del_scale = fabs(y[i]);
       if (wt > del_scale) {
 	del_scale = wt;
       }
-      cand_nrm = abs(del[i])/del_scale;
+      cand_nrm = fabs(del[i])/del_scale;
       if (cand_nrm > newnrm) {
 	newnrm = cand_nrm;
       }
