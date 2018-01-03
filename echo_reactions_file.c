@@ -23,25 +23,31 @@ specific language governing permissions and limitations under the License.
 #include "boltzmann_structs.h"
 
 #include "echo_reactions_file.h"
-int echo_reactions_file(struct state_struct *state,
-			FILE *rxn_echo_fp) {
+int echo_reactions_file(struct state_struct *state) {
   /*
     Echo the reactions file to a rxns.echo file.
-    Called by: boltzmann_init
+    Called by: echo_inputs
     Calls:     fopen, fprintf, fclose (intrinsic)
   */
   struct rxn_struct *reactions;
   struct rxn_struct *reaction;
   struct rxn_matrix_struct *rxns_matrix;
+  double  *reg_constant;
+  double  *reg_exponent;
+  double  *reg_drctn;
+  int64_t *reg_species;
   int64_t *rxn_ptrs;
   int64_t *molecules_indices;
   int64_t *coefficients;
   int64_t *matrix_text;
-  
+  int64_t metabolite;
+  int64_t reg_base;
+
   char *rxn_title_text;
   char *pathway_text;
   char *compartment_text;
   char *molecules_text;
+  char *regulation_text;
 
   char *title;
   char *pathway;
@@ -61,34 +67,43 @@ int echo_reactions_file(struct state_struct *state,
   int coeff;
   int j;
 
+  int max_regs_per_rxn;
+  int use_regulation;
+
+  int i;
+  int padi;
+
   char tab;
   char padc[7];
 
+  FILE *rxn_echo_fp;
+  FILE *lfp;
+
   tab  = (char)9;
   success = 1;
-  rxn_title_text   = state->rxn_title_text;
-  pathway_text     = state->pathway_text;
-  compartment_text = state->compartment_text; 
-  molecules_text   = state->molecules_text;
-
-  /*
-    Now passed in as an argument.
-  */
-  /*
-  rxn_echo_fp = fopen("rxns.echo","w+");
+  rxn_echo_fp = fopen(state->rxn_echo_file,"w+");
   if (rxn_echo_fp == NULL) {
     fprintf(stderr,
-	    "echo_reactions_file: Error could not open rxns.echo file.\n");
+	    "echo_inputs: Error could not open %s file.\n",state->rxn_echo_file);
     success = 0;
   }
-  */
   if (success) {
-    reaction       = state->reactions;
-    rxns_matrix    = state->reactions_matrix;
-    rxn_ptrs       = rxns_matrix->rxn_ptrs;
+    rxn_title_text    = state->rxn_title_text;
+    pathway_text      = state->pathway_text;
+    compartment_text  = state->compartment_text; 
+    molecules_text    = state->molecules_text;
+    use_regulation    = (int)state->use_regulation;
+    reg_species       = state->reg_species;
+    reg_drctn         = state->reg_drctn;
+    reg_constant      = state->reg_constant;
+    reg_exponent      = state->reg_exponent;
+    reaction          = state->reactions;
+    rxns_matrix       = state->reactions_matrix;
+    rxn_ptrs          = rxns_matrix->rxn_ptrs;
     molecules_indices = rxns_matrix->molecules_indices;
-    coefficients   = rxns_matrix->coefficients;
-    matrix_text    = rxns_matrix->text;
+    coefficients      = rxns_matrix->coefficients;
+    matrix_text       = rxns_matrix->text;
+    reg_base          = 0;
     for (rxns=0;rxns < (int)state->number_reactions;rxns++) {
       if (reaction->title>=0) {
 	title = (char *)&rxn_title_text[reaction->title];
@@ -159,13 +174,34 @@ int echo_reactions_file(struct state_struct *state,
       } else {
 	fprintf(rxn_echo_fp,"DGZERO-UNITS\tkJ/mol\n");
       }
-      if (state->use_activities) {
+      if (state->use_activities && (state->use_regulation == 0)) {
 	fprintf(rxn_echo_fp,"ACTIVITY\t%le\n",reaction->activity);
+      }
+      if (use_regulation) {
+	for (i=0;i<max_regs_per_rxn;i++) {
+	  metabolite = reg_species[reg_base+i];
+	  if (metabolite >= 0) {
+	    if (reg_drctn[reg_base+i] > 0.0) {
+	      fprintf(rxn_echo_fp,"PREGULATION\t%s\t%le\t%le\n",
+		      (char *)&regulation_text[metabolite],
+		      reg_constant[reg_base+i],
+		      reg_exponent[reg_base+i]);
+	    } else {
+	      fprintf(rxn_echo_fp,"NREGULATION\t%s\t%le\t%le\n",
+		      (char *)&regulation_text[metabolite],
+		      reg_constant[reg_base+i],
+		      reg_exponent[reg_base+i]);
+	    }
+	  } else {
+	    break;
+	  }
+	}
+	reg_base += max_regs_per_rxn;
       }
       fprintf(rxn_echo_fp,"//\n");
       reaction += 1; /* Caution address arithmetic. */
     }
-    /*fclose(rxn_echo_fp);*/
+    fclose(rxn_echo_fp);
   }
   return(success);
 }
