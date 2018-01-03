@@ -61,8 +61,8 @@ int lr14_approximate_delta_concs(struct state_struct *state,
   double  volume;
   double  recip_volume;
   double  multiplier;
-  double  ke_adj;
-  double  rke_adj;
+  double  keq_adj;
+  double  rkeq_adj;
   double  coeff;
   double  recip_avogadro;
   double  fluxi;
@@ -167,18 +167,18 @@ int lr14_approximate_delta_concs(struct state_struct *state,
     rt = 1.0;
     tr = 1.0;
     tp = 1.0;
-    coeff_sum = 0;
+    sum_coeff = 0;
     for (j=rxn_ptrs[i];j<rxn_ptrs[i+1];j++) {
       mi = molecule_indices[j];
       molecule = (struct molecule_struct *)&molecules[mi];
       ci = molecule->c_index;
       compartment = (struct compartment_struct *)&compartments[ci];
       recip_volume       = compartment->recip_volume;
-      volume             = copmartment->volume;
+      volume             = compartment->volume;
       /*
       */
       klim = coefficients[j];
-      coeff_sum += klim;
+      sum_coeff += klim;
       conc_mi = concs[mi];
       if (klim < 0) {
 	for (k=0;k<(-klim);k++) {
@@ -224,15 +224,16 @@ int lr14_approximate_delta_concs(struct state_struct *state,
       Save likelihoods for printing.
     */
     if (pt != 0) {
-      forward_lklhd[i] = ke[i] * ke_adj * (rt/pt);
+      forward_lklhd[i] = ke[i] * keq_adj * (rt/pt);
     } else {
       if (rt != 0) {
 	forward_lklhd[i] = 1.0;
       } else {
-	forward_lklhd[i] = 0;0;
+	forward_lklhd[i] = 0.0;
+      }
     }
     if (rt != 0) {
-      reverse_lklhd[i] = rke[i] * rek_adj * (pt/rt);
+      reverse_lklhd[i] = rke[i] * rkeq_adj * (pt/rt);
     } else {
       if (pt != 0) {
 	reverse_lklhd[i] = 1.0;
@@ -245,7 +246,7 @@ int lr14_approximate_delta_concs(struct state_struct *state,
     NB if use_activities is not set activities[i] will be 1.0 for all i.
     */
     rfc[i] = (forward_lklhd[i] - reverse_lklhd[i]) * activities[i];
-  }
+  } /* end for i */
   if (success) {
     molecule = molecules;
     for (i=0;i<num_species;i++) {
