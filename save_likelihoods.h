@@ -20,4 +20,4 @@ under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
-extern void save_likelihoods(struct state_struct *state, int rxn_view_pos);
+extern void save_likelihoods(struct state_struct *state, int64_t rxn_view_pos);
