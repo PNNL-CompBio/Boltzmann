@@ -196,14 +196,14 @@ int boltzmann_run(struct state_struct *state) {
 	  choice_view_step = choice_view_step - one_l;
 	  if ((choice_view_step <= zero_l) || (i == (n_warmup_steps-one_l))) {
 	    if (rxn_choice == noop_rxn) {
-	      fprintf(lfp,"%ld\tnone\n",i);
+	      fprintf(lfp,"%lld\tnone\n",i);
 	    } else {
 	      if (rxn_choice < number_reactions) {
-		fprintf(lfp,"%ld\t%d\t%le\t%le\n",i,rxn_choice,forward_rxn_likelihood[rxn_choice],
+		fprintf(lfp,"%lld\t%d\t%le\t%le\n",i,rxn_choice,forward_rxn_likelihood[rxn_choice],
 			reverse_rxn_likelihood[rxn_choice]);
 	      } else {
 		rxn_no = rxn_choice - number_reactions;
-		fprintf(lfp,"%ld\t%d\t%le\t%le\n",i,rxn_choice,reverse_rxn_likelihood[rxn_no],
+		fprintf(lfp,"%lld\t%d\t%le\t%le\n",i,rxn_choice,reverse_rxn_likelihood[rxn_no],
 			forward_rxn_likelihood[rxn_no]);
 	      
 	      }
@@ -281,14 +281,14 @@ int boltzmann_run(struct state_struct *state) {
 	    choice_view_step = choice_view_step - one_l;
 	    if ((choice_view_step <= zero_l) || (i == (n_record_steps-one_l))) {
 	      if (rxn_choice == noop_rxn) {
-		fprintf(lfp,"%ld\tnone\n",i);
+		fprintf(lfp,"%lld\tnone\n",i);
 	      } else {
 		if (rxn_choice < number_reactions) {
-		  fprintf(lfp,"%ld\t%d\t%le\t%le\n",i,rxn_choice,forward_rxn_likelihood[rxn_choice],
+		  fprintf(lfp,"%lld\t%d\t%le\t%le\n",i,rxn_choice,forward_rxn_likelihood[rxn_choice],
 			  reverse_rxn_likelihood[rxn_choice]);
 		} else {
 		  rxn_no = rxn_choice - number_reactions;
-		  fprintf(lfp,"%ld\t%d\t%le\t%le\n",i,rxn_choice,reverse_rxn_likelihood[rxn_no],
+		  fprintf(lfp,"%lld\t%d\t%le\t%le\n",i,rxn_choice,reverse_rxn_likelihood[rxn_no],
 			  forward_rxn_likelihood[rxn_no]);
 		  
 		}
