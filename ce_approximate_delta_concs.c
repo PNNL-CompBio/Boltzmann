@@ -7,7 +7,7 @@
 int ce_approximate_delta_concs(struct state_struct *state, double *counts,
 			       double *forward_rxn_likelihoods,
 			       double *reverse_rxn_likelihoods, 
-			       double *flux, double multiplier,
+			       double *flux, double flux_scaling,
 			       int base_rxn,
 			       int choice) {
   /*
@@ -15,7 +15,7 @@ int ce_approximate_delta_concs(struct state_struct *state, double *counts,
     coupled_enzyme.dat reaction file , explicitly to match the 
     coupledenzymefunc.m matlab function:
     For testing ode23tb.
-    Called by: ode23tb, ode_num_jac, ode_it_solve
+    Called by: approximate_delta_concs
     Calls:     update_rxn_likelihoods
 
                                 TMF
@@ -187,5 +187,8 @@ int ce_approximate_delta_concs(struct state_struct *state, double *counts,
 
   flux[7]  = -(k1a * y[0] * y[7]) + (k1_a * y[1]) + (k3a * y[3]) - (k3_a * y[7] * y[2]);
   flux[8] = - (k1b * y[2] * y[8]) + (k1_b * y[4]) + (k3b * y[6]) - (k3_b * y[8] * y[5]);
+  for (i=0;i<9;i++) {
+    flux[i] *= flux_scaling;
+  }
   return (success);
 }
