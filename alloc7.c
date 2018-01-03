@@ -32,6 +32,7 @@ int alloc7(struct state_struct *state) {
     the reactant_term vector (length = num_rxns), 
     product_term_vector (length = num_rxns),  r_over_p, p_over_r both of 
     length num_rxns, and concs of length num_species.
+    Also an integer vector, rxn_has_flux of length num_rxns.
     Called by: deq_run
     Calls:     calloc, fprintf, fflush,
   */
@@ -45,6 +46,7 @@ int alloc7(struct state_struct *state) {
   int64_t ask_for;
   int64_t one_l;
   int64_t usage;
+  int    *rxn_has_flux;
   int num_rxns;
   int num_species;
   int success;
@@ -166,6 +168,24 @@ int alloc7(struct state_struct *state) {
       success = 0;
     } else {
       state->concs = concs;
+    }
+  }
+  /*
+    Allocate space for the rxn_has_flux indicator vector.
+    This vector is sort of a hack for now for improving mass
+    conservation. We need to address mass conservation more carefully.
+  */
+  if (success) {
+    ask_for = (num_rxns + (num_rxns & 1)) * sizeof(int);
+    usage += ask_for;
+    rxn_has_flux = (int*)calloc(one_l,ask_for);
+    if (rxn_has_flux == NULL) {
+      fprintf(stderr,"alloc7: Error unable to allocate %lld bytes for "
+	      "rxn_has_flux\n",ask_for);
+      fflush(stderr);
+      success = 0;
+    } else {
+      state->rxn_has_flux = rxn_has_flux;
     }
   }
   state->usage = usage;
