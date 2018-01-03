@@ -49,6 +49,8 @@ int flatten_state(struct state_struct *boot_state,
   struct rxn_struct rs;
   struct rxn_matrix_struct rms;
   struct rxn_matrix_struct *reactions_matrix;
+  struct molecules_matrix_struct mms;
+  struct molecules_matrix_struct *molecules_matrix;
   int64_t *new_state_l;
   int64_t *workspace_base_l;
   int64_t *workspace_base;
@@ -109,6 +111,10 @@ int flatten_state(struct state_struct *boot_state,
   int64_t molecule_probabilities_size;
   int64_t molecule_chemical_potentials_offset;
   int64_t molecule_chemical_potentials_size;
+  int64_t count_to_conc_offset;
+  int64_t count_to_conc_size;
+  int64_t conc_to_count_offset;
+  int64_t conc_to_count_size;
   
   int64_t activities_offset;
   int64_t activities_size;
@@ -128,7 +134,6 @@ int flatten_state(struct state_struct *boot_state,
   int64_t reactions_matrix_offset;
   int64_t reactions_matrix_size;
   int64_t reactions_matrix_pad;
-
   int64_t rxn_ptrs_offset;
   int64_t rxn_ptrs_size;
   int64_t molecules_offset;
@@ -190,6 +195,21 @@ int flatten_state(struct state_struct *boot_state,
   int64_t molecules_text_offset_in_bytes;
   int64_t compartments_text_offset_in_bytes;
   int64_t max_regs_per_rxn;
+  /*
+    Adding stuff for molecules matrix.
+  sorted_molecules_offset = text_offset + text_size;
+  */
+  int64_t molecules_matrix_offset;
+  int64_t molecules_matrix_size;
+  int64_t molecules_matrix_pad;
+  int64_t molecules_ptrs_offset;
+  int64_t molecules_ptrs_size;
+  int64_t rxn_indices_offset;
+  int64_t rxn_indices_size;
+  int64_t mlcls_coeffs_offset;
+  int64_t mlcls_coeffs_size;
+  int64_t transpose_workspace_offset;
+  int64_t transpose_workspace_size;
   int success;
   int load_from_boot;
   one_l   = (int64_t)1;
@@ -251,9 +271,14 @@ int flatten_state(struct state_struct *boot_state,
     molecule_probabilities_size;
   molecule_chemical_potentials_size   = unique_molecules;
   
-
-  activities_offset    = molecule_chemical_potentials_offset +
+  count_to_conc_offset = molecule_chemical_potentials_offset +
     molecule_chemical_potentials_size;
+  count_to_conc_size  = unique_molecules;
+
+  conc_to_count_offset = count_to_conc_offset + count_to_conc_size;
+  conc_to_count_size   = unique_molecules;
+
+  activities_offset    = conc_to_count_offset + conc_to_count_size;
   activities_size      = number_reactions;
 
   reg_constant_size    = number_reactions * max_regs_per_rxn;
@@ -290,7 +315,20 @@ int flatten_state(struct state_struct *boot_state,
   solvent_coefficients_size   = number_reactions + (number_reactions & 1);
   text_offset            = solvent_coefficients_offset + solvent_coefficients_size;
   text_size              = molecules_indices_size;
-  sorted_molecules_offset = text_offset + text_size;
+
+  molecules_matrix_offset = text_offset + text_size;
+  molecules_matrix_size   = sizeof(mms);
+  molecules_matrix_pad    = (align_len - (molecules_matrix_size & align_mask)) & align_mask;
+  molecules_matrix_size   = (molecules_matrix_size + molecules_matrix_pad) >> log2_word_len;
+  molecules_ptrs_offset   = molecules_matrix_offset + molecules_matrix_size;
+  molecules_ptrs_size     = unique_molecules + 1;
+  molecules_ptrs_size     = molecules_ptrs_size + (molecules_ptrs_size & 1);
+  rxn_indices_offset      = molecules_ptrs_offset + molecules_ptrs_size;
+  rxn_indices_size        = number_molecules + (number_molecules&1);
+  mlcls_coeffs_offset     = rxn_indices_offset + rxn_indices_size;
+  mlcls_coeffs_size       = rxn_indices_size;
+
+  sorted_molecules_offset = mlcls_coeffs_offset + mlcls_coeffs_size;
   sorted_molecules_offset_in_bytes = sorted_molecules_offset << log2_word_len;
   sorted_molecules_size   = sizeof(ies) * number_molecules;
   sorted_molecules_pad    = (align_len - (sorted_molecules_size & align_mask)) & align_mask;
@@ -350,7 +388,9 @@ int flatten_state(struct state_struct *boot_state,
   reverse_rxn_log_size    = free_energy_size;
   rxn_likelihood_ps_offset = reverse_rxn_log_offset + reverse_rxn_log_size;
   rxn_likelihood_ps_size  = (free_energy_size + 1) << 1;
-  workspace_end = rxn_likelihood_ps_offset + rxn_likelihood_ps_size;
+  transpose_workspace_offset = rxn_likelihood_ps_offset + rxn_likelihood_ps_size;
+  transpose_workspace_size = unique_molecules+1;
+  workspace_end =  transpose_workspace_offset + transpose_workspace_size;
   if (print_output) {
     rxn_view_hist_length     = boot_state->rxn_view_hist_length;
     no_op_likelihood_offset = workspace_end;
@@ -449,6 +489,9 @@ int flatten_state(struct state_struct *boot_state,
     new_state->molecule_dg0tfs   = (double*)&new_state_l[molecule_dg0tfs_offset];
     new_state->molecule_probabilities   = (double*)&new_state_l[molecule_probabilities_offset];
     new_state->molecule_chemical_potentials   = (double*)&new_state_l[molecule_chemical_potentials_offset];
+    new_state->count_to_conc = (double*)&new_state_l[count_to_conc_offset];
+    new_state->conc_to_count = (double*)&new_state_l[conc_to_count_offset];
+
     new_state->activities    = (double*)&new_state_l[activities_offset];
     new_state->reg_constant  = (double*)&new_state_l[reg_constant_offset];
     new_state->reg_exponent  = (double*)&new_state_l[reg_exponent_offset];
@@ -465,6 +508,11 @@ int flatten_state(struct state_struct *boot_state,
     reactions_matrix->coefficients = (int64_t *)&new_state_l[coefficients_offset];
     reactions_matrix->solvent_coefficients = (int64_t *)&new_state_l[solvent_coefficients_offset];
     reactions_matrix->text = (int64_t*)&new_state_l[text_offset];
+    new_state->molecules_matrix = (struct molecules_matrix_struct*)&new_state_l[molecules_matrix_offset];
+    molecules_matrix = new_state->molecules_matrix;
+    molecules_matrix->molecules_ptrs = (int64_t*)&new_state_l[molecules_ptrs_offset];
+    molecules_matrix->rxn_indices    = (int64_t*)&new_state_l[rxn_indices_offset];
+    molecules_matrix->coefficients   = (int64_t*)&new_state_l[mlcls_coeffs_offset];
     new_state->sorted_molecules = (struct molecule_struct*)&new_state_l[sorted_molecules_offset];
     new_state->sorted_cmpts = (struct compartment_struct*)&new_state_l[sorted_cmpts_offset];
     new_state->params_file  = (char*)&new_state_l[file_names_offset];
@@ -523,6 +571,8 @@ int flatten_state(struct state_struct *boot_state,
 	     boot_state->molecule_probabilities,move_size);
       memcpy(new_state->molecule_chemical_potentials,
 	     boot_state->molecule_chemical_potentials,move_size);
+      memcpy(new_state->count_to_conc,boot_state->count_to_conc,move_size);
+      memcpy(new_state->conc_to_count,boot_state->conc_to_count,move_size);
       move_size = number_reactions * sizeof(double);
       memcpy(new_state->activities,boot_state->activities,move_size);
       move_size = number_reactions * max_regs_per_rxn * sizeof(double);
@@ -545,6 +595,16 @@ int flatten_state(struct state_struct *boot_state,
 	     boot_state->reactions_matrix->coefficients,move_size);
       memcpy(new_state->reactions_matrix->text,
 	     boot_state->reactions_matrix->text,move_size);
+
+      move_size = (unique_molecules + 1) * sizeof(int64_t);
+      memcpy(new_state->molecules_matrix->molecules_ptrs,
+	      boot_state->molecules_matrix->molecules_ptrs,move_size);
+      move_size = number_molecules * sizeof(int64_t);
+      memcpy(new_state->molecules_matrix->rxn_indices,
+	     boot_state->molecules_matrix->rxn_indices,move_size);
+      memcpy(new_state->molecules_matrix->coefficients,
+             boot_state->molecules_matrix->coefficients,move_size);
+
       move_size = number_reactions * sizeof(int64_t);
       memcpy(new_state->reactions_matrix->solvent_coefficients,
 	     boot_state->reactions_matrix->solvent_coefficients,move_size);
