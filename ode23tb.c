@@ -10,6 +10,12 @@
 #include "ode_print_concs.h"
 #include "blas.h"
 #include "lapack.h"
+#include "compute_net_likelihoods.h"
+#include "compute_net_lklhd_bndry_flux.h"
+#include "print_net_likelihood_header.h"
+#include "print_net_lklhd_bndry_flux_header.h"
+#include "print_net_likelihoods.h"
+#include "print_net_lklhd_bndry_flux.h"
 /*
 #define DBG 1
 */
@@ -146,6 +152,7 @@ int ode23tb (struct state_struct *state, double *counts,
 
   int64_t ask_for;
   int64_t one_l;
+  int64_t zero_l;
   int64_t nfevals;
   int64_t nsteps;
   int64_t nfailed;
@@ -155,6 +162,9 @@ int ode23tb (struct state_struct *state, double *counts,
   int64_t nf;
   int64_t eps_hex;
   int64_t sqrt_eps_hex;
+  int64_t ode_rxn_view_freq;
+  int64_t ode_rxn_view_step;
+
 
   int *base_reactant_indicator; /* length nunique_molecules */
   int *base_reactants;          /* length nunique_molecules */
@@ -206,6 +216,9 @@ int ode23tb (struct state_struct *state, double *counts,
   int ode_solver_choice;
   int delta_concs_choice;
 
+  int nl_success;
+  int padi;
+
   char  trans_chars[8];
   char  *trans;
 
@@ -219,6 +232,7 @@ int ode23tb (struct state_struct *state, double *counts,
   tfinal  = state->ode_t_final;
   tdir    = 1.0;
   one_l   = (int64_t)1;
+  zero_l  = (int64_t)0;
   rate    = 0.0;
   nsteps   = (int64_t)0;
   nfailed  = nsteps;
@@ -558,6 +572,20 @@ int ode23tb (struct state_struct *state, double *counts,
     h = tdir * absh;
     for (i=0;i<ny;i++) {
       z[i] = h*yp[i];
+    }
+    /*
+      Set up to print net likelihoods and net-likelihood-boundary fluxes
+    */
+    ode_rxn_view_freq = state->ode_rxn_view_freq;
+    if (ode_rxn_view_freq > 0) {
+      /* 
+	If tracking net likelihoods and fluxes, set up to
+	print the first iteration, and open and print headers to 
+	the .nl_flux and .nlklhd files.
+      */
+      print_net_likelihood_header(state);
+      print_net_lklhd_bndry_flux_header(state);
+      ode_rxn_view_step = one_l;
     }
     /*
       Main loop.
@@ -1039,8 +1067,20 @@ int ode23tb (struct state_struct *state, double *counts,
 	}
 	y_counts[i] = y[i] * conc_to_count[i];
       }
-      if (print_concs) {
-	ode_print_concs(state,t,y);
+      if (ode_rxn_view_freq > 0) {
+	ode_rxn_view_step -= one_l;
+	if (ode_rxn_view_step == zero_l) {
+          nl_success = compute_net_likelihoods(state);
+	  if (nl_success) {
+	    print_net_likelihoods(state,t);
+	    compute_net_lklhd_bndry_flux(state);
+	    print_net_lklhd_bndry_flux(state,t);
+	  }
+	  if (print_concs) {
+	    ode_print_concs(state,t,y);
+	  }
+	  ode_rxn_view_step = ode_rxn_view_freq;
+	}
       }
       if (not_done) {
 	if (normcontrol) {
