@@ -151,7 +151,7 @@ int lr8_approximate_delta_concs(struct state_struct *state,
 	 and thermo_product = 
 	 product( species_conc + |stoichiometric_coef|/volume)^|stoichiometric coef|.
 
-	 Then if a molecule is a  in rxn i,
+	 Then if a molecule is in rxn i,
 
 	 rxn i contributes 1/stoichiometric_coef * rfc[i] to the molcule's flux.
          here we include the sign with the stoichiometric_coef, so for
@@ -220,7 +220,7 @@ int lr8_approximate_delta_concs(struct state_struct *state,
       } else {
 	flux[i] = 0.0;
       }
-      molecule += 1; /* Caution address arithmetic heare. */
+      molecule += 1; /* Caution address arithmetic hear. */
     } /* end for (i...) */
   } /* end if success */
 #ifdef DBG
