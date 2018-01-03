@@ -138,7 +138,7 @@ int lr1_approximate_delta_concs(struct state_struct *state,
 	  frl = forward_rxn_likelihoods[rxn];
 	  rrl = reverse_rxn_likelihoods[rxn];
 	  if (coefficients[j] < 0) {
-	    forward = -frl;
+	    forward += -frl;
 	    backward += (frl * rrl);
 	  } else {
 	    if (coefficients[j] > 0) {
