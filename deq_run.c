@@ -159,6 +159,7 @@ int deq_run(struct state_struct *state) {
   lfp                    = state->lfp;
   noop_rxn               = number_reactions + number_reactions;
   normcontrol            = 0;
+  print_ode_concs        = print_ode_concs && print_output;
   /*
     We need to allocate space needed by the derivative approximation routine
     ode_counts (length = num_species)
@@ -230,13 +231,15 @@ int deq_run(struct state_struct *state) {
   htry = 0.0;
   nonnegative = 1.0;
   if (success) {
-    if (ode_rxn_view_freq > 0) {
-      ode_print_concs_header(state);
-      ode_print_lklhd_header(state);
-      ode_print_dconcs_header(state);
-      ode_print_bflux_header(state);
-      print_net_likelihood_header(state);
-      print_net_lklhd_bndry_flux_header(state);
+    if (print_output) {
+      if (ode_rxn_view_freq > 0) {
+	ode_print_concs_header(state);
+	ode_print_lklhd_header(state);
+	ode_print_dconcs_header(state);
+	ode_print_bflux_header(state);
+	print_net_likelihood_header(state);
+	print_net_lklhd_bndry_flux_header(state);
+      }
     }
     success = ode_solver(state,concs,htry,nonnegative,normcontrol,
 			 print_ode_concs,solver_choice);
