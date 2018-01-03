@@ -80,7 +80,7 @@ void print_boundary_flux(struct state_struct *state) {
       ci = molecule->c_index;
       if (ci != oi) {
 	oi = ci;
-	if (ci >= 0) {
+	if (ci > 0) {
 	  cur_cmpt = (struct istring_elem_struct *)&(sorted_cmpts[ci]);
 	  cmpt_string = (char *)&compartment_text[cur_cmpt->string];
 	} else {
@@ -89,7 +89,7 @@ void print_boundary_flux(struct state_struct *state) {
       }
       if (molecule->variable == 0) {
 	molecule_str = (char *)&molecules_text[molecule->string];
-	if (ci >= 0) {
+	if (ci > 0) {
 	  fprintf(bndry_flux_fp,"%s:%s\t%le\n",molecule_str,
 		  cmpt_string,bndry_flux_concs[j]);
 	} else {
