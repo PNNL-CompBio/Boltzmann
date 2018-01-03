@@ -38,6 +38,9 @@ int merge_molecules(struct molecule_struct *list1,
   struct molecule_struct *p1;
   struct molecule_struct *p2;
   struct molecule_struct *p3;
+  struct molecule_struct mes;
+  size_t move_size;
+  size_t e_size;
   
   char *string1;
   char *string2;
@@ -61,6 +64,7 @@ int merge_molecules(struct molecule_struct *list1,
   p1  = list1;
   p2  = list2;
   p3  = mlist;
+  e_size = (size_t)sizeof(mes);
   string1 = NULL;
   string2 = NULL;
   if (p1->string >= 0) {
@@ -90,11 +94,14 @@ int merge_molecules(struct molecule_struct *list1,
       /*
 	Smaller value was in p1.
       */
+      /*
       p3->string = p1->string;
       p3->m_index  = p1->m_index;
       p3->c_index  = p1->c_index;
       p3->variable = p1->variable;
       p3->g_index  = p1->g_index;
+      */
+      memcpy((void*)p3,(void*)p1,e_size);
       j1++;
       p1 += 1; /* Caution Address arithmetic here. */
       p3 += 1; /* Caution Address arithmetic here. */
@@ -102,15 +109,21 @@ int merge_molecules(struct molecule_struct *list1,
 	If we have seen all of list 1, catenate the rest of list 2.
       */
       if (j1 == l1) {
+	move_size = (size_t)(l2-j2) * e_size;
+	if (move_size > 0) {
+	  memcpy((void*)p3,(void*)p2,move_size);
+	}
+	/*
 	for (j = j2;j<l2;j++) {
 	  p3->string = p2->string;
 	  p3->m_index  = p2->m_index;
 	  p3->c_index  = p2->c_index;
 	  p3->variable = p2->variable;
 	  p3->g_index  = p2->g_index;
-	  p2 += 1; /* Caution Address arithmetic here. */
-	  p3 += 1; /* Caution Address arithmetic here. */
+	  p2 += 1; // Caution Address arithmetic here. 
+	  p3 += 1; // Caution Address arithmetic here. 
 	}
+	*/
 	break;
       } else {
 	if (p1->string >= 0) {
@@ -123,27 +136,34 @@ int merge_molecules(struct molecule_struct *list1,
       /*
 	Smaller value was in p2.
       */
+      /*
       p3->string = p2->string;
-      p3->m_index  = p2->m_index;
       p3->c_index  = p2->c_index;
-      p3->variable = p2->variable;
       p3->g_index  = p2->g_index;
+      */
       j2++;
+      memcpy((void*)p3,(void*)p2,e_size);
       p2 += 1; /* Caution Address arithmetic here. */
       p3 += 1; /* Caution Address arithmetic here. */
       /* 
 	If we have seen all of list 2, catenate the rest of list 1.
       */
       if (j2 == l2) {
+	move_size = (size_t)(l1-j1) * e_size;
+	if (move_size > 0) {
+	  memcpy((void*)p3,(void*)p1,move_size);
+	}
+	/*
 	for (j = j1;j<l1;j++) {
 	  p3->string = p1->string;
 	  p3->m_index  = p1->m_index;
 	  p3->c_index  = p1->c_index;
 	  p3->variable = p1->variable;
 	  p3->g_index  = p1->g_index;
-	  p1 += 1; /* Caution Address arithmetic here. */
-	  p3 += 1; /* Caution Address arithmetic here. */
+	  p1 += 1; // Caution Address arithmetic here. 
+	  p3 += 1; // Caution Address arithmetic here. 
 	}
+	*/
 	break;
       } else {
 	if (p2->string >= 0) {
