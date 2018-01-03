@@ -40,7 +40,6 @@ int read_compartment_sizes(struct state_struct *state) {
   char *compartment_file;
   char *cmpts_buffer;
   char *compartment_name;
-  char *line;
   char *fgp;
   char *vol_string;
   int64_t cmpts_buff_len;
