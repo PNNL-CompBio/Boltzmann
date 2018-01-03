@@ -121,12 +121,8 @@ double rxn_likelihood(double *concs,
 	left_concs = left_concs * (conc-k);	
       } 
     } else {
-      for (k=0;k<coeff;k++) {
-	if ((conc - k) <= 0) {
-	  right_concs = right_concs * 0.5;
-	} else {
-	  right_concs = right_concs * (conc-k);
-	}
+      for (k=1;k<=coeff;k++) {
+	right_concs = right_concs * (conc+k);
       } 
     }
   }
