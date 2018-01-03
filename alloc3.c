@@ -47,8 +47,6 @@ int alloc3(struct state_struct *state) {
 
   int success;
   int nrxns;
-  int rxn_view_freq;
-  int rxn_view_hist_length;
 
   int nzr;
   int max_compartment_len;
@@ -62,7 +60,6 @@ int alloc3(struct state_struct *state) {
   nrxns                   = (int)state->number_reactions;
   max_molecule_len        = (int)state->max_molecule_len + 1;
   max_compartment_len     = (int)state->max_compartment_len + 1;
-  rxn_view_freq           = (int)state->rxn_view_freq;
   /*
     Allocate space for compartment pointers in the sorted molecules list -
     length is unique_compartments + 1;
