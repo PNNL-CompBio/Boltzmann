@@ -31,12 +31,12 @@ specific language governing permissions and limitations under the License.
 #include "boltzmann_structs.h"
 
 #include "read_params.h"
-int read_params (int argc, char **argv, struct state_struct *state) {
+int read_params (char *param_file_name, struct state_struct *state) {
   /*
     Read paramaters for the boltzmann code to determine equilbrium
     concentrations of a set of reactions via Monte Carlo methods.
 
-    Called by: boltzmann main program.
+    Called by: boltzmann_init
   */
   int64_t max_param_line_len;
   char *param_buffer;
@@ -47,12 +47,12 @@ int read_params (int argc, char **argv, struct state_struct *state) {
   int sscan_ok;
   FILE *in_fp;
   success = 1;
-  if (argc < 2) {
-    fprintf(stdout,"read_params: Warning no arguments given looking for ./boltzmann.in input file.\n");
+  if (param_file_name == NULL) {
+    fprintf(stdout,"read_params: Warning no param_file_name given, looking for ./boltzmann.in input file.\n");
     fflush(stdout);
     strcpy(state->params_file,"./boltzmann.in");
   } else {
-    strcpy(state->params_file,argv[1]);
+    strcpy(state->params_file,param_file_name);
   }
   in_fp = fopen(state->params_file,"r");
   if (in_fp == NULL) {
