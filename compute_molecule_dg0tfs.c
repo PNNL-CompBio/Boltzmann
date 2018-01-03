@@ -41,7 +41,7 @@ int compute_molecule_dg0tfs(struct formation_energy_struct *fes){
   struct pseudoisomer_struct *pseudoisomers;
   int num_cpds;
 
-  struct istring_elem_struct *cur_molecules;
+  struct molecule_struct *cur_molecules;
   char *pseudoisomer_strings;
   char *molecules_text;
   char *molecule;
