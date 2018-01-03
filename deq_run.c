@@ -38,6 +38,7 @@ specific language governing permissions and limitations under the License.
 #include "ode_print_lklhd_header.h"
 #include "print_net_likelihood_header.h"
 #include "print_net_lklhd_bndry_flux_header.h"
+#include "get_counts.h"
 /*
 #include "fill_flux_pieces.h"
 #include "ode23tb.h"
@@ -247,11 +248,14 @@ int deq_run(struct state_struct *state) {
   print_counts(state,j);
   */
   /*
-    Convert counts back to integers,
+    Convert concs to counts,
   */
-  for (i=0;i<unique_molecules;i++) {
-    counts[i] = concs[i] * conc_to_count[i];
-    if (counts[i] <= 0.0) {
+  get_counts(unique_molecules,concs,conc_to_count,counts);
+  if (state->no_round_from_deq == 0) {
+    /*
+      Convert counts back to integers,
+   */
+    for (i=0;i<unique_molecules;i++) {
       counts[i] = (double)((int64_t)(counts[i] + 0.5));
     }
   }
