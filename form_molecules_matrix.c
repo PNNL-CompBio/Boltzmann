@@ -33,7 +33,7 @@ specific language governing permissions and limitations under the License.
 int form_molecules_matrix(struct state_struct *state) {
   /*
     Transpose the reactions matrix in to the molecules matrix.
-    Called by: boltzmann
+    Called by: boltzmann_init
     Calls:     
   */
   struct rxn_matrix_struct *rxn_matrix;
