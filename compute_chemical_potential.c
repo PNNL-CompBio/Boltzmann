@@ -41,7 +41,7 @@ int compute_chemical_potential(struct formation_energy_struct *fes){
 
   double  *probabilities; /*len = unique_molecules*/
   double  *chemical_potentials; /*len = unique_molecules */
-  double *current_concs;	/*len = unique_molecules */
+  double *current_counts;	/*len = unique_molecules */
   double temp_kelvin;
   double sum;
   double sump1;
@@ -58,7 +58,7 @@ int compute_chemical_potential(struct formation_energy_struct *fes){
   nu_molecules        = fes->nunique_molecules;
   probabilities       = fes->molecule_probabilities;
   chemical_potentials = fes->molecule_chemical_potentials;
-  current_concs       = fes->current_concentrations;
+  current_counts      = fes->current_counts;
 
   /*
     -RT is computed in read_params and stored in state->m_rt and 
@@ -69,12 +69,12 @@ int compute_chemical_potential(struct formation_energy_struct *fes){
 
   sum = 0.0;
   for (i=0;i<nu_molecules;i++) {
-    sum = sum + current_concs[i];
+    sum = sum + current_counts[i];
   }
   sump1 = sum + 1.0;
   for (i=0;i<nu_molecules;i++) {
     chemical_potentials[i] = m_rt *
-      log((sump1*probabilities[i])/(current_concs[i]+1.0));
+      log((sump1*probabilities[i])/(current_counts[i]+1.0));
   }
   return (success);
 }
