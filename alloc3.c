@@ -47,7 +47,7 @@ int alloc3(struct state_struct *state) {
     dg0tfs                 	     (nunique_molecules)
     molecule_probabilities 	     (nunique_molecules)
     molecule_chemical_potentials     (nunique_molecules)
-    Called by: boltzmann_init
+    Called by: boltzmann_init_core
     Calls:     calloc, fprintf, fflush (intrinsic)
   */
   int64_t ask_for;
