@@ -75,21 +75,21 @@ int alloc2(struct state_struct *state) {
   one_l      = (int64_t)1;
   align_mask = state->align_mask;
   align_len  = state->align_len;
-  num_rxns   = state->number_reactions;
-  num_molecules = state->number_molecules;
-  num_cmpts   = state->number_compartments;
-  rxn_title_space =  state->rxn_title_len + ((int64_t)num_rxns) * align_len;
+  num_rxns   = (int)state->number_reactions;
+  num_molecules = (int)state->number_molecules;
+  num_cmpts   = (int)state->number_compartments;
+  rxn_title_space =  state->rxn_title_space + ((int64_t)num_rxns) * align_len;
   rxn_title_space += align_len - (rxn_title_space & align_mask);
-  pathway_space   =  state->pathway_len + ((int64_t)num_rxns) * align_len;
+  pathway_space   =  state->pathway_space + ((int64_t)num_rxns) * align_len;
   pathway_space   += align_len - (pathway_space & align_mask);
   if (state->number_compartments > 0) {
-    compartment_space = state->compartment_len +
+    compartment_space = state->compartment_space +
                         ((int64_t)num_rxns) * align_len;
     compartment_space += align_len - (compartment_space & align_mask);
   } else {
     compartment_space = 0;
   }
-  molecules_space  = state->molecules_len + ((int64_t)num_molecules) * align_len;
+  molecules_space  = state->molecules_space + ((int64_t)num_molecules) * align_len;
   molecules_space  += align_len - (molecules_space & align_mask);
   ask_for = rxn_title_space + pathway_space + compartment_space +
     molecules_space + molecules_space;
@@ -268,18 +268,6 @@ int alloc2(struct state_struct *state) {
     if (state->activities == NULL) {
       fprintf(stderr,"alloc2: Error unable to allocate %ld bytes for "
 	      "state->activities field.\n",ask_for);
-      fflush(stderr);
-      success = 0;
-    }
-  }
-
-  if (success) {
-    ask_for = ((int64_t)num_rxns) * ((int64_t)sizeof(double));
-    usage += ask_for;
-    state->activities_save = (double*)calloc(one_l,ask_for);
-    if (state->activities_save == NULL) {
-      fprintf(stderr,"alloc2: Error unable to allocate %ld bytes for "
-	      "state->activities_save field.\n",ask_for);
       fflush(stderr);
       success = 0;
     }
