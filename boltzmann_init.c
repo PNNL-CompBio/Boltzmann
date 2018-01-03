@@ -87,6 +87,7 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
   char *cmpt_string;
   double *dg0s;
   double *free_energy;
+  double *activities;
   int64_t align_len;
   int64_t align_mask;
   int64_t rxn_title_len;
@@ -370,5 +371,18 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
       free_energy[i] = dg0s[i];
     }
   }
+  /*
+    If use_activities has not been turned on, set all activities to
+    1.0 so that all reactions are fully active.
+  */
+  if (success) {
+    activities = state->activities;
+    if (state->use_activities == 0) {
+      for (i=0;i<state->number_reactions;i++) {
+	activities[i] = 1.0;
+      }
+    }
+  }
+
   return(success);
   }
