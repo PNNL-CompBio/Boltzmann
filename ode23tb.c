@@ -1,30 +1,40 @@
 #include "boltzmann_structs.h"
 
 #include "init_base_reactants.h"
-#include "approximate_fluxes.h"
-#include "ce_approximate_fluxes.h"
+#include "approximate_delta_concs.h"
+/*#include "ce_approximate_delta_concs.h" */
+/*#include "lr_approximate_delta_concs.h" */
 #include "compute_flux_scaling.h"
 #include "ode_num_jac.h"
 #include "ode_it_solve.h"
-#include "print_concs_fluxes.h"
 #include "ode_print_concs.h"
 #include "blas.h"
 #include "lapack.h"
+/*
+#define DBG 1
+*/
+#ifdef DBG 
+#include "print_concs_fluxes.h"
+#endif
 
 #include "ode23tb.h"
 int ode23tb (struct state_struct *state, double *counts,
 	     double htry, int nonnegative, int normcontrol,
-	     int print_concs) {
+	     int print_concs, int choice) {
 
   /*
     NB. This is adapted from the ode23tb matlab code .
     Our mass matrix is the identity matrix.
-    species concentrations = y0, species fluxes = f0,
+    species concentrations = y0, species concentration changes wrt time = f0,
     species concentration = counts .* count_to_conc
     htry is first conc step size, set to zero to set via approximation.
     nonnegative should be set to 1 to specify that concs must be positive.
 
-    Called by: deq_run
+    choice is not used by ode23tb but is a method selector for its
+    parent, ode_solver, and might be used in printing debug information.
+    
+
+    Called by: ode_solver
     Calls:     init_base_reactants,
                compute_flux_scaling,
                approximate_fluxes, ode_num_jac, ode_it_solve,
@@ -193,14 +203,14 @@ int ode23tb (struct state_struct *state, double *counts,
   int nysq;
   int info;
 
+  int ode_solver_choice;
+  int delta_concs_choice;
+
   char  trans_chars[8];
   char  *trans;
 
   FILE *lfp;
   FILE *efp;
-  /*
-#define DBG 1
-  */
   success = 1;
   t0      = 0.0;
   tfinal  = 10.0;
@@ -218,10 +228,11 @@ int ode23tb (struct state_struct *state, double *counts,
   conc_to_count = state->conc_to_count;
   base_rxn      = state->base_reaction;
   ny            = state->nunique_molecules;
-  nysq          = ny * ny;
+  delta_concs_choice = (int)state->delta_concs_choice;
   nrxns         = state->number_reactions;
   min_conc      = state->min_conc;
   lfp           = state->lfp;
+  nysq          = ny * ny;
   trans_chars[0] = 'N';
   trans_chars[1] = 'T';
   trans_chars[3] = 'C';
@@ -307,28 +318,13 @@ int ode23tb (struct state_struct *state, double *counts,
       concentrations in base reaction).
     */
     flux_scaling = compute_flux_scaling(state,y0);
-    ce_approximate_fluxes(state,y_counts,
-		       forward_rxn_likelihoods,reverse_rxn_likelihoods,
-		       f0,flux_scaling,base_rxn);
+    approximate_delta_concs(state,y_counts,
+			    forward_rxn_likelihoods,reverse_rxn_likelihoods,
+			    f0,flux_scaling,base_rxn,
+			    delta_concs_choice);
 #ifdef DBG
     if (lfp) {
-      fprintf(lfp," ode23tb: After first call to ce_approximate_fluxes\n");
-      origin = 0; 
-      t = 0;
-      h = 0;
-      print_concs_fluxes(state,ny,f0,y,y_counts,
-			 forward_rxn_likelihoods,
-			 reverse_rxn_likelihoods,t,h,nsteps,origin);
-    }
-#endif
-    /*
-    approximate_fluxes(state,y_counts,
-		       forward_rxn_likelihoods,reverse_rxn_likelihoods,
-		       f0,flux_scaling,base_rxn);
-    */
-#ifdef DBG
-    if (lfp) {
-      fprintf(lfp," ode23tb: After first call to approximate_fluxes, flux_scaling = %le\n",flux_scaling);
+      fprintf(lfp," ode23tb: After first call to approximate_delta_concs, flux_scaling = %le\n",flux_scaling);
       origin = 0; 
       t = 0;
       h = 0;
@@ -481,53 +477,17 @@ int ode23tb (struct state_struct *state, double *counts,
 	f1   = flux at t+tdel, y
 	conc = count/volume
       */
-    /*
-      Now the flux concentration needs likelihoods which needs counts,
-      so we need to convert the y1 to counts.
-    */
       /*
-      for (i=0;i<ny;i++) {
-	y1[i] = y[i] + tdel * yp[i];
-	if (y1[i] < min_conc) {
-	  if (lfp) {
-	    if (y1[i] < 0.0) {
-	      fprintf(lfp,"ode23tb: Warning y1[%d] was < 0, setting to %le\n",
-		      i,min_conc);
-	    } else {
-	      fprintf(lfp,"ode23tb: Warning y1[%d] was < %le, setting to %le\n",
-		      i,min_conc);
-	    }
-	  }
-	  y1[i] = min_conc;
-	}
-	y1_counts[i] = y1[i] * conc_to_count[i];
-      }
-      approximate_fluxes(state,y1_counts,
-			 forward_rxn_likelihoods,reverse_rxn_likelihoods,
-			 f1,flux_scaling1,base_rxn);
+	Now the flux concentration needs likelihoods which needs counts,
+	so we need to convert the y1 to counts.
       */
       flux_scaling1 = compute_flux_scaling(state,y1);
-      ce_approximate_fluxes(state,y_counts,
+      approximate_delta_concs(state,y_counts,
 			 forward_rxn_likelihoods,reverse_rxn_likelihoods,
-			 f1,flux_scaling1,base_rxn);
-
+			      f1,flux_scaling1,base_rxn,delta_concs_choice);
 #ifdef DBG
       if (lfp) {
-	fprintf(lfp,"ode23tb: After call to ce_approximate_fluxes in f1\n");
-	origin = 1; 
-	print_concs_fluxes(state,ny,f1,y1,y1_counts,
-			   forward_rxn_likelihoods,
-			   reverse_rxn_likelihoods,t,h,nsteps,origin);
-      }
-#endif
-      /*
-      approximate_fluxes(state,y_counts,
-			 forward_rxn_likelihoods,reverse_rxn_likelihoods,
-			 f1,flux_scaling1,base_rxn);
-      */
-#ifdef DBG
-      if (lfp) {
-	fprintf(lfp,"ode23tb: After call to approximate_fluxes in f1, flux_scaling = %le\n",flux_scaling);
+	fprintf(lfp,"ode23tb: After call to approximate_delta_concs in f1, flux_scaling = %le\n",flux_scaling);
 	origin = 1; 
 	print_concs_fluxes(state,ny,f1,y1,y1_counts,
 			   forward_rxn_likelihoods,
@@ -660,27 +620,12 @@ int ode23tb (struct state_struct *state, double *counts,
 	    compute f0. at current y.
 	  */
 	  flux_scaling = compute_flux_scaling(state,y);
-	  ce_approximate_fluxes(state,y_counts,
+	  approximate_delta_concs(state,y_counts,
 			     forward_rxn_likelihoods,reverse_rxn_likelihoods,
-			     f0,flux_scaling,base_rxn);
-
+				  f0,flux_scaling,base_rxn,delta_concs_choice);
 #ifdef DBG
 	  if (lfp) {
-	    fprintf(lfp,"ode23tb: after new Jacobian call to ce_approximate_fluxes\n");
-	    origin = 2; 
-	    print_concs_fluxes(state,ny,f0,y,y_counts,
-			       forward_rxn_likelihoods,
-			       reverse_rxn_likelihoods,t,h,nsteps,origin);
-	  }
-#endif
-	  /*
-	  approximate_fluxes(state,y_counts,
-			     forward_rxn_likelihoods,reverse_rxn_likelihoods,
-			     f0,flux_scaling,base_rxn);
-	  */
-#ifdef DBG
-	  if (lfp) {
-	    fprintf(lfp,"ode23tb: after new Jacobian call to approximate_fluxes, flux_scaling = %le\n",flux_scaling);
+	    fprintf(lfp,"ode23tb: after new Jacobian call to approximate_delta_concs, flux_scaling = %le\n",flux_scaling);
 	    origin = 2; 
 	    print_concs_fluxes(state,ny,f0,y,y_counts,
 			       forward_rxn_likelihoods,
@@ -795,9 +740,6 @@ int ode23tb (struct state_struct *state, double *counts,
 	itfail2 = 0;
 	if (itfail1 == 0) {
 	  /* Stage 2. */
-	  if (print_concs) {
-	    ode_print_concs(state,t2,y2);
-	  }
 	  if (normcontrol) {
 	    normy2 = dnrm2_(&ny,y2,&inc1);
 	    /*
@@ -906,9 +848,6 @@ int ode23tb (struct state_struct *state, double *counts,
 	  }
 	} else {
 	  /* stage 1 and 2 succeeded, estimate local truncation error.*/
-	  if (print_concs) {
-	    ode_print_concs(state,tnew,ynew);
-	  }
 	  if (normcontrol) {
 	    normynew = dnrm2_(&ny,ynew,&inc1);
 	  /*
@@ -1064,9 +1003,6 @@ int ode23tb (struct state_struct *state, double *counts,
 	  }
 	}
 	if (nnreset_znew) {
-	  if (print_concs) {
-	    ode_print_concs(state,tnew,ynew);
-	  }
 	  if (normcontrol) {
 	    normynew = dnrm2_(&ny,ynew,&inc1);
 	  } else {
@@ -1099,6 +1035,9 @@ int ode23tb (struct state_struct *state, double *counts,
 	  y[i] = min_conc;
 	}
 	y_counts[i] = y[i] * conc_to_count[i];
+      }
+      if (print_concs) {
+	ode_print_concs(state,t,y);
       }
       if (not_done) {
 	if (normcontrol) {
