@@ -144,6 +144,20 @@ int alloc3(struct state_struct *state) {
   }
   if (success) {
     /*
+      Allocate space for the boudary flux concentrations buffer.
+    */
+    ask_for = ((int64_t)nu_molecules) * ((int64_t)sizeof(double));
+    usage += ask_for;
+    state->bndry_flux_concs = (double *)calloc(one_l,ask_for);
+    if (state->bndry_flux_concs == NULL) {
+      fprintf(stderr,"alloc3: Error unable to allocate %ld bytes for "
+	      "bndry_flux_concs field\n",ask_for);
+      fflush(stderr);
+      success = 0;
+    }
+  }
+  if (success) {
+    /*
       Allocate space for the molecules_matrix;
     */
     ask_for = (int64_t)sizeof(sms);
