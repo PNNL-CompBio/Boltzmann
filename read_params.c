@@ -113,6 +113,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
     state->adjust_steady_state = (int64_t)0;
     state->print_output        = (int64_t)0;
     state->use_pseudoisomers   = (int64_t)1;
+    state->use_metropolis      = (int64_t)1;
     state->default_initial_count = (int64_t)0;
     param_buffer       = state->param_buffer;
     max_param_line_len = state->max_param_line_len;
@@ -163,6 +164,8 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	sscan_ok = sscanf(value,"%s",state->pseudoisomer_file);
       } else if (strncmp(key,"USE_PSEUDOISOMERS",17) == 0) {
 	sscan_ok = sscanf(value,"%ld",&state->use_pseudoisomers);
+      } else if (strncmp(key,"USE_METROPOLIS",14) == 0) {
+	sscan_ok = sscanf(value,"%ld",&state->use_metropolis);
       } else if (strncmp(key,"LOG_FILE",8) == 0) {
 	sscan_ok = sscanf(value,"%s",state->log_file);
       } else if (strncmp(key,"SOLVENT",7) == 0) {
