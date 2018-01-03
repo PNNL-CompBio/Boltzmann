@@ -72,7 +72,7 @@ int candidate_rxn(struct state_struct *state, double *scalingp,
 
   success = 1;
   rxn_likelihood_ps      = state->rxn_likelihood_ps;
-  num_rxns               = state->number_reactions;
+  num_rxns               = (int)state->number_reactions;
   forward_rxn_likelihood = state->forward_rxn_likelihood;
   reverse_rxn_likelihood = state->reverse_rxn_likelihood;
   activities             = state->activities;
