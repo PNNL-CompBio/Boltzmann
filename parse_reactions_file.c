@@ -46,6 +46,8 @@ int parse_reactions_file(struct state_struct *state) {
     It fills the reactions structure.
     It also sets the molecules_indices, coefficients,
     and text fields of the reactions matrix.
+    It also fills the rxn_title_text, pathway_text, compartment_text
+    and molecules_text buffers.
    
     An istring_elem_struct has 4 fields. The first three are set by 
     this routine.
@@ -104,7 +106,6 @@ int parse_reactions_file(struct state_struct *state) {
   int64_t align_mask; 
   int64_t len;
   int64_t sll;
-  char **matrix_text;
   char *rxn_buffer;
   char *fgp;
   char **keywords;
@@ -115,7 +116,10 @@ int parse_reactions_file(struct state_struct *state) {
   char *compartment_text;
   char *molecules_text;
   char *raw_molecules_text;
-
+  char *title;
+  char *lcompartment;
+  char *rcompartment;
+  char *pathway;
   int success;
   int rxns;
 
@@ -195,11 +199,10 @@ int parse_reactions_file(struct state_struct *state) {
     rxn_ptrs                    = rxns_matrix->rxn_ptrs;
     molecules_indices           = rxns_matrix->molecules_indices;
     coefficients                = rxns_matrix->coefficients;
-    matrix_text                 = rxns_matrix->text;
     reaction                    = reactions;
-    reaction->lcompartment      = NULL;
-    reaction->rcompartment      = NULL;
-    reaction->pathway           = NULL;
+    reaction->lcompartment      = -1;
+    reaction->rcompartment      = -1;
+    reaction->pathway           = -1;
     reaction->left_compartment  = -1;
     reaction->right_compartment = -1;
     reaction->num_reactants     = 0;
@@ -261,9 +264,11 @@ int parse_reactions_file(struct state_struct *state) {
 	  rxn_title_len = (int64_t)(line_len - kl - ws_chars+1);
 	  /*
 	    Copy the reaction title.
-	  */
 	  reaction->title = (char *)&rxn_title_text[rxn_title_pos];
-	  strcpy(reaction->title,(char*)&rxn_buffer[kl+ws_chars]);
+	  */
+	  reaction->title = rxn_title_pos;
+	  title  = (char *)&rxn_title_text[rxn_title_pos];
+	  strcpy(title,(char*)&rxn_buffer[kl+ws_chars]);
 	  /*
 	    caution bit twiddle follows: 
 	    padding = (align_len - (rxn_titl_len % align_len)) % align_len
@@ -277,8 +282,12 @@ int parse_reactions_file(struct state_struct *state) {
 	    Pathway line.
 	  */
 	  pathway_len = line_len - kl - ws_chars + 1;
+	  /*
 	  reaction->pathway = (char *)&pathway_text[pathway_pos];
-	  strcpy(reaction->pathway,(char*)&rxn_buffer[kl+ws_chars]);
+	  */
+	  reaction->pathway = pathway_pos;
+	  pathway = (char *)&pathway_text[pathway_pos];
+	  strcpy(pathway,(char*)&rxn_buffer[kl+ws_chars]);
 	  padding = (align_len - (pathway_len & align_mask)) & align_mask;
 	  pathway_pos += pathway_len + padding;
 	  break;
@@ -294,26 +303,33 @@ int parse_reactions_file(struct state_struct *state) {
 	      state->min_compartment_len = (int64_t)compartment_len;
 	    }
 	  }
+	  /*
 	  reaction->lcompartment = (char *)&compartment_text[compartment_pos];
-	  strcpy(reaction->lcompartment,(char*)&rxn_buffer[kl+ws_chars]);
-	  upcase(compartment_len,reaction->lcompartment,
-		 reaction->lcompartment);
-	  if ((strcmp(reaction->lcompartment,"V") == 0) ||
-	      (strcmp(reaction->lcompartment,"C") == 0)) {
+	  */
+	  reaction->lcompartment = compartment_pos;
+	  lcompartment = (char *)&compartment_text[compartment_pos];
+	  strcpy(lcompartment,(char*)&rxn_buffer[kl+ws_chars]);
+	  upcase(compartment_len,lcompartment,
+		 lcompartment);
+	  if ((strcmp(lcompartment,"V") == 0) ||
+	      (strcmp(lcompartment,"C") == 0)) {
 	    fprintf(stderr,"parse_reactions_file: Error compartments may not have single character names V or C\n");
 	    fflush(stderr);
 	    success = 0;
 	    break;
 	  }
-	  reaction->rcompartment = NULL;
+	  reaction->rcompartment = -1;
 	  padding = (align_len - (compartment_len & align_mask)) & align_mask;
-	  compartment_pos += compartment_len + padding;
 	  reaction->left_compartment = cmpts;
 	  reaction->right_compartment = cmpts;
-	  unsorted_cmpts->string = reaction->lcompartment;
+	  /*
+	  unsorted_cmpts->string = lcompartment;
+	  */
+	  unsorted_cmpts->string = compartment_pos;
 	  unsorted_cmpts->m_index  = -1;
 	  unsorted_cmpts->c_index  = cmpts;
 	  unsorted_cmpts += 1; /* Caution address arithmetic */
+	  compartment_pos += compartment_len + padding;
 	  cmpts += 1;
 	  break;
 	case 3: 
@@ -328,16 +344,23 @@ int parse_reactions_file(struct state_struct *state) {
 	      state->min_compartment_len = (int64_t)compartment_len;
 	    }
 	  }
+	  /*
 	  reaction->lcompartment = (char *)&compartment_text[compartment_pos];
-	  strcpy(reaction->lcompartment,(char*)&rxn_buffer[kl+ws_chars]);
-	  upcase(compartment_len,reaction->lcompartment,
-		 reaction->lcompartment);
+	  */
+	  reaction->lcompartment = compartment_pos;
+	  lcompartment = (char *)&compartment_text[compartment_pos];
+	  strcpy(lcompartment,(char*)&rxn_buffer[kl+ws_chars]);
+	  upcase(compartment_len,lcompartment,
+		 lcompartment);
 	  padding = (align_len - (compartment_len & align_mask)) & align_mask;
-	  compartment_pos += compartment_len + padding;
 	  reaction->left_compartment = cmpts;
-	  unsorted_cmpts->string = reaction->lcompartment;
+	  /*
+	  unsorted_cmpts->string = lcompartment;
+	  */
+	  unsorted_cmpts->string = compartment_pos;
 	  unsorted_cmpts->c_index  = cmpts;
 	  unsorted_cmpts += 1; /* Caution address arithmetic */
+	  compartment_pos += compartment_len + padding;
 	  cmpts += 1;
 	  break;
 	case 4: 
@@ -352,16 +375,23 @@ int parse_reactions_file(struct state_struct *state) {
 	      state->min_compartment_len = (int64_t)compartment_len;
 	    }
 	  }
+	  /*
 	  reaction->rcompartment = (char *)&compartment_text[compartment_pos];
-	  strcpy(reaction->rcompartment,(char*)&rxn_buffer[kl+ws_chars]);
-	  upcase(compartment_len,reaction->rcompartment,
-		 reaction->rcompartment);
+	  */
+	  reaction->rcompartment = compartment_pos;
+	  rcompartment = (char *)&compartment_text[compartment_pos];
+	  strcpy(rcompartment,(char*)&rxn_buffer[kl+ws_chars]);
+	  upcase(compartment_len,rcompartment,
+		 rcompartment);
 	  padding = (align_len - (compartment_len & align_mask)) & align_mask;
-	  compartment_pos += compartment_len + padding;
 	  reaction->right_compartment = cmpts;
-	  unsorted_cmpts->string = reaction->rcompartment;
+	  /*
+	  unsorted_cmpts->string = rcompartment;
+	  */
+	  unsorted_cmpts->string = compartment_pos;
 	  unsorted_cmpts->c_index  = cmpts;
 	  unsorted_cmpts += 1; /* Caution address arithmetic */
+	  compartment_pos += compartment_len + padding;
 	  cmpts += 1;
 	  break;
 	case 5:
@@ -483,9 +513,9 @@ int parse_reactions_file(struct state_struct *state) {
 	  */
 	  reaction += 1;
 	  if (rxns < (int)state->number_reactions) {
-	    reaction->lcompartment      = NULL;
-	    reaction->rcompartment      = NULL;
-	    reaction->pathway           = NULL;
+	    reaction->lcompartment      = -1;
+	    reaction->rcompartment      = -1;
+	    reaction->pathway           = -1;
 	    reaction->left_compartment  = -1;
 	    reaction->right_compartment = -1;
 	    reaction->num_reactants     = 0;
