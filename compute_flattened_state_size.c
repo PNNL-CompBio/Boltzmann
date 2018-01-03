@@ -9,7 +9,7 @@ int64_t compute_flattened_state_size(struct state_struct *state) {
   struct cvodes_params_struct cv_p_s;
   int64_t fsize;
   int nr;
-  int nm;
+  int nu;
   int nc;
   int nz;
   int cvps;
