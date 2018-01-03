@@ -75,6 +75,9 @@ struct reaction_struct {
   */
   int deltag0_computed;
   int num_regulators;
+
+  int coefficient_sum;
+  int padi;
   
 }
 ;
