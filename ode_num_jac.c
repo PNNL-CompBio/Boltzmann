@@ -321,7 +321,7 @@ int ode_num_jac(struct state_struct *state,
 	      fflush(lfp);
 	    }
 #endif
-	    dcopy(&ny,dfdy_tmp,&index1,dfdy_colj,&index1);
+	    dcopy_(&ny,dfdy_tmp,&index1,dfdy_colj,&index1);
 	    /*
 	    fscaletmp = max(absfvaluerm,absfdelrm_tmp);
 	    */
