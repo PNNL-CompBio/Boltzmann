@@ -136,9 +136,9 @@ int ode_it_solve(struct state_struct *state,
   iter_count = 0;
   trans_chars[0] = 'N';
   trans = &trans_chars[0];
-  /*
+
   oldnrm = minnrm;
-  */
+
   exit_not = 1;
   for (iter = 0; ((iter<max_iter) && exit_not);iter++) {
     iter_count = iter + 1;
