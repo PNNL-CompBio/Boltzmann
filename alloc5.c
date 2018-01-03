@@ -27,9 +27,11 @@ int alloc5(int64_t num_cpds,
 	   int64_t pi_len, 
 	   int64_t align_len, 
 	   int64_t *usage,
-	   struct formation_energy_struct **formation_energies_p) {
+	   void **pointers) {
   /*
-    Allocate space for the formation_energies struct, and its
+    Allocate space for the pseudoisomser structure and
+    its corresponding string space, pseudoisomer_strings
+
     pseudoisomers, pseudoisomer_strings, sorted_pseudoisomer fields:
     space to hold data read from state->pseudoisomer_dg0_file.
 
@@ -41,14 +43,15 @@ int alloc5(int64_t num_cpds,
 
     *usage is incremented by the amount of space allocated;
 
-    formation_energies_p is returned as a pointer to the allocated
-    foromation_energy struct. 
+    pointers[0] will be a struct pseudoisomer_struct* that points
+       to the pseudoisomer struct
+
+    pointers[1] will be a char* that points the the pseuodisomer_strings
+    data.
 
     Called by: compute_standard_energies
     Calls:     calloc, fprintf (intrinsic)
   */
-  struct formation_energy_struct fe_s;
-  struct formation_energy_struct *formation_energies;
   struct pseudoisomer_struct pi_s;
   struct pseudoisomer_struct *pseudoisomers;
   char *pseudoisomer_strings;
@@ -65,36 +68,20 @@ int alloc5(int64_t num_cpds,
   one_l      = (int64_t)1;
   align_mask = align_len - one_l;
   /*
-    Allocate space for the formation_energy struct.
+    Allocate space for the pseudoisomer dg0f data.
   */
-  ask_for = (int64_t)sizeof(fe_s);
-  *usage += ask_for;
-  formation_energies = (struct formation_energy_struct *)calloc(one_l,ask_for);
-  
-  if (formation_energies == NULL) {
-    fprintf(stderr,"alloc5: Error, unable to allocate %lld bytes of space for "
-	    "formation_energy struct\n",ask_for);
+  ask_for = num_cpds * ((int64_t)sizeof(pi_s));
+  *usage   += ask_for;
+  pseudoisomers = (struct pseudoisomer_struct *)calloc(one_l,ask_for);
+  if (pseudoisomers == NULL) {
+    fprintf(stderr,"alloc5: Error, unable to allocate %lld bytes of space "
+	    "for pseudoisomer data \n",ask_for);
     fflush(stderr);
     success = 0;
+
   }
   if (success) {
-    *formation_energies_p = formation_energies;
-    /*
-      Allocate space for the pseudoisomer dg0f data.
-    */
-  
-    ask_for = num_cpds * ((int64_t)sizeof(pi_s));
-    *usage   += ask_for;
-    pseudoisomers = (struct pseudoisomer_struct *)calloc(one_l,ask_for);
-    if (pseudoisomers == NULL) {
-      fprintf(stderr,"alloc5: Error, unable to allocate %lld bytes of space "
-	      "for pseudoisomer data \n",ask_for);
-      fflush(stderr);
-      success = 0;
-    }
-  }
-  if (success) {
-    formation_energies->pseudoisomers = pseudoisomers;
+    pointers[0] = (void*)pseudoisomers;
     ask_for = pi_len + ((align_len - (pi_len & align_mask)) & align_mask);
     *usage += ask_for;
     pseudoisomer_strings = (char *)calloc(one_l,ask_for);
@@ -106,7 +93,7 @@ int alloc5(int64_t num_cpds,
     }
   }
   if (success) {
-    formation_energies->pseudoisomer_strings = pseudoisomer_strings;
+    pointers[1] = (void*)pseudoisomer_strings;
   }
   /*
   if (success) {
@@ -122,8 +109,7 @@ int alloc5(int64_t num_cpds,
     }
   }
   if (success) {
-    formation_energies->sorted_pseudoisomer_indices = 
-      sorted_pseudoisomer_indices;
+    pointers[2] = (void*)sorted_pseudoisomer_indices;
     ask_for = (enum_cpds + enum_cpds) * ((int64_t)sizeof(int));
     *usage += ask_for;
     pseudoisomer_scratch = (int*)calloc(one_l,ask_for);
@@ -133,7 +119,7 @@ int alloc5(int64_t num_cpds,
       fflush(stderr);
       success = 0;
     } else {
-      formation_energies->pseudoisomer_scratch = pseudoisomer_scratch;
+      pointers[3] = (void*)pseudoisomer_scratch;
     }
   }
   */
