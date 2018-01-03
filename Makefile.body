@@ -8,6 +8,7 @@ SERIAL_OBJS1 = boltzmann_boot.o boltzmann_mmap_superstate.o flatten_super_state.
 SERIAL_OBJS2 = boltzmann_run.o update_rxn_log_likelihoods.o choose_rxn.o bndry_flux_update.o candidate_rxn.o rxn_likelihood.o rxn_likelihood_postselection.o rxn_log_likelihoods.o rxn_likelihoods.o binary_search_l_u_b.o rxn_conc_update.o compute_delta_g_forward_entropy_free_energy.o print_concentrations.o print_likelihoods.o save_likelihoods.o print_free_energy.o print_boundary_flux.o print_restart_file.o print_reactions_view.o
 
 #SERIAL_OBJS3 = rxn_map_init.o rxn_map_run.o alloc4.o form_molecules_matrix.o
+SERIAL_OBJS3 = 
 
 SERIAL_OBJS4 = boltzmann_global_to_local_concs.o boltzmann_global_to_local_fluxes.o boltzmann_local_to_global_concs.o boltzmann_local_to_global_fluxes.o size_file.o boltzmann_load.o boltzmann_number_of_reaction_files.o boltzmann_global_molecule_count.o boltzmann_length_state_i.o boltzmann_max_local_state_size.o boltzmann_size_superstate.o
 
@@ -80,10 +81,6 @@ libboltzmann.a: $(SERIAL_OBJS1) $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SERIAL_OBJS4)
 	$(AR) $(ARFLAGS) libboltzmann.a print_boundary_flux.o
 	$(AR) $(ARFLAGS) libboltzmann.a print_restart_file.o
 	$(AR) $(ARFLAGS) libboltzmann.a print_reactions_view.o
-	$(AR) $(ARFLAGS) libboltzmann.a rxn_map_init.o
-	$(AR) $(ARFLAGS) libboltzmann.a alloc4.o
-	$(AR) $(ARFLAGS) libboltzmann.a form_molecules_matrix.o
-	$(AR) $(ARFLAGS) libboltzmann.a rxn_map_run.o
 	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_global_to_local_concs.o   
 	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_global_to_local_fluxes.o  
 	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_local_to_global_concs.o   
@@ -94,7 +91,11 @@ libboltzmann.a: $(SERIAL_OBJS1) $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SERIAL_OBJS4)
 	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_max_local_state_size.o    
 	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_length_state_i.o	    
 	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_number_of_reaction_files.o
-	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_size_superstate.o               
+	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_size_superstate.o
+#	$(AR) $(ARFLAGS) libboltzmann.a rxn_map_init.o
+#	$(AR) $(ARFLAGS) libboltzmann.a alloc4.o
+#	$(AR) $(ARFLAGS) libboltzmann.a form_molecules_matrix.o
+#	$(AR) $(ARFLAGS) libboltzmann.a rxn_map_run.o
 
 
 
