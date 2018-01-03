@@ -1,6 +1,9 @@
 #include "boltzmann_structs.h"
 #include "compute_net_likelihoods.h"
-int compute_net_likelihoods(struct state_struct *state) {
+int compute_net_likelihoods(struct state_struct *state,
+			    double *forward_rxn_likelihood,
+			    double *reverse_rxn_likelihood,
+			    double *net_likelihood) {
   /*
     Compute the net likelihood for each reaction.
     Uses the forward_rxn_likelihood and reverse_rxn_likelihood 
@@ -10,9 +13,6 @@ int compute_net_likelihoods(struct state_struct *state) {
     Calls:
   */
   int64_t number_reactions;
-  double  *forward_rxn_likelihood; /* number_reactions */
-  double  *reverse_rxn_likelihood; /* number_reactions */
-  double *net_likelihood;
   double  total_likelihood;
   double  recip_total_likelihood;
   int64_t i;
@@ -22,9 +22,6 @@ int compute_net_likelihoods(struct state_struct *state) {
   FILE *efp;
   success                = 1;
   number_reactions       = state->number_reactions;
-  forward_rxn_likelihood = state->forward_rxn_likelihood;
-  reverse_rxn_likelihood = state->reverse_rxn_likelihood;
-  net_likelihood         = state->net_likelihood;
   lfp                    = state->lfp;
   total_likelihood = 0;
   for (i=0;i<number_reactions;i++) {
