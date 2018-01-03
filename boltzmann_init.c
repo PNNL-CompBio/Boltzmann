@@ -42,12 +42,13 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
   */
   struct state_struct *state;
   int success;
-  int padi;
+  int one;
   /*
     allocate space for the state struct.
     Allocate space for the reactions line buffer, and the rxn_file keywords.
   */
-  success = alloc0(statep);
+  one = 1;
+  success = alloc0(statep,one);
   if (success) {
     /*
       Read the input parameters file.
