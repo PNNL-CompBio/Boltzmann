@@ -38,6 +38,7 @@ int alloc2(struct state_struct *state) {
     Called by: boltzmann
     Calls:     calloc, fprintf (intrinsic)
   */
+  struct vgrng_state_struct vss;
   struct rxn_struct rs;
   struct rxn_struct *reactions;
   struct rxn_matrix_struct rms;
@@ -197,9 +198,9 @@ int alloc2(struct state_struct *state) {
     }
   }
   if (success) {
-    ask_for = nze * ((int64_t)sizeof(char *));
+    ask_for = nze * ((int64_t)sizeof(int64_t *));
     usage += ask_for;
-    reactions_matrix->text = (char **)calloc(one_l,ask_for);
+    reactions_matrix->text = (int64_t *)calloc(one_l,ask_for);
     if (reactions_matrix->text == NULL) {
       fprintf(stderr,"alloc2: Error, unable to allocate %ld bytes of space "
 	      "for reactions_matrix->text\n",ask_for);
@@ -256,6 +257,28 @@ int alloc2(struct state_struct *state) {
 	      "state->activities field.\n",ask_for);
       fflush(stderr);
       success = 0;
+    }
+  }
+  if (success) {
+    ask_for = (int64_t)sizeof(vss);
+    statep->vgrng_state = (struct vgrng_state_struct *)calloc(one_l,ask_for);
+    if (statep->vgrng_state == NULL) {
+      success = 0;
+      fprintf(stderr,
+	      "alloc0: unable to allocate %ld bytes for state->vgrng_state.\n",
+	      ask_for);
+      fflush(stderr);
+    }
+  }
+  if (success) {
+    ask_for = (int64_t)sizeof(vss);
+    statep->vgrng2_state = (struct vgrng_state_struct *)calloc(one_l,ask_for);
+    if (statep->vgrng2_state == NULL) {
+      success = 0;
+      fprintf(stderr,
+	      "alloc0: unable to allocate %ld bytes for state->vgrng2_state.\n",
+	      ask_for);
+      fflush(stderr);
     }
   }
   state->usage = usage;
