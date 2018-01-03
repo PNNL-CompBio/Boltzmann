@@ -20,7 +20,7 @@ under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
-extern double rxn_likelihood(double *concs, 
+extern double rxn_likelihood(double *counts, 
 			     struct state_struct *state,
 			     int rxn_direction,
 			     int rxn);
