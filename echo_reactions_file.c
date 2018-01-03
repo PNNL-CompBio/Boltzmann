@@ -29,8 +29,8 @@ int echo_reactions_file(struct state_struct *state) {
     Called by: echo_inputs
     Calls:     fopen, fprintf, fclose (intrinsic)
   */
-  struct rxn_struct *reaction;
-  struct rxn_matrix_struct *rxns_matrix;
+  struct reaction_struct *reaction;
+  struct reactions_matrix_struct *rxns_matrix;
   double  *reg_constant;
   double  *reg_exponent;
   double  *reg_drctn;
