@@ -105,7 +105,7 @@ int print_reactions_view(struct state_struct *state) {
     */
     fprintf(rxn_view_fp," No Reaction\t0<=>0\t%d\t\t",rxn_fire[nrxns+nrxns]);
     for(k=0;k<rxn_view_hist_length;k++) {
-      fprintf(rxn_view_fp,"\t%le",no_op_likelihood[k]);
+      fprintf(rxn_view_fp,"\t1.0");
     }
     fprintf(rxn_view_fp,"\n");
     for (rxns=0;rxns < nrxns;rxns++) {
@@ -117,6 +117,13 @@ int print_reactions_view(struct state_struct *state) {
       for (j=rxn_ptrs[rxns];j<rxn_ptrs[rxns+1];j++) {
 	coeff = coefficients[j];
 	if (coeff < 0) {
+	  if (nr > 0) {
+	    /*
+	      If this is not the first reactant printed out
+	      put a + after the last one and before this one.
+	    */
+	    fprintf(rxn_view_fp," + ");
+	  }
 	  if (coeff < -1) {
 	    coeff = -coeff;
 	    fprintf(rxn_view_fp,"%d ",coeff);
@@ -124,30 +131,26 @@ int print_reactions_view(struct state_struct *state) {
 	  molecule = (char*)&molecules_text[matrix_text[j]];
 	  fprintf(rxn_view_fp,"%s",molecule);
 	  nr += 1;
-	  if (nr < reaction->num_reactants) {
-	    fprintf(rxn_view_fp," + ");
-	  } else {
-	    fprintf(rxn_view_fp," => ");
-	    break;
-	  }
 	}
       }
+      fprintf(rxn_view_fp," => ");
       np = 0;
       for (j=rxn_ptrs[rxns];j<rxn_ptrs[rxns+1];j++) {
 	coeff = coefficients[j];
 	if (coeff > 0) {
+	  if (np > 0) {
+	    /*
+	      If this is not the first product  printed out
+	      put a + after the last one and before this one.
+	    */
+	    fprintf(rxn_view_fp," + ");
+	  }
 	  if (coeff > 1) {
 	    fprintf(rxn_view_fp,"%d ",coeff);
 	  }
 	  molecule = (char*)&molecules_text[matrix_text[j]];
 	  fprintf(rxn_view_fp,"%s",molecule);
 	  np += 1;
-	  if (np < reaction->num_products) {
-	    fprintf(rxn_view_fp," + ");
-	  } else {
-	    fprintf(rxn_view_fp," ");
-	    break;
-	  }
 	}
       }
       /*
@@ -178,6 +181,9 @@ int print_reactions_view(struct state_struct *state) {
       for (j=rxn_ptrs[rxns];j<rxn_ptrs[rxns+1];j++) {
 	coeff = coefficients[j];
 	if (coeff < 0) {
+	  if (nr > 1) {
+	    fprintf(rxn_view_fp," + ");
+	  }
 	  if (coeff < -1) {
 	    coeff = -coeff;
 	    fprintf(rxn_view_fp,"%d ",coeff);
@@ -185,30 +191,22 @@ int print_reactions_view(struct state_struct *state) {
 	  molecule = (char*)&molecules_text[matrix_text[j]];
 	  fprintf(rxn_view_fp,"%s",molecule);
 	  nr += 1;
-	  if (nr < reaction->num_reactants) {
-	    fprintf(rxn_view_fp," + ");
-	  } else {
-	    fprintf(rxn_view_fp," <= ");
-	    break;
-	  }
 	}
       }
+      fprintf(rxn_view_fp," <= ");
       np = 0;
       for (j=rxn_ptrs[rxns];j<rxn_ptrs[rxns+1];j++) {
 	coeff = coefficients[j];
 	if (coeff > 0) {
+	  if (np > 0) {
+	    fprintf(rxn_view_fp," + ");
+	  }
 	  if (coeff > 1) {
 	    fprintf(rxn_view_fp,"%d ",coeff);
 	  }
 	  molecule = (char*)&molecules_text[matrix_text[j]];
 	  fprintf(rxn_view_fp,"%s",molecule);
 	  np += 1;
-	  if (np < reaction->num_products) {
-	    fprintf(rxn_view_fp," + ");
-	  } else {
-	    fprintf(rxn_view_fp," ");
-	    break;
-	  }
 	}
       }
       /*
