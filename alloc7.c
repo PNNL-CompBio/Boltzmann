@@ -94,7 +94,7 @@ int alloc7(struct state_struct *state) {
     run_workspace_bytes  += ask_for;
     ode_counts = (double *)calloc(one_l,ask_for);
     if (ode_counts == NULL) {
-      fprintf(stderr,"alloc7: Error unable to allocate %lld bytes for "
+      fprintf(stderr,"alloc7: Error unable to allocate %ld bytes for "
 	      "ode_counts\n",ask_for);
       fflush(stderr);
       success = 0;
@@ -109,7 +109,7 @@ int alloc7(struct state_struct *state) {
     ode_concs = (double *)calloc(one_l,ask_for);
     if (ode_concs == NULL) {
       if (lfp) {
-	fprintf(lfp,"alloc7: Error unable to allocate %lld bytes for "
+	fprintf(lfp,"alloc7: Error unable to allocate %ld bytes for "
 		"ode_concs\n",ask_for);
 	fflush(lfp);
       }
@@ -128,7 +128,7 @@ int alloc7(struct state_struct *state) {
     reactant_term = (double *)calloc(one_l,ask_for);
     if (reactant_term == NULL) {
       if (lfp) {
-	fprintf(lfp,"alloc7: Error unable to allocate %lld bytes for "
+	fprintf(lfp,"alloc7: Error unable to allocate %ld bytes for "
 	      "reactant_term\n",ask_for);
 	fflush(lfp);
       }
@@ -147,7 +147,7 @@ int alloc7(struct state_struct *state) {
     product_term = (double *)calloc(one_l,ask_for);
     if (product_term == NULL) {
       if (lfp) {
-	fprintf(lfp,"alloc7: Error unable to allocate %lld bytes for "
+	fprintf(lfp,"alloc7: Error unable to allocate %ld bytes for "
 		"product_term\n",ask_for);
 	fflush(lfp);
       }
@@ -166,7 +166,7 @@ int alloc7(struct state_struct *state) {
     rxn_q = (double *)calloc(one_l,ask_for);
     if (rxn_q == NULL) {
       if (lfp) {
-	fprintf(lfp,"alloc7: Error unable to allocate %lld bytes for "
+	fprintf(lfp,"alloc7: Error unable to allocate %ld bytes for "
 	      "rxn_q\n",ask_for);
 	fflush(lfp);
       }
@@ -185,7 +185,7 @@ int alloc7(struct state_struct *state) {
     recip_rxn_q = (double *)calloc(one_l,ask_for);
     if (recip_rxn_q == NULL) {
       if (lfp) {
-	fprintf(lfp,"alloc7: Error unable to allocate %lld bytes for "
+	fprintf(lfp,"alloc7: Error unable to allocate %ld bytes for "
 		"recip_rxn_q\n",ask_for);
 	fflush(lfp);
       }
@@ -204,7 +204,7 @@ int alloc7(struct state_struct *state) {
     log_kf_rel = (double *)calloc(one_l,ask_for);
     if (log_kf_rel == NULL) {
       if (lfp) {
-	fprintf(lfp,"alloc7: Error unable to allocate %lld bytes for "
+	fprintf(lfp,"alloc7: Error unable to allocate %ld bytes for "
 	      "log_kf_rel\n",ask_for);
 	fflush(lfp);
       }
@@ -223,7 +223,7 @@ int alloc7(struct state_struct *state) {
     log_kr_rel = (double *)calloc(one_l,ask_for);
     if (log_kr_rel == NULL) {
       if (lfp) {
-	fprintf(lfp,"alloc7: Error unable to allocate %lld bytes for "
+	fprintf(lfp,"alloc7: Error unable to allocate %ld bytes for "
 		"log_kr_rel\n",ask_for);
 	fflush(lfp);
       }
@@ -239,7 +239,7 @@ int alloc7(struct state_struct *state) {
     ode_forward_lklhds = (double *)calloc(one_l,ask_for);
     if (ode_forward_lklhds == NULL) {
       if (lfp) {
-	fprintf(lfp,"alloc7: Error unable to allocate %lld bytes for "
+	fprintf(lfp,"alloc7: Error unable to allocate %ld bytes for "
 		"ode_forward_lklhds\n",ask_for);
 	fflush(lfp);
       }
@@ -255,7 +255,7 @@ int alloc7(struct state_struct *state) {
     ode_reverse_lklhds = (double *)calloc(one_l,ask_for);
     if (ode_reverse_lklhds == NULL) {
       if (lfp) {
-	fprintf(lfp,"alloc7: Error unable to allocate %lld bytes for "
+	fprintf(lfp,"alloc7: Error unable to allocate %ld bytes for "
 		"ode_reverse_lklhds\n",ask_for);
 	fflush(lfp);
       }
@@ -276,7 +276,7 @@ int alloc7(struct state_struct *state) {
     rxn_has_flux = (int*)calloc(one_l,ask_for);
     if (rxn_has_flux == NULL) {
       if (lfp) {
-	fprintf(lfp,"alloc7: Error unable to allocate %lld bytes for "
+	fprintf(lfp,"alloc7: Error unable to allocate %ld bytes for "
 	      "rxn_has_flux\n",ask_for);
 	fflush(lfp);
       }
@@ -293,7 +293,7 @@ int alloc7(struct state_struct *state) {
     if (base_reactant_indicator == NULL) {
       success = 0;
       if (lfp) {
-	fprintf(lfp,"alloc7: Error could not allocate %lld "
+	fprintf(lfp,"alloc7: Error could not allocate %ld "
 		"bytes for int base_reactant scratch space.\n",ask_for);
 	fflush(lfp);
       }
