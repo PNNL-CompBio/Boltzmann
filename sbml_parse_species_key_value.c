@@ -171,7 +171,7 @@ int sbml_parse_species_key_value(struct sbml2bo_struct *state,
     } else {
       /*
 	Too much information if we print all these out.
-      fprintf(error_fp,"sbml_get_species_attribute_value: "
+      fprintf(error_fp,"sbml_parse_species_key_value: "
 	      "Error found unexpected key:%s in species tag\n",key);
       fflush(error_fp);
       */
