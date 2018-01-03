@@ -29,7 +29,8 @@ int molecules_lookup(char *molecule_name, int compartment_index,
   /*
     Return the index of the molecule_name in the unique_molecules sorted list
     or -1 if not found.
-    Called by: read_initial_concentrations.
+    Called by: read_initial_concentrations, translate_regulation_metabolites
+    Calls:     strcmp
   */
   struct molecule_struct *sorted_molecules;
   char *molecules_text;
