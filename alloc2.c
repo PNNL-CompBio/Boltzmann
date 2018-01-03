@@ -177,6 +177,17 @@ int alloc2(struct state_struct *state) {
   }
   if (success) {
     usage += ask_for;
+    reactions_matrix->compartment_indices = (int64_t*)calloc(one_l,ask_for);
+    if (reactions_matrix->compartment_indices == NULL) {
+      fprintf(stderr,"alloc2: Error, unable to allocate %ld bytes of space "
+	      "for reactions_matrix->compartment_indices\n",ask_for);
+      fflush(stderr);
+      success = 0;
+    }
+  }
+  
+  if (success) {
+    usage += ask_for;
     reactions_matrix->coefficients = (int64_t*)calloc(one_l,ask_for);
     if (reactions_matrix->coefficients == NULL) {
       fprintf(stderr,"alloc2: Error, unable to allocate %ld bytes of space "
