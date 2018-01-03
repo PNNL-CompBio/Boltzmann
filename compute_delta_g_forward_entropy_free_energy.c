@@ -83,6 +83,7 @@ int compute_delta_g_forward_entropy_free_energy(struct state_struct *state,
   /*
     Input fields.
   */
+  success                    = 1;
   m_rt                       = state->m_rt;
   number_reactions           = (int)state->number_reactions;
   current_concentrations     = state->current_concentrations;
@@ -97,7 +98,7 @@ int compute_delta_g_forward_entropy_free_energy(struct state_struct *state,
     Recompute the forward reaction log likelihoods and 
     store the likelihoods in forward_rxn_likelihod 
     and their logs in forward_rxn_log_likelihood_ratio field
-    of state. Now done before this call in boltzmann_run_sim.
+    of state. Now done before this call in boltzmann_run.
     success = rxn_log_likelihoods(current_concentrations,
                                   forward_rxn_likelihood,
 				  forward_rxn_log_likelihood,
