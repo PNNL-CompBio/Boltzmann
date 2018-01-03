@@ -42,32 +42,47 @@ int unique_molecules(struct state_struct *state) {
   struct rxn_struct *reactions;
   struct rxn_matrix_struct *rxns_matrix;
   int64_t *molecules_indices;
+  int64_t *compartment_indices;
   struct istring_elem_struct *sorted_molecules;
   struct istring_elem_struct *cur_molecule;
   struct istring_elem_struct *umolecules_next;
   int nzr;
   int i;
+
   int success;
   int nu_molecules;
+
+  int ni;
+  int cni;
+
   success = 1;
   nzr            = state->number_molecules;
   sorted_molecules = state->sorted_molecules;
   rxns_matrix    = state->reactions_matrix;
   molecules_indices = rxns_matrix->molecules_indices;
+  compartment_indices = rxns_matrix->compartment_indices;
   /* loop over sorted molecules. */
   nu_molecules = 0;
-  molecules_indices[sorted_molecules->index] = nu_molecules;
+  molecules_indices[sorted_molecules->m_index] = nu_molecules;
+  sorted_molecules->m_index = 0;
   cur_molecule = sorted_molecules;
+  cur_molecule->c_index = compartment_indices[cur_molecule->c_index];
+  cni          = compartment_indices[sorted_molecules->c_index];
   sorted_molecules += 1; /* Caution address arithmetic. */
   umolecules_next  = sorted_molecules;
   for (i=1;i<nzr;i++) {
-    if (strcmp(sorted_molecules->string,cur_molecule->string) != 0) {
+    ni = compartment_indices[sorted_molecules->c_index];
+    if ((ni != cni)  ||
+	(strcmp(sorted_molecules->string,cur_molecule->string) != 0)) {
       nu_molecules += 1;
       cur_molecule = sorted_molecules;
       umolecules_next->string = cur_molecule->string;
+      umolecules_next->m_index = nu_molecules;
+      umolecules_next->c_index = ni;
+      cni = ni;
       umolecules_next += 1; /* Caution address arithmetic. */
     }
-    molecules_indices[sorted_molecules->index] = nu_molecules;
+    molecules_indices[sorted_molecules->m_index] = nu_molecules;
     sorted_molecules += 1; /* Caution address arithmetic. */
   }
   state->unique_molecules = nu_molecules + 1;
