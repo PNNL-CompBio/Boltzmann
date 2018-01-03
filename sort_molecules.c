@@ -48,6 +48,7 @@ int sort_molecules(struct molecule_struct *unsorted_molecules,
   struct molecule_struct ies;
 
   int64_t move_size;
+  int64_t e_size;
   
   int success;
   int step;
@@ -60,7 +61,7 @@ int sort_molecules(struct molecule_struct *unsorted_molecules,
   success = 1;
   u_molecules = unsorted_molecules;
   s_molecules = sorted_molecules;
-  
+  e_size = (size_t)sizeof(ies);
   if (n >= 2) {
     for (step = 1; step < n; step += step) {
       for(j=0;j<(n-step);j = j + step + step) {
@@ -78,6 +79,12 @@ int sort_molecules(struct molecule_struct *unsorted_molecules,
       */ 
       ln = n & (step + step - 1);
       if (ln <= step) {
+	if (ln > 0) {
+	  move_size = ln * e_size;
+	  j=n-ln;
+	  memcpy((void*)&s_molecules[j],(void*)&u_molecules[j],move_size);
+	}
+	/*
 	for (j = n-ln;j<n;j++) {
 	  s_molecules[j].string   = u_molecules[j].string;
 	  s_molecules[j].m_index  = u_molecules[j].m_index;
@@ -85,6 +92,7 @@ int sort_molecules(struct molecule_struct *unsorted_molecules,
 	  s_molecules[j].variable = u_molecules[j].variable;
 	  s_molecules[j].g_index  = u_molecules[j].g_index;
 	}
+	*/
       }
       temp            = s_molecules;
       s_molecules     = u_molecules;
