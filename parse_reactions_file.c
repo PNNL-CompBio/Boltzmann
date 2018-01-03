@@ -582,8 +582,9 @@ int parse_reactions_file(struct state_struct *state) {
 		       &reaction->delta_g0);
 	  if (ns < 1) {
 	    fprintf(stderr,
-		    "parse_reactions_file: malformed DGZERO line was\n%s\n",
-		    rxn_buffer);
+		    "parse_reactions_file: Error: malformed DGZERO line"
+		    " for reaction %s was\n%s\n",
+		    reaction->title,rxn_buffer);
 	    fflush(stderr);
 	    success = 0;
 	    break;
@@ -596,8 +597,9 @@ int parse_reactions_file(struct state_struct *state) {
 	  sl = count_nws((char*)&rxn_buffer[ws_chars+kl]);
 	  if (sl < 1) {
 	    fprintf(stderr,
-		    "parse_reactions_file: Malformed DGZERO-UNITS line,"
-		    " using KCAL/MOL\n");
+		    "parse_reactions_file: Error: malformed DGZERO-UNITS line,"
+		    " for reaction %s, was %s, using KCAL/MOL\n",
+		    reaction->title,rxn_buffer);
 	    fflush(stderr);
 	    reaction->unit_i = 0;
 	  } else {
