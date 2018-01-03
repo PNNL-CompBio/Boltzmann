@@ -333,6 +333,7 @@ int parse_reactions_file(struct state_struct *state,
 	  unsorted_cmpts->string = lcompartment;
 	  */
 	  unsorted_cmpts->string = compartment_pos;
+	  unsorted_cmpts->volume = 0.0;
 	  unsorted_cmpts->m_index  = -1;
 	  unsorted_cmpts->c_index  = cmpts;
 	  unsorted_cmpts += 1; /* Caution address arithmetic */
