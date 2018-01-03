@@ -66,10 +66,11 @@ int parse_reactions_file(struct state_struct *state,
 		  held fixed in concentration.
 
     Called by: rxns_init
-    Calls    : parse_rxn_file_keyword
-               count_ws
-	       count_nws
-	       upcase
+    Calls    : parse_rxn_file_keyword,
+               count_ws,
+	       count_nws,
+	       is_a_coef,
+	       upcase,
 	       fseek, feof, fgets, fprintf, fflush, sscanf (intrinsic)
   */
   struct rxn_struct *reactions;
