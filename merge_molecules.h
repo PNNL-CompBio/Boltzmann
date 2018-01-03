@@ -23,5 +23,6 @@ specific language governing permissions and limitations under the License.
 extern int merge_molecules(struct istring_elem_struct *list1,
 			   struct istring_elem_struct *list2,
 			   struct istring_elem_struct *mlist,
+			   char *molecules_text,
 			   int l1,
 			   int l2);
