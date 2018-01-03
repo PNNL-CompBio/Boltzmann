@@ -134,11 +134,23 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
   /*
     Here is where the sbml file processing will need to go.
   */
-
-
+  if (success) {
+    if (state->sbml_file[0] != '\0') {
+      success = sbml_to_boltzmann(state);
+    }
+  }
   if (success) {
     success = size_rxns_file(state,state->reaction_file);
   }
+  /*
+    At this point in time we can compute how much space the aligned
+    reaction titles, pathway descriptions, compartments and molecules
+    verbage will take.
+    We want an uppercase version of the molecules, so we need two 
+    molecules copies. Also we have an upperbound of the number of molecules,
+    state->number_molecules, and we can allocate space for the molecules 
+    sorting.
+  */
   if (success) {
     success = alloc2(state);
   }
@@ -166,15 +178,6 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
     }
 #endif
   }
-  /*
-    At this point in time we can compute how much space the aligned
-    reaction titles, pathway descriptions, compartments and molecules
-    verbage will take.
-    We want an uppercase version of the molecules, so we need two 
-    molecules copies. Also we have an upperbound of the number of molecules,
-    state->number_molecules, and we can allocate space for the molecules 
-    sorting.
-  */
   if (success) {
     /*
       Read and parse the reactions file.
