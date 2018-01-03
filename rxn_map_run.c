@@ -39,12 +39,12 @@ int rxn_map_run(struct state_struct *state,
 		int mi, int mj) {
   struct rxn_matrix_struct *rxn_matrix;
   struct molecule_struct *sorted_molecules;
-  struct molecule_struct *sorted_compartments;
+  struct compartment_struct *sorted_compartments;
   struct molecule_struct *molecule_i;
   struct molecule_struct *molecule_j;
   struct molecule_struct *molecule_t;
-  struct molecule_struct *compartment_i;
-  struct molecule_struct *compartment_j;
+  struct compartment_struct *compartment_i;
+  struct compartment_struct *compartment_j;
   struct stack_level_elem_struct sles;
   struct stack_level_elem_struct *levels;
   struct stack_level_elem_struct *cur_level;
@@ -196,10 +196,10 @@ int rxn_map_run(struct state_struct *state,
   if (success) {
     molecule_i = (struct molecule_struct *)&sorted_molecules[mi];
     ci = molecule_i->c_index;
-    compartment_i = (struct molecule_struct *)&sorted_compartments[ci];
+    compartment_i = (struct compartment_struct *)&sorted_compartments[ci];
     molecule_j = (struct molecule_struct *)&sorted_molecules[mj];
     cj = molecule_j->c_index;
-    compartment_j = (struct molecule_struct *)&sorted_compartments[cj];
+    compartment_j = (struct compartment_struct *)&sorted_compartments[cj];
     /* 
       Now we want to build chains of reactions, that
       start with mi and end with mj.
