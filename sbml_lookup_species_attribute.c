@@ -34,7 +34,8 @@ int sbml_lookup_species_attribute(char *key) {
     3 hasOnlySubstanceUnits
     4 id
     5 initialAmount
-    6 substanceUnits
+    6 name
+    7 substanceUnits
   Returns -1 if key is not in list.
 
   Called by: sbml_process_list_of_species
@@ -47,43 +48,69 @@ int sbml_lookup_species_attribute(char *key) {
   int cmp4;
   int cmp5;
   int cmp6;
+  int cmp7;
   int tag;
-  cmp0 = strcmp(key,"bondaryCondition");
-  cmp6 = strcmp(key,"substanceUnits");
+  int fc;
+  int bfc;
+  int cfc;
+  int hfc;
+  int ifc;
+  int nfc;
+  int sfc;
   tag = -1;
-  if (cmp0 == 0) {
-    tag = 0;
-  } else {
-    if (cmp6 == 0) {
-      tag = 6;
+  fc =  (int)key[0];
+  bfc = (int)'b';
+  cfc = (int)'c';
+  hfc = (int)'h';
+  ifc = (int)'i';
+  nfc = (int)'n';
+  sfc = (int)'s';
+  if (fc < ifc) {
+    if (fc <= bfc) {
+      if (strcmp(key,"bondaryCondition") == 0) {
+	tag = 0;
+      }
     } else {
-      cmp3 = strcmp(key,"hasOnlySubstanceUnits");
-      if (cmp3 == 0) {
-	tag = 3;
-      } else {
-	if (cmp3 < 0) {
-	  cmp1 = strcmp(key,"compartment");
-	  if (cmp1 == 0) {
-	    tag = 1;
-	  } else {
-	    cmp2 = strcmp(key,"constant");
-	    if (cmp2 == 0) {
-	      tag = 2;
-	    }
-	  }
+      if (fc == cfc) {
+	if (strcmp(key,"compartment") == 0) {
+	  tag = 1;
 	} else {
-	  cmp4 = strcmp(key,"id");
-	  if (cmp4 == 0) {
-	    tag = 4;
-	  } else {
-	    cmp5 = strcmp(key,"initialAmount");
-	    if (cmp5 == 0) {
-	      tag = 5;
-	    }
+	  if (strcmp(key,"constant") == 0) {
+	    tag = 2;
+	  }
+	}
+      } else {
+	if (fc == hfc) {
+	  if (strcmp(key,"hasOnlySubstanceUnits") == 0) {
+	    tag = 3;
+	  }
+	}
+      }
+    }
+  } else {
+    if (fc >= sfc) {
+      if (strcmp(key,"substanceUnits") == 0) {
+	tag = 7;
+      } 
+    } else {
+      if (fc == ifc) {
+	if (strcmp(key,"id") == 0) {
+	  tag = 4;
+	} else {
+	  if (strcmp(key,"initialAmount") == 0) {
+	    tag = 5;
+	  }
+	}
+      } else {
+	if (fc == nfc) {
+	  if (strcmp(key,"name") == 0) {
+	    tag = 6;
 	  }
 	}
       }
     }
   }
-  return (tag);
+  return(tag);
 }
+
+
