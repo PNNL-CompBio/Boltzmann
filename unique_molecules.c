@@ -81,52 +81,6 @@ int unique_molecules(struct state_struct *state) {
 				  &sum_molecule_len,
 				  align_len,
 				  align_mask);
-  /*
-  compartment_indices = rxns_matrix->compartment_indices;
-  */
-  /*
-  sum_molecule_len = (int64_t)0;
-  //* loop over sorted molecules. 
-  nu_molecules = 0;
-  molecules_indices[sorted_molecules->m_index] = nu_molecules;
-  sorted_molecules->m_index = 0;
-  cur_molecule = sorted_molecules;
-  cstring = NULL;
-  if (cur_molecule->string >= 0) {
-    cstring = (char *)&molecules_text[cur_molecule->string];
-    sum_molecule_len += ((int64_t)strlen(cstring));
-  }
-  //*
-    This translation has already been done in translate_compartments.
-  cur_molecule->c_index = compartment_indices[cur_molecule->c_index];
-  //
-  cni = sorted_molecules->c_index;
-  sorted_molecules += 1; //* Caution address arithmetic. 
-  umolecules_next  = sorted_molecules;
-  for (i=1;i<nzr;i++) {
-    ni = sorted_molecules->c_index;
-    sstring = NULL;
-    if (sorted_molecules->string >= 0) {
-      sstring = (char *)&molecules_text[sorted_molecules->string];
-    }
-    if ((ni != cni)  ||
-	(strcmp(sstring,cstring) != 0)) {
-      cstring = sstring;
-      sum_molecule_len += ((int64_t)strlen(cstring));
-      nu_molecules += 1;
-      cur_molecule = sorted_molecules;
-      umolecules_next->string = cur_molecule->string;
-      umolecules_next->m_index = nu_molecules;
-      umolecules_next->c_index = ni;
-      cni = ni;
-      umolecules_next += 1; //* Caution address arithmetic. 
-    }
-    molecules_indices[sorted_molecules->m_index] = nu_molecules;
-    sorted_molecules += 1; //* Caution address arithmetic. 
-  }
-  state->nunique_molecules = nu_molecules + 1;
-  state->sum_molecule_len = sum_molecule_len;
-  */
   state->nunique_molecules = nunique_molecules;
   state->sum_molecule_len  = sum_molecule_len;
   return(success);
