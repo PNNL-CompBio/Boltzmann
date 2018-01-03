@@ -15,6 +15,9 @@ int create_output_filenames(struct state_struct *state) {
   char *output_filename;
   char *counts_out_filename;
   char *ode_concs_filename;
+  char *ode_flux_filename;
+  char *ode_lklhd_filename;
+  char *ode_bflux_filename;
   char *net_lklhd_filename;
   char *nl_bndry_flx_filename;
   char *rxn_lklhd_filename;
@@ -49,6 +52,10 @@ int create_output_filenames(struct state_struct *state) {
   rxn_echo_filename    = state->rxn_echo_file;
   rxn_mat_filename     = state->rxn_mat_file;
   dg0ke_filename       = state->dg0ke_file;
+  ode_flux_filename    = state->ode_flux_file;
+  ode_lklhd_filename   = state->ode_lklhd_file;
+  ode_bflux_filename   = state->ode_bflux_file;
+
   dictionary_filename  = state->dictionary_file;
 
   rxn_filename_length = strlen(rxn_filename);
@@ -108,6 +115,12 @@ int create_output_filenames(struct state_struct *state) {
       strncpy(ode_concs_filename,rxn_filename,rxn_filename_base_length);      
       strcpy((char*)&ode_concs_filename[rxn_filename_base_length],".ode_concs");
     }
+    strncpy(ode_flux_filename,rxn_filename,rxn_filename_base_length);
+    strcpy((char*)&ode_flux_filename[rxn_filename_base_length],".ode_flux");
+    strncpy(ode_lklhd_filename,rxn_filename,rxn_filename_base_length);
+    strcpy((char*)&ode_lklhd_filename[rxn_filename_base_length],".ode_lklhd");
+    strncpy(ode_bflux_filename,rxn_filename,rxn_filename_base_length);
+    strcpy((char*)&ode_bflux_filename[rxn_filename_base_length],".ode_bflux");
     strncpy(net_lklhd_filename,rxn_filename,rxn_filename_base_length);
     strcpy((char*)&net_lklhd_filename[rxn_filename_base_length],".nlklhd");
     strncpy(nl_bndry_flx_filename,rxn_filename,rxn_filename_base_length);
