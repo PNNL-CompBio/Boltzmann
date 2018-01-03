@@ -26,7 +26,7 @@ specific language governing permissions and limitations under the License.
 #include "sbml_count_cmpts.h"
 int sbml_count_cmpts(struct sbml2bo_struct *sbml_state) {
   /*
-    Called by: sbml_to_boltzmans, sbml2bo
+    Called by: sbml_to_boltzmann, sbml2bo
     Calls:     sbml_find_section, fopen, fprintf, fflush, fclose
   */
   char sbml_buffer_c[2048];
