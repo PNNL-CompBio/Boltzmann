@@ -148,6 +148,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
     state->fe_view_freq        = (int64_t)0;
     state->use_activities      = (int64_t)0;
     state->use_deq             = (int64_t)0;
+    state->no_round_from_deq   = (int64_t)0;
     state->adjust_steady_state = (int64_t)0;
     state->print_output        = (int64_t)0;
     state->use_pseudoisomers   = (int64_t)1;
@@ -318,6 +319,8 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	if (state->use_deq < 0) {
 	  state->use_deq = 0;
 	}
+      } else if (strncmp(key,"NO_ROUND_FROM_DEQ",17) == 0) {
+	sscan_ok = sscanf(value,"%lld",&(state->no_round_from_deq));
       } else if (strncmp(key,"USE_STEADY_STATE",19) == 0) {
 	sscan_ok = sscanf(value,"%lld",&(state->adjust_steady_state));
 	state->use_metropolis = state->adjust_steady_state;
