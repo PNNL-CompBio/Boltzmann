@@ -138,6 +138,9 @@ int echo_reactions_file(struct state_struct *state) {
       } else {
 	fprintf(rxn_echo_fp,"DGZERO-UNITS\tkJ/mol\n");
       }
+      if (state->use_activities) {
+	fprintf(rxn_echo_fp,"ACTIVITY\t%le\n",reaction->activity);
+      }
       fprintf(rxn_echo_fp,"//\n");
       reaction += 1; /* Caution address arithmetic. */
     }
