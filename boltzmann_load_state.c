@@ -22,12 +22,15 @@ specific language governing permissions and limitations under the License.
 ******************************************************************************/
 #include "boltzmann_structs.h"
 #include "boltzmann_flatten_state.h"
+#include "boltzmann_build_agent_data_block.h"
 #include "boltzmann_load_state.h"
-int boltzmann_load_state(void *flattened_state, 
-			 struct state_struct **state_p) {
+int boltzmann_load_state(void *flattened_state,
+			 struct state_struct **state_p, 
+			 void **agent_data_p) {
   /*
     Allocate and load a boltzmann state from a flattened_state
-    created by boltzman_save_state.
+    created by boltzman_save_state, also allocate and fill
+    an agent_data_block 
     Called by: biocellion/user, boltzmann_test_save_load
     Calls:     boltzmann_flatten_state
   */
@@ -37,12 +40,12 @@ int boltzmann_load_state(void *flattened_state,
   int success;
   in_flattened_state = flattened_state;
   direction = 1;
+  state = NULL;
   success = boltzmann_flatten_state(&state,&in_flattened_state,direction,
 				    stderr);
   if (success) {
-    *state_p = state;
-  } else {
-    *state_p = NULL;
+    success = boltzmann_build_agent_data_block(state,agent_data_p);
   }
+  *state_p = state;
   return(success);
 }
