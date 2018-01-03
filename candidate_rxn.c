@@ -23,6 +23,7 @@ specific language governing permissions and limitations under the License.
 #include "boltzmann_structs.h"
 #include "vgrng.h"
 #include "binary_search_l_u_b.h"
+#include "update_regulations.h"
 #include "rxn_count_update.h"
 
 #include "candidate_rxn.h"
@@ -33,7 +34,8 @@ int candidate_rxn(struct state_struct *state, double *scalingp,
     choose_rxn, and update counts as though
     that reaction had been selected.
     Called by : choose_rxn
-    Calls     : vgrng, 
+    Calls     : update_regulations,
+                vgrng, 
                 binary_search_l_u_b,
 		rxn_count_update
   */
@@ -58,7 +60,7 @@ int candidate_rxn(struct state_struct *state, double *scalingp,
   int j;
 
   int direction;
-  int padi;
+  int use_regulation;
 
   success = 1;
   rxn_likelihood_ps      = state->rxn_likelihood_ps;
@@ -67,9 +69,16 @@ int candidate_rxn(struct state_struct *state, double *scalingp,
   reverse_rxn_likelihood = state->reverse_rxn_likelihood;
   activities             = state->activities;
   vgrng_state            = state->vgrng_state;
+  use_regulation         = state->use_regulation;
   uni_multiplier         = vgrng_state->uni_multiplier;
   num_rxns_t2            = num_rxns << 1;
   num_rxns_t2_p1         = num_rxns_t2 + 1;
+  /*
+    If we are using regulation, update the activities.
+  */
+  if (use_regulation) {
+    update_regulations(state);
+  }
   /*
     Compute the partial sums of the reaction likelihoods.
   */
