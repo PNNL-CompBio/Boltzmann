@@ -47,6 +47,7 @@ specific language governing permissions and limitations under the License.
 */
 #include "compute_standard_energies.h"
 #include "compute_ke.h"
+#include "compute_kss.h"
 #include "zero_solvent_coefficients.h"
 #include "print_rxn_likelihoods_header.h"
 #include "print_free_energy_header.h"
@@ -141,6 +142,7 @@ int boltzmann_boot(char *param_file_name,
 	       read_initial_concentrations,
 	       compute_standard_energies,
 	       compute_ke,
+	       compute_kss,
 	       print_rxn_likelihoods_header,
 	       print_free_energy_header
   */
@@ -620,6 +622,12 @@ int boltzmann_boot(char *param_file_name,
 	*/
 	if (success) {
 	  success = compute_ke(state);
+	}
+	/*
+	  Compute the reaction kss's.
+	*/
+	if (success) {
+	  success = compute_kss(state);
 	}
 	/*
 	  Here we won't print the dg0 and ke values as they go to a
