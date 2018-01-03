@@ -72,9 +72,11 @@ specific language governing permissions and limitations under the License.
      listOfLocalParameters if they have a dg0
 */
 #include "boltzmann_structs.h"
-#include "sbml2bo_structs.h"
 
+#include "size_ms2js_file.h"
 #include "sbml_alloc0.h"
+#include "sbml_alloc2.h"
+#include "read_ms2js.h"
 #include "sbml_set_file_names.h"
 #include "sbml_alloc1.h"
 #include "sbml_count_cmpts.h"
@@ -86,21 +88,36 @@ int sbml_to_boltzmann(struct state_struct *state) {
   struct sbml2bo_struct *sbml_state;
   struct compartment_struct *unsorted_compartments;
   struct compartment_struct *sorted_compartments;
+  int64_t num_modelseed_ids;
+  int64_t length_ms2js_strings;
   int success;
   int max_compartment_len;
   FILE *lfp;
   FILE *extra_fp;
-  success = 1;
+  success = size_ms2js_file(state,&num_modelseed_ids,
+			    &length_ms2js_strings);
   /*
     Need to allocate space for the state structure and its
-    filename fields.
+    filename fields and the ms2js structure and its fields,
+    ms2js_strings, ms_ids, js_ids.
   */
-  success = sbml_alloc0(&sbml_state);
+  if (success) {
+    success = sbml_alloc0(&sbml_state);
+  }
+  if (success) {
+    strcpy(sbml_state->sbml_file,state->sbml_file);
+    strcpy(sbml_state->ms2js_file,state->ms2js_file);
+    sbml_state->num_modelseed_ids = num_modelseed_ids;
+    sbml_state->length_ms2js_strings = length_ms2js_strings;
+    success = sbml_alloc2(sbml_state,num_modelseed_ids,length_ms2js_strings);
+    if (success) {
+      success = read_ms2js(sbml_state);
+    }
+  }
   /*
     Need to read input file name and generate output file names.
   */
   if (success) {
-    strcpy(sbml_state->sbml_file,state->sbml_file);
     success = sbml_set_file_names(sbml_state);
   }
   /*
