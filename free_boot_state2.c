@@ -34,7 +34,6 @@ int free_boot_state2(struct state_struct *state) {
   */
   struct rxn_matrix_struct *reactions_matrix; 
   struct molecules_matrix_struct *molecules_matrix;
-  struct formation_energy_struct *formation_energies;
   int success;
   int padi;
   success = 1;
