@@ -27,7 +27,7 @@ specific language governing permissions and limitations under the License.
 int print_molecules_dictionary(struct state_struct *state) {
   /*
     Print the  unique molecules in sorted order and the 
-    header line for the concs.out file.
+    header line for the counts.out file.
     Called by: boltzmann_init
     Calls:     fopen, fprintf, fclose (intrinsic)
   */
@@ -51,16 +51,20 @@ int print_molecules_dictionary(struct state_struct *state) {
   int success;
   int nu_molecules;
 
+  int solvent_pos;
+  int padi;
+
   FILE *dict_fp;
-  FILE *conc_fp;
+  FILE *counts_fp;
   success = 1;
   nu_molecules     = state->nunique_molecules;
   cur_molecules    = state->sorted_molecules;
   cur_cmpts        = state->sorted_cmpts;
-  conc_fp          = state->concs_out_fp;
+  counts_fp        = state->counts_out_fp;
   molecule_dg0tfs  = state->molecule_dg0tfs;
   molecules_text   = state->molecules_text;
   compartment_text = state->compartment_text;
+  solvent_pos      = (int)state->solvent_pos;
   dict_fp = fopen("molecules.dict","w+");
   if (dict_fp == NULL) {
     fprintf(stderr,
@@ -72,8 +76,8 @@ int print_molecules_dictionary(struct state_struct *state) {
   cmpt_string = NULL;
   oi          = -1;
   if (success) {
-    if (conc_fp) {
-      fprintf(conc_fp,"iter");
+    if (counts_fp) {
+      fprintf(counts_fp,"iter");
     }
     fprintf(dict_fp,"number name free_energy_of_formation\n");
     for (i=0;i<nu_molecules;i++) {
@@ -88,19 +92,23 @@ int print_molecules_dictionary(struct state_struct *state) {
       }
       if (ci > 0) {
 	fprintf(dict_fp,"%d %s %s %le\n",i,molecule,cmpt_string,molecule_dg0tfs[i]);
-	if (conc_fp) {
-	  fprintf(conc_fp,"\t%s:%s",molecule,cmpt_string);
+	if (counts_fp) {
+	  if (i != solvent_pos) {
+	    fprintf(counts_fp,"\t%s:%s",molecule,cmpt_string);
+	  }
 	}
       } else {
 	fprintf(dict_fp,"%d %s %le\n",i,molecule,molecule_dg0tfs[i]);
-	if (conc_fp) {
-	  fprintf(conc_fp,"\t%s",molecule);
+	if (counts_fp) {
+	  if (i != solvent_pos) {
+	    fprintf(counts_fp,"\t%s",molecule);
+	  }
 	}
       }
       cur_molecules += 1; /* Caution address arithmetic. */
     }
-    if (conc_fp) {
-      fprintf(conc_fp,"\n");
+    if (counts_fp) {
+      fprintf(counts_fp,"\n");
     }
     fclose(dict_fp);
   }
