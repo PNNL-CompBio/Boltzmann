@@ -47,6 +47,7 @@ int print_reactions_view(struct state_struct *state) {
   char **matrix_text;
   double *rxn_view_data;
   double *rev_rxn_view_data;
+  double *activities;
   int    *rxn_fire;
 
   int success;
@@ -62,7 +63,7 @@ int print_reactions_view(struct state_struct *state) {
   int j;
 
   int k;
-  int lthl;
+  int rxn_view_hist_lngth;
 
   int nrxns;
   int net_fire;
@@ -84,17 +85,18 @@ int print_reactions_view(struct state_struct *state) {
     success = 0;
   }
   if (success) {
-    reaction       = state->reactions;
-    rxns_matrix    = state->reactions_matrix;
-    rxn_ptrs       = rxns_matrix->rxn_ptrs;
-    molecules_indices = rxns_matrix->molecules_indices;
-    coefficients   = rxns_matrix->coefficients;
-    matrix_text    = rxns_matrix->text;
-    rxn_view_data  = state->rxn_view_likelihoods;
-    rev_rxn_view_data = state->rev_rxn_view_likelihoods;
-    rxn_fire          = state->rxn_fire;
-    lthl              = state->lthl;
-    nrxns             = state->number_reactions;
+    reaction       	 = state->reactions;
+    rxns_matrix    	 = state->reactions_matrix;
+    activities           = state->activities;
+    rxn_ptrs       	 = rxns_matrix->rxn_ptrs;
+    molecules_indices    = rxns_matrix->molecules_indices;
+    coefficients   	 = rxns_matrix->coefficients;
+    matrix_text    	 = rxns_matrix->text;
+    rxn_view_data  	 = state->rxn_view_likelihoods;
+    rev_rxn_view_data 	 = state->rev_rxn_view_likelihoods;
+    rxn_fire          	 = state->rxn_fire;
+    rxn_view_hist_lngth  = state->rxn_view_hist_lngth;
+    nrxns                = state->number_reactions;
     for (rxns=0;rxns < nrxns;rxns++) {
       if (reaction->title) {
 	fprintf(rxn_view_fp,"%s\t",reaction->title);
@@ -140,9 +142,13 @@ int print_reactions_view(struct state_struct *state) {
       net_fire = rxn_fire[rxns] - rxn_fire[rxns+nrxns];
       fprintf(rxn_view_fp,"\t%d\t%d",rxn_fire[rxns],net_fire);
       /*
+	Print out the rxn activity level.
+      */
+      fprintf(rxn_view_fp,"\t%le",activities[rxns]);
+      /*
 	Now print the reaction likelihoods for this reaction.
       */
-      for(k=0;k<lthl;k++) {
+      for(k=0;k<rxn_view_hist_lngth;k++) {
 	fprintf(rxn_view_fp,"\t%le",*rxn_view_data);
 	rxn_view_data++; /* Caution address arithmetic here.*/
       }
@@ -194,9 +200,13 @@ int print_reactions_view(struct state_struct *state) {
       net_fire = -net_fire;
       fprintf(rxn_view_fp,"\t%d\t%d",rxn_fire[nrxns+rxns],net_fire);
       /*
+	Print out the rxn activity level.
+      */
+      fprintf(rxn_view_fp,"\t%le",activities[rxns]);
+      /*
 	Now print the reaction likelihoods for this reverse reaction.
       */
-      for(k=0;k<lthl;k++) {
+      for(k=0;k<rxn_view_hist_lngth;k++) {
 	fprintf(rxn_view_fp,"\t%le",*rev_rxn_view_data);
 	rev_rxn_view_data++; /* Caution address arithmetic here.*/
       }
