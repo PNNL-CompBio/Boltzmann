@@ -55,6 +55,10 @@ int lr7_approximate_delta_concs(struct state_struct *state,
   double  recip_volume;
   double  recip_avogadro;
   double  fluxi;
+  double  keq_adj;
+  double  rkeq_adj;
+  double  volume;
+  double  multiplier;
   int64_t *molecules_ptrs;
   int64_t *rxn_indices;
   int64_t *coefficients;
@@ -75,6 +79,9 @@ int lr7_approximate_delta_concs(struct state_struct *state,
 
   int k;
   int klim;
+
+  int sum_coeff;
+  int padi;
 
   FILE *lfp;
   FILE *efp;
@@ -131,13 +138,16 @@ int lr7_approximate_delta_concs(struct state_struct *state,
     rt = 1.0;
     tr = 1.0;
     tp = 1.0;
+    sum_coeff = 0;
     for (j=rxn_ptrs[i];j<rxn_ptrs[i+1];j++) {
       mi = molecule_indices[j];
       molecule = (struct molecule_struct *)&molecules[mi];
       ci = molecules->c_index;
       compartment = (struct compartment_struct *)&compartments[ci];
       recip_volume = compartment->recip_volume;
+      volume       = compartment->volume;
       klim = rcoefficients[j];
+      sum_coeff += klim;
       thermo_adj = abs(klim) * recip_volume * recip_avogadro;
       conc_mi = concs[mi];
       if (klim < 0) {
@@ -153,13 +163,29 @@ int lr7_approximate_delta_concs(struct state_struct *state,
 	  }
 	}
       }
+    } /*  end for (j... ) */
+    keq_adj = 1.0;
+    rkeq_adj = 1.0;
+    multiplier = 1.0;
+    if (sum_coeff > 0) {
+      multiplier = recip_volume;
+    } else {
+      if (sum_coeff < 0) {
+	multiplier = volume;
+	sum_coeff = - sum_coeff;
+      } 
     }
+    for (k=0;k < sum_coeff; k++) {
+      keq_adj *= multiplier;
+    }
+    rkeq_adj = 1.0/keq_adj;
+
     /*
       NB. tp and tr will always be > 0 as thermo_adj > 0 and concs_mi >= 0;
       thermo_adj and 1/coefficients[j] could be precomputed, and stored
       as fields in the reaction and molecules matrices respectively.
     */
-    rfc[i] = (ke[i] * (rt/tp)) - (rke[i] * (pt/tr));
+    rfc[i] = (ke[i] * keq_adj * (rt/tp)) - (rke[i] * rkeq_adj * (pt/tr));
   }
   if (success) {
     molecule = molecules;
@@ -169,7 +195,7 @@ int lr7_approximate_delta_concs(struct state_struct *state,
 	for (j=molecules_ptrs[i];j<molecules_ptrs[i+1];j++) {
 	  rxn = rxn_indices[j];
 	  if (coefficients[j] != 0) {
-	    fluxi += (rfc[rxn]/((double)coefficients[j]));
+	    fluxi += (rfc[rxn]*((double)coefficients[j]));
 	  }
 	} /* end for(j...) */
 	flux[i] = flux_scaling * fluxi;
