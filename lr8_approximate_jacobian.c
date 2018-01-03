@@ -292,6 +292,7 @@ int lr8_approximate_jacobian(struct state_struct *state,
   } /* end for i */
   molecule = molecules;
   dfdy_pos = 0;
+  ndfdy_pos = 0;
   for (i=0;i<ny;i++) {
     column_mask[i] = 0;
   }
@@ -303,6 +304,7 @@ int lr8_approximate_jacobian(struct state_struct *state,
       Ensure that we store a diagonal element for each row.
     */
     column_mask[i] = 1;
+    dfdy_pos = ndfdy_pos;
     dfdy_ja[dfdy_pos] = i;
     dfdy_pos += 1;
     ndfdy_pos = dfdy_pos;
@@ -353,6 +355,13 @@ int lr8_approximate_jacobian(struct state_struct *state,
       }
     } /* end if (molecule->variable) */
     dfdy_ia[i+1] = ndfdy_pos;
+    /*
+      Make sure to reset mask and dfdy_row entry for diagonal elements
+      for fixed concentration species.
+    */
+    dfdy_row[i]  = 0.0;
+    column_mask[i] = 0;
+    molecule += 1; /* Caution address arithmetic here. */
   } /* end for (i...) */
   /*
     Now we want rows of dfdy in dfdy_a to be sorted by column number,
