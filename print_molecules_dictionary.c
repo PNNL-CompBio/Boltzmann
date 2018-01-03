@@ -28,7 +28,7 @@ int print_molecules_dictionary(struct state_struct *state) {
   /*
     Print the  unique molecules in sorted order and the 
     header line for the counts.out file.
-    Called by: boltzmann_init
+    Called by: echo_inputs
     Calls:     fopen, fprintf, fclose (intrinsic)
   */
   struct rxn_struct *reactions;
@@ -65,11 +65,11 @@ int print_molecules_dictionary(struct state_struct *state) {
   molecules_text   = state->molecules_text;
   compartment_text = state->compartment_text;
   solvent_pos      = (int)state->solvent_pos;
-  dict_fp = fopen("molecules.dict","w+");
+  dict_fp = fopen(state->dictionary_file,"w+");
   if (dict_fp == NULL) {
     fprintf(stderr,
-	    "print_molecules_dictionary: Error could not open "
-	    "molecules.dict file.\n");
+	    "print_molecules_dictionary: Error could not open %s\n",
+	    state->dictionary_file);
     fflush(stderr);
     success = 0;
   }
