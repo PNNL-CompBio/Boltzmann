@@ -35,6 +35,7 @@ specific language governing permissions and limitations under the License.
 #include "count_nws.h"
 #include "upcase.h"
 #include "is_a_coef.h"
+#include "parse_side_line.h"
 
 #include "parse_reactions_file.h"
 int parse_reactions_file(struct state_struct *state) {
@@ -116,7 +117,7 @@ int parse_reactions_file(struct state_struct *state) {
   int ci;
 
   int colon_loc;
-  int padi;
+  int side;
 
   FILE *rxn_fp;
   FILE *lfp;
@@ -343,236 +344,29 @@ int parse_reactions_file(struct state_struct *state) {
 	  /*
 	    A left line, count and record reactant molecules and coefficients.
 	  */
+	  side = -1;
 	  rctnts = (char *)&rxn_buffer[kl+ ws_chars];
-	  pos = 0;
-	  len = strlen(rctnts);
-	  while (pos < len) {
-	    sl = (int64_t)count_nws(rctnts);
-	    if (sl > 0) {
-	      molecules_indices[molecules] = molecules;
-	      if (is_a_coef(sl,rctnts)) {
-		rctnts[sl] = '\0';
-		coefficients[molecules] = - atoi(rctnts);
-		rctnts[sl] = ' ';
-
-		pos += sl;
-		rctnts += sl; /* Caution address arithmetic. */
-
-		skip   =  count_ws(rctnts);
-
-		pos += skip;
-		rctnts += skip; /* Caution address arithmetic. */
-
-		sl = count_nws(rctnts);
-	      } else {
-		coefficients[molecules] = -1;
-	      }
-	      /*
-		At this juncture we need to check for
-		a "local" compartment specification of the form 
-		:compartment trailing the molecule name. We do not
-		allow spaces on either side of the semicolon.
-	      */
-	      ci = -1;
-	      rctnts[sl] = '\0';
-	      colon_loc = find_colon(rctnts);
-	      if (colon_loc >= 0) {
-		/* 
-		  We had a local :compartment attached.
-		  determine its length, store it and shorten the
-		  length for the molecule - do not forget to 
-		  allow for the terminating null.
-		*/
-		compartment_len = sl - colon_loc;
-		sl = colon_loc;
-		rctnts[sl] = '\0';
-		if (compartment_len > state->max_compartment_len) {
-		  state->max_compartment_len = compartment_len;
-		} else {
-		  if (compartment_len < state->min_compartment_len) {
-		    state->min_compartment_len = compartment_len;
-		  }
-		}
-		unsorted_cmpts->string = (char *)&compartment_text[compartment_pos];
-		unsorted_cmpts->c_index  = cmpts;
-		unsorted_cmpts += 1; /* Caution address arithmetic */
-		ci = cmpts;
-		cmpts += 1;
-		strcpy(unsorted_cmpts->string,(char*)&rctnts[colon_loc+1]);
-		upcase(compartment_len,unsorted_cmpts->string,
-		       unsorted_cmpts->string);
-		padding = (align_len - (compartment_len & align_mask)) & 
-		  align_mask;
-		compartment_pos += compartment_len + padding;
-	      }
-	      if (sl > state->max_molecule_len) {
-		state->max_molecule_len = sl;
-	      } else {
-		if (sl < state->min_molecule_len) {
-		  state->min_molecule_len = sl;
-		}
-	      }
-	      matrix_text[molecules] = (char*)&raw_molecules_text[molecules_pos];
-	      sll = (int64_t)sl + (int64_t)1;
-	      padding = (align_len - (sll & align_mask)) & align_mask;
-	      strcpy((char *)&raw_molecules_text[molecules_pos],rctnts);
-	      upcase(sl,(char *)&raw_molecules_text[molecules_pos],
-		     (char *)&molecules_text[molecules_pos]);
-	      unsorted_molecules->string = (char *)&molecules_text[molecules_pos];
-	      unsorted_molecules->m_index  = molecules;
-	      unsorted_molecules->c_index  = ci;
-	      unsorted_molecules += 1; /* Caution address arithmetic. */
-
-	      molecules_pos += (int64_t)(sll + padding);
-	      rctnts[sl] = ' ';
-
-	      pos += sl; /* Caution address arithmetic. */
-	      rctnts += sl;
-	      molecules += 1;
-	      reaction->num_reactants += 1;
-	      skip = count_ws(rctnts);
-
-	      pos += skip; /* Caution address arithmetic. */
-	      rctnts += skip;
-
-	      if (pos < len) {
-		if (rctnts[0] != '+') {
-		  fprintf(stderr,"parse_reactions_file: Error, missing + "
-			  "between reactants, reactions file line was \n%s\n",
-			  rxn_buffer);
-		  fflush(stderr);
-		  success = 0;
-		  break;
-		}
-
-		pos += 1;
-		rctnts += 1; /* Caution address arithmetic.*/
-
-		skip = count_ws(rctnts);
-
-		pos  += skip;
-		rctnts += skip; /* Caution address arithmetic.*/
-	      }
-	    } /* end if (sl > 0)  - a reactant was found . */
-	  } /* end while (pos > len) */
+	  success = parse_side_line(rctnts,(int64_t *)&molecules_pos,
+				    (int64_t *)&compartment_pos,
+				    (int *)&molecules,
+				    (int *)&cmpts,
+				    (struct rxn_struct *)reaction,
+				    state,
+				    side);
 	  break;
 	case 6:
 	  /*
 	    A right line, count product molecules.
 	  */
 	  prdcts = (char *)&rxn_buffer[kl + ws_chars];
-	  pos = 0;
-	  len = strlen(prdcts);
-	  while (pos < len) {
-	    sl = (int64_t)count_nws(prdcts);
-	    if (sl > 0) {
-	      molecules_indices[molecules] = molecules;
-	      if (is_a_coef(sl,prdcts)) {
-		prdcts[sl] = '\0';
-		coefficients[molecules] = atoi(prdcts);
-		prdcts[sl] = ' ';
-
-		pos += sl;
-		prdcts += sl; /* Caution address arithmetic. */
-
-		skip   =  count_ws(prdcts);
-		
-		pos += skip;
-		prdcts += skip; /* Caution address arithmetic.*/
-
-		sl = count_nws(prdcts);
-	      } else {
-		coefficients[molecules] = 1;
-	      }
-	      ci = -1;
-	      prdcts[sl] = '\0';
-	      colon_loc = find_colon(prdcts);
-	      if (colon_loc >= 0) {
-		/* 
-		  We had a local :compartment attached.
-		  determine its length, store it and shorten the
-		  length for the molecule - do not forget to 
-		  allow for the terminating null.
-		*/
-		compartment_len = sl - colon_loc;
-		sl = colon_loc;
-		rctnts[sl] = '\0';
-		if (compartment_len > state->max_compartment_len) {
-		  state->max_compartment_len = compartment_len;
-		} else {
-		  if (compartment_len < state->min_compartment_len) {
-		    state->min_compartment_len = compartment_len;
-		  }
-		}
-		unsorted_cmpts->string = (char *)&compartment_text[compartment_pos];
-		unsorted_cmpts->c_index  = cmpts;
-		unsorted_cmpts += 1; /* Caution address arithmetic */
-		ci = cmpts;
-		cmpts += 1;
-		strcpy(unsorted_cmpts->string,(char*)&rctnts[colon_loc+1]);
-		upcase(compartment_len,unsorted_cmpts->string,
-		       unsorted_cmpts->string);
-		padding = (align_len - (compartment_len & align_mask)) & 
-		  align_mask;
-		compartment_pos += compartment_len + padding;
-	      }
-	      if (sl > state->max_molecule_len) {
-		state->max_molecule_len = sl;
-	      } else {
-		if (sl < state->min_molecule_len) {
-		  state->min_molecule_len = sl;
-		}
-	      }
-	      if (sl > state->max_molecule_len) {
-		state->max_molecule_len = sl;
-	      } else {
-		if (sl < state->min_molecule_len) {
-		  state->min_molecule_len = sl;
-		}
-	      }
-	      matrix_text[molecules] = (char*)&raw_molecules_text[molecules_pos];
-	      prdcts[sl] = '\0';
-	      sll = (int64_t)sl + (int64_t)1;
-	      padding = (align_len - (sll & align_mask)) & align_mask;
-	      strcpy((char *)&raw_molecules_text[molecules_pos],prdcts);
-	      upcase(sl,(char *)&raw_molecules_text[molecules_pos],
-		     (char *)&molecules_text[molecules_pos]);
-	      unsorted_molecules->string = (char *)&molecules_text[molecules_pos];
-	      unsorted_molecules->m_index  = molecules;
-	      unsorted_molecules->c_index  = ci;
-	      unsorted_molecules += 1; /* Caution address arithmetic. */
-	      molecules_pos += (int64_t)(sll + padding);
-	      prdcts[sl] = ' ';
-
-	      pos += sl;
-	      prdcts += sl; /* Caution address arithmetic. */
-
-	      molecules += 1;
-	      reaction->num_products += 1;
-	      skip = count_ws(prdcts);
-
-	      pos += skip;
-	      prdcts += skip; /* Caution address arithmetic. */
-
-	      if (pos < len) {
-		if (prdcts[0] != '+') {
-		  fprintf(stderr,"parse_reactions_file: Error, missing + "
-			  "between products, reactions file line was \n%s\n",
-			  rxn_buffer);
-		  fflush(stderr);
-		  success = 0;
-		  break;
-		}
-		pos    += 1;
-		prdcts += 1; /* Caution address arithmetic. */
-
-		skip = count_ws(prdcts);
-
-		pos  += skip;
-		prdcts += skip; /* Caution address arithmetic. */
-	      }
-	    } /* end if (sl > 0)  - a reactant was found . */
-	  } /* end while (pos > len) */
+	  side   = 1;
+	  success = parse_side_line(prdcts,(int64_t *)&molecules_pos,
+				    (int64_t *)&compartment_pos,
+				    (int *)&molecules,
+				    (int *)&cmpts,
+				    (struct rxn_struct *)reaction,
+				    state,
+				    side);
 	  break;
 	case 7:
 	  /* 
@@ -693,16 +487,5 @@ int parse_reactions_file(struct state_struct *state) {
     fflush(stderr);
     success = 0;
   }
-  /*
-    These are now set in size_rxns_file.
-  state->reaction_file_length = total_length;
-  state->number_reactions = rxns;
-  state->number_molecules   = molecules;
-  state->number_compartments = cmpts;
-  state->molecules_len = molecules_len;
-  state->pathway_len = pathway_len;
-  state->compartment_len = compartment_len;
-  state->rxn_title_len = rxn_title_len;
-  */
   return(success);
 }
