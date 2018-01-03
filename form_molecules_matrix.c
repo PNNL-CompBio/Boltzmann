@@ -29,7 +29,7 @@ int form_molecules_matrix(struct state_struct *state,
 			  int64_t *transpose_rp) {
   /*
     Transpose the reactions matrix in to the molecules matrix.
-    Called by: boltzmann_init
+    Called by: boltzmann_init_core, deq_run
     Calls:     
   */
   struct rxn_matrix_struct *rxn_matrix;
