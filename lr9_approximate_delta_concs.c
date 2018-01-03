@@ -9,7 +9,7 @@ int lr9_approximate_delta_concs(struct state_struct *state,
   /*
     Compute approximations to concentration changes wrt time, 
     Based on thermodynamics formulation for concentraion rate
-    changes, but also scaled by reactin activity coefficents.
+    changes, but also scaled by reaction activity coefficents.
     using counts to compute tr, tp, pt, rt instead of concs.
 
     Get reference from Bill Cannon
