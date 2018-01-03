@@ -80,7 +80,7 @@ int parse_side_line(char *rctnts_p,
     
   */
   struct molecule_struct *unsorted_molecules;
-  struct molecule_struct *unsorted_cmpts;
+  struct compartment_struct *unsorted_cmpts;
   struct rxn_matrix_struct *rxns_matrix;
   int64_t *molecules_indices;
   int64_t *coefficients;
@@ -119,7 +119,7 @@ int parse_side_line(char *rctnts_p,
   molecules          = *molecules_p;
   cmpts              = *cmpts_p;
   unsorted_molecules = (struct molecule_struct *)&state->unsorted_molecules[molecules];
-  unsorted_cmpts     = (struct molecule_struct *)&state->unsorted_cmpts[cmpts];
+  unsorted_cmpts     = (struct compartment_struct *)&state->unsorted_cmpts[cmpts];
   rctnts             = rctnts_p;
 
   rxns_matrix        = state->reactions_matrix;
@@ -190,6 +190,7 @@ int parse_side_line(char *rctnts_p,
 	unsorted_cmpts->string = (char *)&compartment_text[compartment_pos];
 	*/
 	unsorted_cmpts->string = compartment_pos;
+	unsorted_cmpts->volume = 0.0;
 	compartment = (char *)&compartment_text[compartment_pos];
 	unsorted_cmpts->c_index  = cmpts;
 	unsorted_cmpts += 1; /* Caution address arithmetic */
@@ -223,6 +224,11 @@ int parse_side_line(char *rctnts_p,
       unsorted_molecules->string = molecules_pos;
       unsorted_molecules->m_index  = molecules;
       unsorted_molecules->c_index  = ci;
+      /*
+	Set the variable field to -1 to track prescence of molecule
+	in the intial concentrations file.
+      */
+      unsorted_molecules->variable = -1;
       unsorted_molecules += 1; /* Caution address arithmetic. */
 
       molecules_pos += (int64_t)(sll + padding);
