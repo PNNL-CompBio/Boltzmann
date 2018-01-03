@@ -192,6 +192,17 @@ int alloc2(struct state_struct *state) {
     }
   }
   if (success) {
+    ask_for = num_rxns * ((int64_t)sizeof(int64_t));
+    usage += ask_for;
+    reactions_matrix->solvent_coefficients = (int64_t*)calloc(one_l,ask_for);
+    if (reactions_matrix->solvent_coefficients == NULL) {
+      fprintf(stderr,"alloc2: Error, unable to allocate %ld bytes of space "
+	      "for reactions_matrix->solvent_coefficients\n",ask_for);
+      fflush(stderr);
+      success = 0;
+    }
+  }
+  if (success) {
     ask_for = nze * ((int64_t)sizeof(int64_t));
     usage += ask_for;
     reactions_matrix->text = (int64_t *)calloc(one_l,ask_for);
