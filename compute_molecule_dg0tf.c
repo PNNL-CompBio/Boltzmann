@@ -144,6 +144,7 @@ int compute_molecule_dg0tf(double ph,
 	priority_level = 2;
       }
     }
+    pseudoisomer += 1; /* Caution address arithmetic */
   }
   if (dgt1 != dgtmin) {
     sum *= exp(dgt1 - dgtmin);
