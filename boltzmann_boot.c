@@ -126,14 +126,15 @@ int boltzmann_boot(char *param_file_name,
   int64_t *meta_data;
   char    *global_state_filename;
   int success;
-  int padi;
+  int one;
 
   FILE *global_state_fp;
   FILE *lfp;
   /*
     allocate space for the a sample boltzman state struct.
   */
-  success = alloc0(&init_state);
+  one = 1;
+  success = alloc0(&init_state,one);
   if (success) {
     /*
       Read the input parameters file.
