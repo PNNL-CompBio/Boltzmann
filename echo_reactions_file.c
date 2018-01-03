@@ -31,7 +31,8 @@ specific language governing permissions and limitations under the License.
 #include "boltzmann_structs.h"
 
 #include "echo_reactions_file.h"
-int echo_reactions_file(struct state_struct *state) {
+int echo_reactions_file(struct state_struct *state,
+			FILE *rxn_echo_fp) {
   /*
     Echo the reactions file to a rxns.echo file.
     Called by: boltzmann_init
@@ -43,7 +44,18 @@ int echo_reactions_file(struct state_struct *state) {
   int64_t *rxn_ptrs;
   int64_t *molecules_indices;
   int64_t *coefficients;
-  char **matrix_text;
+  int64_t *matrix_text;
+  
+  char *rxn_title_text;
+  char *pathway_text;
+  char *compartment_text;
+  char *molecules_text;
+
+  char *title;
+  char *pathway;
+  char *compartment;
+  char *molecule;
+
 
   int success;
   int rxns;
@@ -57,21 +69,27 @@ int echo_reactions_file(struct state_struct *state) {
   int coeff;
   int j;
 
-  FILE *rxn_echo_fp;
-  FILE *lfp;
-
   char tab;
   char padc[7];
 
   tab  = (char)9;
   success = 1;
+  rxn_title_text   = state->rxn_title_text;
+  pathway_text     = state->pathway_text;
+  compartment_text = state->compartment_text; 
+  molecules_text   = state->molecules_text;
 
+  /*
+    Now passed in as an argument.
+  */
+  /*
   rxn_echo_fp = fopen("rxns.echo","w+");
   if (rxn_echo_fp == NULL) {
     fprintf(stderr,
 	    "echo_reactions_file: Error could not open rxns.echo file.\n");
     success = 0;
   }
+  */
   if (success) {
     reaction       = state->reactions;
     rxns_matrix    = state->reactions_matrix;
@@ -80,19 +98,24 @@ int echo_reactions_file(struct state_struct *state) {
     coefficients   = rxns_matrix->coefficients;
     matrix_text    = rxns_matrix->text;
     for (rxns=0;rxns < (int)state->number_reactions;rxns++) {
-      if (reaction->title) {
-	fprintf(rxn_echo_fp,"REACTION\t%s\n",reaction->title);
+      if (reaction->title>=0) {
+	title = (char *)&rxn_title_text[reaction->title];
+	fprintf(rxn_echo_fp,"REACTION\t%s\n",title);
       }
-      if (reaction->pathway) {
-	fprintf(rxn_echo_fp,"PATHWAY\t%s\n",reaction->pathway);
+      if (reaction->pathway>=0) {
+	pathway = (char *)&pathway_text[reaction->pathway];
+	fprintf(rxn_echo_fp,"PATHWAY\t%s\n",pathway);
       }
-      if (reaction->lcompartment) {
-	if (reaction->rcompartment) {
-	  fprintf(rxn_echo_fp,"LEFT_COMPARTMENT\t%s\n",reaction->lcompartment);
+      if (reaction->lcompartment>=0) {
+	if (reaction->rcompartment>=0) {
+	  compartment = (char *)&compartment_text[reaction->lcompartment];
+	  fprintf(rxn_echo_fp,"LEFT_COMPARTMENT\t%s\n",compartment);
+	  compartment = (char *)&compartment_text[reaction->rcompartment];
 	  fprintf(rxn_echo_fp,
-		  "RIGHT_COMPARTMENT\t%s\n",reaction->rcompartment);
+		  "RIGHT_COMPARTMENT\t%s\n",compartment);
 	} else {
-	  fprintf(rxn_echo_fp,"COMPARTMENT\t%s\n",reaction->lcompartment);
+	  compartment = (char *)&compartment_text[reaction->lcompartment];
+	  fprintf(rxn_echo_fp,"COMPARTMENT\t%s\n",compartment);
 	}
       }
       fprintf(rxn_echo_fp,"LEFT\t");
@@ -104,7 +127,8 @@ int echo_reactions_file(struct state_struct *state) {
 	    coeff = -coeff;
 	    fprintf(rxn_echo_fp,"%d ",coeff);
 	  }
-	  fprintf(rxn_echo_fp,"%s",matrix_text[j]);
+	  molecule = (char*)&molecules_text[matrix_text[j]];
+	  fprintf(rxn_echo_fp,"%s",molecule);
 	  nr += 1;
 	  if (nr < reaction->num_reactants) {
 	    fprintf(rxn_echo_fp," + ");
@@ -122,7 +146,8 @@ int echo_reactions_file(struct state_struct *state) {
 	  if (coeff > 1) {
 	    fprintf(rxn_echo_fp,"%d ",coeff);
 	  }
-	  fprintf(rxn_echo_fp,"%s",matrix_text[j]);
+	  molecule = (char*)&molecules_text[matrix_text[j]];
+	  fprintf(rxn_echo_fp,"%s",molecule);
 	  np += 1;
 	  if (np < reaction->num_products) {
 	    fprintf(rxn_echo_fp," + ");
@@ -144,7 +169,7 @@ int echo_reactions_file(struct state_struct *state) {
       fprintf(rxn_echo_fp,"//\n");
       reaction += 1; /* Caution address arithmetic. */
     }
-    fclose(rxn_echo_fp);
+    /*fclose(rxn_echo_fp);*/
   }
   return(success);
 }
