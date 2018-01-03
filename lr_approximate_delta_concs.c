@@ -102,7 +102,7 @@ int lr_approximate_delta_concs(struct state_struct *state, double *counts,
   if ((base_rxn < 0)  || (base_rxn >= num_rxns)) {
     success = 0;
     if (lfp) {
-      fprintf(lfp,"approximate_delta_concs: Error, base_rxn = %d is not in [0:%d)\n",
+      fprintf(lfp,"lr_approximate_delta_concs: Error, base_rxn = %d is not in [0:%d)\n",
 	      base_rxn,num_rxns);
       fflush(lfp);
     }
@@ -141,7 +141,7 @@ int lr_approximate_delta_concs(struct state_struct *state, double *counts,
     } else {
       success = 0;
       if (lfp) {
-	fprintf(lfp,"approximate_delta_concs: Error, reaction likelihood for base_rxn reaction is 0.\n");
+	fprintf(lfp,"lr_approximate_delta_concs: Error, reaction likelihood for base_rxn reaction %d is 0.\n",base_rxn);
 	fflush(lfp);
       }
     }
