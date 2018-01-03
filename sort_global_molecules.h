@@ -21,8 +21,8 @@ CONDITIONS OF ANY KIND, either express or implied. See the License for the
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
 extern int sort_global_molecules(
-			     struct istring_elem_struct **unsorted_molecules,
-			     struct istring_elem_struct **sorted_molecules,
+			     struct molecule_struct **unsorted_molecules,
+			     struct molecule_struct **sorted_molecules,
 			     int64_t *molecule_map_indices,
 			     char *molecule_text,
 			     int n);
