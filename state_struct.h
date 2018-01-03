@@ -139,12 +139,16 @@ struct state_struct {
     reaction view history frequency.
     Default value is 0: don't display.
   */
-  int  lthf;
+  int  rxn_view_freq;
   /*
     Likelihood transpose history length:
-    lthl = floor((record_steps + lthf - 1)/lthf);
+    rxn_view_hist_lngthd = 
+       floor((record_steps + rxn_view_freq - 1)/rxn_view_freq);
   */
-  int  lthl;
+  int  rxn_view_hist_lngth;
+
+  int  lklhd_view_freq;
+  int  conc_view_freq;
 
   int  num_fixed_concs;
   int  use_activities;
