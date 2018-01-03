@@ -149,7 +149,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
     state->ionic_strength      = 0.15;
     state->joules_per_cal      = 4.184;
     state->epsilon             = 0.0000001;
-    state->avogadro            = 6.022214179e23;
+    state->avogadro            = 6.022140857e23;
     state->recip_avogadro      = 1.0/state->avogadro;
     state->cals_per_joule      = 1.0/state->joules_per_cal;
     state->default_volume      = 1.0e-15;
