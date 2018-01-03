@@ -71,6 +71,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
     strcpy(state->output_file,"./boltzmann.out");
     strcpy(state->concs_out_file,"./concs.out");
     strcpy(state->rxn_lklhd_file,"./rxns.lklhd");
+    strcpy(state->free_energy_file,"./rxns.fe");
     strcpy(state->input_dir,"./");
     strcpy(state->output_dir,"./");
     state->align_len        = (int64_t)16;
@@ -84,6 +85,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
     state->small_nonzero    = 1.e-31;
     state->warmup_steps     = 1000;
     state->record_steps     = 1000;
+    state->free_energy_format = 0;
     param_buffer       = state->param_buffer;
     max_param_line_len = state->max_param_line_len;
     key                = state->param_key;
@@ -111,6 +113,8 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	sscan_ok = sscanf(value,"%s",state->concs_out_file);
       } else if (strncmp(key,"RXN_LKLHD_FILE",13) == 0) {
 	sscan_ok = sscanf(value,"%s",state->rxn_lklhd_file);
+      } else if (strncmp(key,"FREE_ENERGY_FILE",15) == 0) {
+	sscan_ok = sscanf(value,"%s",state->free_energy_file);
       } else if (strncmp(key,"LOG_FILE",8) == 0) {
 	sscan_ok = sscanf(value,"%s",state->log_file);
       } else if (strncmp(key,"ALIGN_LEN",9) == 0) {
@@ -129,6 +133,24 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	sscan_ok = sscanf(value,"%d",&(state->warmup_steps));
       } else if (strncmp(key,"RECORD_STEPS",12) == 0) {
 	sscan_ok = sscanf(value,"%d",&(state->record_steps));
+      } else if (strncmp(key,"FREE_ENERGY_FORMAT",12) == 0) {
+	if (strncmp(value,"NONE",4) == 0) {
+	  state->free_energy_format = 0;
+	} else if (strcmp(value,"NEG_LOG_LKLHD") == 0) {
+	  state->free_energy_format = 1;
+	} else if (strcmp(value,"KJ/MOL") == 0) {
+	  state->free_energy_format = 2;
+	} else if (strcmp(value,"KCAL/MOL") == 0) {
+	  state->free_energy_format = 3;
+	} else {
+	  sscan_ok = sscanf(value,"%d",&(state->free_energy_format));
+	  if (sscan_ok != 1) {
+	    fprintf(stderr,"read_params: invalid value for free_energy "
+		    "format using 0\n");
+	    fflush(stderr);
+	    state->free_energy_format = 0;
+	  }
+	}
       }
       sscan_ok = 0;
       rtp = fgets(param_buffer,max_param_line_len,in_fp);
