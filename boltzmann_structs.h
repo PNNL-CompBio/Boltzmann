@@ -60,6 +60,6 @@ specific language governing permissions and limitations under the License.
 #include "vgrng_state_struct.h"
 #include "pseudoisomer_struct.h"
 #include "formation_energy_struct.h"
-#include "ms2js_struct.h"
+#include "t2js_struct.h"
 #include "sbml2bo_struct.h"
 #endif
