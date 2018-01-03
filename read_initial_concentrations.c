@@ -40,18 +40,30 @@ int read_initial_concentrations(struct state_struct *state) {
   */
   struct  molecule_struct *sorted_molecules;
   struct  molecule_struct *molecule;
+  struct  molecule_struct *sorted_compartments;
+  struct  molecule_struct *compartment;
   double  volume;
+  double  recip_volume;
+  double  default_volume;
+  double  min_count;
+  double  min_conc;
+  double  default_min_conc;
   double  conc_units;
   double  conc;
   double  count;
-  double  conc_multiple;
   double  c_multiple;
   double  multiplier;
   double  avogadro;
+  double  units_avo;
+  double  recip_avogadro;
   double  half;
   double  e_val;
   double  u_val;
   double  *bndry_flux_counts;
+  double  ntotal_opt;
+  double  ntotal_exp;
+  double  opt_count;
+  double  exp_count;
   double  *counts;
   double  *kss_e_val;
   double  *kss_u_val;
@@ -83,29 +95,35 @@ int read_initial_concentrations(struct state_struct *state) {
   int solvent;
 
   int compute_conc;
-  int padi;
+  int nu_compartments;
   
   char vc[2];
   char cc[2];
   
   FILE *conc_fp;
   FILE *counts_out_fp;
-  avogadro           = state->avogadro;
-  half               = 0.5;
-  nu_molecules       = state->nunique_molecules;
-  molecules_buff_len = state->max_param_line_len;
-  molecules_buffer   = state->param_buffer;
-  molecule_name      = molecules_buffer + state->max_param_line_len;
-  compartment_name   = molecule_name + (state->max_param_line_len>>1);
-  sorted_molecules   = state->sorted_molecules;
-  counts             = state->current_counts;
-  kss_e_val          = state->kss_e_val; 
-  kss_u_val          = state->kss_u_val; 
-  bndry_flux_counts  = (double *)state->bndry_flux_counts;
+  avogadro            = state->avogadro;
+  recip_avogadro      = state->recip_avogadro;
+  half                = 0.5;
+  nu_molecules        = state->nunique_molecules;
+  nu_compartments     = state->nunique_compartments;
+  molecules_buff_len  = state->max_param_line_len;
+  molecules_buffer    = state->param_buffer;
+  molecule_name       = molecules_buffer + state->max_param_line_len;
+  compartment_name    = molecule_name + (state->max_param_line_len>>1);
+  sorted_molecules    = state->sorted_molecules;
+  sorted_compartments = state->sorted_cmpts;
+  counts              = state->current_counts;
+  kss_e_val           = state->kss_e_val; 
+  kss_u_val           = state->kss_u_val; 
+  bndry_flux_counts   = (double *)state->bndry_flux_counts;
   success = 1;
   one_l = (int64_t)1;
+  default_volume = 1.0e-15;
   variable_c = (char *)&vc[0];
   compute_c  = (char *)&cc[0];
+  ntotal_opt = 0.0;
+  ntotal_exp = 0.0;
   for (i=0;i<nu_molecules;i++) {
     counts[i] = -1.0;
     bndry_flux_counts[i] = -1.0;
@@ -132,7 +150,12 @@ int read_initial_concentrations(struct state_struct *state) {
 	  fflush(stderr);
 	  success = 0;
 	} else {
+	  if (volume <= 0.0) {
+	    volume = default_volume;
+	  }
 	  state->volume = volume;
+	  recip_volume = 1.0/volume;
+	  state->recip_volume = recip_volume;
 	}
       }
     } else {
@@ -178,11 +201,36 @@ int read_initial_concentrations(struct state_struct *state) {
     }
   }
   if (success) {
-    multiplier = conc_units * volume * avogadro;
-    state->conc_to_count = multiplier;
-    if (multiplier > 0.0) {
-      state->count_to_conc = 1.0/multiplier;
+    /*
+      Initialize compartment volume, recip_volume if unset and 
+      ntotal_exp, ntotal_opt, conc_to_count, and count_to_conc fields.
+    */
+    units_avo = conc_units * avogadro;
+    compartment = (struct molecule_struct *)&sorted_compartments[0];
+    for (i=0;i<nu_compartments;i++) {
+      if (compartment->volume <= 0.0) {
+	compartment->volume = volume;
+      }
+      compartment->recip_volume = 1.0/compartment->volume;
+      compartment->ntotal_exp   = 0.0;
+      compartment->ntotal_opt   = 0.0;
+      compartment->min_conc     = compartment->recip_volume * recip_avogadro;
+      multiplier                = units_avo * volume;
+      compartment->conc_to_count = multiplier;
+      if (multiplier > 0.0) {
+	compartment->count_to_conc   = 1.0/multiplier;
+      } else {
+	success = 0;
+      }
+      compartment += 1; /* Caution address arithmetic */
     }
+  }	
+  if (success) {
+    compartment = (struct molecule_struct *)&sorted_compartments[0];
+    compartment->volume = volume;
+    compartment->recip_volume = 1.0/volume;
+    state->conc_to_count  = compartment->conc_to_count;
+    state->count_to_conc  = compartment->count_to_conc;
     while (!feof(conc_fp)) {
       fgp = fgets(molecules_buffer,molecules_buff_len,conc_fp);
       if (fgp) {
@@ -231,30 +279,6 @@ int read_initial_concentrations(struct state_struct *state) {
 	    }
 	  }
 	}
-	if (nscan >= 6) {
-	  /*
-	    An expermental and user intial values were supplied.
-	    Don't need to do anything yet as they are in e_val and u_val,
-	    or else e_val and u_val are 1.0
-	  */
-	  if ((e_val == 0.0) || (u_val == 0.0)) {
-	    /*
-	      Do we want to print and error message ?
-	      We would just set the 0 one to be the nonzero one,
-	      or if both zero set them to 1. Since what we are
-	      always interested in is their ratio, setting both
-	      to 1 if either is 0 accomplishes that effect.
-	    */
-	    e_val = 1.0;
-	    u_val = 1.0;
-	  }
-	} else {
-	  /*
-	    No modification of e_q is to happen.
-	  */
-	  u_val = 1.0;
-	  e_val = 1.0;
-	}
 	mol_len = strlen(molecule_name);
 	compartment_name = molecule_name;
 	for (i=0;i<mol_len-1;i++) {
@@ -272,6 +296,22 @@ int read_initial_concentrations(struct state_struct *state) {
 	  upcase(cmpt_len,compartment_name,compartment_name);
 	  ci = compartment_lookup(compartment_name,state);
 	}
+	compartment = (struct molecule_struct *)&sorted_compartments[ci];
+	volume       = compartment->volume;
+	recip_volume = compartment->recip_volume;
+	min_conc     = compartment->min_conc;
+	multiplier   = compartment->conc_to_count;
+	if (e_val == 0.0) {
+	  /*
+	    Here if we are in a particular compartment
+	    we may want to use that compartment volume instead
+	    of the default volume.
+	  */
+	  e_val = min_conc;
+	}
+	if (u_val == 0.0) {
+	  u_val = min_conc;
+	}
 	if (nscan >= 2) {
 	  upcase(mol_len,molecule_name,molecule_name);
 	  si = molecules_lookup(molecule_name,ci,state);
@@ -282,6 +322,16 @@ int read_initial_concentrations(struct state_struct *state) {
 	      multiplier is volume * units * Avogadro's number.
 	    */
 	    counts[si] = (double)((int64_t)((conc * multiplier) + half));
+	    opt_count  = (double)((int64_t)((u_val * multiplier) + half));
+	    exp_count  = (double)((int64_t)((e_val * multiplier) + half));
+	    if (opt_count < 1.0) {
+	      opt_count = 1.0;
+	    }
+	    if (exp_count < 1.0) {
+	      exp_count = 1.0;
+	    }
+	    compartment->ntotal_opt += opt_count;
+	    compartment->ntotal_exp += exp_count;
 	    kss_e_val[si] = e_val;
 	    kss_u_val[si] = u_val;
 	    molecule = (struct molecule_struct *)&sorted_molecules[si];
