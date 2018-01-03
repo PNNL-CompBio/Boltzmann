@@ -80,7 +80,7 @@ int create_output_filenames(struct state_struct *state) {
       /*
 	Probably should print a warning mewssage here.
       */
-      fprintf(stderr,"create_output_filenames: Warning, truncated rxn_filename_base to %ld characters\n",rxn_filename_base_length);
+      fprintf(stderr,"create_output_filenames: Warning, truncated rxn_filename_base to %lld characters\n",rxn_filename_base_length);
       fflush(stderr);
     }
     state->rxn_filename_base_length = rxn_filename_base_length;
