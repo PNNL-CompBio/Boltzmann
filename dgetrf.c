@@ -16,7 +16,6 @@ void dgetrf_(int *m_p,
   double one;
   double mone;
   double zero;
-  double temp;
   double sfmin;
   double *dbl_ptr;
   int64_t sfmin_hex;
@@ -24,8 +23,6 @@ void dgetrf_(int *m_p,
   int64_t jb_lda;
   int64_t j_lda;
   int64_t j_p_jb_lda;
-  int64_t a21_start;
-  int64_t a22_start;
   int m;
   int n;
 
@@ -41,11 +38,8 @@ void dgetrf_(int *m_p,
   int nb;
   int inc1;
 
-  int izero;
   int min_m_n;
-
   int mmj;
-  int padi;
 
   int min_m_j_p_jb;
   int j_p_jb_m1;
