@@ -201,6 +201,10 @@ int parse_reactions_file(struct state_struct *state,
     reaction->num_reactants     = 0;
     reaction->num_products      = 0;
     reaction->activity          = 1.0;
+    reaction->temp_kelvin       = state->temp_kelvin;
+    reaction->deltag0_computed  = 0;
+    reaction->ph                = state->ph;
+    reaction->ionic_strength    = state->ionic_strength;
     activities[0]               = 1.0;
     rxn_ptrs[rxns]              = molecules;
     fgp = fgets(rxn_buffer,rxn_buff_len,rxn_fp);
@@ -451,10 +455,10 @@ int parse_reactions_file(struct state_struct *state,
 	    title  = (char *)&rxn_title_text[reaction->title];
 	    fprintf(stderr,
 		    "parse_reactions_file: Error: malformed DGZERO-UNITS line,"
-		    " for reaction %s, was %s, using KCAL/MOL\n",
+		    " for reaction %s, was %s, using KJ/MOL\n",
 		    title,rxn_buffer);
 	    fflush(stderr);
-	    reaction->unit_i = 0;
+	    reaction->unit_i = 1;
 	  } else {
 	    upcase(sl,(char*)&rxn_buffer[ws_chars+kl],(char*)&rxn_buffer[ws_chars+kl]);
 	    if (strncmp((char*)&rxn_buffer[ws_chars+kl],"KJ/MOL",6) == 0) {
@@ -526,6 +530,14 @@ int parse_reactions_file(struct state_struct *state,
 	    reaction->num_reactants     = 0;
 	    reaction->num_products      = 0;
 	    reaction->activity          = 1.0;
+	    /*
+	      The following three lines added by DGT on 4/18/2013
+	    */
+	    reaction->temp_kelvin       = state->temp_kelvin;
+	    reaction->ph                = state->ph;
+	    reaction->ionic_strength    = state->ionic_strength;
+	    reaction->deltag0_computed  = 0;
+
 	    rxn_ptrs[rxns]              = molecules;
 	  }
 	  break;
