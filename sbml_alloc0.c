@@ -54,7 +54,7 @@ int sbml_alloc0(struct sbml2bo_struct **state_p) {
   */
   num_files = 8;
   one_l   = (int64_t)1;
-  max_file_name_len = 1024;
+  max_file_name_len = 128;
   ask_for = (int64_t)sizeof(state_instance);
   state = (struct sbml2bo_struct *)calloc(one_l,ask_for);
   if (state == NULL) {
