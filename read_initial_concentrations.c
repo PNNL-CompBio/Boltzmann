@@ -40,9 +40,12 @@ int read_initial_concentrations(struct state_struct *state) {
     Calls:     molecules_lookup
                fopen, fgets, fclose, fprintf, fflush (intrinsic)
   */
+  struct istring_elem_struct *sorted_molecules;
+  struct istring_elem_struct *molecule;
   double  conc;
   double *concs;
   int64_t molecules_buff_len;
+  int64_t one_l;
   int success;
   int nzr;
 
@@ -50,41 +53,80 @@ int read_initial_concentrations(struct state_struct *state) {
   int i;
 
   int nscan;
-  int ws;
-
-  int nws;
-  int ll;
+  int variable;
 
   int si;
-  int padi;
+  int ci;
+
+  
   char *molecules_buffer;
   char *molecule_name;
+  char *compartment_name;
+  char *variable_c;
+  char vc[2];
   char *fgp;
   
   FILE *conc_fp;
   nu_molecules = state->unique_molecules;
   molecules_buff_len = state->rxn_buff_len;
   molecules_buffer   = state->rxn_buffer;
-  molecule_name     = state->molecule_name;
-  concs            = state->concentrations;
+  molecule_name      = state->molecule_name;
+  compartment_name   = state->compartment_name;
+  sorted_molecules  = state->sorted_molecules;
+  concs            = state->current_concentrations;
   success = 1;
+  one_l = (int64_t)1;
+  variable_c = (char *)&vc[0];
   for (i=0;i<nu_molecules;i++) {
     concs[i] = -1.0;
   }
-  conc_fp = fopen("concs.in","r");
+  conc_fp = fopen(state->init_conc_file,"r");
   if (conc_fp) {
     while (!feof(conc_fp)) {
       fgp = fgets(molecules_buffer,molecules_buff_len,conc_fp);
       if (fgp) {
-	ll = strlen(molecules_buffer);
-	nscan = sscanf(molecules_buffer,"%s %le",molecule_name,&conc);
-	if (nscan == 2) {
+	nscan = sscanf(molecules_buffer,"%s:%s %le %1s",
+		       molecule_name, compartment_name, &conc,variable_c);
+	if (nscan >= 3) {
+	  /*
+	    A compartment was specified.
+	  */
+	  ci = compartment_lookup(compartment_name,state);
+	  variable = 1;
+	  if (nscan == 4) {
+	    vc[0] = vc[0] & 95;
+	    if (strncmp(variable_c,"C",one_l) == 0) {
+	      variable = 0;
+	    }
+	  }
+	} else {
+	  ci = -1;
+	  nscan = sscanf(molecules_buffer,"%s %le %1s",molecule_name,
+			 &conc,variable_c);
+	  variable = 1;
+	  if (nscan == 3) {
+	    vc[0] = vc[0] & 95;
+	    if (strncmp(variable_c,"C",one_l) == 0) {
+	      variable = 0;
+	    }
+	  } else {
+	    if (nscan < 2) {
+	      fprintf(stderr,"read_initial_concentrations: Error "
+		      "poorly formated line was\n%s\n",molecules_buffer);
+	      fflush(stderr);
+	      success = 0;
+	    }
+	  }
+	}
+	if (success) {
 	  if (strcmp(molecule_name,"*") == 0) {
 	    state->default_initial_conc = conc;
 	  } else {
-	    si = molecules_lookup(molecule_name,state);
+	    si = molecules_lookup(molecule_name,ci,state);
 	    if ((si >=0) && si < nu_molecules) {
 	      concs[si] = conc;
+	      molecule = (struct istring_elem_struct *)&sorted_molecules[si];
+	      molecule->variable = variable;
 	    } else {
 	      fprintf(stderr,"read_initial_concentrations: Error "
 		      "unrecognized molecules in conc.in was %s\n",
