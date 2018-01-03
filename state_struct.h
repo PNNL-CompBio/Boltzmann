@@ -25,7 +25,7 @@ specific language governing permissions and limitations under the License.
 struct state_struct {
   struct rxn_struct *reactions;
   struct rxn_matrix_struct *reactions_matrix;
-  struct molecules_matrix_struct *molecules_matrix_matrix;
+  struct molecules_matrix_struct *molecules_matrix;
   struct istring_elem_struct *unsorted_molecules;
   struct istring_elem_struct *sorted_molecules;
   struct istring_elem_struct *unsorted_cmpts;
