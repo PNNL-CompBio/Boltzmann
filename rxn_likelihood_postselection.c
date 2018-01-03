@@ -55,6 +55,10 @@ double rxn_likelihood_postselection(double *counts,
   */
   double rxn_likelihood;
   double *ke;
+  double *kss;
+  /*
+  double *kssr;
+  */
   double  count;
   double  left_counts;
   double  right_counts;
@@ -81,10 +85,17 @@ double rxn_likelihood_postselection(double *counts,
   rcoef             = rxns_matrix->coefficients;
   molecules_indices = rxns_matrix->molecules_indices;
   ke                = state->ke;
+  kss               = state->kss;
+  /*
+  kssr              = state->kssr;
+  */
   i = rxn;
   left_counts        = 1.0;
   right_counts       = 1.0;
-  eq_k = ke[i];
+  eq_k = ke[rxn] * kss[rxn];
+  /*
+    This may change if kssr[rxn] != 1/kss[rxn]
+  */
   if (rxn_direction < 0) {
     eq_k = 1.0/eq_k;
   }
