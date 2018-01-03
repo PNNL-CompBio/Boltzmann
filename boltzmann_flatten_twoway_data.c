@@ -1,4 +1,6 @@
 #include "boltzmann_structs.h"
+#include "boltzmann_cvodes_headers.h"
+#include "cvodes_params_struct.h"
 #include "boltzmann_flatten_vgrng_state.h"
 #include "boltzmann_flatten_twoway_data.h"
 int boltzmann_flatten_twoway_data(struct state_struct *state,
