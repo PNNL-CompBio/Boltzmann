@@ -108,7 +108,7 @@ double rxn_likelihood(double *concs,
   right_concs       = 1.0;
   eq_k = ke[rxn];
   if (rxn_direction < 0) {
-    eq_k = 1/eq_k;
+    eq_k = 1.0/eq_k;
   }
   for (j=rxn_ptrs[rxn];j<rxn_ptrs[rxn+1];j++) {
     coeff = rcoef[j];
