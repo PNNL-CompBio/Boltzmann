@@ -1,5 +1,7 @@
 #include "boltzmann_structs.h"
-#include "blas.h"
+#include "boltzmann_cvodes_headers.h"
+#include "cvodes_params_struct.h"
+/*#include "blas.h"*/
 #include "build_newton_matrix.h"
 int  build_newton_matrix(struct state_struct *state,
 			 double gamma,
