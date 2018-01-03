@@ -131,6 +131,8 @@ n       word_1:  -1 doubles   (1 double/word)
 		  lfstate[0],total_size);
 	  fflush(lfp);
 	}
+      } else {
+	state->flattened_size = total_size << 3;
       }
     }
   }
