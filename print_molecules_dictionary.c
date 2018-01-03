@@ -54,10 +54,12 @@ int print_molecules_dictionary(struct state_struct *state) {
   int nu_molecules;
 
   FILE *dict_fp;
+  FILE *conc_fp;
   success = 1;
   nu_molecules     = state->unique_molecules;
   cur_molecules = state->sorted_molecules;
   cur_cmpts     = state->sorted_cmpts;
+  conc_fp       = state->concs_out_fp;
   dict_fp = fopen("molecules.dict","w+");
   if (dict_fp == NULL) {
     fprintf(stderr,
@@ -66,9 +68,16 @@ int print_molecules_dictionary(struct state_struct *state) {
     fflush(stderr);
     success = 0;
   }
+  if (conc_fp == NULL) {
+    fprintf(stderr,
+	    "print_molecules_dictionary: Error null concs_out_fp\n");
+    fflush(stderr);
+    success = 0;
+  }
   cmpt_string = NULL;
   oi          = -1;
   if (success) {
+    fprintf(conc_fp,"iter");
     for (i=0;i<nu_molecules;i++) {
       ci = cur_molecules->c_index;
       if (ci != oi) {
@@ -78,11 +87,14 @@ int print_molecules_dictionary(struct state_struct *state) {
       }
       if (ci != -1) {
 	fprintf(dict_fp,"%d %s %s\n",i,cur_molecules->string,cmpt_string);
+	fprintf(conc_fp," %s:%s",cur_molecules->string,cmpt_string);
       } else {
 	fprintf(dict_fp,"%d %s\n",i,cur_molecules->string);
+	fprintf(conc_fp," %s",cur_molecules->string);
       }
       cur_molecules += 1; /* Caution address arithmetic. */
     }
+    fprintf(conc_fp,"\n");
     fclose(dict_fp);
   }
   return(success);
