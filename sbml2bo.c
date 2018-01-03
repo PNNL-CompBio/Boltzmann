@@ -47,11 +47,14 @@ int main(int argc, char **argv) {
   int64_t length_kg2js_strings;
   int success;
   int max_file_name_len;
+  int one;
+  int padi;
   FILE *lfp;
   FILE *extra_fp;
 
   max_file_name_len = 4096;
-  success = alloc0(&state);
+  one = 1;
+  success = alloc0(&state,one);
   /*
     Set the fields of the state structure that size_ms2js_file needs.
   */
