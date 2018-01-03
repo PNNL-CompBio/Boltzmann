@@ -251,6 +251,7 @@ struct state_struct {
   char *pseudoisomer_file; /* max_filename_len */
   char *compartment_file;  /* max_filename_len */
   char *sbml_file;         /* max_filename_len */
+  char *ms2js_file;        /* max_filename_len */
   char *solvent_string;    /* Length is 64. Allocated in alloc0 */
 
   char *rxn_title_text;    /* rxn_title_space. Allocated in alloc2  */
