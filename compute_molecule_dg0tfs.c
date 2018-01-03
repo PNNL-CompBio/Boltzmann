@@ -35,7 +35,7 @@ specific language governing permissions and limitations under the License.
 int compute_molecule_dg0tfs(struct formation_energy_struct *fes){
 /*
   Compute the dg0tf for all of the molecules in the reactions file.
-  Called by: boltzmann_init.
+  Called by: compute_standard_energies
   Calls:     compute_molecule_dg0tf, fopen, fprintf, fclose, fflush
 */
   struct pseudoisomer_struct *pseudoisomers;
