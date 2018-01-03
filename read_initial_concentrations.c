@@ -167,13 +167,13 @@ int read_initial_concentrations(struct state_struct *state) {
       }
     }
   }
-  /*
-    Print the initial concentrations to the concentrations output file.
-  */
   for (i=0;i<nu_molecules;i++) {
     bndry_flux_concs[i] = concs[i];
   }
   state->num_fixed_concs = num_fixed_concs;
+  /*
+    Print the initial concentrations to the concentrations output file.
+  */
   if (state->concs_out_fp) {
     fprintf(state->concs_out_fp,"init");
     for (i=0;i<nu_molecules;i++) {
