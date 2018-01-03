@@ -13,7 +13,7 @@ int lr6_approximate_delta_concs(struct state_struct *state,
   /*
     Compute approximations to concentration changes wrt time, 
     Based on likelihood computational alchemy
-    for computing ratios of forward reaction rates.
+    for computing ratios of reaction rates.
 
     so kf_rel[i] = 
 
