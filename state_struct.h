@@ -334,13 +334,15 @@ struct state_struct {
   double  *rxn_likelihood_ps;      /* number_reactions + 1 */
   /* Allocated in alloc7 */
   double *flux_vector;   /* flux vector of length number_unique_molecules */
-  double *flux_jacobian; /* number_unique_molecules * number_unique_molecules */
   double *reactant_term; /* product of reaction reactant concentrations, length number_reactions */
   double *product_term;  /* product of reaction product concentrations, length number_reactions */
   double *p_over_r; /*  product of produced species concentrations.  */
   double *r_over_p;/* Ratio of reactant_term to product_term. */
-  double *concs; /* concentrations from counts. */
-  int *rxn_has_flux /* Indicator as to whether a reaction contributes to 
+  double *ode_counts; /* counts from concentrations */
+  double *ode_concs;  /* concentrations from counts. */
+  double *ode_forward_lklhds;
+  double *ode_reverse_lklhds;
+  int *rxn_has_flux; /* Indicator as to whether a reaction contributes to 
 		       species flux  length is number_reactions */
   /*
     Workspace only if printing. (debugging);
