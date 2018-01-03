@@ -45,10 +45,6 @@ int print_reactions_matrix(struct state_struct *state) {
   int64_t *molecules_indices;
   int64_t *coefficients;
   int64_t *matrix_text;
-  double *rxn_view_data;
-  double *rev_rxn_view_data;
-  double *no_op_likelihood;
-  int    *rxn_fire;
 
   char *molecules_text;
   char *compartment_text;
