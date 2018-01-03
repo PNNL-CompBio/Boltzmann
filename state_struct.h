@@ -42,6 +42,7 @@ struct state_struct {
   char *free_energy_file;
   char *restart_file;
   char *rxn_view_file;
+  char *bndry_flux_file;
   char *output_dir;
   char *rxn_buffer;
   char *conc_buffer;
@@ -91,6 +92,7 @@ struct state_struct {
   double  small_nonzero;
   double  *current_concentrations;
   double  *future_concentrations;
+  double  *bndry_flux_concs;
   double  *dg0s;
   double  *free_energy;
   double  *forward_rxn_likelihood;
@@ -140,6 +142,9 @@ struct state_struct {
   */
   int  lthl;
 
+  int  num_fixed_concs;
+  int  padi;
+
 #ifdef TIMING_ON
   struct timing_struct timing_data;
 #endif
@@ -151,6 +156,7 @@ struct state_struct {
   FILE *free_energy_fp;
   FILE *restart_fp;
   FILE *rxn_view_fp;
+  FILE *bndry_flux_fp;
   FILE *lfp;
 }
 ;
