@@ -34,8 +34,8 @@ int compute_ke(struct state_struct *state) {
     Called by: energy_init
     Calls:      exp
   */
-  struct rxn_struct *reactions;
-  struct rxn_struct *reaction;
+  struct reaction_struct *reactions;
+  struct reaction_struct *reaction;
   /*
   struct species_matrix_struct species_matrix;
   */
