@@ -29,10 +29,10 @@ int free_boot_state2(struct state_struct *state) {
   /*
     Free space allocated to fields of the state_struct by alloc2, alloc3,
     alloc4, and alloc5 calls.
-    Called by: boltzmann_init_core
+    Called by: NOT CURRENTLY USED.
     Calls:     free.
   */
-  struct rxn_matrix_struct *reactions_matrix; 
+  struct reactions_matrix_struct *reactions_matrix; 
   struct molecules_matrix_struct *molecules_matrix;
   int success;
   int padi;
@@ -81,8 +81,8 @@ int free_boot_state2(struct state_struct *state) {
       }
     }
     if (state->unsorted_cmpts) {
-      if (state->sorted_cmpts < state->unsorted_cmpts) {
-        free(state->sorted_cmpts);
+      if (state->sorted_compartments < state->unsorted_cmpts) {
+        free(state->sorted_compartments);
       } else {
 	free(state->unsorted_cmpts);
       }
@@ -169,8 +169,8 @@ int free_boot_state2(struct state_struct *state) {
       if (molecules_matrix->molecules_ptrs) {
 	free(molecules_matrix->molecules_ptrs);
       }
-      if (molecules_matrix->rxn_indices) {
-	free(molecules_matrix->rxn_indices);
+      if (molecules_matrix->reaction_indices) {
+	free(molecules_matrix->reaction_indices);
       }
       if (molecules_matrix->coefficients) {
 	free(molecules_matrix->coefficients);
