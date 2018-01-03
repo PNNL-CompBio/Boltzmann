@@ -113,14 +113,14 @@ struct state_struct {
   int64_t num_scalars;          	
   int64_t number_reactions;     	
   int64_t number_molecules;            
-  int64_t unique_molecules;     	
+  int64_t nunique_molecules;     	
   int64_t use_activities;       	
   int64_t molecules_or_conc;      
   int64_t warmup_steps;           
   int64_t record_steps;           
   int64_t print_output;
   int64_t number_compartments;  	
-  int64_t unique_compartments;  	
+  int64_t nunique_compartments;  	
 
   int64_t align_len;
   int64_t align_mask;
@@ -145,6 +145,11 @@ struct state_struct {
   int64_t min_compartment_len;  	
   int64_t sum_molecule_len;
   int64_t sum_compartment_len;
+  int64_t sorted_molecules_offset_in_bytes;
+  int64_t sorted_compartments_offset_in_bytes;
+  int64_t molecules_text_offset_in_bytes;
+  int64_t compartments_text_offset_in_bytes;
+
 
 
   double  ideal_gas_r;
