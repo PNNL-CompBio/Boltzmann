@@ -48,7 +48,7 @@ int boltzmann_run_sim(struct state_struct *state) {
     Run the boltzmann simulations, to be called after
     boltzmann_init has been called.
 
-    Called by: boltzmann
+    Called by: boltzmann_drv
     Calls:     free_energy_changes,
                vgrng,
 	       binary_search_l_u_b,
