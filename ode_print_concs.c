@@ -29,7 +29,7 @@ void ode_print_concs(struct state_struct *state, double time, double *concs) {
     Prints out the current concentrations field of the state structure
     in a tab delimited row terminated by a newline.
 
-    Called by: ode23tb
+    Called by: boltzmann_monitor_ode
 
     Arguments:
     
@@ -46,6 +46,8 @@ void ode_print_concs(struct state_struct *state, double time, double *concs) {
     
   */
   struct molecule_struct *cur_molecule;
+  double *counts;
+  double *concs_to_counts;
   int unique_molecules;
   int j;
 
@@ -63,6 +65,8 @@ void ode_print_concs(struct state_struct *state, double time, double *concs) {
   print_concs_or_counts  = state->print_concs_or_counts;
   unique_molecules       = state->nunique_molecules;
   cur_molecule           = state->sorted_molecules;
+  counts                 = state->ode_counts;
+  concs_to_counts        = state->concs_to_counts;
 
   do_concs = 0;
   do_counts = 0;
@@ -74,6 +78,9 @@ void ode_print_concs(struct state_struct *state, double time, double *concs) {
   if (print_concs_or_counts & 1) {
     if (ode_counts_fp) {
       do_counts = 1;
+      for (j=0;j<unique_moleules;j++) {
+	counts[j] = concs[j] * concs_to_counts[j];
+      }
     }
   }
   if (do_concs) {
@@ -89,7 +96,7 @@ void ode_print_concs(struct state_struct *state, double time, double *concs) {
 	  fprintf(ode_concs_fp,"\t%le",concs[j]);
 	}
 	if (do_counts) {
-	  fprintf(ode_counts_fp,"\t%le",concs[j]);
+	  fprintf(ode_counts_fp,"\t%le",counts[j]);
 	}
       }
       cur_molecule += 1; /* caution address arithmetic.*/
