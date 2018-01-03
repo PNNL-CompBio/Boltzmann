@@ -11,6 +11,8 @@
 #include "lr8_approximate_delta_concs.h"
 #include "lr9_approximate_delta_concs.h"
 #include "lr10_approximate_delta_concs.h"
+#include "lr11_approximate_delta_concs.h"
+#include "lr12_approximate_delta_concs.h"
 #include "ce_approximate_delta_concs.h"
 
 #include "approximate_delta_concs.h"
@@ -19,10 +21,10 @@ int approximate_delta_concs(struct state_struct *state, double *concs,
 			    double *flux, int choice) {
   /*
     Compute approximations to concentartion changes wrt time
-    0 for lr_approximate_delta_concs, based on likelihood rations.
-    1 for lr1_approximate_delta_concs, based on likelihood rations.
-    2 for lr2_approximate_delta_concs, based on likelihood rations.
-    3 for lr3_approximate_delta_concs, based on likelihood rations.
+    0 for lr_approximate_delta_concs, based on likelihood ratios.
+    1 for lr1_approximate_delta_concs, based on likelihood ratios.
+    2 for lr2_approximate_delta_concs, based on likelihood ratios.
+    3 for lr3_approximate_delta_concs, based on likelihood ratios.
 
     42 for ce_approximate_delta_concs, for debugging only with
     the reaction rates for the coupledenzyme.in file
@@ -136,7 +138,18 @@ int approximate_delta_concs(struct state_struct *state, double *concs,
 					   concs,
 					   flux, 
 					   choice);
-
+    break;
+  case 11:
+    success = lr11_approximate_delta_concs(state,
+					   concs,
+					   flux, 
+					   choice);
+    break;
+  case 12:
+    success = lr12_approximate_delta_concs(state,
+					   concs,
+					   flux, 
+					   choice);
     break;
   case 42:
     /*
