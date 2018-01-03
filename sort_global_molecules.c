@@ -53,6 +53,10 @@ int sort_global_molecules(struct molecule_struct **unsorted_molecules,
   struct molecule_struct *u_molecules;
   struct molecule_struct *s_molecules;
   struct molecule_struct *temp;
+  struct molecule_struct mes;
+  size_t e_size;
+  size_t move_size;
+  
   int global_molecules;
   int success;
   int step;
@@ -69,6 +73,7 @@ int sort_global_molecules(struct molecule_struct **unsorted_molecules,
   u_molecules = *unsorted_molecules;
   s_molecules = *sorted_molecules;
   global_molecules = molecule_map_indices[n];
+  e_size = (size_t)sizeof(mes);
   if (n == 1) {
     /*
       Only 1 Global molecule nothing to be done.
@@ -97,6 +102,12 @@ int sort_global_molecules(struct molecule_struct **unsorted_molecules,
       if (ln <= step) {
 	list1_first = molecule_map_indices[n-ln];
 	l1 = global_molecules - list1_first;
+	if (l1 > 0) {
+	  move_size = ((size_t)l1) * e_size;
+	  memcpy((void*)&(s_molecules[list1_first]),
+		 (void*)&(u_molecules[list1_first]),move_size);
+	}
+	/*
 	for (j = list1_first;j<global_molecules;j++) {
 	  s_molecules[j].string   = u_molecules[j].string;
 	  s_molecules[j].m_index  = u_molecules[j].m_index;
@@ -104,6 +115,7 @@ int sort_global_molecules(struct molecule_struct **unsorted_molecules,
 	  s_molecules[j].g_index  = u_molecules[j].g_index;
 	  s_molecules[j].variable = u_molecules[j].variable;
 	}
+	*/
       }
       temp               = s_molecules;
       s_molecules     = u_molecules;
