@@ -4,11 +4,8 @@
 
 #include "ce_approximate_delta_concs.h"
 
-int ce_approximate_delta_concs(struct state_struct *state, double *counts,
-			       double *forward_rxn_likelihoods,
-			       double *reverse_rxn_likelihoods, 
-			       double *flux, double flux_scaling,
-			       int base_rxn,
+int ce_approximate_delta_concs(struct state_struct *state, double *concs,
+			       double *flux, 
 			       int choice) {
   /*
     Compute approximations to delta concentrations wrt to time for 
@@ -26,20 +23,13 @@ int ce_approximate_delta_concs(struct state_struct *state, double *counts,
 
 				      
 
-    counts			D1I   molecule counts vector of length 
+    concs			D1I   molecule concentrations vector of length 
                                       nunique_moleucles
-    forward_rxn_likelihoods     D1W   scratch vector of length number_reactions
-    reverse_rxn_likelihoods     D1W   scratch vector of length number_reactions
 
     flux                        D1O   vector of length  unique_molecules
                                       of concentration change per unit time.
 				      Set by this routine.
 
-    multiplier                  D0I   forward rate constant for base
-                                      reaction multplied by base reaction
-				      reactant concentration prodeuct.
-				      
-    base_rxn                    I0I   Base reaction number (usually 0)
     choice                      IOI   Not used by this routine.         
 
     Note that multiplier is K_f(base_rxn_reaction)*(product of reactant 
@@ -47,7 +37,7 @@ int ce_approximate_delta_concs(struct state_struct *state, double *counts,
 	    molecule = (struct molecule_struct *)&sorted_molecules[si];
   */
   double k1a,k1_a, k2a,k2_a,k3a,k3_a,k1b,k1_b,k2b,k2_b,k3b,k3_b;
-  double *count_to_conc;
+  double flux_scaling;
   double y[9];
 
   int success;
@@ -56,14 +46,14 @@ int ce_approximate_delta_concs(struct state_struct *state, double *counts,
 #define DBG 1
   */
   success = 1;
-
-  if (success) {
-    success = update_rxn_likelihoods(state,counts,forward_rxn_likelihoods,
-				     reverse_rxn_likelihoods);
+  if (state->flux_scaling == 0.0) {
+    flux_scaling = 1.0;
+  } else {
+    flux_scaling = state->flux_scaling;
   }
-  count_to_conc = state->count_to_conc;
+  if (success) 
   for (i=0;i<9;i++) {
-    y[i] = counts[i] * count_to_conc[i];
+    y[i] = concs[i];
   }
   k1a = 1.0e9;
   k1_a = 1000.0;
