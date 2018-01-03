@@ -124,6 +124,8 @@ struct state_struct {
   int64_t use_deq;
   int64_t adjust_steady_state;
   int64_t molecules_or_conc;      
+  int64_t ode_solver_choice;
+  int64_t delta_concs_choice;
   int64_t warmup_steps;           
   int64_t record_steps;           
   int64_t print_output;
@@ -340,6 +342,7 @@ struct state_struct {
   int  *base_reactant_indicator;   /* vector of length nunique_molecules
 				      elment i 1 for in species i in
 				      base_reactants list, 0 otherwise. */
+
 
   FILE *rxn_fp;
   FILE *conc_fp;
