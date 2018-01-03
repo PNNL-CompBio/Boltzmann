@@ -36,9 +36,9 @@ int parse_sbml(struct sbml2bo_struct *state) {
     Parse an sbml file generating concs.in, rxnx.dat and cmpts.dat files.
     Called by: sbml2bo, sbml_to_boltzmann
     Calls: sbml_find_section,
-           sbml_proces_list_of_compartments,
-           sbml_proces_list_of_species,
-           sbml_proces_list_of_reactions,
+           sbml_process_list_of_compartments,
+           sbml_process_list_of_species,
+           sbml_process_list_of_reactions,
 	   calloc, fopen, fclose, fflush
   */
   char sbml_buffer_c[2048];
