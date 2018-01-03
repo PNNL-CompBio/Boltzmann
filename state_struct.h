@@ -167,6 +167,8 @@ struct state_struct {
   double  dg_forward;
   double  entropy;
   double  current_concentrations_sum;
+  double  volume;
+  double  conc_units;
   int64_t *workspace_base;
 
   /* two way data (modified) */
