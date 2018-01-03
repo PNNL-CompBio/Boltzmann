@@ -22,6 +22,7 @@ specific language governing permissions and limitations under the License.
 ******************************************************************************/
 #include "boltzmann_structs.h"
 #include "boltzmann_cvodes_headers.h"
+#include "cvodes_params_struct.h"
 #include "count_nws.h"
 #include "upcase.h"
 #include "read_params.h"
@@ -127,6 +128,8 @@ int read_params (char *param_file_name, struct state_struct *state) {
     state->nl_bndry_flx_file[0] = '\0';
     state->concs_out_file[0]    = '\0';
     state->ode_counts_file[0]   = '\0';
+    state->ode_sens_file[0]     = '\0';
+    state->ode_dsens_file[0]     = '\0';
     /*
       Following line Added by DGT on 4/18/2013
      */
@@ -201,6 +204,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
     state->ode_stop_rel        = (int64_t)0; /* absolute size */
     state->ode_stop_style      = (int64_t)0; /* none: integrate till t_final */
     state->print_ode_concs     = (int64_t)0;
+    state->compute_sensitivities = (int64_t)0;
 
     state->default_initial_count = (int64_t)0;
 
@@ -297,6 +301,10 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	sscan_ok = sscanf(value,"%s",state->ode_lklhd_file);
       } else if (strncmp(key,"ODE_BFLUX_FILE",14) == 0) {
 	sscan_ok = sscanf(value,"%s",state->ode_bflux_file);
+      } else if (strncmp(key,"ODE_SENS_FILE",13) == 0) {
+	sscan_ok = sscanf(value,"%s",state->ode_sens_file);
+      } else if (strncmp(key,"ODE_DSENS_FILE",14) == 0) {
+	sscan_ok = sscanf(value,"%s",state->ode_dsens_file);
       /*
 	Following 2 lines added by DGT on 4/18/2013, Modified by DJB 6/2/2013
       */	
@@ -332,12 +340,14 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	cvodes_params->prec_fill = (int)state->cvodes_prec_fill;
       } else if (strncmp(key,"ODE_JACOBIAN_CHOICE",19) == 0) {
 	sscan_ok = sscanf(value,"%ld",&state->ode_jacobian_choice);
+      } else if (strncmp(key,"COMPUTE_SENSITIVITIES",21) == 0) {
+	sscan_ok = sscanf(value,"%ld",&state->compute_sensitivities);
       } else if (strncmp(key,"SOLVENT",7) == 0) {
 	sscan_ok = sscanf(value,"%s",state->solvent_string);
       } else if (strncmp(key,"ALIGN_LEN",9) == 0) {
 	sscan_ok = sscanf(value,"%ld",&(state->align_len));
 	if (state->align_len < 0) {
-	  state->align_len = 16;
+	  state->align_len = 64;
 	}
 	state->align_mask = state->align_len - (int64_t)1;
       } else if (strncmp(key,"MAX_REGS_PER_RXN",18) == 0) {
@@ -349,7 +359,11 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	if (strncmp(value,"INF",3) == 0) {
 	  state->ode_stop_norm = 0;
 	} else if (strncmp(value,"MAX",3) == 0) {
+	  state->ode_stop_norm = 0;
+	} else if (strncmp(value,"1",3) == 0) {
 	  state->ode_stop_norm = 1;
+	} else if (strncmp(value,"2",3) == 0) {
+	  state->ode_stop_norm = 2;
 	} else {
 	  sscan_ok = sscanf(value,"%d",&ode_stop_norm);
 	  if (sscan_ok == 1) {
@@ -374,9 +388,10 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	  }
 	}
       } else if (strncmp(key,"ODE_STOP_STYLE",14) == 0) {
+	if (strncmp(value,"TIME",4) == 0) {
+	  state->ode_stop_style = 1;
+	}
 	if (strncmp(value,"VEC",3) == 0) {
-	  state->ode_stop_style = 0;
-	} else if (strncmp(value,"ELE",3) == 0) {
 	  state->ode_stop_style = 1;
 	} else {
 	  sscan_ok = sscanf(value,"%d",&ode_stop_style);
@@ -413,7 +428,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
       } else if (strncmp(key,"FLUX_SCALING",12) == 0) {
 	sscan_ok = sscanf(value,"%le",&(state->flux_scaling));
       /*
-	Following four lines addd by DGT on 4/15/2013
+	Following four lines added by DGT on 4/15/2013
       */
       } else if (strncmp(key,"PH",2) == 0) {
 	sscan_ok = sscanf(value,"%le",&(state->ph));
