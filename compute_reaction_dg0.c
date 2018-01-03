@@ -105,7 +105,10 @@ int compute_reaction_dg0(struct formation_energy_struct *fes){
       fprintf(lfp,"Number of reactants = %i\n",reaction->num_reactants);
       fprintf(lfp,"Number of products = %i\n",reaction->num_products);
     }
-
+    /*
+      Set the free energy units to KJ/mol.
+    */
+    reaction->unit_i = 1;
     sum = 0;
     rxn_dg0_tf = (double)0.0;
     for (j=rxn_ptrs[rxns];j<rxn_ptrs[rxns+1];j++) {
