@@ -30,7 +30,9 @@ specific language governing permissions and limitations under the License.
 #include "form_molecules_matrix.h"
 #include "alloc7.h"
 #include "update_rxn_log_likelihoods.h"
+/*
 #include "fill_flux_pieces.h"
+*/
 #include "ode23tb.h"
 
 #include "deq_run.h"
@@ -45,7 +47,6 @@ int deq_run(struct state_struct *state) {
 	       form_molelcules_matrix,
 	       alloc7,
 	       update_rxn_log_likelihoods
-	       fill_flux_pieces,
 	       ode23tb
   */ 
   struct state_struct *nstate;
