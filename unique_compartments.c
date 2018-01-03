@@ -29,6 +29,7 @@ specific language governing permissions and limitations under the License.
 #include <unistd.h>
 
 #include "boltzmann_structs.h"
+#include "unique_compartments_core.h"
 
 #include "unique_compartments.h"
 int unique_compartments(struct state_struct *state) {
@@ -49,6 +50,9 @@ int unique_compartments(struct state_struct *state) {
   char *sstring;
   char *cstring;
   int64_t sum_compartment_len;
+  int64_t nunique_compartments;
+  int64_t align_len;
+  int64_t align_mask;
 
   int nzr;
   int i;
@@ -57,13 +61,22 @@ int unique_compartments(struct state_struct *state) {
   int nu_cmpts;
 
   success = 1;
+  align_len     = state->align_len;
+  align_mask     = state->align_mask;
   nzr            = state->number_compartments;
   sorted_cmpts   = state->sorted_cmpts;
   rxns_matrix    = state->reactions_matrix;
   compartment_text = state->compartment_text;
   compartment_indices = rxns_matrix->compartment_indices;
+  
+  success = unique_compartments_core(nzr,sorted_cmpts,compartment_text,
+				     compartment_indices,
+				     &nunique_compartments,
+				     &sum_compartment_len,
+				     align_len,align_mask);
+  /*				     
   sum_compartment_len = (int64_t)0;
-  /* loop over sorted compartments. */
+  //* loop over sorted compartments. 
   nu_cmpts = 0;
   if (nzr > 1) {
     if (sorted_cmpts->string >= 0) {
@@ -75,7 +88,7 @@ int unique_compartments(struct state_struct *state) {
       cstring = NULL;
     }
     cur_cmpt = sorted_cmpts;
-    sorted_cmpts += 1; /* Caution address arithmetic. */
+    sorted_cmpts += 1; //* Caution address arithmetic. 
     ucmpts_next  = sorted_cmpts;
   }
   for (i=1;i<nzr;i++) {
@@ -88,15 +101,17 @@ int unique_compartments(struct state_struct *state) {
 	cstring  = sstring;
 	sum_compartment_len += ((int64_t)strlen(cstring));
 	ucmpts_next->string = cur_cmpt->string;
-	ucmpts_next += 1; /* Caution address arithmetic. */
+	ucmpts_next += 1; //* Caution address arithmetic.
       }
       compartment_indices[sorted_cmpts->c_index] = nu_cmpts;
     } else {
       compartment_indices[sorted_cmpts->c_index] = -1;
     }
-    sorted_cmpts += 1; /* Caution address arithmetic. */
+    sorted_cmpts += 1; //* Caution address arithmetic. 
   }
-  state->unique_compartments = nu_cmpts + 1;
-  state->sum_compartment_len = sum_compartment_len;
+  state->nunique_compartments = nu_cmpts + 1;
+  */
+  state->nunique_compartments = nunique_compartments;
+  state->sum_compartment_len  = sum_compartment_len;
   return(success);
 }
