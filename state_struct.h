@@ -40,6 +40,7 @@ struct state_struct {
   char *concs_out_file;
   char *rxn_lklhd_file;
   char *free_energy_file;
+  char *restart_file;
   char *output_dir;
   char *rxn_buffer;
   char *conc_buffer;
@@ -134,6 +135,7 @@ struct state_struct {
   FILE *concs_out_fp;
   FILE *rxn_lklhd_fp;
   FILE *free_energy_fp;
+  FILE *restart_fp;
   FILE *lfp;
 }
 ;
