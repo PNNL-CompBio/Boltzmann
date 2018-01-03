@@ -19,6 +19,7 @@
 #include "ode23tb_max_abs_ratio.h"
 #include "ode23tb_nonneg_err.h"
 #include "ode23tb_enforce_nonneg.h"
+#include "ode23tb_test_steady_state.h"
 #include "boltzmann_monitor_ode.h"
 #include "boltzmann_size_jacobian.h"
 #include "approximate_jacobian.h"
@@ -1166,6 +1167,15 @@ int ode23tb (struct state_struct *state, double *concs) {
 	    need_new_lu = 1;
 	  }
 	} /* end if nofailed */
+	/*
+	  Test to see if we should quit based on size of flux vector
+	  compared to threshold absolutely or relative to the size of
+	  the concentrations vector.
+	*/
+	done = ode_test_steady_state(state,ny,y,f0);
+	if (done) {
+	  not_done = 0;
+	}
       } /* end if (not_done) */
 #ifdef DBG
       fprintf(ode_dconcs_fp,"Bottom of main_loop\n");
