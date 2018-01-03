@@ -342,7 +342,7 @@ struct state_struct {
   */
   /*
     Incoming data not modified, depends only on agent type.
-    (5*number_reactions + 7*unique_molecules) * sizeof(double)
+    (9*number_reactions + 7*unique_molecules) * sizeof(double)
     + 2*number_reactions * max_regs_per_rxn * sizeof(double)
     + 2*number_reactions * max_regs_per_rxn * sizeof(int64_t)
         =
@@ -351,6 +351,8 @@ struct state_struct {
   double  *dg0s;      /* len = number_reactions  */
   double  *ke;        /* len = number_reactions  */
   double  *rke;       /* len = number_reactions  */
+  double  *forward_rc;  /* len = number_reactions */
+  double  *reverse_rc;  /* len = number_reactions */
   double  *kss;       /* len = number_reactions  */
   double  *kssr;       /* len = number_reactions  */
   double  *kss_e_val; /* len = unique_molecules  */
