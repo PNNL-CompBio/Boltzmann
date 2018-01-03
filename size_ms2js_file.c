@@ -82,9 +82,9 @@ int size_ms2js_file(struct state_struct *state,
 	fflush(stderr);
 	success = 0;
       } else {
-	*num_modelseed_ids = (int64_t)np;
+	*num_modelseed_ids = lc;
 	*length_ms2js_strings = cc  + 
-	  ((state->align_len << 1) * np);
+	  ((state->align_len << 1) * lc);
 	fclose(ms2js_size_fp);
 	sprintf(command,"/bin/rm -f _ms2js_wc_output_");
 	system(command);
