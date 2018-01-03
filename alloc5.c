@@ -44,7 +44,7 @@ int alloc5(int64_t num_cpds,
     formation_energies_p is returned as a pointer to the allocated
     foromation_energy struct. 
 
-    Called by: formation_energy_rxn_dg0fs
+    Called by: compute_standard_energies
     Calls:     calloc, fprintf (intrinsic)
   */
   struct formation_energy_struct fe_s;
