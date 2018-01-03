@@ -2,11 +2,13 @@
 
 #include "compute_flux_scaling.h"
 #include "approximate_fluxes.h"
+#include "ce_approximate_fluxes.h"
 
 #include "num_jac_col.h"
 
 int num_jac_col(struct state_struct *state,
 		int ny, int j,
+		int    *rowmax_p,
 		double *y,
 		double *f,
 		double *delj_p,
@@ -17,9 +19,9 @@ int num_jac_col(struct state_struct *state,
 		double *forward_rxn_likelihoods,
 		double *reverse_rxn_likelihoods,
 		double *dfdy_colj,
-		double *absfdiffmax_p,
 		double *absfvaluerm_p,
 		double *absfdelrm_p,
+		double *absfdiffmax_p,
 		double *infnormdfdy_colj_p) {
   /*
     Compute column j of the jacobian matrix dfdy,
@@ -139,7 +141,12 @@ int num_jac_col(struct state_struct *state,
     */
     y[j] = ydelj;
     flux_scaling = compute_flux_scaling(state,y);
+    /*
     approximate_fluxes(state,y_counts,
+		       forward_rxn_likelihoods,reverse_rxn_likelihoods,
+		       fdel,flux_scaling,base_rxn);
+    */
+    ce_approximate_fluxes(state,y_counts,
 		       forward_rxn_likelihoods,reverse_rxn_likelihoods,
 		       fdel,flux_scaling,base_rxn);
 #ifdef DBG
@@ -179,6 +186,7 @@ int num_jac_col(struct state_struct *state,
 	rowmax = k;
       }
     }
+    *rowmax_p = rowmax;
     absfdiffmax    = fabs(fdiff[rowmax]);
     absfdelrm      = fabs(fdel[rowmax]);
     absfvaluerm    = fabs(f[rowmax]);
