@@ -57,8 +57,9 @@ int compute_standard_energies(struct state_struct *state) {
   int64_t length_pseudoisomer_strings;
   void   *pointers[4];
   int success;
-  int nu_molecules;
+  int padi;
   /*
+  int nu_molecules;
   FILE *lfp;
   FILE *efp;
   lfp = state->lfp;
