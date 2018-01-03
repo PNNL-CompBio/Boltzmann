@@ -27,7 +27,7 @@ specific language governing permissions and limitations under the License.
 int set_compartment_ptrs(struct state_struct *state) {
   /*
     Set pointers to the first molecule in each compartment
-    Called by: species_init
+    Called by: species_init, rxn_map_init
     Calls:     
   */
   int64_t *cmpt_ptrs;
