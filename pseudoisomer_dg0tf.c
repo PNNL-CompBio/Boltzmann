@@ -52,7 +52,7 @@ double pseudoisomer_dg0tf(double ph,
   */
   is_sqrt   = sqrt(ionic_str);
   deltag_tf = deltag0 - (((nh*mrt)*log(10))*ph)-((2.91482*((z*z)-nh)*is_sqrt)/
-					   (1.0+1.6*is_sqrt));
+						 (1.0+1.6*is_sqrt));
 
   /*
     cout << "[CalcFreeEnergy(speciesDeltaG_tf)] species deltaG0 = " << deltaG0 << " kJ/mol" << endl;
