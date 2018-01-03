@@ -25,9 +25,7 @@ specific language governing permissions and limitations under the License.
 
 #include "alloc4.h"
 
-int alloc4(struct state_struct *state,
-	   struct molecules_matrix_struct **molecules_matrix_p,
-	   int64_t **transpose_work_p) {
+int alloc4(struct state_struct *state, int setup) {
   /*
     Allocate space for the molecules_matrix structure and its
     subfields and for the transpose_work space needed to form it.
@@ -36,7 +34,7 @@ int alloc4(struct state_struct *state,
      molecules_matrix->molecules_ptrs,
      molecules_matrix->reaction_indices,
      molecules_matrix->coefficients
-     workspace_transpose
+     transpose_workspace (only if setup > 0) 
     Called by: boltzmann_init_core, rxn_map_init
     Calls:     calloc, fprintf, fflush,
   */
@@ -68,7 +66,7 @@ int alloc4(struct state_struct *state,
       fflush(stderr);
       success = 0;
     } else {
-      *molecules_matrix_p = molecules_matrix;
+      state->molecules_matrix = molecules_matrix;
     }
   }
   /*
@@ -108,16 +106,18 @@ int alloc4(struct state_struct *state,
     } 
   }
   if (success) {
-    ask_for = ((int64_t)(nu_molecules+1)) * ((int64_t)sizeof(int64_t));
-    usage += ask_for;
-    transpose_work = (int64_t*)calloc(one_l,ask_for);
-    if (transpose_work == NULL) {
-      fprintf(stderr,"alloc4: Error unable to allocate %lld bytes for "
-	      "transpose_work vector.\n",ask_for);
-      fflush(stderr);
-      success = 0;
-    } else {
-      *transpose_work_p = transpose_work;
+    if (setup > 0) {
+      ask_for = ((int64_t)(nu_molecules+1)) * ((int64_t)sizeof(int64_t));
+      usage += ask_for;
+      transpose_work = (int64_t*)calloc(one_l,ask_for);
+      if (transpose_work == NULL) {
+	fprintf(stderr,"alloc4: Error unable to allocate %lld bytes for "
+		"transpose_work vector.\n",ask_for);
+	fflush(stderr);
+	success = 0;
+      } else {
+	state->transpose_workspace = transpose_work;
+      }
     }
   }
   state->usage = usage;
