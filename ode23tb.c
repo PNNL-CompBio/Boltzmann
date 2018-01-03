@@ -216,16 +216,15 @@ int ode23tb (struct state_struct *state, double *concs,
   int padj;
 #endif
 
-
   int nysq;
   int info;
-
-  int ierr;
-  int padi;
 
   int delta_concs_choice;
   int nnreset_znew;
 
+  int print_output;
+  int ierr;
+  
   char  trans_chars[8];
   char  *trans;
 
@@ -233,6 +232,7 @@ int ode23tb (struct state_struct *state, double *concs,
   FILE *ode_dconcs_fp;
   success = 1;
   t0      = 0.0;
+  tnew    = t0;
   /*
   tfinal  = 10.0;
   */
@@ -252,6 +252,7 @@ int ode23tb (struct state_struct *state, double *concs,
   count_to_conc = state->count_to_conc;
   conc_to_count = state->conc_to_count;
   ny            = state->nunique_molecules;
+  print_output  = state->print_output;
   two_ny        = ny + ny;
   nysq          = ny * ny;
   delta_concs_choice = (int)state->delta_concs_choice;
@@ -263,6 +264,10 @@ int ode23tb (struct state_struct *state, double *concs,
   lfp           = state->lfp;
   ode_dconcs_fp = state->ode_dconcs_fp;
   ode_rxn_view_freq = state->ode_rxn_view_freq;
+  if (print_output == 0) {
+    ode_rxn_view_freq = 0;
+    state->ode_rxn_view_freq = 0;
+  }
   trans_chars[0] = 'N';
   trans_chars[1] = 'T';
   trans_chars[3] = 'C';
@@ -270,6 +275,34 @@ int ode23tb (struct state_struct *state, double *concs,
   ifour         = 4;
   ifive         = 5;
   inc1          = 1;
+
+  dfdy         		  = NULL;
+  miter        		  = NULL;
+  y            		  = NULL;
+  z            		  = NULL;
+  y2           		  = NULL;
+  z2           		  = NULL;
+  znew         		  = NULL;
+  ynew         		  = NULL;
+  yp           		  = NULL;
+  f0           		  = NULL;
+  it_solve_rhs 		  = NULL;
+  it_solve_del 		  = NULL;
+  it_solve_scr 		  = NULL;
+  est          		  = NULL;
+  fac          		  = NULL;
+  thresh       		  = NULL;
+  delfdelt     		  = NULL;
+  wt           		  = NULL;
+  pivot        		  = NULL;
+  ipivot       		  = NULL;    
+  net_lklhd_bndry_flux 	  = NULL;
+  fdel                 	  = NULL;
+  fdiff                	  = NULL;
+  dfdy_tmp             	  = NULL;
+  forward_rxn_likelihoods = NULL;
+  reverse_rxn_likelihoods = NULL;
+  counts                  = NULL;
   /*
     Allocate double space needed for scratch vectors and matrices.
     actually 31*ny but we'll throw in an extra 9 ny for future needs.
@@ -286,7 +319,6 @@ int ode23tb (struct state_struct *state, double *concs,
       }
     }
   }
-
   if (success) {
     miter     = &dfdy[nysq];
     y         = &miter[nysq];
