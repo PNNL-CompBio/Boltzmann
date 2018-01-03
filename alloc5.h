@@ -24,5 +24,5 @@ extern int alloc5(int64_t num_cpds,
 		  int64_t pi_len, 
 		  int64_t align_len, 
 		  int64_t *usage,
-		  struct formation_energy_struct **formation_energies_p);
+		  void **pointers);
 
