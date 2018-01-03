@@ -44,6 +44,7 @@ int sort_compartments(struct istring_elem_struct *unsorted_compartments,
   struct istring_elem_struct *u_compartments;
   struct istring_elem_struct *s_compartments;
   struct istring_elem_struct *temp;
+  struct istring_elem_struct ies;
 
   int success;
   int step;
