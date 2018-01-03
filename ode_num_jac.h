@@ -8,6 +8,8 @@ extern int ode_num_jac(struct state_struct *state,
 		       double *f, 
 		       double *fac,
 		       double *thresh,
-		       double *ode_num_jac_scratch,
-		       int64_t *nf);
+		       double *fdel, 
+		       double *fdiff, 
+		       double *dfdy_tmp, 
+ 		       int64_t *nf);
 #endif
