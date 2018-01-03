@@ -46,15 +46,7 @@ int main(int argc, char **argv) {
   int64_t length_ms2js_strings;
   int64_t length_kg2js_strings;
   int success;
-  int base_len;
-
-  int in_len;
   int max_file_name_len;
-  char *concs_in_file;
-  char *rxns_dat_file;
-  char *cmpts_dat_file;
-  char *log_file;
-  char *tail;
   FILE *lfp;
   FILE *extra_fp;
 
@@ -143,4 +135,5 @@ int main(int argc, char **argv) {
   if (success) {
     success = parse_sbml(sbml_state);
   }
+  exit(0);
 }
