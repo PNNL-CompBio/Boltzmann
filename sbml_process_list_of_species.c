@@ -44,7 +44,6 @@ int sbml_process_list_of_species(FILE *sbml_fp,
 	       sbml_parse_species_key_value,
                sbml_generate_init_conc_line
   */
-  struct compartment_struct *compartment;
   struct t2js_struct *ms2js_data;
   char comp_c[1024];
   char species_c[1024];
@@ -55,7 +54,6 @@ int sbml_process_list_of_species(FILE *sbml_fp,
   char *species;
   char *species_name;
   char bcf[8];
-  char *concs_file;
   char *bc;
   char *line;
   
