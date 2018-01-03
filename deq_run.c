@@ -236,7 +236,7 @@ int deq_run(struct state_struct *state) {
   }
   */
 
-  htry = 0.1;
+  htry = 0.0;
   nonnegative = 1.0;
   if (success) {
     success = ode23tb(state,counts,htry,nonnegative);
