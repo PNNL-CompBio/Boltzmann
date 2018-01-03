@@ -22,8 +22,6 @@ int boltzmann_load_agent_data(struct state_struct *state, void *agent_data) {
   int64_t zero_l;
   int success;
   int direction;
-  int vgrng_state_length;
-  int padi;
 
   success           = 1;
   zero_l            = (int64_t)0;
