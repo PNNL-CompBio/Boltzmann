@@ -42,7 +42,7 @@ int choose_rxn(struct state_struct *state,
   /*
     Choose a reaction using Metropolis Monte Carlo Methods.
 
-    Called by: boltzmann_run_sim
+    Called by: boltzmann_run
     Calls:     vgrng,
                candidate_rxn,
 	       rxn_likelihood_postselection.
