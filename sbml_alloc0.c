@@ -35,8 +35,6 @@ int sbml_alloc0(struct sbml2bo_struct **state_p) {
   struct sbml2bo_struct *state;
   int64_t ask_for;
   int64_t one_l;
-  int64_t *ms_ids;
-  int64_t *js_ids;
   char *sbml_file;
   char *concs_in_file;
   char *rxns_dat_file;
