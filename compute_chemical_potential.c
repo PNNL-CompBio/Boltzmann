@@ -42,7 +42,6 @@ int compute_chemical_potential(struct formation_energy_struct *fes){
   double  *probabilities; /*len = unique_molecules*/
   double  *chemical_potentials; /*len = unique_molecules */
   double *current_counts;	/*len = unique_molecules */
-  double temp_kelvin;
   double sum;
   double sump1;
   double m_rt;
