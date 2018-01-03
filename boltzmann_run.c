@@ -272,8 +272,10 @@ int boltzmann_run(struct state_struct *state) {
 	  }
 	}
       }
-      if (rxn_choice <= number_reactions_t2) {
-	rxn_fire[rxn_choice] += 1;
+      if (print_output) {
+	if (rxn_choice <= number_reactions_t2) {
+	  rxn_fire[rxn_choice] += 1;
+	}
       }
       /*
 	Copy the future concentrations, the result of the reaction firing
