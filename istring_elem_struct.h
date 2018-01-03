@@ -1,7 +1,5 @@
 /* istring_elem_struct.h 
   
-sss
-
 Pacific Northwest National Laboratory, Richland, WA 99352.
 
 Copyright (c) 2010 Battelle Memorial Institute.
