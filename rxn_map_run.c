@@ -42,7 +42,6 @@ int rxn_map_run(struct state_struct *state,
   struct compartment_struct *sorted_compartments;
   struct molecule_struct *molecule_i;
   struct molecule_struct *molecule_j;
-  struct molecule_struct *molecule_t;
   struct compartment_struct *compartment_i;
   struct compartment_struct *compartment_j;
   struct stack_level_elem_struct sles;
@@ -53,7 +52,6 @@ int rxn_map_run(struct state_struct *state,
   char   *molecules_text;
   char   *compartment_text;
 
-  int64_t *ws;
   int64_t *rxn_ptrs;
   int64_t *m_indices;
   int64_t *r_coefs;
@@ -63,7 +61,6 @@ int rxn_map_run(struct state_struct *state,
   int64_t *m_coefs;
 
 
-  int64_t *m_unmarked;
   int64_t *r_unmarked;
   int64_t *stack;
   int64_t *terminal_reaction;
@@ -85,19 +82,13 @@ int rxn_map_run(struct state_struct *state,
   int64_t k;
   int64_t i;
   int64_t j;
-  int64_t mt;
   int64_t ci;
   int64_t cj;
   int64_t ask_for;
   int64_t one_l;
   int64_t zero_l;
   int64_t nzr;
-  int64_t c_molecule;
-  int64_t next_reaction_pos;
-  int64_t potential_reaction;
   int64_t direction;
-  int64_t potential_molecule;
-  int64_t next_molecule_pos;
   int success;
   int level;
   /*
