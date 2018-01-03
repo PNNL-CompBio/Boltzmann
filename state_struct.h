@@ -155,7 +155,7 @@ struct state_struct {
   int64_t use_metropolis;
   int64_t use_regulation;
   int64_t max_regs_per_rxn;
-  int64_t rxn_filename_base_length;
+  int64_t output_filename_base_length;
   int64_t base_reaction;
   int64_t number_base_reaction_reactants;
   int64_t print_ode_concs;
