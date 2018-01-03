@@ -68,7 +68,7 @@ int compute_reaction_dg0(struct state_struct *state){
   int k;
 
   int coeff;
-  int use_deltag0;
+  int use_dgzero;
 
   int try_pseudoisomer;
   int padi;
@@ -88,7 +88,7 @@ int compute_reaction_dg0(struct state_struct *state){
   matrix_text    	   = rxns_matrix->text;
   nrxns                    = (int)state->number_reactions;
   molecules_text           = state->molecules_text;
-  use_deltag0              = state->use_deltag0;
+  use_dgzero              = state->use_dgzero;
   
   molecule_dg0tfs          = state->molecule_dg0tfs;
 
@@ -106,7 +106,7 @@ int compute_reaction_dg0(struct state_struct *state){
       fprintf(lfp,"Number of products = %i\n",reaction->num_products);
     }
     
-    try_pseudoisomer = (use_deltag0 == 0) || ((use_deltag0 == 1) && (reaction->deltag0_computed != -1)) ;
+    try_pseudoisomer = (use_dgzero == 0) || ((use_dgzero == 1) && (reaction->deltag0_computed != -1)) ;
     if (try_pseudoisomer) {
       /*
 	Set the free energy units to KJ/mol.
