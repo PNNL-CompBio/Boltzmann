@@ -78,7 +78,6 @@ int unique_compartments(struct state_struct *state) {
     sorted_cmpts += 1; /* Caution address arithmetic. */
     ucmpts_next  = sorted_cmpts;
   }
-  sum_compartment_len = (int64_t)0;
   for (i=1;i<nzr;i++) {
     if (sorted_cmpts->string>=0) {
       sstring = (char*)&compartment_text[sorted_cmpts->string];
