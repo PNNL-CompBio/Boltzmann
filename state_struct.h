@@ -143,6 +143,8 @@ struct state_struct {
   int64_t min_molecule_len;     	
   int64_t max_compartment_len;  	
   int64_t min_compartment_len;  	
+  int64_t sum_molecule_len;
+  int64_t sum_compartment_len;
 
 
   double  ideal_gas_r;
@@ -157,6 +159,7 @@ struct state_struct {
   double  default_initial_conc;
   double  dg_forward;
   double  entropy;
+  int64_t *workspace_base;
 
   /* two way data (modified) */
   double  *dg_forward_p; /* scalar */        /* 8 */             
