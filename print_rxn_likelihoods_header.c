@@ -26,7 +26,7 @@ specific language governing permissions and limitations under the License.
 void print_rxn_likelihoods_header(struct state_struct *state) {
   /*
     Print the header lines for the reaction likelihoods output file.
-    Called by: boltzmann_init .
+    Called by: run_init .
     Calls    : fprintf,fflush.
   */
   struct rxn_struct *reactions;
