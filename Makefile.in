@@ -204,7 +204,7 @@ SERIAL_OBJS7 = deq_run.o alloc7.o ode_solver.o ode23tb.o \
 	vec_set_constant.o ode23tb_build_factor_miter.o \
 	ode23tb_max_abs_ratio.o ode23tb_nonneg_err.o \
 	ode23tb_enforce_nonneg.o get_counts.o boltzmann_monitor_ode.o
-SERIAL_OBJS8 = boltzmann_cvodes.o boltzmann_size_jacobian.o boltzmann_cvodes_rhs.o boltzmann_print_cvodeinit_errors.o boltzmann_cvodes_init.o boltzmann_check_cvodeset_errors.o boltzmann_check_tol_errors.o boltzmann_set_cvodes_linear_solver.o boltzmann_check_cvdls_errors.o boltzmann_check_cvspils_errors.o boltzmann_cvodes_psetup.o approximate_jacobian.o lr8_approximate_jacobian.o crs_column_sort_rows.o build_newton_matrix.o precondition_newton_matrix.o iluvf.o dcrsng_mag_sort.o dcrsng_mag_merge.o isort.o imerge.o boltzmann_cvodes_psolve.o boltzmann_cvodes_bsolve.o boltzmann_cvodes_fsolve.o boltzmann_cvodes_jtimes.o boltzmann_sparse_mvp.o boltzmann_print_cvode_error.o dgbtrf.o dgbtf2.o dger.o dgbtrs.o dswap.o dtbsv.o 
+SERIAL_OBJS8 = boltzmann_cvodes.o boltzmann_size_jacobian.o boltzmann_cvodes_rhs.o boltzmann_print_cvodeinit_errors.o boltzmann_cvodes_init.o boltzmann_check_cvodeset_errors.o boltzmann_check_tol_errors.o boltzmann_set_cvodes_linear_solver.o boltzmann_check_cvdls_errors.o boltzmann_check_cvspils_errors.o boltzmann_cvodes_psetup.o approximate_jacobian.o boltzmann_sparse_to_dense.o boltzmann_dense_to_sparse.o lr8_approximate_jacobian.o crs_column_sort_rows.o build_newton_matrix.o precondition_newton_matrix.o iluvf.o dcrsng_mag_sort.o dcrsng_mag_merge.o isort.o imerge.o boltzmann_cvodes_psolve.o boltzmann_cvodes_bsolve.o boltzmann_cvodes_fsolve.o boltzmann_cvodes_jtimes.o boltzmann_sparse_mvp.o boltzmann_print_cvode_error.o dgbtrf.o dgbtf2.o dger.o dgbtrs.o dswap.o dtbsv.o 
 
 #SERIAL_OBJS9 = flatten_state.o free_boot_state2.o free_boot_state.o
 SBML_OBJS = sbml_to_boltzmann.o size_ms2js_file.o size_kg2js_file.o sbml_alloc0.o sbml_set_file_names.o sbml_alloc2.o read_ms2js.o read_kg2js.o sort_json_ids.o merge_sorted_strings.o sbml_count_cmpts.o sbml_count_species.o sbml_alloc1.o parse_sbml.o sbml_find_section.o sbml_process_list_of_compartments.o sbml_read_key_value.o sbml_lookup_compartment_attribute.o sbml_volume_units_conversion.o sbml_process_list_of_species.o sbml_start_species_def.o sbml_parse_species_key_value.o sbml_lookup_species_attribute.o sbml_process_substanceunits.o sbml_generate_init_conc_line.o boltzmannize_string.o sbml_find_string.o sbml_sort_species_trans.o sbml_merge_species_trans.o sbml_process_list_of_reactions.o sbml_look_for_in_reaction_tag.o sbml_process_reaction_tag.o sbml_lookup_reaction_attribute.o sbml_process_list_of_reactants_tag.o  sbml_process_list_of_products_tag.o sbml_process_species_reference_tag.o sbml_lookup_speciesref_attribute.o count_ntb.o
@@ -778,6 +778,8 @@ libboltzmann.a: $(SERIAL_OBJS1)  $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SERIAL_OBJS4)
 	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_check_cvspils_errors.o
 	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_cvodes_psetup.o
 	$(AR) $(ARFLAGS) libboltzmann.a approximate_jacobian.o
+	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_sparse_to_dense.o
+	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_dense_to_sparse.o
 	$(AR) $(ARFLAGS) libboltzmann.a lr8_approximate_jacobian.o
 	$(AR) $(ARFLAGS) libboltzmann.a crs_column_sort_rows.o
 	$(AR) $(ARFLAGS) libboltzmann.a build_newton_matrix.o
@@ -1669,8 +1671,14 @@ boltzmann_check_cvspils_errors.o: boltzmann_check_cvspils_errors.c boltzmann_che
 boltzmann_cvodes_psetup.o: boltzmann_cvodes_psetup.c boltzmann_cvodes_psetup.h $(SERIAL_INCS) approximate_jacobian.h build_newton_matrix.h precondition_newton_matrix.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_cvodes_psetup.c
 
-approximate_jacobian.o: approximate_jacobian.c approximate_jacobian.h $(SERIAL_INCS) lr8_approximate_jacobian.h
+approximate_jacobian.o: approximate_jacobian.c approximate_jacobian.h $(SERIAL_INCS) ode_num_jac.h lr8_approximate_jacobian.h boltzmann_sparse_to_dense.h boltzmann_dense_to_sparse.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c approximate_jacobian.c
+
+boltzmann_sparse_to_dense.o: boltzmann_sparse_to_dense.c boltzmann_sparse_to_dense.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_sparse_to_dense.c
+
+boltzmann_dense_to_sparse.o: boltzmann_dense_to_sparse.c boltzmann_dense_to_sparse.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_dense_to_sparse.c
 
 lr8_approximate_jacobian.o: lr8_approximate_jacobian.c lr8_approximate_jacobian.h $(SERIAL_INCS) get_counts.h update_regulations.h vec_set_constant.h crs_column_sort_rows.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c lr8_approximate_jacobian.c
