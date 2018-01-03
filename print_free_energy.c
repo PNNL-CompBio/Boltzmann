@@ -58,7 +58,7 @@ void print_free_energy(struct state_struct *state, int64_t step) {
   forward_rxn_log_likelihood_ratio = state->forward_rxn_log_likelihood_ratio;
   cals_per_joule  	           = state->cals_per_joule;
   if (free_energy_fp) {
-    fprintf(free_energy_fp,"%ld",step);
+    fprintf(free_energy_fp,"%lld",step);
     if (free_energy_format == 1) {
       for (j=0;j<number_reactions;j++) {
 	fprintf(free_energy_fp,"\t%le",
