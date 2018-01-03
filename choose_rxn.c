@@ -24,7 +24,7 @@ specific language governing permissions and limitations under the License.
 #include "vgrng.h"
 #include "candidate_rxn.h"
 #include "bndry_flux_update.h"
-#include "rxn_likelihood_postselection.h"
+#include "metropolis.h"
 
 #include "choose_rxn.h"
 int choose_rxn(struct state_struct *state,
@@ -79,6 +79,9 @@ int choose_rxn(struct state_struct *state,
 
   int j;
   int k;
+
+  int use_metropolis;
+  int padi;
   
   success                = 1;
   number_reactions       = (int)state->number_reactions;
@@ -87,6 +90,7 @@ int choose_rxn(struct state_struct *state,
   activities             = state->activities;
   future_counts          = state->future_counts;
   vgrng2_state           = state->vgrng2_state;
+  use_metropolis         = (int)state->use_metropolis;
   number_reactions_t2    = number_reactions << 1;
   accept = 0;
   for (j=0;((j<number_reactions)&&(accept == 0));j++) {
@@ -120,20 +124,18 @@ int choose_rxn(struct state_struct *state,
     accept = 1;
     if (rxn_choice < number_reactions_t2) {
       /*
-    	The Metropolis method follows.
+    	The Metropolis method used to follow here.
     	If reaction was forward or reverse 
     	( No-op is rxn_choice >= number_reactions_t2).
       */
-      /*
-    	Compute the reaction likelihood for this reaction.
-      */
-      likelihood = rxn_likelihood_postselection(future_counts,
-    						state,rxn_direction,i);
-    	  
-      /*
-    	Update the boundary fluxes.
-      */
-      success = bndry_flux_update(i,rxn_direction,state);
+      if (use_metropolis) {
+	accept = metropolis(state,rxn_direction,i,scaling);
+      } else {
+	/*
+	  Update the boundary fluxes.
+	*/
+	success = bndry_flux_update(i,rxn_direction,state);
+      }
     } 
   } /* end for (j...) */
   if (accept == 0) {
