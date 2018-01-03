@@ -91,7 +91,7 @@ int choose_rxn(struct state_struct *state,
   int k;
   
   success                = 1;
-  number_reactions       = state->number_reactions;
+  number_reactions       = (int)state->number_reactions;
   forward_rxn_likelihood = state->forward_rxn_likelihood;
   reverse_rxn_likelihood = state->reverse_rxn_likelihood;
   activities             = state->activities;
