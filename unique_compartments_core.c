@@ -60,7 +60,7 @@ int unique_compartments_core(int nzr,
   srtd_cmpts = sorted_cmpts;
   /* loop over sorted compartments. */
   nu_cmpts = 0;
-  
+  cstring = "";
   if (nzr > 1) {
     if (srtd_cmpts->string >= 0) {
       compartment_indices[srtd_cmpts->c_index] = nu_cmpts;
