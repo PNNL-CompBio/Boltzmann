@@ -77,7 +77,7 @@ double rxn_likelihood(double *counts,
 				 counts in the counts vector.
 
   */
-  struct rxn_matrix_struct *rxns_matrix;
+  struct reactions_matrix_struct *rxns_matrix;
   struct molecule_struct  *molecules;
   struct molecule_struct  *molecule;
   
