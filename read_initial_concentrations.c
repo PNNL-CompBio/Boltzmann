@@ -84,7 +84,7 @@ int read_initial_concentrations(struct state_struct *state) {
   char cc[2];
   
   FILE *conc_fp;
-  avogadro           = 6.02e23;
+  avogadro           = state->avogadro;
   half               = 0.5;
   nu_molecules       = state->nunique_molecules;
   molecules_buff_len = state->max_param_line_len;
@@ -171,6 +171,10 @@ int read_initial_concentrations(struct state_struct *state) {
   }
   if (success) {
     multiplier = conc_units * volume * avogadro;
+    state->conc_to_count = multiplier;
+    if (multiplier > 0.0) {
+      state->count_to_conc = 1.0/multiplier;
+    }
     while (!feof(conc_fp)) {
       fgp = fgets(molecules_buffer,molecules_buff_len,conc_fp);
       if (fgp) {
