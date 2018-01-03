@@ -52,7 +52,7 @@ int parse_rxn_list_line(struct state_struct *local_state, struct boot_state_stru
   if (rp == NULL) {
     success = 0;
     if (lfp) {
-      fprintf(lfp,"parse_rxn_list_line: Error reading %ld'th line of rxns_list file\n",
+      fprintf(lfp,"parse_rxn_list_line: Error reading %lld'th line of rxns_list file\n",
 	      rxn_file);
       fflush(lfp);
     }
