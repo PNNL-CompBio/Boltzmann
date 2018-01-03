@@ -43,25 +43,38 @@ int sbml_lookup_reaction_attribute(char *key) {
   int cmp2;
   int cmp3;
 
+  int cmp4;
+  int cmp5;
+
   int tag;
   int padi;
 
   cmp0 = strcmp(key,"compartment");
-  cmp1 = strcmp(key,"fast");
-  cmp2 = strcmp(key,"id");
-  cmp3 = strcmp(key,"reversible");
   tag = -1;
   if (cmp0 == 0) {
     tag = 0;
   } else {
+    cmp1 = strcmp(key,"delta_g0");
     if (cmp1 == 0) {
       tag = 1;
     } else {
+      cmp2 = strcmp(key,"delta_g0_units");
       if (cmp2 == 0) {
 	tag = 2;
       } else {
+	cmp3 = strcmp(key,"fast");
 	if (cmp3 == 0) {
 	    tag = 3;
+	} else {
+	  cmp4 = strcmp(key,"id");
+	  if (cmp4 == 0) {
+	    tag = 4;
+	  } else {
+	    cmp5 = strcmp(key,"reversible");
+	    if (cmp5 == 0) {
+	      tag = 5;
+	    }
+	  }
 	}
       }
     }
