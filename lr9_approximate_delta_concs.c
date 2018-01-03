@@ -101,7 +101,7 @@ int lr9_approximate_delta_concs(struct state_struct *state,
   molecules_ptrs   = molecules_matrix->molecules_ptrs;
   rxn_indices      = molecules_matrix->reaction_indices;
   coefficients     = molecules_matrix->coefficients;
-  activities       = state->activites;
+  activities       = state->activities;
   rxn_matrix       = state->reactions_matrix;
   rxn_ptrs         = rxn_matrix->rxn_ptrs;
   molecule_indices = rxn_matrix->molecules_indices;
