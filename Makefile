@@ -67,7 +67,8 @@ AUTOMAKE = ${SHELL} /home/dbaxter/boltzmann/trunk/missing --run automake-1.11
 AWK = gawk
 CC = gcc 
 CCDEPMODE = depmode=none
-CFLAGS = ${OPT_FLAGS} ${SUNDIAILS_INCS}
+#CFLAGS = ${OPT_FLAGS} ${SUNDIALS_INCS}
+CFLAGS = ${NO_OPT_FLAGS} ${SUNDIALS_INCS}
 CPP = gcc -E
 CPPFLAGS = 
 CYGPATH_W = echo
@@ -84,9 +85,6 @@ INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
 LDFLAGS = 
 LIBOBJS = 
-#OPT_FLAGS = -O2 -fPIC -Wall
-#
-### End User configurable options ###
 LIBS = libboltzmann.a -lm ${SUNDIALS_LIBS} libboltzmann.a
 LTLIBOBJS = 
 MAKEINFO = ${SHELL} /home/dbaxter/boltzmann/trunk/missing --run makeinfo
@@ -149,23 +147,23 @@ target_alias =
 top_build_prefix = 
 top_builddir = .
 top_srcdir = .
+SUNDIALS_ROOT = ./sundials-2.7.0
 CLINKER = gcc
 AR = ar
 ARFLAGS = -crv
-EXECS = boltzmann deq lapack_test sbml2bo kegg_ms_ids ms2js_ids kegg_ids bwarmup boltzmann_test_save_load
-SUNDIALS_ROOT = /home/dbaxter/sundials/sundials-2.7.0
 SUNDIALS_LIB_DIR = ${SUNDIALS_ROOT}/lib
 SUNDIALS_INC_DIR = ${SUNDIALS_ROOT}/include
 SUNDIALS_LIBS = ${SUNDIALS_LIB_DIR}/libsundials.so ${SUNDIALS_LIB_DIR}/libsundials_cvodes.so ${SUNDIALS_LIB_DIR}/libsundials_cvodes.so ${SUNDIALS_LIB_DIR}/libsundials_nvec_ser.so
 SUNDIALS_INCS = -I ${SUNDIALS_INC_DIR} -I ${SUNDIALS_INC_DIR}/sundials -I ${SUNDIALS_INC_DIR}/cvodes -I ${SUNDIALS_INC_DIR}/cvode -I${SUNDIALS_INC_DIR}/nvector
-DBG_FLAGS = -O0 -g -Wall ${SUNDIALS_INCS}
-NO_OPT_FLAGS = -O0 -g -Wall ${SUNDIALS_INCS}
-OPT_FLAGS = -g -O0 -fPIC -Wall ${SUNDIALS_INCS}
+DBG_FLAGS = -O0 -g -fPIC -Wall ${SUNDIALS_INCS}
+NO_OPT_FLAGS = -O0 -g -fPIC -Wall ${SUNDIALS_INCS}
+OPT_FLAGS = -g -O2 -fPIC -Wall ${SUNDIALS_INCS}
 DCFLAGS = ${CFLAGS} 
 LFLAGS = -g 
 TIMING_LIB = 
 TIMING_DEP = 
 TFLAGS = 
+EXECS = boltzmann deq lapack_test sbml2bo kegg_ms_ids ms2js_ids kegg_ids bwarmup boltzmann_test_save_load
 TIMING_DEPS = timingi.h djb_timing_b.h djb_timing.h
 LUNWIND_DEPS = luwtb.h luwtb1.h luwtb2.h
 #EXECS defined in Makefile.head
@@ -217,7 +215,7 @@ all: all-am
 .SUFFIXES: .c .f .f90 .o
 am--refresh:
 	@:
-$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(srcdir)/Makefile.head $(srcdir)/Makefile.notiming $(srcdir)/Makefile.body $(am__configure_deps)
+$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(srcdir)/Makefile.body $(srcdir)/Makefile.head $(srcdir)/Makefile.notiming $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -514,8 +512,12 @@ uninstall-am:
 	maintainer-clean-generic mostlyclean mostlyclean-generic pdf \
 	pdf-am ps ps-am uninstall uninstall-am
 
-default: $(EXECS)
-all:  $(EXECS)
+all:  $(EXECS) $(SUNDIALS_LIB_DIR)/libsundials_cvodes.so $(SUNDIALS_LIB_DIR)/libsundials_cvodes.a $(SUNDIALS_LIB_DIR)/libsundials_nvec_ser.a $(SUNDIALS_LIB_DIR)/libsundials_nvec_ser.so $(SUNDIALS_LIB_DIR)/libsundials.so $(SUNDIALS_LIB_DIR)/libsundials.a
+
+$(SUNDIALS_LIB_DIR)/libsundials_cvodes.so $(SUNDIALS_LIB_DIR)/libsundials_cvodes.a $(SUNDIALS_LIB_DIR)/libsundials_nvec_ser.a $(SUNDIALS_LIB_DIR)/libsundials_nvec_ser.so $(SUNDIALS_LIB_DIR)/libsundials.so $(SUNDIALS_LIB_DIR)/libsundials.a:
+	cd $(SUNDIALS_ROOT) && $(MAKE)
+
+default: $(EXECS) ${LIBS}
 
 ms2js_ids: $(KPM_OBJS)
 	$(CLINKER) -O0 -o ms2js_ids $(KPM_OBJS)
@@ -937,7 +939,7 @@ boltzmann_test_save_load: boltzmann_test_save_load.o $(MMAP_OBJS) $(TIMING_LIB) 
 #boltzmann_rep_state_i.o: boltzmann_rep_state_i.c boltzmann_rep_state_i.h flatten_state.h $(SERIAL_INCS)
 #	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_rep_state_i.c
 
-boltzmann: $(MMAP_OBJS) $(TIMING_LIB) boltzmann.o libboltzmann.a
+boltzmann: $(MMAP_OBJS) $(TIMING_LIB) boltzmann.o libboltzmann.a $(LIBS)
 	$(CLINKER) $(LFLAGS) -o boltzmann boltzmann.o $(SERIAL_OBJS1) $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SERIAL_OBJS4) $(SBML_OBJS) $(SERIAL_OBJS7) $(SERIAL_OBJS8) $(MMAP_OBJS) $(TIMING_LIB) $(LIBS)
 
 boltzmann.o: $(SERIAL_INCS) boltzmann.c boltzmann_init.h boltzmann_run.h 
@@ -1789,6 +1791,8 @@ boltzmann_load_aux_data.o: boltzmann_load_aux_data.c boltzmann_load_aux_data.h $
 
 clean:
 	-/bin/rm -f *.o *.a *~ $(EXECS)
+	cd $(SUNDIALS_ROOT) && $(MAKE) clean
+
 .c.o:
 	$(CC) $(CFLAGS) $(TFLAGS) -c $<
 .f.o:
