@@ -45,6 +45,7 @@ int flatten_state(struct state_struct *boot_state,
   struct state_struct ss;
   struct vgrng_state_struct vss;
   struct molecule_struct ies;
+  struct compartment_struct ces;
   struct rxn_struct rs;
   struct rxn_matrix_struct rms;
   struct rxn_matrix_struct *reactions_matrix;
@@ -269,7 +270,7 @@ int flatten_state(struct state_struct *boot_state,
   sorted_molecules_size   = (sorted_molecules_size + sorted_molecules_pad) >> log2_word_len;
   sorted_cmpts_offset     = sorted_molecules_offset + sorted_molecules_size;
   sorted_compartments_offset_in_bytes = sorted_cmpts_offset << log2_word_len;
-  sorted_cmpts_size       = sizeof(ies) * unique_compartments;
+  sorted_cmpts_size       = sizeof(ces) * unique_compartments;
   sorted_cmpts_pad        = (align_len - (sorted_cmpts_size & align_mask)) & align_mask;
   sorted_cmpts_size       = (sorted_cmpts_size + sorted_cmpts_pad) >> log2_word_len;
   auxiliary_data_offset   = sorted_cmpts_offset + sorted_cmpts_size;
@@ -432,7 +433,7 @@ int flatten_state(struct state_struct *boot_state,
     reactions_matrix->coefficients = (int64_t *)&new_state_l[coefficients_offset];
     reactions_matrix->text = (int64_t*)&new_state_l[text_offset];
     new_state->sorted_molecules = (struct molecule_struct*)&new_state_l[sorted_molecules_offset];
-    new_state->sorted_cmpts = (struct molecule_struct*)&new_state_l[sorted_cmpts_offset];
+    new_state->sorted_cmpts = (struct compartment_struct*)&new_state_l[sorted_cmpts_offset];
     new_state->params_file  = (char*)&new_state_l[file_names_offset];
     new_state->max_filename_len = max_filename_len;
     boltzmann_set_filename_ptrs(new_state);
@@ -507,7 +508,7 @@ int flatten_state(struct state_struct *boot_state,
       move_size = unique_molecules * sizeof(ies);
       memcpy(new_state->sorted_molecules,
 	     boot_state->sorted_molecules,move_size);
-      move_size = unique_compartments * sizeof(ies);
+      move_size = unique_compartments * sizeof(ces);
       memcpy(new_state->sorted_cmpts,
 	     boot_state->sorted_cmpts,move_size);
       move_size = num_files * max_filename_len;
