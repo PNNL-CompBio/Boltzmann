@@ -31,7 +31,7 @@ int compute_ke(struct state_struct *state) {
 
     K_eq  = exp(-delta_G_0/RT)
     
-    Called by: boltzmann_init
+    Called by: energy_init
   */
   struct rxn_struct *reactions;
   struct rxn_struct *reaction;
