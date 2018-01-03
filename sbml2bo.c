@@ -52,9 +52,10 @@ int main(int argc, char **argv) {
   FILE *lfp;
   FILE *extra_fp;
 
-  max_file_name_len = 4096;
+  max_file_name_len = 128;
   one = 1;
   success = alloc0(&state,one);
+  state->max_filename_len = max_file_name_len;
   /*
     Set the fields of the state structure that size_ms2js_file needs.
   */
