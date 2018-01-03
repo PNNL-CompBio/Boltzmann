@@ -29,7 +29,7 @@ int zero_solvent_coefficients (struct state_struct *state) {
   /*
     Zero the coefficients in the reaction matrix corresponding to
     solvent molecules, but save them in the solvent_coefficients vector.
-    Called by run_init. print_rxns_matrix
+    Called by energy_init. print_rxns_matrix
     Calls:
   */
   struct reactions_matrix_struct *rxns_matrix;
@@ -68,7 +68,7 @@ int zero_solvent_coefficients (struct state_struct *state) {
       rcoef[j] = 0.0;
     } else {
       molecule = (struct molecule_struct*)&sorted_molecules[index];
-      if (molecule->solvent && use_bulk_water) {
+      if (molecule->solvent && (use_bulk_water || (molecule->variable == 0))) {
 	scoef[solvent_coef_count] = rcoef[j];
 	solvent_coef_count += 1;
 	rcoef[j] = 0.0;
