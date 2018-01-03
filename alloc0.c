@@ -42,13 +42,22 @@ int alloc0(struct state_struct **state) {
   struct state_struct bltzs;
   struct state_struct *statep;
   struct vgrng_state_struct vss;
+  int64_t *rxn_file_keyword_lengths;
+  char    *rxn_buff;
+  char    *rxn_keyword_buff;
+  char    **rxn_keywords;
   int64_t max_file_name_len;
   int64_t max_param_line_len;
   int64_t ask_for;
   int64_t one_l;
   int64_t usage;
+
   int success;
   int num_state_files;
+
+  int num_rxn_file_keywords;
+  int rxn_file_keyword_len;
+
   ask_for           = (int64_t)sizeof(bltzs);
   one_l             = (int64_t)1;
   max_file_name_len = (int64_t)4096;
@@ -106,6 +115,57 @@ int alloc0(struct state_struct **state) {
 	      ask_for);
       fflush(stderr);
     } 
+  }
+  /*
+    Allocate space for processing the reactions file.
+  */
+  if (success) {
+    rxn_file_keyword_len = 144;
+    ask_for = rxn_file_keyword_len;
+    usage   += ask_for;
+    rxn_keyword_buff = (char *)calloc(one_l,ask_for);
+    if (rxn_keyword_buff) {
+      statep->rxn_file_keyword_buffer = rxn_keyword_buff;
+    } else {
+      fprintf(stderr,
+	      "alloc1: Error, unable to allocate %ld bytes for "
+	      "rxn_file_keyword_buffer\n",
+	      ask_for);
+      fflush(stderr);
+      success = 0;
+    }
+  }
+  if (success) {
+    num_rxn_file_keywords = 11;
+    statep->num_rxn_file_keywords = num_rxn_file_keywords;
+    ask_for = ((int64_t)num_rxn_file_keywords) * ((int64_t)sizeof(char *));
+    usage   += ask_for;
+    rxn_keywords = (char **)calloc(one_l,ask_for);
+    if (rxn_keywords) {
+      statep->rxn_file_keywords = rxn_keywords;
+    } else {
+      fprintf(stderr,
+	      "alloc1: Error, unable to allocate %ld bytes for "
+	      "rxn_file_keywords\n",
+	      ask_for);
+      fflush(stderr);
+      success = 0;
+    }
+  }
+  if (success) {
+    ask_for = ((int64_t)num_rxn_file_keywords) * ((int64_t)sizeof(int64_t));
+    usage += ask_for;
+    rxn_file_keyword_lengths = (int64_t *)calloc(one_l,ask_for);
+    if (rxn_file_keyword_lengths) {
+      statep->rxn_file_keyword_lengths = rxn_file_keyword_lengths;
+    } else {
+      fprintf(stderr,
+	      "alloc1: Error, unable to allocate %ld bytes for "
+	      "rxn_file_keyword_lengths\n",
+	      ask_for);
+      fflush(stderr);
+      success = 0;
+    }
     statep->usage = usage;
   }
   return(success);
