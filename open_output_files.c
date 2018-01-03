@@ -49,15 +49,15 @@ int open_output_files(struct state_struct *state) {
     }
   }
   if (success) {
-    if (state->concs_out_file) {
+    if (state->counts_out_file) {
       /*
 	Open the concentrations output file.
       */
-      state->concs_out_fp = fopen(state->concs_out_file,"w");
-      if (state->concs_out_fp == NULL) {
+      state->counts_out_fp = fopen(state->counts_out_file,"w");
+      if (state->counts_out_fp == NULL) {
 	fprintf(stderr,
-		"output_output_files: unable to open concs_out_file, %s, quitting.\n",
-		state->concs_out_file);
+		"output_output_files: unable to open counts_out_file, %s, quitting.\n",
+		state->counts_out_file);
 	fflush(stderr);
 	success = 0;
       }
