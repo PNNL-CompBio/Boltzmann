@@ -22,4 +22,5 @@ specific language governing permissions and limitations under the License.
 ******************************************************************************/
 extern int sort_compartments(struct istring_elem_struct **unsorted_istrings,
 			     struct istring_elem_struct **sorted_istrings,
+			     char *compartment_text,
 			     int n);
