@@ -29,7 +29,6 @@ int echo_reactions_file(struct state_struct *state) {
     Called by: echo_inputs
     Calls:     fopen, fprintf, fclose (intrinsic)
   */
-  struct rxn_struct *reactions;
   struct rxn_struct *reaction;
   struct rxn_matrix_struct *rxns_matrix;
   double  *reg_constant;
@@ -57,9 +56,6 @@ int echo_reactions_file(struct state_struct *state) {
 
   int success;
   int rxns;
-
-  int ns;
-  int padding;
 
   int np;
   int nr;
@@ -92,6 +88,7 @@ int echo_reactions_file(struct state_struct *state) {
     pathway_text      = state->pathway_text;
     compartment_text  = state->compartment_text; 
     molecules_text    = state->molecules_text;
+    regulation_text   = state->regulation_text;
     use_regulation    = (int)state->use_regulation;
     reg_species       = state->reg_species;
     reg_drctn         = state->reg_drctn;
@@ -99,6 +96,7 @@ int echo_reactions_file(struct state_struct *state) {
     reg_exponent      = state->reg_exponent;
     reaction          = state->reactions;
     rxns_matrix       = state->reactions_matrix;
+    max_regs_per_rxn  = state->max_regs_per_rxn;
     rxn_ptrs          = rxns_matrix->rxn_ptrs;
     molecules_indices = rxns_matrix->molecules_indices;
     coefficients      = rxns_matrix->coefficients;
