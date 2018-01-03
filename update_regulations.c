@@ -11,6 +11,12 @@ int update_regulations(struct state_struct * state, double *counts_or_concs,
 
     Called by: candidate_rxn, 
                compute_delta_g_forward_entropy_free_energy
+	       lr8_approximate_delta_concs,
+	       lr9_approximate_delta_concs,
+	       lr10_approximate_delta_concs,
+	       lr11_approximate_delta_concs,
+	       lr12_approximate_delta_concs,
+	       lr8_approximate_jacobian,
     Calls:     update_regulation
   */
   int number_reactions;
