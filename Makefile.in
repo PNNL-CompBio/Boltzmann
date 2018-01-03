@@ -183,11 +183,11 @@ SERIAL_OBJS7 = deq_run.o alloc7.o ode_solver.o ode23tb.o \
 	lr1_approximate_delta_concs.o lr2_approximate_delta_concs.o \
 	lr3_approximate_delta_concs.o lr4_approximate_delta_concs.o \
 	lr5_approximate_delta_concs.o lr6_approximate_delta_concs.o \
-	lr7_approximate_delta_concs.o ce_approximate_delta_concs.o \
-	update_rxn_likelihoods.o print_concs_dconcs.o lsame.o dtrsm.o \
-	dlaswp.o dgetrf2.o dgetrf.o dgetrs.o dgemm.o \
-	ode_print_concs_header.o ode_print_concs.o \
-	ode_print_dconcs_header.o ode_print_dconcs.o \
+	lr7_approximate_delta_concs.o lr8_approximate_delta_concs.o \
+	ce_approximate_delta_concs.o update_rxn_likelihoods.o \
+	print_concs_dconcs.o lsame.o dtrsm.o dlaswp.o dgetrf2.o \
+	dgetrf.o dgetrs.o dgemm.o ode_print_concs_header.o \
+	ode_print_concs.o ode_print_dconcs_header.o ode_print_dconcs.o \
 	ode_print_lklhd_header.o ode_print_lklhds.o \
 	ode_print_bflux_header.o ode23tb_normyp_o_wt.o \
 	ode23tb_limit_h.o ode23tb_init_wt.o ode23tb_update_wt.o \
@@ -819,6 +819,7 @@ libboltzmann.a: $(SERIAL_OBJS1)  $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SERIAL_OBJS4)
 	$(AR) $(ARFLAGS) libboltzmann.a lr5_approximate_delta_concs.o
 	$(AR) $(ARFLAGS) libboltzmann.a lr6_approximate_delta_concs.o
 	$(AR) $(ARFLAGS) libboltzmann.a lr7_approximate_delta_concs.o
+	$(AR) $(ARFLAGS) libboltzmann.a lr8_approximate_delta_concs.o
 	$(AR) $(ARFLAGS) libboltzmann.a ce_approximate_delta_concs.o
 	$(AR) $(ARFLAGS) libboltzmann.a num_jac_col.o
 	$(AR) $(ARFLAGS) libboltzmann.a ode_it_solve.o
@@ -1470,7 +1471,7 @@ init_relative_rates.o: init_relative_rates.c init_relative_rates.h $(SERIAL_INCS
 compute_flux_scaling.o: compute_flux_scaling.c compute_flux_scaling.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c compute_flux_scaling.c
 
-approximate_delta_concs.o: approximate_delta_concs.c approximate_delta_concs.h ce_approximate_delta_concs.h lr_approximate_delta_concs.h lr2_approximate_delta_concs.h lr1_approximate_delta_concs.h lr3_approximate_delta_concs.h lr4_approximate_delta_concs.h lr5_approximate_delta_concs.h lr6_approximate_delta_concs.h lr7_approximate_delta_concs.h $(SERIAL_INCS)
+approximate_delta_concs.o: approximate_delta_concs.c approximate_delta_concs.h ce_approximate_delta_concs.h lr_approximate_delta_concs.h lr2_approximate_delta_concs.h lr1_approximate_delta_concs.h lr3_approximate_delta_concs.h lr4_approximate_delta_concs.h lr5_approximate_delta_concs.h lr6_approximate_delta_concs.h lr7_approximate_delta_concs.h lr8_approximate_delta_concs.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c approximate_delta_concs.c 
 
 vec_abs.o: vec_abs.c vec_abs.h $(SERIAL_INCS)
@@ -1509,8 +1510,11 @@ lr5_approximate_delta_concs.o: lr5_approximate_delta_concs.c lr5_approximate_del
 lr6_approximate_delta_concs.o: lr6_approximate_delta_concs.c lr6_approximate_delta_concs.h update_rxn_likelihoods.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c lr6_approximate_delta_concs.c 
 
-lr7_approximate_delta_concs.o: lr7_approximate_delta_concs.c lr7_approximate_delta_concs.h update_rxn_likelihoods.h $(SERIAL_INCS)
+lr7_approximate_delta_concs.o: lr7_approximate_delta_concs.c lr7_approximate_delta_concs.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c lr7_approximate_delta_concs.c 
+
+lr8_approximate_delta_concs.o: lr8_approximate_delta_concs.c lr8_approximate_delta_concs.h get_counts.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c lr8_approximate_delta_concs.c 
 
 ode_num_jac.o: ode_num_jac.c ode_num_jac.h $(SERIAL_INCS) num_jac_col.h blas.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c ode_num_jac.c 
