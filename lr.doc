@@ -1,0 +1,126 @@
+
+
+Fundamental rate change equation.
+
+dS_m/dt =  sum      g_(i,m)*(K_f(i)* rt[i] - K_r(i) * pt[i])
+          rxns i                     
+	  that                       
+	  m is 
+	  in  
+
+
+      S_m is the concentration of species m. g_(i,m) is the stoicheometric coefficient of species m in reaction i.
+
+      where pt[i] = product     S_k^g(i,k)
+		    k a product	    
+		    in rxn i          
+
+
+            rt[i] = product         S_j^g_(i,j)
+	            j a reactant
+		    in rxn i.
+
+            K_f(i) and K_r(i) are the forward and reverse rate constants for reaction i.
+	    Ke[i] represesents the equilibrium constant for reaction i,
+	    rKe[i] representst the equilibrium constat for the reverse of reaction i.
+            B is the base reaction,
+            and Q[i] is the reation quotient pt[i]/rt[i]
+
+
+	    L_f[i] = forward likelihood  = Ke[i] * Q[i]^-1
+
+            L_r(i] = reverse likelihood  = rKe[i] * Q[i];
+
+		    
+Different Lr* approximate K_f(i) and K_r(i) differently.
+
+
+Lr1 
+
+    K_f[i] = Ke[i]/(pt[i]*Ke[B]*Q[B]^-1)
+
+
+
+   and K_r[i] = 1.0/(pt(i) * Ke(B)*Q[B]^-1) 
+
+
+Lr2
+
+   K_f[i] = L_f[i]/(L_f[B] * rt[i]) 
+
+   K_r[i] = L_r[i]/pt[i]
+
+
+Lr3     
+
+     K_f[i] = L_f[i]/(L_f[B] * rt[i]) 
+
+     K_r[i] = L_f[i]*L_r[i]/(L_f[B]*pt[i])
+
+
+Lr4
+    
+     K_f[i] = L_f[i]/(L_f[b] * rt[i]) 
+
+     K_r[i] = L_r[i]/(L_f[B] * pt[i])
+
+
+
+lr5
+
+    K_f[i] = L_f[i]/(L_t * rt[i])
+
+    K_r[i] = L_r[i]/(L_t * pt[i])
+
+    where L_t = sum L_f[i] + sum L_r[i]
+                 i            i
+
+
+Lr6 (computational alchemy) 
+
+
+           K_f[i] = exp (sum (g_(i,j) Dg0[j])/(-RT))
+                         g_(i,j) > 0
+
+
+           K_r[i] = exp (sum (g_(i,j) Dg0[j])/(-RT))
+                         g_(i,j) < 0
+
+
+
+Lr7
+
+	   K_f[i] = Ke[i]/tp[i];
+
+	   K_r[i] = rKE[i]/tr[i];
+
+
+      where tp[i] = product     (S_k+g_(i,k))^g_(i,k)
+		    k a product	    
+		    in rxn i          
+
+
+            tr[i] = product     (S_j+g_(i,j))^g_(i,j)
+	            j a reactant
+		    in rxn i.
+	   
+           but tp and tr computed with concs (so g_(i,j) in the addidtive term is scaled by 1/(avo*volume).
+
+
+Lr8 
+      Same as lr 7 but tp and tr are computed with counts instead of concs.
+
+
+Lr9 uses read in rate constants, for K_f and K_r expecting concentration based rate constants.
+
+Lr10 uses read in rate constants, for K_f and K_r expecting conunt based rate constants.
+
+
+Lr11, stable addition flavor of lr8.
+
+Lr12, stable addition flavor of lr10.
+
+Lr13, d n_i/dt = 1/log(n_i/exp(-molecule_dg0tfs[i]/RT)) sum K_j *  Q_j^-1
+                                                         j
+
+lr14 sames as lr7 but tp and tr replaced by pt and rt.
