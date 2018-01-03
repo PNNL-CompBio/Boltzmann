@@ -43,6 +43,7 @@ int print_restart_file(struct state_struct *state) {
   struct istring_elem_struct *cur_cmpts;
   struct istring_elem_struct *cur_cmpt;
   double *cconcs;
+  char   *restart_file;
   int64_t *column_indices;
   char *cmpt_string;
   char *molecule;
@@ -67,14 +68,14 @@ int print_restart_file(struct state_struct *state) {
   cur_molecules = state->sorted_molecules;
   cur_cmpts     = state->sorted_cmpts;
   cconcs        = state->current_concentrations;
-  restart_fp    = state->restart_fp;
   molecules_text = state->molecules_text;
   compartment_text = state->compartment_text;
   vbs[0]        = 'C';
   vbs[1]        = '\0';
   vbsc          = (char *)&vbs[0];
   vbsv          = (char *)&vbs[1];
-  restart_fp = fopen(state->restart_file,"w+");
+  restart_file  = state->restart_file;
+  restart_fp = fopen(restart_file,"w+");
   if (restart_fp == NULL) {
     fprintf(stderr,
 	    "print_restart_file: Error opening restart_file %s\n",
