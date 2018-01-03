@@ -322,8 +322,7 @@ int flatten_state(struct state_struct *boot_state,
   reverse_rxn_log_offset  = forward_rxn_log_offset + forward_rxn_log_size;
   reverse_rxn_log_size    = free_energy_size;
   rxn_likelihood_ps_offset = reverse_rxn_log_offset + reverse_rxn_log_size;
-  rxn_likelihood_ps_size  = free_energy_size + 1;
-  rxn_likelihood_ps_size  += (rxn_likelihood_ps_size & 1);
+  rxn_likelihood_ps_size  = (free_energy_size + 1) << 1;
   workspace_end = rxn_likelihood_ps_offset + rxn_likelihood_ps_size;
   if (print_output) {
     rxn_view_hist_length     = boot_state->rxn_view_hist_length;
