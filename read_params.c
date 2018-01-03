@@ -31,6 +31,13 @@ int read_params (char *param_file_name, struct state_struct *state) {
     Called by: boltzmann_init
     Calls:     fopen, fprintf, fgets, feof, sscanf, strncmp (intrinsic)
   */
+  double rt;
+  double m_r_rt;
+  double m_rt;
+  double joules_per_cal;
+  double cals_per_joule;
+  double ideal_gas_r;
+  double temp_kelvin;
   int64_t max_param_line_len;
   char *param_buffer;
   char *key;
@@ -67,15 +74,28 @@ int read_params (char *param_file_name, struct state_struct *state) {
     strcpy(state->restart_file,"./restart.concs");
     strcpy(state->rxn_view_file,"./rxns.view");
     strcpy(state->bndry_flux_file,"./boundary_flux.txt");
+    /*
+      Following line Added by DGT on 4/18/2013
+     */
+    strcpy(state->pseudoisomer_file,"./pseudoisomer_dg0f.txt");
     strcpy(state->input_dir,"./");
     strcpy(state->output_dir,"./");
     state->align_len        = (int64_t)16;
     state->max_filename_len = (int64_t)4096;
     state->max_param_line_len = (int64_t)4096;
     state->align_mask       = state->align_len - (int64_t)1;
+    /*
     state->ideal_gas_r      = 0.00198858775;
+    */
+    state->ideal_gas_r      = 0.008314;
     state->temp_kelvin      = 298.15;
-    state->cal_gm_per_joule = 4.184;
+    /*
+      Following 2 lines added by DGT on 4/15/2013
+    */
+    state->ph               = 7.5;
+    state->ionic_strength   = 0.15;
+    state->joules_per_cal   = 4.184;
+    state->cals_per_joule   = 1.0/state->joules_per_cal;
     state->warmup_steps     = (int64_t)1000;
     state->record_steps     = (int64_t)1000;
     state->free_energy_format = (int64_t)0;
@@ -84,6 +104,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
     state->lklhd_view_freq    = (int64_t)0;
     state->use_activities     = (int64_t)0;
     state->print_output       = (int64_t)0;
+    state->use_pseudoisomers  = (int64_t)1;
     param_buffer       = state->param_buffer;
     max_param_line_len = state->max_param_line_len;
     key                = param_buffer + max_param_line_len; /* address arithmetic */
@@ -126,6 +147,13 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	sscan_ok = sscanf(value,"%s",state->rxn_view_file);
       } else if (strncmp(key,"BNDRY_FLUX_FILE",15) == 0) {
 	sscan_ok = sscanf(value,"%s",state->bndry_flux_file);
+      /*
+	Following 2 lines added by DGT on 4/18/2013, Modified by DJB 6/2/2013
+      */	
+      } else if (strncmp(key,"PSEUDOISOMER_FILE",17) == 0) {
+	sscan_ok = sscanf(value,"%s",state->pseudoisomer_file);
+      } else if (strncmp(key,"USE_PSEUDOISOMERS",17) == 0) {
+	sscan_ok = sscanf(value,"%d",&state->use_pseudoisomers);
       } else if (strncmp(key,"LOG_FILE",8) == 0) {
 	sscan_ok = sscanf(value,"%s",state->log_file);
       } else if (strncmp(key,"ALIGN_LEN",9) == 0) {
@@ -138,6 +166,14 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	sscan_ok = sscanf(value,"%le",&(state->ideal_gas_r));
       } else if (strncmp(key,"TEMP_KELVIN",11) == 0) {
 	sscan_ok = sscanf(value,"%le",&(state->temp_kelvin));
+      /*
+	Following four lines addd by DGT on 4/15/2013
+      */
+      } else if (strncmp(key,"PH",2) == 0) {
+	sscan_ok = sscanf(value,"%le",&(state->ph));
+      } else if (strncmp(key,"IONIC_STRENGTH",14) == 0) {
+	sscan_ok = sscanf(value,"%le",&(state->ionic_strength));
+
       } else if (strncmp(key,"WARMUP_STEPS",12) == 0) {
 	sscan_ok = sscanf(value,"%ld",&(state->warmup_steps));
       } else if (strncmp(key,"RXN_VIEW_FREQ",13) == 0) {
@@ -188,6 +224,29 @@ int read_params (char *param_file_name, struct state_struct *state) {
       if (rtp) {
 	sscan_ok = sscanf(param_buffer,"%s %s",key,value);
       }
+    }
+  }
+  if (success) {
+    /*
+      If we were to need temp_kelvin to change during the computation,
+      it would be useful to have the following in a routine say
+      compute_m_r_rt to set the rt,m_rt, and m_r_rt fields of state.
+    */
+    ideal_gas_r = state->ideal_gas_r;
+    temp_kelvin = state->temp_kelvin;
+    rt          = ideal_gas_r * temp_kelvin;
+    state->rt   = rt;
+    if (rt > 0.0) {
+      m_r_rt = -1.0/rt;
+      m_rt   = 0.0 - rt;
+      state->m_r_rt = m_r_rt;
+      state->m_rt   = m_rt;
+    } else {
+      success = 0;
+      fprintf (stderr,
+	       "read_params: Error at temp_kelvin = 0 Ke  = 0, "
+	       "nothing happens.");
+      fflush(stderr);
     }
   }
   return (success);
