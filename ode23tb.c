@@ -112,6 +112,7 @@ int ode23tb (struct state_struct *state, double *counts,
   double norm_delfdelt;
   double err1_est;
   double rtol_o_err;
+  double min_conc;
 
   int64_t ask_for;
   int64_t one_l;
@@ -184,6 +185,7 @@ int ode23tb (struct state_struct *state, double *counts,
   base_rxn      = state->base_reaction;
   ny            = state->nunique_molecules;
   nrxns         = state->number_reactions;
+  min_conc      = state->min_conc;
   lfp           = state->lfp;
   /*
     Allocate double space needed for scratch vectors and matrices.
@@ -228,6 +230,10 @@ int ode23tb (struct state_struct *state, double *counts,
     ode_num_jac_scratch  = &ynew_counts[ny];
     forward_rxn_likelihoods = &ode_num_jac_scratch[4*ny];
     reverse_rxn_likelihoods = &forward_rxn_likelihoods[nrxns];
+    /*
+      We need to move from stochastic counts to contiuous counts
+      so as not to have zero concentrations.
+    */
     /*
       Compute initial concentratiosn from molecule counts.
       Also fill f0 from fluxes input.
@@ -380,6 +386,18 @@ int ode23tb (struct state_struct *state, double *counts,
     */
       for (i=0;i<ny;i++) {
 	y1[i] = y[i] + tdel * yp[i];
+	if (y1[i] < min_conc) {
+	  if (lfp) {
+	    if (y1[i] < 0.0) {
+	      fprintf(lfp,"ode23tb: Warning y1[%d] was < 0, setting to %le\n",
+		      i,min_conc);
+	    } else {
+	      fprintf(lfp,"ode23tb: Warning y1[%d] was < %le, setting to %le\n",
+		      i,min_conc);
+	    }
+	  }
+	  y1[i] = min_conc;
+	}
 	y1_counts[i] = y1[i] * conc_to_count[i];
       }
       flux_scaling1 = compute_flux_scaling(state,y1);
@@ -521,6 +539,16 @@ int ode23tb (struct state_struct *state, double *counts,
 	t2 = t + alpha*h;
 	for (i=0;i<ny;i++) {
 	  y2[i] = y[i] + (alpha * z[i]);
+	  if (y2[i] < min_conc) {
+	    if (lfp) {
+	      fprintf(lfp,"ode23tb: Warning y2[%d] was < 0, setting to %le\n",
+		      i,min_conc);
+	    } else {
+	      fprintf(lfp,"ode23tb: Warning y2[%d] was < %le, setting to %le\n",
+		      i,min_conc);
+	    }
+	    y2[i] = min_conc;
+	  }
 	  y2_counts[i] = y2[i] * conc_to_count[i];
 	  z2[i] = z[i];
 	}
@@ -565,6 +593,18 @@ int ode23tb (struct state_struct *state, double *counts,
 	  for (i=0;i<ny;i++) {
 	    znew[i] = (p31 * z[i]) + (p32*z2[i]) + (p33 * (y2[i]-y[i]));
 	    ynew[i] = y[i] + (gg * (z[i] + z2[i])) + (d*znew[i]);
+	    if (ynew[i] < min_conc) {
+	      if (lfp) {
+		if (ynew[i] < 0) {
+		  fprintf(lfp,"ode23tb: Warning ynew[%d] was < 0, setting to %le\n",
+			  i,min_conc);
+		} else {
+		  fprintf(lfp,"ode23tb: Warning ynew[%d] was < %le, setting to %le\n",
+			  i,min_conc);
+		}
+	      }
+	      ynew[i] = min_conc;
+	    }
 	    ynew_counts[i] = ynew[i] * conc_to_count[i];
 	  }
 	  iter_count = 0;
@@ -739,6 +779,18 @@ int ode23tb (struct state_struct *state, double *counts,
       for (i=0;i<ny;i++) {
 	y[i] = ynew[i];
 	z[i] = znew[i];
+	if (y[i] < min_conc) {
+	  if (lfp) {
+	    if (y[i] < 0) {
+	      fprintf(lfp,"ode23tb: Warning y[%d] was < 0, setting to %le\n",
+		      i,min_conc);
+	    } else {
+	      fprintf(lfp,"ode23tb: Warning y[%d] was < %le, setting to %le\n",
+		      i,min_conc);
+	    }
+	  }
+	  y[i] = min_conc;
+	}
 	y_counts[i] = y[i] * conc_to_count[i];
       }
       if (not_done) {
