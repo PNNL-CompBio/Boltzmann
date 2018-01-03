@@ -1,4 +1,6 @@
 #include "boltzmann_structs.h"
+#include "boltzmann_cvodes_headers.h"
+#include "cvodes_params_struct.h"
 #include "get_counts.h"
 #include "update_regulations.h"
 #include "vec_set_constant.h"
@@ -135,7 +137,11 @@ int lr8_approximate_jacobian(struct state_struct *state,
   int mj;
 
   int ndfdy_pos;
-  int padi;
+  int ns;
+
+  int ode_solver_choice;
+  int compute_sensitivities;
+  
 
   FILE *lfp;
   FILE *efp;
@@ -145,7 +151,7 @@ int lr8_approximate_jacobian(struct state_struct *state,
   success          = 1;
   dzero            = 0.0;
   num_rxns         = state->number_reactions;
-  ny      = state->nunique_molecules;
+  ny               = state->nunique_molecules;
   molecules        = state->sorted_molecules;
   activities       = state->activities;
   forward_lklhd    = state->ode_forward_lklhds;
@@ -167,6 +173,8 @@ int lr8_approximate_jacobian(struct state_struct *state,
   conc_to_count    = state->conc_to_count;
   count_to_conc    = state->count_to_conc;
   use_regulation   = state->use_regulation;
+  ode_solver_choice = state->ode_solver_choice;
+  compute_sensitivities = state->compute_sensitivities;
   /*
     The following vectors are allocated in boltzmann_cvodes 
   */
@@ -179,6 +187,13 @@ int lr8_approximate_jacobian(struct state_struct *state,
   dfdy_jat         = cvodes_params->dfdy_jat; 
   dfdy_row         = cvodes_params->prec_row;
   column_mask      = cvodes_params->column_mask;
+  if (compute_sensitivities && (ode_solver_choice == 1)) {
+    ke = cvodes_params->p;
+    rke = cvodes_params->rp;
+    for (i=0;i<num_rxns;i++) {
+      rke[i] = 1.0/ke[i];
+    }
+  }
   /*
   recip_avogadro   = state->recip_avogadro;
   */
