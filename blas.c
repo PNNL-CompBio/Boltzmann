@@ -52,7 +52,7 @@ double dnrm2_(int *nx, double *x, int *inc) {
 
 void dgemv_(char *trans, int *m_p, int *n_p, double *alpha_p, double *a, 
 	   int *lda_p, double *x, int *incx_p, double *beta_p, 
-	   double *y, int *incy_p) {
+	    double *y, int *incy_p, int len_trans) {
    /*
      Simplified version of dgemv that assumes trans = 0,
      incx and incy are both 1.
