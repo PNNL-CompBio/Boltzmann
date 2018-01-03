@@ -42,26 +42,30 @@ int compute_ke(struct state_struct *state) {
   double dg0;
   double *dg0s;
   double *ke;
+  double *rke;
   double m_r_rt;
   double cals_per_joule;
 
   int success;
   int nrxns;
+
   int i;
-  int padi;
-  /*
   int print_output;
+
   FILE *lfp;
+  FILE *efp;
+  /*
+
   */
   success   = 1;
   nrxns     = (int)state->number_reactions;
   reactions = state->reactions;
   dg0s      = state->dg0s;
   ke        = state->ke;
-  /*
+  rke       = state->rke;
+
   print_output = (int)state->print_output;
   lfp          = state->lfp;
-  */
   /*
     m_r_rt = -1/(RT)
   */
@@ -86,6 +90,15 @@ int compute_ke(struct state_struct *state) {
     }
     dg0s[i] = dg0;
     ke[i] = exp(dg0 * m_r_rt);
+    if (ke[i] == 0.0) {
+      success = 0;
+      if (lfp) {
+	fprintf(lfp,"compute_ke: Error zero equilibrium constants\n");
+	fflush(lfp);
+      }
+    } else {
+      rke[i] = 1.0/ke[i];
+    }
     /*
     if (print_output) {
       if (lfp) {
