@@ -1,5 +1,6 @@
 #include "boltzmann_structs.h"
 #include "blas.h"
+#include "approximate_delta_concs.h"
 #include "ode_test_steady_state.h"
 int ode_test_steady_state(struct state_struct *state,
 			  int ny,
@@ -32,7 +33,7 @@ int ode_test_steady_state(struct state_struct *state,
       ode_stop_norm = 0,1, or 2.
    
     Called by ode23tb, boltzmann_cvodes
-    Calls: idamax_, dnrm2_, fabs
+    Calls: approximate_delta_concs, idamax_, dnrm2_, fabs
   */
   double ode_stop_thresh;
   double fnorm;
@@ -41,17 +42,17 @@ int ode_test_steady_state(struct state_struct *state,
   int ode_stop_rel;
 
   int ode_stop_norm;
-  int ny;
-
   int ode_stop_style;
-  int done;
 
+  int done;
   int incx;
+
   int i;
+  int padi;
 
   ny                 = state->nunique_molecules;
   delta_concs_choice = state->delta_concs_choice;
-  ode_stop_thresh    = state->ode_thresh;
+  ode_stop_thresh    = state->ode_stop_thresh;
   ode_stop_rel       = state->ode_stop_rel;
   ode_stop_norm      = state->ode_stop_norm;
   ode_stop_style     = state->ode_stop_style;
@@ -72,12 +73,12 @@ int ode_test_steady_state(struct state_struct *state,
       /*
 	Use the 2 norm.
       */
-      fnorm = dnrm2_(&ny,f,&inc1);
+      fnorm = dnrm2_(&ny,f,&incx);
     } else {
       /*
 	Use the infinity norm
       */
-      fnorm = fabs(f[idamax_(&ny,f,&inc1)]);
+      fnorm = fabs(f[idamax_(&ny,f,&incx)]);
     }
     if (ode_stop_rel) {
       if (ode_stop_norm == 1) {
@@ -92,12 +93,12 @@ int ode_test_steady_state(struct state_struct *state,
         /*
       	Use the 2 norm.
         */
-        ynorm = dnrm2_(&ny,y,&inc1);
+        ynorm = dnrm2_(&ny,y,&incx);
       } else {
         /*
       	Use the infinity norm
         */
-        ynorm = fabs(y[idamax_(&ny,y,&inc1)]);
+        ynorm = fabs(y[idamax_(&ny,y,&incx)]);
       } 
       ode_stop_thresh = ode_stop_thresh * ynorm;
     } /* end if ode_stop_rel */
