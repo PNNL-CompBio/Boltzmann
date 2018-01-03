@@ -32,7 +32,7 @@ int boltzmann_boot_check(struct super_state_struct *super_statep, FILE *lfp) {
   struct  super_state_pointers_struct ssps;
   struct  super_state_pointers_struct *super_state_pointers;
   struct  state_struct *lstate;
-  double  *concs;
+  double  *counts;
   int64_t *super_statel;
   int64_t *state_offsets_sizes;
   int64_t *molecule_map_starts;
@@ -114,8 +114,8 @@ int boltzmann_boot_check(struct super_state_struct *super_statep, FILE *lfp) {
 	    local_molecules = &molecule_map[map_index];
 	    local_compartments = &compartment_map[map_index];
 	  */
-	  concs = lstate->current_concentrations;
-	  fprintf (lfp,"\n\n Initial concentrations from %s\n",
+	  counts = lstate->current_counts;
+	  fprintf (lfp,"\n\n Initial counts from %s\n",
 		   lstate->init_conc_file);
 	  for (j=0;j<lstate->nunique_molecules;j++) {
 	    molecule    = *local_molecules;
@@ -124,11 +124,11 @@ int boltzmann_boot_check(struct super_state_struct *super_statep, FILE *lfp) {
 	      fprintf(lfp,"%s:%s\t%le\n",
 		      (char*)&molecules_text[molecule_names[molecule]],
 		      (char*)&compartments_text[compartment_names[compartment]],
-		      concs[j]);
+		      counts[j]);
 	    } else {
 	      fprintf(lfp,"%s\t%le\n",
 		      (char*)&molecules_text[molecule_names[molecule]],
-		      concs[j]);
+		      counts[j]);
 	    }
 	    local_molecules += 1; /* Caution address arithmetic */
 	    local_compartments += 1; /* Caution address arithmetic */
