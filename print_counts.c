@@ -25,9 +25,9 @@ specific language governing permissions and limitations under the License.
 #include "print_counts.h"
 void print_counts(struct state_struct *state, int64_t step) {
   /* 
-    print the molecule counts.
-    Prints out the current counts field of the state structure
-    in a tab delimited row terminated by a newline.
+    print the molecule counts and or concentrations.
+    if concs_or_counts is 1 or 3, the current counts are printed.
+    if it is 2 or 3 the concentrations are printed - each to their own file.
 
     Called by boltzmann_run, deq
 
@@ -38,7 +38,9 @@ void print_counts(struct state_struct *state, int64_t step) {
     state         G*I      state structure :
                            input fields are unique_molecules,
 					    current_concentrations,
-					    counts_out_fp
+					    counts_out_fp,
+					    concs_out_fp,
+					    concs_or_counts;
                            no fields of state are modified.
 
     step          JSI      eight byte integer step number, -1 for initial step.
@@ -46,28 +48,69 @@ void print_counts(struct state_struct *state, int64_t step) {
     
   */
   double *current_counts;
+  double *count_to_conc;
+  double conc;
+  
   int unique_molecules;
   int j;
   int solvent_pos;
-  int padi;
+  int concs_or_counts;
 
   FILE *counts_out_fp;
+  FILE *concs_out_fp;
   counts_out_fp          = state->counts_out_fp;
+  concs_out_fp           = state->concs_out_fp;
   unique_molecules       = state->nunique_molecules;
   current_counts         = state->current_counts;
   solvent_pos            = (int)state->solvent_pos;
-  if (counts_out_fp) {
-    if (step < (int64_t)0) {
-      fprintf(counts_out_fp,"init");
-    } else {
-      fprintf(counts_out_fp,"%lld",step);
-    }
-    for (j=0;j<unique_molecules;j++) {
-      if (j != solvent_pos) {
-	fprintf(state->counts_out_fp,"\t%le",current_counts[j]);
+  concs_or_counts        = (int)state->concs_or_counts;
+  count_to_conc          = state->count_to_conc;
+  if (concs_or_counts & 1) {
+    if (counts_out_fp) {
+      switch(step) {
+      case -3:
+	fprintf(counts_out_fp,"init");
+	break;
+      case -2:
+	fprintf(counts_out_fp,"awm");
+	break;
+      case -1:
+	fprintf(counts_out_fp,"adeq");
+	break;
+      default:
+	fprintf(counts_out_fp,"%lld",step);
       }
+      for (j=0;j<unique_molecules;j++) {
+	if (j != solvent_pos) {
+	  fprintf(state->counts_out_fp,"\t%le",current_counts[j]);
+	}
+      }
+      fprintf(state->counts_out_fp,"\n");
     }
-    fprintf(state->counts_out_fp,"\n");
+  }
+  if (concs_or_counts & 2) {
+    if (concs_out_fp) {
+      switch(step) {
+      case -3:
+	fprintf(concs_out_fp,"init");
+	break;
+      case -2:
+	fprintf(concs_out_fp,"awm");
+	break;
+      case -1:
+	fprintf(concs_out_fp,"adeq");
+	break;
+      default:
+	fprintf(concs_out_fp,"%lld",step);
+      }
+      for (j=0;j<unique_molecules;j++) {
+	if (j != solvent_pos) {
+	  conc = current_counts[j] * count_to_conc[j];
+	  fprintf(state->concs_out_fp,"\t%le",conc);
+	}
+      }
+      fprintf(state->concs_out_fp,"\n");
+    }
   }
   return;
 }
