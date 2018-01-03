@@ -2,16 +2,16 @@
 #include "ode23tb.h"
 
 #include "ode_solver.h"
-int ode_solver (struct state_struct *state, double *counts,
+int ode_solver (struct state_struct *state, double *concs,
 		double htry, int nonnegative, int normcontrol,
 		int print_concs, int choice) {
   /*
     Called by: deq_run
     Calls:     ode23tb
                
-               counts is the vector of species molecle
-	       counts, the counts_to_concs field in state can be used
-	       to convert those counts to concentrations. 
+               concs is the vector of species molecle
+	       concentrations, the concs_to_counts field in state can be used
+	       to convert those concentrations to counts. 
 	       We may change that to be a concentrations vector and package
 	       all of the other arguments into a piece of the state_struct
 	       for future convenience.
@@ -42,7 +42,7 @@ int ode_solver (struct state_struct *state, double *counts,
       state->ode_solver_choice = 0;
     }
   }
-  success = ode23tb(state,counts,htry,nonnegative,normcontrol,
+  success = ode23tb(state,concs,htry,nonnegative,normcontrol,
 		    print_concs,choice);
   return(success);
 }
