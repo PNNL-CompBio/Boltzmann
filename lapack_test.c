@@ -117,69 +117,69 @@ int main(int argc, char **argv)
     test dnrm2.
   */
   msqrt = sqrt(dm);
-  result   = dnrm2(&m, xsol, &inc1);
+  result   = dnrm2_(&m, xsol, &inc1);
   fprintf(stdout," dnrm2 result should be %le, got %le\n",
 	  msqrt,result);
   fflush(stdout);
   /*
     test dcopy.
   */
-  dcopy(&m,xsol,&inc1,xtest,&inc1);
+  dcopy_(&m,xsol,&inc1,xtest,&inc1);
   /*
     Now xtest should be all 1's.
   */
-  result = dnrm2(&m, xtest, &inc1);
-  fprintf (stdout,"dcopy, nrm2 of xtest should be %le = %le\n",
+  result = dnrm2_(&m, xtest, &inc1);
+  fprintf (stdout,"dcopy_, nrm2 of xtest should be %le = %le\n",
 	   msqrt,result);
   fflush(stdout);
   /*
     test dscal.
   */
-  dscal(&m,&two,xtest,&inc1);
+  dscal_(&m,&two,xtest,&inc1);
   /*
     Now xtest should be all 2's
   */
   answer = msqrt + msqrt;
-  result = dnrm2(&m,xtest, &inc1);
-  fprintf(stdout,"dscal test, nrm2 of xtest should be %le = %le\n",
+  result = dnrm2_(&m,xtest, &inc1);
+  fprintf(stdout,"dscal_ test, nrm2 of xtest should be %le = %le\n",
 	  answer,result);
   fflush(stdout);
   /*
     test daxpy. 
   */
-  daxpy(&m,&two,xsol,&inc1,xtest,&inc1);
+  daxpy_(&m,&two,xsol,&inc1,xtest,&inc1);
   /*
     now xtest should be all 4's
   */
   answer = answer + answer;
-  result = dnrm2(&m,xtest, &inc1);
-  fprintf(stdout,"daxpy test, nrm2 of xtest should be %le = %le\n",
+  result = dnrm2_(&m,xtest, &inc1);
+  fprintf(stdout,"daxpy_ test, nrm2 of xtest should be %le = %le\n",
 	  answer,result);
   fflush(stdout);
   /*
-    Test ddot, ddot(xtest,xsol) should be 4 * m
+    Test ddot_, ddot(xtest,xsol) should be 4 * m
   */
-  result = ddot(&m,xsol,&inc1,xtest,&inc1);
+  result = ddot_(&m,xsol,&inc1,xtest,&inc1);
   answer = 4.0 * dm;
-  fprintf(stdout,"ddot test,result should be %le = %le\n",
+  fprintf(stdout,"ddot_ test,result should be %le = %le\n",
 	  answer,result);
   fflush(stdout);
   /*
-    Test idamax on col m/2 of a, result should be m/2
+    Test idamax_ on col m/2 of a, result should be m/2
   */
   ianswer = m>>1;
   col_m_o_2 = ianswer * m;
-  iresult = idamax(&m,&a[col_m_o_2],&inc1);
+  iresult = idamax_(&m,&a[col_m_o_2],&inc1) - 1;
   fprintf(stdout,"idamax test on positive max abs, answer should be %d = %d\n",
 	  ianswer,iresult);
   fflush(stdout);
   /*
-    Now Test idamax on  - col m/2 of a, result should be m/2
+    Now Test idamax_ on  - col m/2 of a, result should be m/2
   */
-  dcopy(&m,&a[col_m_o_2],&inc1,xtest,&inc1);
-  dscal(&m,&neg_one,xtest,&inc1);
-  iresult = idamax(&m,xtest,&inc1);
-  fprintf(stdout,"idamax test on negative max abs, answer should be %d = %d\n",
+  dcopy_(&m,&a[col_m_o_2],&inc1,xtest,&inc1);
+  dscal_(&m,&neg_one,xtest,&inc1);
+  iresult = idamax_(&m,xtest,&inc1) - 1;
+  fprintf(stdout,"idamax_ test on negative max abs, answer should be %d = %d\n",
 	  ianswer,iresult);
   fflush(stdout);
   /*
@@ -190,8 +190,8 @@ int main(int argc, char **argv)
   for (i=0;i<m;i++) {
     y[i] = zero;
   }
-  dgemv(&n_char,&m,&m,&one,a,&m,xsol,&inc1,&one,y,&inc1);
-  fprintf(stdout,"dgemv test:\n answer\tresult\n");
+  dgemv_(&n_char,&m,&m,&one,a,&m,xsol,&inc1,&one,y,&inc1);
+  fprintf(stdout,"dgemv_ test:\n answer\tresult\n");
   for (i=0;i<m;i++) {
     result = ((double)i) + one;
     fprintf(stdout,"%le\t%le\n",result,y[i]);
@@ -208,16 +208,16 @@ int main(int argc, char **argv)
   c[1] = 0;
   c[2] = 0;
   c[3] = 0;
-  dgemm(&n_char,&n_char,&itwo,&itwo,&itwo,&one,a,&m,b,&m,&one,c,&ldc);
+  dgemm_(&n_char,&n_char,&itwo,&itwo,&itwo,&one,a,&m,b,&m,&one,c,&ldc);
   answer = (two * (dm * dm)) - dm + one;
   answer2 = -3.0 * dm + two;
   
-  fprintf(stdout, "dgemm test: Answer is \n"
+  fprintf(stdout, "dgemm_ test: Answer is \n"
 	  "%le\t%le\n",answer,answer2);
   answer = answer2 - two;
   answer2 = (two * (dm *dm))  - one;
   fprintf(stdout, "%le\t%le\n",answer,answer2);
-  fprintf(stdout, "\ndgemm test: result is \n"
+  fprintf(stdout, "\ndgemm_ test: result is \n"
 	  "%le\t%le\n%le\t%le\n",c[0],c[2],c[1],c[3]);
   fflush(stdout);
   /*
@@ -238,10 +238,10 @@ int main(int argc, char **argv)
   for (i=1;i<m;i++) {
     y[i] = y[i-1] + two;
   }
-  dcopy(&m,y,&inc1,xtest,&inc1);
-  dtrsm(&l_char,&u_char,&n_char,&n_char,&m,&m,&one,a,&m,xtest,&m);
-  daxpy(&m,&neg_one,xsol,&inc1,xtest,&inc1);
-  answer = dnrm2(&m,xtest,&inc1);
+  dcopy_(&m,y,&inc1,xtest,&inc1);
+  dtrsm_(&l_char,&u_char,&n_char,&n_char,&m,&inc1,&one,a,&m,xtest,&m);
+  daxpy_(&m,&neg_one,xsol,&inc1,xtest,&inc1);
+  answer = dnrm2_(&m,xtest,&inc1);
   fprintf(stdout,"dtrsm test for nonunit uppper triangular solve\n");
   fprintf(stdout,"   nrm2(xtest - xsol ) = %le\n",answer);
   for (i=0;i<m;i++) {
@@ -257,10 +257,10 @@ int main(int argc, char **argv)
   for (i=1;i<m;i++) {
     y[i] = y[i-1] + one;
   }
-  dcopy(&m,y,&inc1,xtest,&inc1);
-  dtrsm(&l_char,&u_char,&n_char,&u_char,&m,&m,&one,a,&m,xtest,&m);
-  daxpy(&m,&neg_one,xsol,&inc1,xtest,&inc1);
-  answer = dnrm2(&m,xtest,&inc1);
+  dcopy_(&m,y,&inc1,xtest,&inc1);
+  dtrsm_(&l_char,&u_char,&n_char,&u_char,&m,&inc1,&one,a,&m,xtest,&m);
+  daxpy_(&m,&neg_one,xsol,&inc1,xtest,&inc1);
+  answer = dnrm2_(&m,xtest,&inc1);
   fprintf(stdout,"dtrsm test for unit uppper triangular solve\n");
   fprintf(stdout,"   nrm2(xtest - xsol ) = %le\n",answer);
   for (i=0;i<m;i++) {
@@ -275,10 +275,10 @@ int main(int argc, char **argv)
   for (i=0;i<m;i++) {
     y[i] = dm;
   }
-  dcopy(&m,y,&inc1,xtest,&inc1);
-  dtrsm(&l_char,&l_char,&n_char,&n_char,&m,&m,&one,a,&m,xtest,&m);
-  daxpy(&m,&neg_one,xsol,&inc1,xtest,&inc1);
-  answer = dnrm2(&m,xtest,&inc1);
+  dcopy_(&m,y,&inc1,xtest,&inc1);
+  dtrsm_(&l_char,&l_char,&n_char,&n_char,&m,&inc1,&one,a,&m,xtest,&m);
+  daxpy_(&m,&neg_one,xsol,&inc1,xtest,&inc1);
+  answer = dnrm2_(&m,xtest,&inc1);
   fprintf(stdout,"dtrsm test for nonunit lower triangular solve\n");
   fprintf(stdout,"   nrm2(xtest - xsol ) = %le\n",answer);
   for (i=0;i<m;i++) {
@@ -294,10 +294,10 @@ int main(int argc, char **argv)
   for (i=1;i<m;i++) {
     y[i] = y[i-1] - one;
   }
-  dcopy(&m,y,&inc1,xtest,&inc1);
-  dtrsm(&l_char,&l_char,&n_char,&u_char,&m,&m,&one,a,&m,xtest,&m);
-  daxpy(&m,&neg_one,xsol,&inc1,xtest,&inc1);
-  answer = dnrm2(&m,xtest,&inc1);
+  dcopy_(&m,y,&inc1,xtest,&inc1);
+  dtrsm_(&l_char,&l_char,&n_char,&u_char,&m,&inc1,&one,a,&m,xtest,&m);
+  daxpy_(&m,&neg_one,xsol,&inc1,xtest,&inc1);
+  answer = dnrm2_(&m,xtest,&inc1);
   fprintf(stdout,"dtrsm test for nonunit lower triangular solve\n");
   fprintf(stdout,"   nrm2(xtest - xsol ) = %le\n",answer);
   for (i=0;i<m;i++) {
@@ -311,11 +311,11 @@ int main(int argc, char **argv)
   for (i=0;i<m;i++) {
     y[i] = zero;
   }
-  dgemv(&n_char,&m,&m,&one,a,&m,xsol,&inc1,&one,y,&inc1);
+  dgemv_(&n_char,&m,&m,&one,a,&m,xsol,&inc1,&one,y,&inc1);
   /*
     Factor. a.
   */
-  dgetrf(&m,&m,a,&m,ipiv,&info);
+  dgetrf_(&m,&m,a,&m,ipiv,&info);
   /*
     Check info code.
   */
@@ -324,8 +324,8 @@ int main(int argc, char **argv)
   /*
     Now solve for xtest (should be = xsol).
   */
-  dcopy(&m,y,&inc1,xtest,&inc1);
-  dgetrs(&n_char,&m,&inc1,a,&m,ipiv,xtest,&m,&info);
+  dcopy_(&m,y,&inc1,xtest,&inc1);
+  dgetrs_(&n_char,&m,&inc1,a,&m,ipiv,xtest,&m,&info);
   /*
     Check info code.
   */
@@ -334,8 +334,8 @@ int main(int argc, char **argv)
     fprintf(stdout,"ipiv[%d] = %d\n",i,ipiv[i]);
   }
   fflush(stdout);
-  daxpy(&m,&neg_one,xsol,&inc1,xtest,&inc1);
-  answer = dnrm2(&m,xtest,&inc1);
+  daxpy_(&m,&neg_one,xsol,&inc1,xtest,&inc1);
+  answer = dnrm2_(&m,xtest,&inc1);
   fprintf(stdout,"dgetrs test for a solve\n");
   fprintf(stdout,"   nrm2(xtest - xsol ) = %le\n",answer);
   for (i=0;i<m;i++) {
@@ -350,11 +350,11 @@ int main(int argc, char **argv)
   for (i=0;i<m;i++) {
     y[i] = zero;
   }
-  dgemv(&n_char,&m,&m,&one,b,&m,xsol,&inc1,&one,y,&inc1);
+  dgemv_(&n_char,&m,&m,&one,b,&m,xsol,&inc1,&one,y,&inc1);
   /*
     Factor. b.
   */
-  dgetrf(&m,&m,b,&m,ipiv,&info);
+  dgetrf_(&m,&m,b,&m,ipiv,&info);
   /*
     Check info code.
   */
@@ -363,8 +363,8 @@ int main(int argc, char **argv)
   /*
     Now solve for xtest (should be = xsol).
   */
-  dcopy(&m,y,&inc1,xtest,&inc1);
-  dgetrs(&n_char,&m,&inc1,b,&m,ipiv,xtest,&m,&info);
+  dcopy_(&m,y,&inc1,xtest,&inc1);
+  dgetrs_(&n_char,&m,&inc1,b,&m,ipiv,xtest,&m,&info);
   /*
     Check info code.
   */
@@ -373,8 +373,8 @@ int main(int argc, char **argv)
     fprintf(stdout,"ipiv[%d] = %d\n",i,ipiv[i]);
   }
   fflush(stdout);
-  daxpy(&m,&neg_one,xsol,&inc1,xtest,&inc1);
-  answer = dnrm2(&m,xtest,&inc1);
+  daxpy_(&m,&neg_one,xsol,&inc1,xtest,&inc1);
+  answer = dnrm2_(&m,xtest,&inc1);
   fprintf(stdout,"dgetrs test for b solve\n");
   fprintf(stdout,"   nrm2(xtest - xsol ) = %le\n",answer);
   for (i=0;i<m;i++) {
@@ -412,16 +412,17 @@ int main(int argc, char **argv)
 	  a[7],a[16],a[25],a[34],a[43],a[52],a[61],a[70],a[79]);
   fprintf(stdout,"%le\t%le\t%le\t%le\t%le\t%le\t%le\t%le\t%le\t\n",
 	  a[8],a[17],a[26],a[35],a[44],a[53],a[62],a[71],a[80]);
-  ipiv[0] = 0;
-  ipiv[1] = 1;
-  ipiv[2] = 2;
-  ipiv[3] = 5;
-  ipiv[4] = 4;
-  ipiv[5] = 5;
-  ipiv[6] = 6;
-  ipiv[7] = 7;
+  ipiv[0] = 1;
+  ipiv[1] = 2;
+  ipiv[2] = 3;
+  ipiv[3] = 4;
+  ipiv[4] = 5;
+  ipiv[5] = 9;
+  ipiv[6] = 9;
+  ipiv[7] = 8;
+  ipiv[8] = 9;
   mm1 = m -1;
-  dlaswp(&m,a,&m,&izero,&mm1,ipiv,&inc1);
+  dlaswp_(&m,a,&m,&izero,&mm1,ipiv,&inc1);
   fprintf(stdout," a after dlaswp\n");
   fprintf(stdout,"%le\t%le\t%le\t%le\t%le\t%le\t%le\t%le\t%le\t\n",
 	  a[0],a[9],a[18],a[27],a[36],a[45],a[54],a[63],a[72]);
@@ -443,10 +444,11 @@ int main(int argc, char **argv)
 	  a[8],a[17],a[26],a[35],a[44],a[53],a[62],a[71],a[80]);
   for (i=0;i<m;i++) {
     y[i] = zero;
+    xsol[i] = (double)i + one;
   }
-  dgemv(&n_char,&m,&m,&one,a,&m,xsol,&inc1,&one,y,&inc1);
-  dcopy(&m,y,&inc1,xtest,&inc1);
-  dgetrf(&m,&m,a,&m,ipiv,&info);
+  dgemv_(&n_char,&m,&m,&one,a,&m,xsol,&inc1,&one,y,&inc1);
+  dcopy_(&m,y,&inc1,xtest,&inc1);
+  dgetrf_(&m,&m,a,&m,ipiv,&info);
   /*
     Check info code.
   */
@@ -455,7 +457,7 @@ int main(int argc, char **argv)
   /*
     Now solve for xtest (should be = xsol).
   */
-  dgetrs(&n_char,&m,&inc1,a,&m,ipiv,xtest,&m,&info);
+  dgetrs_(&n_char,&m,&inc1,a,&m,ipiv,xtest,&m,&info);
   /*
     Check info code.
   */
@@ -464,9 +466,81 @@ int main(int argc, char **argv)
     fprintf(stdout,"ipiv[%d] = %d\n",i,ipiv[i]);
   }
   fflush(stdout);
-  daxpy(&m,&neg_one,xsol,&inc1,xtest,&inc1);
-  answer = dnrm2(&m,xtest,&inc1);
+  daxpy_(&m,&neg_one,xsol,&inc1,xtest,&inc1);
+  answer = dnrm2_(&m,xtest,&inc1);
   fprintf(stdout,"dgetrs test forp_ a solve\n");
+  fprintf(stdout,"   nrm2(xtest - xsol ) = %le\n",answer);
+  for (i=0;i<m;i++) {
+    fprintf(stdout,"   xtest[%d] - xsol[%d] = %le\n",i,i,xtest[i]);
+  }
+  fflush(stdout);
+  /*
+    Form a different 'a' that requires different pivoting.
+  */
+  dscal_(&msq,&zero,a,&inc1);
+  a[0] 	= 1.0;
+  a[1] 	= -4.0;
+  a[2] 	= 4.0;
+  a[10] = 1.0;
+  a[12] = -.2;
+  a[14] = .4;
+  a[20] = 9.0;
+  a[21] = -4.0;
+  a[23] = 4.0;
+  a[25] = -4.0;
+  a[26] = 4.0;
+  a[28] = -.4;
+  a[29] = -.2;
+  a[30] = 1.0;
+  a[32] = -.2;
+  a[40] = 1.0;
+  a[42] = -4.0;
+  a[44] = 4.0;
+  a[46] = -8.0;
+  a[50] = 9.0;
+  a[60] = 1.0;
+  a[61] = -.1;
+  a[62] = -.2;
+  a[65] = -.2;
+  a[69] = -.2;
+  a[70] = 1.0;
+  a[71] = -.2;
+  a[80] = 1.0;
+  
+  /*
+    Now test dgetrf and dgetrs with matrix a.
+    Form y:
+  */
+  for (i=0;i<m;i++) {
+    y[i] = zero;
+    xsol[i] = 1.0;
+  }
+  dgemv_(&n_char,&m,&m,&one,a,&m,xsol,&inc1,&one,y,&inc1);
+  /*
+    Factor. a.
+  */
+  dgetrf_(&m,&m,a,&m,ipiv,&info);
+  /*
+    Check info code.
+  */
+  fprintf(stdout,"dgetrf on a, return code was %d\n",info);
+  fflush(stdout);
+  /*
+    Now solve for xtest (should be = xsol).
+  */
+  dcopy_(&m,y,&inc1,xtest,&inc1);
+  dgetrs_(&n_char,&m,&inc1,a,&m,ipiv,xtest,&m,&info);
+  /*
+    Check info code.
+  */
+  fprintf(stdout,"dgetrs on a, return code was %d\n",info);
+  for (i=0;i<m;i++) {
+    fprintf(stdout,"ipiv[%d] = %d\n",i,ipiv[i]);
+  }
+  fflush(stdout);
+  daxpy_(&m,&neg_one,xsol,&inc1,xtest,&inc1);
+  answer = dnrm2_(&m,xtest,&inc1);
+  fprintf(stdout,"dgetrs test for a solve\n");
   fprintf(stdout,"   nrm2(xtest - xsol ) = %le\n",answer);
   for (i=0;i<m;i++) {
     fprintf(stdout,"   xtest[%d] - xsol[%d] = %le\n",i,i,xtest[i]);
