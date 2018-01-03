@@ -69,7 +69,7 @@ int alloc0(struct state_struct **state) {
     fflush(stderr);
   }
   if (success) {
-    statep->num_files = (int64_t)14;
+    statep->num_files = (int64_t)16;
     num_state_files   = statep->num_files;
     statep->max_filename_len = max_file_name_len;
     ask_for = ((int64_t)num_state_files) * max_file_name_len;
@@ -100,6 +100,8 @@ int alloc0(struct state_struct **state) {
     statep->rxn_view_file      = statep->restart_file + max_file_name_len;
     statep->bndry_flux_file    = statep->rxn_view_file + max_file_name_len;
     statep->pseudoisomer_file  = statep->bndry_flux_file + max_file_name_len;
+    statep->compartment_file   = statep->pseudoisomer_file + max_file_name_len;
+    statep->sbml_file          = statep->compartment_file + max_file_name_len;
     */
 
     statep->max_param_line_len = max_param_line_len;
