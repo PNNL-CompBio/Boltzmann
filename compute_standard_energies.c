@@ -109,7 +109,7 @@ int compute_standard_energies(struct state_struct *state,
     formation_energies->reactions           = state->reactions;
     formation_energies->reactions_matrix    = state->reactions_matrix;
     formation_energies->sorted_molecules    = state->sorted_molecules;
-    formation_energies->current_concentrations = state->current_concentrations;
+    formation_energies->current_counts      = state->current_counts;
     formation_energies->number_reactions    = state->number_reactions;
     formation_energies->nunique_molecules   = state->nunique_molecules;
     formation_energies->align_len           = state->align_len;
