@@ -59,6 +59,7 @@ int boltzmann_flatten_twoway_data(struct state_struct *state,
     fvgrng_state = (int64_t *)&lfstate[word_pos];
     boltzmann_flatten_vgrng_state(fvgrng_state,state->vgrng_state,direction,&vgrng_state_size);
     word_pos += vgrng_state_size;
+
     fvgrng_state = (int64_t *)&lfstate[word_pos];
     boltzmann_flatten_vgrng_state(fvgrng_state,state->vgrng2_state,direction,&vgrng_state_size);
     word_pos += vgrng_state_size;
@@ -114,6 +115,8 @@ int boltzmann_flatten_twoway_data(struct state_struct *state,
       memcpy(state->net_likelihood,net_likelihood,vec_len);
     }
     word_pos += number_reactions;
+
+
   } /* end if (success) */
   /*
     Set word_pos to be the last word set.
