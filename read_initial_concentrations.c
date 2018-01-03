@@ -45,12 +45,10 @@ int read_initial_concentrations(struct state_struct *state) {
   double  volume;
   double  recip_volume;
   double  default_volume;
-  double  min_count;
   double  min_conc;
   double  conc_units;
   double  conc;
   double  count;
-  double  c_multiple;
   double  multiplier;
   double  avogadro;
   double  units_avo;
@@ -75,9 +73,6 @@ int read_initial_concentrations(struct state_struct *state) {
   char *compute_c;
   char *fgp;
 
-  int success;
-  int nzr;
-
   int nu_molecules;
   int i;
 
@@ -96,6 +91,9 @@ int read_initial_concentrations(struct state_struct *state) {
   int compute_conc;
   int nu_compartments;
   
+  int success;
+  int padi;
+
   char vc[2];
   char cc[2];
   
