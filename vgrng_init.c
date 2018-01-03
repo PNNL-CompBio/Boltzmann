@@ -1,5 +1,6 @@
 /* vgrng_init.c
 *******************************************************************************
+Adapted from the MSpolygraph code vgrng_init.c:
 MSPolygraph
 
 Pacific Northwest National Laboratory, Richland, WA 99352.
@@ -47,7 +48,9 @@ int64_t vgrng_init(struct vgrng_state_struct *vgrng_state, int n) {
   int64_t sv;
   int i;
   /*
-    Called by process_spectrum.
+    Initialize the pseudo random number generator state, 
+    pseudo random (uniformly distributed) 31 bit integers.
+    Called by: boltzmann_init.
   */
   mask = (((int64_t)1)<<32) - ((int64_t)1);
   vgrng_state->mask = mask;
