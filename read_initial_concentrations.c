@@ -123,7 +123,7 @@ int read_initial_concentrations(struct state_struct *state) {
 	  }
 	}
 	if (compartment_name == molecule_name) {
-	  ci = -1;
+	  ci = 0;
 	} else {
 	  upcase(cmpt_len,compartment_name,compartment_name);
 	  ci = compartment_lookup(compartment_name,state);
