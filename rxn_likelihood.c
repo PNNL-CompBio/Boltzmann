@@ -24,24 +24,24 @@ specific language governing permissions and limitations under the License.
 #include "boltzmann_structs.h"
 
 #include "rxn_likelihood.h"
-double rxn_likelihood(double *concs, 
+double rxn_likelihood(double *counts, 
 		      struct state_struct *state,
 		      int rxn_direction,
 		      int rxn) {
   /*
-    Compute the reaction quotient Q_p as the ratio of reactant concentrations
-    to product concentration with any concentration where the stoichiometric
+    Compute the reaction quotient Q_p as the ratio of reactant counts
+    to product counts with any count where the stoichiometric
     coefficient is greater than 1 is raised to that power, and multiply by
     the reaction equilibrium constant ke.
 
     We want to do this in a stable fashion and we want to avoid division
     by zero. So to accomplish this in a stable fashion, the expectation
-    is that all product concentations would have increased and thereby
+    is that all product counts would have increased and thereby
     must be nonzero as they could not be negative to start with.
     The expectation is that there will only be a few (probably fewer than 4)
-    reactants or products, and thus the product of their concentrations
+    reactants or products, and thus the product of their counts
     should not over, nor under flow. If this changes we might want
-    to sort reactant and product concentrations and take the product of 
+    to sort reactant and product counts and take the product of 
     successive quotients which we would expect to be well scaled.
 
     Called by: rxn_likelihoods
@@ -50,9 +50,9 @@ double rxn_likelihood(double *concs,
     Arguments:
      Name           TMF          Descripton  
 
-     concs          D*I          double precision vector of length number-
+     counts          D*I         double precision vector of length number-
                                  unique-molecules with the molecule
-				 concentrations to be use in the reaction
+				 counts to be used in the reaction
 				 likelihood computation.
 				 
      state          G*I		 The boltzmann state structure. No fields
@@ -74,15 +74,19 @@ double rxn_likelihood(double *concs,
      liklehood      DSO          The reaction likelihood ratio, a double 
                                  precision scalar, for the specified reaction
 				 in the specified direction given the molecule
-				 concentrations in the concs vector.
+				 counts in the counts vector.
 
   */
   struct rxn_matrix_struct *rxns_matrix;
   double likelihood;
   double *ke;
-  double  conc;
-  double  left_concs;
-  double  right_concs;
+  double *kss;
+  /*
+  double *kssr;
+  */
+  double  count;
+  double  left_counts;
+  double  right_counts;
   double  eq_k;
   int64_t coeff;
   int64_t *rcoef;
@@ -94,8 +98,8 @@ double rxn_likelihood(double *concs,
   int j;
   int k;
 
-  left_concs = 1.0;
-  right_concs = 1.0;
+  left_counts = 1.0;
+  right_counts = 1.0;
 
   success           = 1;
   nrxns             = (int)state->number_reactions;
@@ -104,26 +108,33 @@ double rxn_likelihood(double *concs,
   rcoef             = rxns_matrix->coefficients;
   molecules_indices = rxns_matrix->molecules_indices;
   ke                = state->ke;
-  left_concs        = 1.0;
-  right_concs       = 1.0;
-  eq_k = ke[rxn];
+  kss               = state->kss;
+  /*
+  kssr              = state->kssr;
+  */
+  left_counts        = 1.0;
+  right_counts       = 1.0;
+  eq_k = ke[rxn] * kss[rxn];
+  /*
+    This may change if kssr[rxn] != 1/kss[rxn]
+  */
   if (rxn_direction < 0) {
     eq_k = 1.0/eq_k;
   }
   for (j=rxn_ptrs[rxn];j<rxn_ptrs[rxn+1];j++) {
     coeff = rcoef[j];
-    conc  = concs[molecules_indices[j]];
+    count  = counts[molecules_indices[j]];
     if (rxn_direction < 0) {
       coeff = -coeff;
     }
     if (coeff < 0) {
       for (k=0;k<(0-coeff);k++) {
-	left_concs = left_concs * (conc-k);	
+	left_counts = left_counts * (count-k);	
       } 
     } else {
       if (coeff > 0) {
 	for (k=1;k<=coeff;k++) {
-	  right_concs = right_concs * (conc+k);
+	  right_counts = right_counts * (count+k);
 	} 
       }
       /*
@@ -132,7 +143,7 @@ double rxn_likelihood(double *concs,
       */
     }
   }
-  likelihood = eq_k * (left_concs/ right_concs);
+  likelihood = eq_k * (left_counts/ right_counts);
 
   return(likelihood);
 }
