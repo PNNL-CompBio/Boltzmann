@@ -23,7 +23,7 @@ specific language governing permissions and limitations under the License.
 #include "boltzmann_structs.h"
 
 #include "print_free_energy.h"
-void print_free_energy(struct state_struct *state, int step) {
+void print_free_energy(struct state_struct *state, int64_t step) {
   /*
     For recording step, print the free energies to the free 
     energy file according to the free_energy_format field of state.
@@ -39,7 +39,7 @@ void print_free_energy(struct state_struct *state, int step) {
 				free_energy, forward_rxn_log_likelihood_ratio,
 				and cal_gm_per_joule
 
-      step           ISI        The recording step number.
+      step           JSI        The recording step number.
   */
   double *forward_rxn_log_likelihood_ratio;
   double *free_energy;
@@ -58,7 +58,7 @@ void print_free_energy(struct state_struct *state, int step) {
   forward_rxn_log_likelihood_ratio = state->forward_rxn_log_likelihood_ratio;
   cals_per_joule  	           = state->cals_per_joule;
   if (free_energy_fp) {
-    fprintf(free_energy_fp,"%d",step);
+    fprintf(free_energy_fp,"%ld",step);
     if (free_energy_format == 1) {
       for (j=0;j<number_reactions;j++) {
 	fprintf(free_energy_fp,"\t%le",
