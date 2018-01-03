@@ -516,7 +516,7 @@ boltzmann_boot_check.o: boltzmann_boot_check.c boltzmann_boot_check.h boltzmann_
 boltzmann_rep_state_i.o: boltzmann_rep_state_i.c boltzmann_rep_state_i.h flatten_state.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_rep_state_i.c
 
-rxn_map: $(MMAP_OBJS) $(TIMING_LIB) rxn_map.o libboltzman.a
+rxn_map: $(MMAP_OBJS) $(TIMING_LIB) rxn_map.o libboltzmann.a
 	$(CLINKER) $(LFLAGS) -o rxn_map rxn_map.o $(SERIAL_OBJS1) $(SERIAL_OBJS3) $(MMAP_OBJS) $(TIMING_LIB) $(LIBS)
 
 rxn_map.o: rxn_map.c rxn_map_init.h rxn_map_run.h $(SERIAL_INCS)
