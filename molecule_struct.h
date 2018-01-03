@@ -65,17 +65,6 @@ struct molecule_struct {
 
 
   */
-  /*
-    The following 7 fields are really compartment only fields.
-  */
-  double volume;
-  double recip_volume;
-  double ntotal_exp;
-  double ntotal_opt;
-  double min_conc;
-  double conc_to_count;
-  double count_to_conc;
-
   int64_t string;
   int  m_index;
   int  c_index;
