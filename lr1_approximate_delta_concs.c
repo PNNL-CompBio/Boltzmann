@@ -1,14 +1,14 @@
 #include "boltzmann_structs.h"
 
+#include "compute_flux_scaling.h"
 #include "update_rxn_likelihoods.h"
 
 #include "lr1_approximate_delta_concs.h"
 
-int lr1_approximate_delta_concs(struct state_struct *state, double *counts,
-			       double *forward_rxn_likelihoods,
-			       double *reverse_rxn_likelihoods, 
-			       double *flux, double flux_scaling,
-			       int base_rxn, int choice) {
+int lr1_approximate_delta_concs(struct state_struct *state, 
+				double *concs,
+				double *flux, 
+				int choice) {
   /*
     Compute approximations to concentration changes wrt time, 
     Based on likelihood ratios and assumption that all
@@ -25,31 +25,24 @@ int lr1_approximate_delta_concs(struct state_struct *state, double *counts,
 					   and lfp,
 				      
 
-    counts			D1I   molecule counts vector of length 
+    concs			D1I   molecule concentrations vector of length 
                                       nunique_moleucles
-    forward_rxn_likelihoods     D1W   scratch vector of length number_reactions
-    reverse_rxn_likelihoods     D1W   scratch vector of length number_reactions
 
     flux                        D1O   vector of length  unique_molecules
                                       of concentration change per unit time.
 				      Set by this routine.
 
-    flux_scaling                D0I   forward rate constant for base
-                                      reaction multplied by base reaction
-				      reactant concentration prodeuct.
-				      
-    base_rxn                    I0I   Base reaction number (usually 0)
-         
     choice                      IOI   Not used by this routine.
-
-    Note that flux_scaling is K_f(base_rxn_reaction)*(product of reactant 
-    concentrations in base reaction).
-	    molecule = (struct molecule_struct *)&sorted_molecules[si];
   */
   struct molecule_struct *molecules;
   struct molecule_struct *molecule;
   struct molecules_matrix_struct *molecules_matrix;
   struct rxn_matrix_struct *rxn_matrix;
+  double *forward_rxn_likelihoods;
+  double *reverse_rxn_likelihoods; 
+  double *counts;
+  double *conc_to_count;
+  double flux_scaling;
   double frb;
   double recip_frb;
   double forward;
@@ -71,6 +64,9 @@ int lr1_approximate_delta_concs(struct state_struct *state, double *counts,
   int j;
   int success;
 
+  int base_rxn;
+  int padi;
+
   FILE *lfp;
   FILE *efp;
   /*
@@ -91,17 +87,25 @@ int lr1_approximate_delta_concs(struct state_struct *state, double *counts,
   rxn_ptrs         = rxn_matrix->rxn_ptrs;
   molecule_indices = rxn_matrix->molecules_indices;
   rcoefficients    = rxn_matrix->coefficients;
-
+  base_rxn         = (int)state->base_reaction;
+  counts           = state->ode_counts;
+  conc_to_count    = state->conc_to_count;
+  forward_rxn_likelihoods = state->ode_forward_lklhds;
+  reverse_rxn_likelihoods = state->ode_reverse_lklhds;
+  flux_scaling     = compute_flux_scaling(state,concs);
   lfp      = state->lfp;
   if ((base_rxn < 0)  || (base_rxn >= num_rxns)) {
     success = 0;
     if (lfp) {
-      fprintf(lfp,"approximate_delta_concs: Error, base_rxn = %d is not in [0:%d)\n",
+      fprintf(lfp,"lr1_approximate_delta_concs: Error, base_rxn = %d is not in [0:%d)\n",
 	      base_rxn,num_rxns);
       fflush(lfp);
     }
   }
   if (success) {
+    for (i=0;i<num_species;i++) {
+      counts[i] = concs[i] * conc_to_count[i];
+    }
     success = update_rxn_likelihoods(state,counts,forward_rxn_likelihoods,
 				     reverse_rxn_likelihoods);
   }
@@ -118,7 +122,7 @@ int lr1_approximate_delta_concs(struct state_struct *state, double *counts,
     } else {
       success = 0;
       if (lfp) {
-	fprintf(lfp,"approximate_delta_concs: Error, reaction likelihood for base_rxn reaction is 0.\n");
+	fprintf(lfp,"lr1_approximate_delta_concs: Error, reaction likelihood for base_rxn reaction is 0.\n");
 	fflush(lfp);
       }
     }
