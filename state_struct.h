@@ -40,7 +40,7 @@ specific language governing permissions and limitations under the License.
 
 
  
-  3. for arrays/structs that are strictly inputs (there are 6 of these
+  3. for arrays/structs that are strictly inputs (there are 12 of these
      not counting string pointers).
      reactions,
      reactions_matrix,
@@ -50,6 +50,13 @@ specific language governing permissions and limitations under the License.
      kssr,
      activities,
      sorted_compartments
+
+     Each of following 4 arrays of length max_regs_per_rxn * num_rxns
+     reg_species,   (int64_t)
+     reg_drctn,     (int64_t)
+     reg_constant,  (double)
+     reg_exponent,  (double)
+
 
 
   4. for work space arrays and structs.
@@ -114,7 +121,6 @@ struct state_struct {
   int64_t auxiliary_data_offset;
   int64_t workspace_length;    	
   int64_t workspace_offset;    	
-  int64_t num_scalars;          	
   int64_t number_reactions;     	
   int64_t number_molecules;            
   int64_t nunique_molecules;     	
@@ -126,39 +132,45 @@ struct state_struct {
   int64_t print_output;
   int64_t number_compartments;  	
   int64_t nunique_compartments;  	
-
   int64_t align_len;
   int64_t align_mask;
-  int64_t max_filename_len;       
-  int64_t max_param_line_len;     
-  int64_t num_rxn_file_keywords;  
-  int64_t free_energy_format;     
-  int64_t rxn_view_freq;          
-  int64_t rxn_view_hist_length;    
-  int64_t lklhd_view_freq;        
-  int64_t count_view_freq;         
+  int64_t max_filename_len;
+  int64_t max_param_line_len;
+  int64_t num_rxn_file_keywords;
+  int64_t free_energy_format;
+  int64_t rxn_view_freq;
+  int64_t rxn_view_hist_length;
+  int64_t lklhd_view_freq;
+  int64_t count_view_freq;
   int64_t fe_view_freq;
-  int64_t reaction_file_length;   
-  int64_t rxn_title_space;        
-  int64_t pathway_space;          
-  int64_t compartment_space;      
-  int64_t molecules_space;        
-  int64_t num_fixed_concs;      	
-  int64_t usage;                  
-  int64_t max_molecule_len;     	
-  int64_t min_molecule_len;     	
-  int64_t max_compartment_len;  	
-  int64_t min_compartment_len;  	
+  int64_t reaction_file_length;
+  int64_t rxn_title_text_length;
+  int64_t pathway_text_length;
+  int64_t compartment_text_length;
+  int64_t molecule_text_length;
+  int64_t regulation_text_length;
+  int64_t num_fixed_concs;
+  int64_t usage;
+  int64_t max_molecule_len;
+  int64_t min_molecule_len;
+  int64_t max_compartment_len;
+  int64_t min_compartment_len;
   int64_t sum_molecule_len;
   int64_t sum_compartment_len;
   int64_t sorted_molecules_offset_in_bytes;
   int64_t sorted_compartments_offset_in_bytes;
   int64_t molecules_text_offset_in_bytes;
   int64_t compartments_text_offset_in_bytes;
+  /*
+  int64_t regulation_text_offset_in_bytes;
+  */
   int64_t num_files;
   int64_t solvent_pos;
   int64_t use_pseudoisomers;
   int64_t use_metropolis;
+  int64_t use_regulation;
+  int64_t max_regs_per_rxn;
+  int64_t rxn_filename_base_length;
 
   double  ideal_gas_r;
   double  temp_kelvin;
@@ -197,7 +209,11 @@ struct state_struct {
   */
   /*
     Incoming data not modified, depends only on agent type.
-    (4*number_reactions + 6*unique_molecules) * sizeof(double)
+    (5*number_reactions + 5*unique_molecules) * sizeof(double)
+    + 2*number_reactions * max_regs_per_rxn * sizeof(double)
+    + 2*number_reactions * max_regs_per_rxn * sizeof(int64_t)
+        =
+    (number_reactions*(5+4*max_regs_per_rxn) + 5*unique_molecules)*sizeof(double)
   */
   double  *dg0s;      /* len = number_reactions  */
   double  *ke;        /* len = number_reactions  */
@@ -208,7 +224,11 @@ struct state_struct {
   double  *molecule_dg0tfs; /* len = unique_molecules */
   double  *molecule_probabilities; /* len = unique_molecules */
   double  *molecule_chemical_potentials; /* len = unique_molecules */
-  double  *activities; /* len = unique_molecules */
+  double  *activities;   /* len = number_reactions */
+  double  *reg_constant; /* len = number_reactions * max_regs_per_rxn */
+  double  *reg_exponent; /* len = number_reactions * max_regs_per_rxn */
+  double  *reg_drctn;    /* len = number_reactions * max_regs_per_rxn */
+  int64_t *reg_species;  /* len = number_reactions * max_regs_per_rxn */
   /* 
      sizeof(rxn_struct) * number of reactions. 
      Allocated in alloc2 
@@ -253,12 +273,17 @@ struct state_struct {
   char *sbml_file;         /* max_filename_len */
   char *ms2js_file;        /* max_filename_len */
   char *kg2js_file;        /* max_filename_len */
+  char *rxn_echo_file;     /* max_filename_len */
+  char *rxn_mat_file;      /* max_filename_len */
+  char *dg0ke_file;        /* max_filename_len */
+  char *dictionary_file;   /* max_filename_len */
   char *solvent_string;    /* Length is 64. Allocated in alloc0 */
 
-  char *rxn_title_text;    /* rxn_title_space. Allocated in alloc2  */
-  char *pathway_text;      /* pathway_space. Allocated in alloc2    */
-  char *compartment_text;  /* compartment_space Allocated in alloc2 */
-  char *molecules_text;    /* molecules_space Allocated in alloc2 */
+  char *rxn_title_text;    /* rxn_title_text_length. Allocated in alloc2  */
+  char *pathway_text;      /* pathway_text_length. Allocated in alloc2    */
+  char *compartment_text;  /* compartment_text_length Allocated in alloc2 */
+  char *molecules_text;    /* molecule_text_length Allocated in alloc2 */
+  char *regulation_text;    /* regulation_text_length Allocated in alloc2 */
   /*
     Workspace only.
   */
@@ -269,7 +294,7 @@ struct state_struct {
   char    **rxn_file_keywords; /* 12, allocated in alloc0 */
   char    *rxn_file_keyword_buffer; /* 144, allocated in alloc0  */
   char    *param_buffer; /*  2* max_param_line_len, allocated in alloc0 */ 
-  char    *raw_molecules_text; /* molecules_space Allocated in alloc2 */
+  char    *raw_molecules_text; /* molecule_text_length Allocated in alloc2 */
   double  *future_counts;      /* unique_molecules */
   double  *free_energy;            /* number_reactions */
   double  *forward_rxn_likelihood; /* number_reactions */
