@@ -229,7 +229,7 @@ struct state_struct {
      sizeof(molecule_struct) * unique_compartments 
      allocated in alloc2 
   */ 
-  struct molecule_struct *sorted_cmpts; 
+  struct compartment_struct *sorted_cmpts; 
   /*
     Auxilliary data read in by boltzmann_init, not needed by
     boltzman_run unless printing is enabled.
@@ -259,7 +259,7 @@ struct state_struct {
     Workspace only.
   */
   struct molecule_struct *unsorted_molecules; /* allocated in alloc2 */
-  struct molecule_struct *unsorted_cmpts; /* allocated in alloc2 */
+  struct compartment_struct *unsorted_cmpts; /* allocated in alloc2 */
   int64_t *compartment_ptrs;
   int64_t *rxn_file_keyword_lengths /* allocated in alloc0 */;
   char    **rxn_file_keywords; /* 12, allocated in alloc0 */
