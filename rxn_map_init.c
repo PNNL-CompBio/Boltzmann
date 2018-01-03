@@ -74,7 +74,6 @@ int rxn_map_init(char *param_file_name, struct state_struct **statep,
   int64_t *transpose_work;
   double *dg0s;
   double *free_energy;
-  double *activities;
   int success;
   int print_output;
 
@@ -178,7 +177,7 @@ int rxn_map_init(char *param_file_name, struct state_struct **statep,
 	success = 0;
       }
       if (success) {
-	success = echo_reactions_file(state,rxn_echo_fp);
+	success = echo_reactions_file(state);
 	fclose(rxn_echo_fp);
       }
     }
