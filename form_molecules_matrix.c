@@ -30,21 +30,27 @@ specific language governing permissions and limitations under the License.
 #include "boltzmann_structs.h"
 
 #include "form_molecules_matrix.h"
-int form_molecules_matrix(struct state_struct *state) {
+int form_molecules_matrix(struct state_struct *state,
+			  struct molecules_matrix_struct *molecules_matrix,
+			  int64_t *transpose_rp) {
   /*
     Transpose the reactions matrix in to the molecules matrix.
     Called by: boltzmann_init
     Calls:     
   */
   struct rxn_matrix_struct *rxn_matrix;
+  /*
   struct molecules_matrix_struct *molecules_matrix;
+  */
   int64_t *rxn_ptrs;
   int64_t *molecules_ptrs;
   int64_t *rcoef;
   int64_t *scoef;
   int64_t *molecules_indices;
   int64_t *rxn_indices;
+  /*
   int64_t *transpose_rp;
+  */
   int nu_molecules;
   int success;
 
@@ -57,17 +63,21 @@ int form_molecules_matrix(struct state_struct *state) {
   int m;
   int padi;
   success  = 1;
-  nu_molecules = state->unique_molecules;
+  nu_molecules = state->nunique_molecules;
   nzr        = state->number_molecules;
   rxn_matrix = state->reactions_matrix;
+  /*
   molecules_matrix = state->molecules_matrix;
+  */
   rxn_ptrs        = rxn_matrix->rxn_ptrs;
   molecules_indices = rxn_matrix->molecules_indices;
   rcoef           = rxn_matrix->coefficients;
   molecules_ptrs    = molecules_matrix->molecules_ptrs;
   rxn_indices     = molecules_matrix->rxn_indices;
   scoef           = molecules_matrix->coefficients;
+  /*
   transpose_rp    = state->transpose_work;
+  */
   for (i=0;i<nu_molecules;i++) {
     transpose_rp[i]  = 0;
   }
