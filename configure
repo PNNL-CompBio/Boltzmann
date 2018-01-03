@@ -2379,7 +2379,6 @@ else
     CFLAGS=
   fi
 fi
-CFLAGS=
 echo "$as_me:$LINENO: checking for $CC option to accept ANSI C" >&5
 echo $ECHO_N "checking for $CC option to accept ANSI C... $ECHO_C" >&6
 if test "${ac_cv_prog_cc_stdc+set}" = set; then
@@ -3067,7 +3066,7 @@ case "$CC" in
 	MPI_EXECS=
 	TIMING_CONFIG="no_"
 	MMAP_CONFIG="no_"
-	CFLAGS="-O0 -g $CFLAGS -DLINUX"
+	CFLAGS="-O0 -g -DLINUX"
 	;;
 esac
 
