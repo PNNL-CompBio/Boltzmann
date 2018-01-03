@@ -9,7 +9,7 @@ int num_jac_col(struct state_struct *state,
 		int ny, int j,
 		double *y,
 		double *f,
-		double delj,
+		double *delj_p,
 		double threshj,
 		double *y_counts,
 		double *fdel,
@@ -39,7 +39,9 @@ int num_jac_col(struct state_struct *state,
 
     f                  D*I    flux vector,
 
-    delj               DSI    value of del[j] from calling routine.
+    delj_p             D*I    value of del[j] from calling routine,
+                              if yj + del[j] < 0 we set del[j] to be
+			      -.5*yj and ydelj to be .5*yj
 
     threshj            DIS    value of thresh[j] from calling routine.
 
@@ -78,6 +80,7 @@ int num_jac_col(struct state_struct *state,
   */
   double recip_delj;
   double yj;
+  double delj;
   double y_counts_savej;
   double ydelj;
   double flux_scaling;
@@ -95,6 +98,7 @@ int num_jac_col(struct state_struct *state,
   success = 1;
   base_rxn      = state->base_reaction;
   conc_to_count = state->conc_to_count;
+  delj          = delj_p;
   if ((delj == 0.0) || (j < 0) || (j >= ny)) {
     success = 0;
   } else {
@@ -102,6 +106,19 @@ int num_jac_col(struct state_struct *state,
     conc_scalej    = conc_to_count[j];
     y_counts_savej = y_counts[j];
     ydelj          = yj + delj;
+    /*
+      Now here we want to be careful, to keep y non-negativ.
+      we assume that yj is non-negative on input (maybe ought to
+      check that and print message if not.
+    */
+    if (ydelj < 0.0) {
+      ydelj = .5 *yj;
+      delj  = -ydelj;
+      *delj_p = delj;
+    }
+    if (ydelj < 0.0) {
+      ydelj = 0.0;
+    }
     y_counts[j]    = ydelj * conc_scalej;
     /*
       evalueate flux at ydelj
@@ -116,10 +133,16 @@ int num_jac_col(struct state_struct *state,
     */
     y_counts[j]    = y_counts_savej;
     y[j]           = yj;
-    recip_delj = 1.0/delj;
-    for (k=0;k<ny;k++) {
-      fdiff[k] = fdel[k] - f[k];
-      dfdy_colj[k] = fdiff[k] * recip_delj;
+    if (delj != 0) {
+      recip_delj = 1.0/delj;
+      for (k=0;k<ny;k++) {
+	fdiff[k] = fdel[k] - f[k];
+	dfdy_colj[k] = fdiff[k] * recip_delj;
+      }
+    } else {
+      for (k=0;k<ny;k++) {
+	dfdy_colj[k] = 0.0;
+      }
     }
     infnormdfdy_colj = abs(dfdy_colj[0]);
     rowmax           = 0;
