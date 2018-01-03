@@ -44,7 +44,7 @@ int flatten_state(struct state_struct *boot_state,
   struct state_struct *new_state;
   struct state_struct ss;
   struct vgrng_state_struct vss;
-  struct istring_elem_struct ies;
+  struct molecule_struct ies;
   struct rxn_struct rs;
   struct rxn_matrix_struct rms;
   struct rxn_matrix_struct *reactions_matrix;
@@ -409,8 +409,8 @@ int flatten_state(struct state_struct *boot_state,
     reactions_matrix->compartment_indices = (int64_t *)&new_state_l[compartment_indices_offset];
     reactions_matrix->coefficients = (int64_t *)&new_state_l[coefficients_offset];
     reactions_matrix->text = (int64_t*)&new_state_l[text_offset];
-    new_state->sorted_molecules = (struct istring_elem_struct*)&new_state_l[sorted_molecules_offset];
-    new_state->sorted_cmpts = (struct istring_elem_struct*)&new_state_l[sorted_cmpts_offset];
+    new_state->sorted_molecules = (struct molecule_struct*)&new_state_l[sorted_molecules_offset];
+    new_state->sorted_cmpts = (struct molecule_struct*)&new_state_l[sorted_cmpts_offset];
     new_state->params_file  = (char*)&new_state_l[file_names_offset];
     new_state->max_filename_len = max_filename_len;
     boltzmann_set_filename_ptrs(new_state);
