@@ -121,6 +121,7 @@ struct state_struct {
   int64_t number_molecules;            
   int64_t nunique_molecules;     	
   int64_t use_activities;       	
+  int64_t use_deq;
   int64_t adjust_steady_state;
   int64_t molecules_or_conc;      
   int64_t warmup_steps;           
@@ -174,6 +175,8 @@ struct state_struct {
   double  temp_kelvin;
   double  avogadro;
   double  recip_avogadro;
+  double  min_count;
+  double  min_conc;
   /*
   double  conc_to_count;
   double  count_to_conc;
