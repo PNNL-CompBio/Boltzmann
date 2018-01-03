@@ -47,7 +47,7 @@ int ce_approximate_fluxes(struct state_struct *state, double *counts,
   struct molecule_struct *molecules;
   struct molecule_struct *molecule;
   struct molecules_matrix_struct *molecules_matrix;
-  struct rxn_matrix_struct *rxn_matrix;
+  struct reactions_matrix_struct *rxn_matrix;
   double k1a,k1_a, k2a,k2_a,k3a,k3_a,k1b,k1_b,k2b,k2_b,k3b,k3_b;
   double frb;
   double lrb;
