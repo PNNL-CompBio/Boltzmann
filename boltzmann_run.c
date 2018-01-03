@@ -250,12 +250,12 @@ int boltzmann_run(struct state_struct *state) {
 	    "\nRecord_step rxn_choice forward_likelihood "
 	    "reverse_likelihood\n");
       }
-      vec_set_constant(number_reactions_t2,rxn_fire,zero_l);
       /*
+      vec_set_constant(number_reactions_t2,rxn_fire,zero_l);
+      */
       for (i=0;i<number_reactions_t2;i++) {
 	rxn_fire[i] = (int64_t)0;
       }
-      */
     }
     /*
       Initialize the boundary fluxes to 0.
