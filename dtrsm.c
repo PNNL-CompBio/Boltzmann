@@ -108,18 +108,14 @@ void dtrsm_(char *side_p, char *uplo_p, char *transa_p, char *diag_p,
   double *acoli;
   double *acolj;
   double *acolk;
-  double *bcoli;
   double *bcolj;
   double *bcolk;
   int64_t acoli_pos;
   int64_t acolj_pos;
   int64_t acolk_pos;
-  int64_t bcoli_pos;
   int64_t bcolj_pos;
   int64_t bcolk_pos;
   int64_t mm1_lda;
-  int64_t nm1_lda;
-  int64_t nm1_ldb;
   int  m;
   int  n;
 
@@ -148,9 +144,6 @@ void dtrsm_(char *side_p, char *uplo_p, char *transa_p, char *diag_p,
   int  udiag;
 
   int  notudiag;
-  int  col_pos;
-
-  int  pos;
   int  inc1;
 
   int  min_lda;
