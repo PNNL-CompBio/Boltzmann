@@ -20,5 +20,7 @@ under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
-
-extern int alloc3(struct state_struct *state);
+#ifndef _ALLOC3_H_
+#define _ALLOC3_H_ 1
+extern int alloc3(struct state_struct *state, int setup);
+#endif
