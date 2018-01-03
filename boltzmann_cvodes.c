@@ -9,7 +9,7 @@
 #include "boltzmann_monitor_ode.h"
 #include "boltzmann_print_sensitivities.h"
 #include "vec_set_constant.h"
-#inclue  "ode_test_steady_state.h"
+#include  "ode_test_steady_state.h"
 #include "boltzmann_cvodes.h"
 int boltzmann_cvodes(struct state_struct *state, double *concs) {
   /*
