@@ -79,6 +79,7 @@ int compute_molecule_dg0tfs(struct state_struct *state,
   m_rt                     = state->m_rt;
   m_r_rt                   = state->m_r_rt;
   print_output             = (int)state->print_output;
+  min_molecule_dg0tf       = 0.0;
   if (print_output) {
     if (lfp) {
       fprintf(lfp,"\nOutput from compute_molecule_dg0tfs.c:\n\n");
@@ -99,6 +100,7 @@ int compute_molecule_dg0tfs(struct state_struct *state,
 				     pseudoisomer_strings,
 				     num_cpds,
 				     &molecule_dg0tfs[i]);
+    
     if (success) {
       if ((i == 0) || (molecule_dg0tfs[i] < min_molecule_dg0tf)) {
 	min_molecule_dg0tf = molecule_dg0tfs[i];
