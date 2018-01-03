@@ -63,5 +63,6 @@ void ode_print_concs(struct state_struct *state, double time, double *concs) {
     }
     fprintf(ode_concs_fp,"\n");
   }
+  fflush(ode_concs_fp);
   return;
 }
