@@ -78,7 +78,7 @@ int alloc0_a(struct state_struct *state) {
   int success;
   success = 1;
   max_file_name_len = (int64_t)128;
-  num_state_files   = (int64_t)32;
+  num_state_files   = (int64_t)40;
   one_l             = (int64_t)1;
   usage             = state->usage;
   state->num_files        =  num_state_files;
