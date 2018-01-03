@@ -558,7 +558,7 @@ int boltzmann_boot(char *param_file_name,
 	}
 	/*
 	  Print the molecules dictionary and the header lines for 
-	  the concentrations output file.
+	  the counts output file.
 	*/
 	if (success) {
 	  if (print_output) {
@@ -566,7 +566,7 @@ int boltzmann_boot(char *param_file_name,
 	  }
 	}
 	/*
-	  Now we need to allocate space for the concentrations,
+	  Now we need to allocate space for the counts,
 	  and read in the intial concentrations.
 	*/
 	if (success) {
@@ -587,8 +587,8 @@ int boltzmann_boot(char *param_file_name,
 	  success = set_compartment_ptrs(state);
 	}
 	/*
-	  Read initial concentrations.
-	  And print them to the concentrations output file.
+	  Read initial concentrations, convert them to counts,
+	  and print them to the counts output file.
 	*/
 	if (success) {
 	  success = read_initial_concentrations(state);
@@ -641,7 +641,7 @@ int boltzmann_boot(char *param_file_name,
 	  need to zero out the coefficients in the reaction matrix that
 	  correspond to the solvent molecule (by default H2O) so as not to
 	  have it influence the computation of likelihoods, nor change
-	  concentration (see rxn_likelihood.c and comment in rxn_conc_update.c)
+	  counts (see rxn_likelihood.c and comment in rxn_count_update.c)
 	*/
 	if (success) {
 	  success = zero_solvent_coefficients(state);
