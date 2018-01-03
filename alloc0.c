@@ -54,7 +54,7 @@ int alloc0(struct state_struct **state) {
   max_file_name_len = (int64_t)4096;
   max_param_line_len = (int64_t)4096;
   success           = 1;
-  num_state_files   = 10;
+  num_state_files   = 11;
   usage             = ask_for;
   statep            = (struct state_struct *)calloc(one_l,ask_for);
   *state            = statep;
@@ -90,6 +90,7 @@ int alloc0(struct state_struct **state) {
     statep->output_dir         = statep->log_file + max_file_name_len;
     statep->concs_out_file     = statep->output_dir + max_file_name_len;
     statep->rxn_lklhd_file     = statep->concs_out_file + max_file_name_len;
+    statep->free_energy_file   = statep->rxn_lklhd_file + max_file_name_len;
     statep->max_param_line_len = max_param_line_len;
     statep->max_filename_len   = max_file_name_len;
     ask_for                    = max_param_line_len << 1;
