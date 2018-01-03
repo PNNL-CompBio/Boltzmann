@@ -93,7 +93,7 @@ int read_compartment_sizes(struct state_struct *state) {
       vol_string += nb; /* Caution address arithmetic */
       ns = sscanf(vol_string,"%le",&volume);
       if ((ns < 1) || (volume <= 0.0)) {
-	volume = state->volume;
+	volume = state->default_volume;
 	fprintf(error_fp,
 		"read_compartment_sizes: Warning invalid volume for "
 		"compartment %s, using %le\n",
