@@ -62,7 +62,6 @@ double rxn_likelihood_postselection(double *concs,
   */
   double rxn_likelihood;
   double *ke;
-  double small_nonzero;
   double  conc;
   double  left_concs;
   double  right_concs;
@@ -84,8 +83,7 @@ double rxn_likelihood_postselection(double *concs,
   right_concs = 1.0;
 
   success           = 1;
-  nrxns             = state->number_reactions;
-  small_nonzero     = state->small_nonzero;
+  nrxns             = (int)state->number_reactions;
   rxns_matrix       = state->reactions_matrix;
   rxn_ptrs          = rxns_matrix->rxn_ptrs;
   rcoef             = rxns_matrix->coefficients;
