@@ -24,8 +24,6 @@ specific language governing permissions and limitations under the License.
 /*
 #define DBG_BOLTZMANN_RUN 1
 */
-
-#include "flatten_state.h"
 #include "update_rxn_log_likelihoods.h"
 #include "choose_rxn.h"
 #include "deq_run.h"
@@ -45,19 +43,18 @@ int boltzmann_run(struct state_struct *state) {
     boltzmann_init has been called to allocate and initialize state structure.
 
     Called by: boltzmann/client
-    Calls:     flatten_state,
-               update_rxn_log_likelihoods,
+    Calls:     update_rxn_log_likelihoods,
 	       choose_rxn,
                deq_run,
 	       compute_delta_g_forward_entropy_free_energy
 	       print_counts,
+	       print_concs,
 	       print_likelihoods,
 	       print free_energy,
 	       print boundary_flux,
 	       print_restart_file
 	       print_reactions_view
   */
-  struct state_struct *nstate;
   double dg_forward;
   double r_sum_likelihood;
   double entropy;
@@ -68,9 +65,9 @@ int boltzmann_run(struct state_struct *state) {
   double *bndry_flux_counts;
   double *activities;
   double *no_op_likelihood;
-  int    *rxn_fire;
   double *dg0s;
   double *free_energy;
+  int64_t *rxn_fire;
   int64_t i;
   int64_t n_warmup_steps;
   int64_t n_record_steps;
@@ -113,13 +110,13 @@ int boltzmann_run(struct state_struct *state) {
   int rxn_no;
   int j;
 
+  int ierr;
+  int padi;
+
   FILE *lfp;
   success = 1;
   one_l   = (int64_t)1;
   zero_l  = (int64_t)0;
-  nstate = state;
-  state->workspace_base = NULL;
-  success = flatten_state(state,&nstate);
   n_warmup_steps    	 = state->warmup_steps;
   n_record_steps    	 = state->record_steps;
   number_reactions       = (int)state->number_reactions;
@@ -219,6 +216,7 @@ int boltzmann_run(struct state_struct *state) {
 							     &entropy);
       */
     } /* end for(i...) */
+    i = -2;
   } else {
     /*
       Use ode solver to move from initial concentrations to
@@ -226,7 +224,9 @@ int boltzmann_run(struct state_struct *state) {
     */
     state->print_ode_concs = 0;
     success = deq_run(state);
+    i = -1;
   }
+  print_counts(state,i);
   if (success) {
     success = update_rxn_log_likelihoods(state);
   }
@@ -244,7 +244,7 @@ int boltzmann_run(struct state_struct *state) {
 	    "reverse_likelihood\n");
       }
       for (i=0;i<number_reactions_t2;i++) {
-	rxn_fire[i] = 0;
+	rxn_fire[i] = (int64_t)0;
       }
     }
     /*
@@ -292,7 +292,7 @@ int boltzmann_run(struct state_struct *state) {
       }
       if (print_output) {
 	if (rxn_choice <= number_reactions_t2) {
-	  rxn_fire[rxn_choice] += 1;
+	  rxn_fire[rxn_choice] += (int64_t)1;
 	}
       }
       /*
