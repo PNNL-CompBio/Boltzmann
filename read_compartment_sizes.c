@@ -107,7 +107,7 @@ int read_compartment_sizes(struct state_struct *state) {
       ci = compartment_lookup(compartment_name,state);
       if (ci < 0) {
 	fprintf(error_fp,"read_compartment_sizes: Warning, compartment %s "
-		"not listed in reaction file.\n");
+		"not listed in reaction file.\n",compartment_name);
 	fflush(error_fp);
       } else {
 	compartment = (struct compartment_struct *)&compartments[ci];
