@@ -30,6 +30,7 @@ int create_output_filenames(struct state_struct *state) {
   char *rxn_mat_filename;
   char *dg0ke_filename;
   char *dictionary_filename;
+  char *aux_data_filename;
   int64_t rxn_filename_base_length;
   int rxn_filename_length;
   int success;
@@ -57,6 +58,7 @@ int create_output_filenames(struct state_struct *state) {
   ode_dconcs_filename  = state->ode_dconcs_file;
   ode_lklhd_filename   = state->ode_lklhd_file;
   ode_bflux_filename   = state->ode_bflux_file;
+  aux_data_filename    = state->aux_data_file;
 
   dictionary_filename  = state->dictionary_file;
 
@@ -131,6 +133,8 @@ int create_output_filenames(struct state_struct *state) {
     strcpy((char*)&net_lklhd_filename[rxn_filename_base_length],".nlklhd");
     strncpy(nl_bndry_flx_filename,rxn_filename,rxn_filename_base_length);
     strcpy((char*)&nl_bndry_flx_filename[rxn_filename_base_length],".nl_flux");
+    strncpy(aux_data_filename,rxn_filename,rxn_filename_base_length);
+    strcpy((char*)&aux_data_filename[rxn_filename_base_length],".aux");
     if (rxn_lklhd_filename[0] == '\0') {
       strncpy(rxn_lklhd_filename,rxn_filename,rxn_filename_base_length);
       strcpy((char*)&rxn_lklhd_filename[rxn_filename_base_length],".lklhd");
