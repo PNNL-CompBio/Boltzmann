@@ -156,7 +156,8 @@ int ode23tb (struct state_struct *state, double *counts,
   double norm_delfdelt_o_wti;
   double dzero;
   double mdh;
-
+  double delta_t;
+  double recip_delta_t;
   int64_t ask_for;
   int64_t one_l;
   int64_t zero_l;
@@ -1040,8 +1041,15 @@ int ode23tb (struct state_struct *state, double *counts,
 	  znew[i] = z3[i];
 	}
       }
+      delta_t = tnew - t;
+      if (delta_t != 0.0) {
+	recip_delta_t = 1.0/delta_t;
+      } else {
+	recip_delta_t = 0.0;
+      }
       t = tnew;
       for (i=0;i<ny;i++) {
+	f0[i] = (ynew[i] - y[i])*recip_delta_t;
 	y[i] = ynew[i];
 	z[i] = znew[i];
 	if (y[i] < min_conc) {
@@ -1071,6 +1079,7 @@ int ode23tb (struct state_struct *state, double *counts,
 	    print_net_lklhd_bndry_flux(state,net_lklhd_bndry_flux,t);
 	  }
 	  ode_print_concs(state,t,y);
+	  ode_print_fluxes(state,t,f0);
 	  ode_print_lklhds(state,t,forward_rxn_likelihoods,
 			   reverse_rxn_likelihoods);
 	  ode_rxn_view_step = ode_rxn_view_freq;
