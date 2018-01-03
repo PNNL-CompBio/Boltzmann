@@ -103,7 +103,9 @@ int unique_molecules_core(int nzr,
       umolecules_next->c_index = ni;
       if (strcmp(solvent_string,sstring) == 0) {
 	umolecules_next->solvent = 1;
-	*solvent_pos = nu_molecules;
+	if (ni == 0) {
+	  *solvent_pos = nu_molecules;
+	}
       } else {
 	umolecules_next->solvent = 0;
       }
