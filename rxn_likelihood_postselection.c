@@ -110,7 +110,7 @@ double rxn_likelihood_postselection(double *concs,
       */
       if (coeff > 0) {
 	for (k=0;k<coeff;k++) {
-	  right_concs = right_concs * (conc-k);
+	  right_concs = right_concs * (conc+k);
 	} 
       }
     }
