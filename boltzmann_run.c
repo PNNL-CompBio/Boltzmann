@@ -233,6 +233,7 @@ int boltzmann_run(struct state_struct *state) {
       Use ode solver to move from initial concentrations to
       steady state.
     */
+    state->print_ode_concs = 0;
     success = deq_run(state);
   }
   if (success) {
