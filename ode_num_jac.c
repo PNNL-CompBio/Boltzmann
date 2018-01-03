@@ -72,7 +72,6 @@ int ode_num_jac(struct state_struct *state,
   double absfdiffmax_tmp;
   double absfdelrm_tmp;
   double tmpfac;
-  double tmpval;
   double *dblptr;
   int64_t eps_hex;
   int64_t sqrt_eps_hex;
@@ -87,7 +86,11 @@ int ode_num_jac(struct state_struct *state,
   int nrxns;
 
   int rowmax;
+#ifdef DBG
   int i;
+#else
+  int padi;
+#endif
 
   FILE *lfp;
   FILE *efp;
