@@ -34,7 +34,7 @@ int sbml_lookup_speciesref_attribute(char *key) {
     3 stoichiometry
   Returns -1 if key is not in list.
 
-  Called by: sbml_process_list_of_reactions
+  Called by: sbml_process_species_reference_tag
   Calls:     strcmp
 */
   int cmp0;
