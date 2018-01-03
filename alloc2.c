@@ -157,20 +157,20 @@ int alloc2(struct state_struct *state) {
     nze = (int64_t)num_species + (int64_t)num_rxns + one_l;
     ask_for = nze * ((int64_t)sizeof(int64_t));
     usage += ask_for;
-    reactions_matrix->row_ptrs = (int64_t*)calloc(one_l,ask_for);
-    if (reactions_matrix->row_ptrs == NULL) {
+    reactions_matrix->rxn_ptrs = (int64_t*)calloc(one_l,ask_for);
+    if (reactions_matrix->rxn_ptrs == NULL) {
       fprintf(stderr,"alloc2: Error, unable to allocate %ld bytes of space "
-	      "for reactions_matrix->row_ptrs\n",ask_for);
+	      "for reactions_matrix->rxn_ptrs\n",ask_for);
       fflush(stderr);
       success = 0;
     }
   }
   if (success) {
     usage += ask_for;
-    reactions_matrix->column_indices = (int64_t*)calloc(one_l,ask_for);
-    if (reactions_matrix->column_indices == NULL) {
+    reactions_matrix->species_indices = (int64_t*)calloc(one_l,ask_for);
+    if (reactions_matrix->species_indices == NULL) {
       fprintf(stderr,"alloc2: Error, unable to allocate %ld bytes of space "
-	      "for reactions_matrix->column_indices\n",ask_for);
+	      "for reactions_matrix->species_indices\n",ask_for);
       fflush(stderr);
       success = 0;
     }
