@@ -1,3 +1,4 @@
+
 AC_INIT([sss],[0.1],[douglas.baxter@pnl.gov])
 AC_CONFIG_SRCDIR([configure.ac])
 
@@ -16,7 +17,7 @@ case "$CC" in
 	CFLAGS="$CFLAGS -DLINUX -DMPI"
 	;;
 	*)
-	SERIAL_EXECS="boltzmann boltzmann_boot_test"
+	SERIAL_EXECS="boltzmann boltzmann_boot_test libboltzmann.a"
 	MPI_EXECS=
 	TIMING_CONFIG="no_"
 	MMAP_CONFIG="no_"
