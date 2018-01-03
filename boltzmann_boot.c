@@ -513,16 +513,6 @@ int boltzmann_boot(char *param_file_name,
 	  */
 	  success = parse_reactions_file(state,rxn_file_name);
 	}
-	if (success) {
-	  if (print_output) {
-	    /*
-	      Echo the reactions to the log file.
-	    */
-	    if (state->rxn_fp) {
-	      success = echo_reactions_file(state,state->rxn_fp);
-	    }
-	  }
-	}
 	/*
 	  First we need to sort the compartments.
 	*/
@@ -613,6 +603,16 @@ int boltzmann_boot(char *param_file_name,
 	if (success) {
 	  if (state->use_pseudoisomers) {
 	    success = compute_standard_energies(state,&formation_energies);
+	  }
+	}
+	if (success) {
+	  if (print_output) {
+	    /*
+	      Echo the reactions to the log file.
+	    */
+	    if (state->rxn_fp) {
+	      success = echo_reactions_file(state,state->rxn_fp);
+	    }
 	  }
 	}
 	/*
