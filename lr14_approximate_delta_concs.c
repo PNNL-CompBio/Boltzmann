@@ -1,4 +1,6 @@
 #include "boltzmann_structs.h"
+#include "boltzmann_cvodes_headers.h"
+#include "cvodes_params_struct.h"
 #include "get_counts.h"
 #include "update_regulations.h"
 #include "lr8_approximate_delta_concs.h"
@@ -39,6 +41,7 @@ int lr14_approximate_delta_concs(struct state_struct *state,
     choice                      IOI   Not used by this routine.
 
   */
+  struct  cvodes_params_struct *cvodes_params;
   struct  molecule_struct *molecules;
   struct  molecule_struct *molecule;
   struct  compartment_struct *compartments;
@@ -64,6 +67,7 @@ int lr14_approximate_delta_concs(struct state_struct *state,
   double  keq_adj;
   double  rkeq_adj;
   double  coeff;
+  double  avogadro;
   double  recip_avogadro;
   double  fluxi;
   double  conc_mi;
@@ -93,6 +97,9 @@ int lr14_approximate_delta_concs(struct state_struct *state,
 
   int use_regulation;
   int count_or_conc;
+
+  int compute_sensitivities;
+  int ode_solver_choice;
 
   int sum_coeff;
   int padi;
@@ -128,9 +135,18 @@ int lr14_approximate_delta_concs(struct state_struct *state,
   counts           = state->ode_counts;
   conc_to_count    = state->conc_to_count;
   use_regulation   = state->use_regulation;
-  /*
+  ode_solver_choice = state->ode_solver_choice;
+  compute_sensitivities = state->compute_sensitivities;
+  if ((ode_solver_choice == 1) && compute_sensitivities) {
+    cvodes_params = state->cvodes_params;
+    ke = cvodes_params->p;
+    rke = cvodes_params->rp;
+    for (i=0;i<num_rxns;i++) {
+      rke[i] = 1.0/ke[i];
+    }
+  }
+  avogadro         = state->avogadro;
   recip_avogadro   = state->recip_avogadro;
-  */
   /*
   flux_scaling     = compute_flux_scaling(state,concs);
   */
@@ -204,10 +220,10 @@ int lr14_approximate_delta_concs(struct state_struct *state,
     multiplier = 1.0;
     sum_coeff = coeff_sum[i];
     if (sum_coeff > 0) {
-      multiplier = recip_volume;
+      multiplier = recip_volume * recip_avogadro;
     } else {
       if (sum_coeff < 0) {
-	multiplier = volume;
+	multiplier = volume * avogadro;
 	sum_coeff = - sum_coeff;
       } 
     }
