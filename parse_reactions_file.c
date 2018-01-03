@@ -558,7 +558,7 @@ int parse_reactions_file(struct state_struct *state,
 	  */
 	  reg_species[reg_pos] = regulation_pos;
 	  reg_drctn[reg_pos]   = 1.0;
-	  nr = sscanf((char*)&rxn_buffer[word1+word1_len],"%ld %ld",&reg_constant[reg_pos],&reg_exponent[reg_pos]);
+	  nr = sscanf((char*)&rxn_buffer[word1+word1_len],"%le %le",&reg_constant[reg_pos],&reg_exponent[reg_pos]);
 	  if (nr < 2) {
 	    success = 0;
 	    if (lfp) {
@@ -596,7 +596,7 @@ int parse_reactions_file(struct state_struct *state,
 	  */
 	  reg_species[reg_pos] = regulation_pos;
 	  reg_drctn[reg_pos]   = 0.0;
-	  nr = sscanf((char*)&rxn_buffer[word1+word1_len],"%ld %ld",&reg_constant[reg_pos],&reg_exponent[reg_pos]);
+	  nr = sscanf((char*)&rxn_buffer[word1+word1_len],"%le %le",&reg_constant[reg_pos],&reg_exponent[reg_pos]);
 	  if (nr < 2) {
 	    success = 0;
 	    if (lfp) {
