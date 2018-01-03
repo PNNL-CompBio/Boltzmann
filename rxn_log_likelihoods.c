@@ -25,15 +25,15 @@ specific language governing permissions and limitations under the License.
 #include "rxn_likelihoods.h"
 
 #include "rxn_log_likelihoods.h"
-int rxn_log_likelihoods(double *concs, 
+int rxn_log_likelihoods(double *counts, 
 			double *rxn_likelihood_values,
 			double *log_rxn_likelihood,
 			struct state_struct *state,
 			int rxn_direction) {
   /*
     Compute the logs of the equilibrium constants and reaction quotients Q_p 
-    ( = the ratio of reactant concentrations to product concentration with 
-        any concentration where the stoichiometric coefficient is greater 
+    ( = the ratio of reactant counts to product counts with 
+        any count where the stoichiometric coefficient is greater 
 	than 1 is raised to that power).
     In the process we may want the rxn_likelihood as well though frequently as
     when called from update_rxn_log_likelihoods we only want the logs, so 
@@ -42,12 +42,12 @@ int rxn_log_likelihoods(double *concs,
 
     We want to do this in a stable fashion and we want to avoid division
     by zero. So to accomplish this in a stable fashion, the expectation
-    is that all product concentations would have increased and thereby
+    is that all product counts would have increased and thereby
     must be nonzero as they could not be negative to start with.
     The expectation is that there will only be a few (probably fewer than 4)
-    reactants or products, and thus the product of their concentrations
+    reactants or products, and thus the product of their counts
     should not over, nor under flow. If this changes we might want
-    to sort reactant and product concentrations and take the product of 
+    to sort reactant and product counts and take the product of 
     successive quotients which we would expect to be well scaled.
 
     Called by: update_rxn_log_likelihoods
@@ -60,7 +60,7 @@ int rxn_log_likelihoods(double *concs,
   int padi;
 
   nrxns         = (int)state->number_reactions;
-  success       = rxn_likelihoods(concs,rxn_likelihood_values,state,
+  success       = rxn_likelihoods(counts,rxn_likelihood_values,state,
 				  rxn_direction);
   if (success) {
     for (i=0;i<nrxns;i++) {
