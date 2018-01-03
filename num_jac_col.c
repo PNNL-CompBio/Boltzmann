@@ -27,6 +27,10 @@ int num_jac_col(struct state_struct *state,
     theshhold for elemntj, the conc_to_count ratio for element j,
     the count vector, the flux vector  f and concetration vector y,
     two scractch
+
+    Called by: ode_num_jac
+    Calls:     fabs
+
     Arguments          TMF    Descriptin
     state              G*I    Boltzmann state for passing to approxmate_fluxes(f)
     ny                 ISI    length of f, y, y_counts, fdel, fdiff, dfdy_colj
@@ -70,10 +74,10 @@ int num_jac_col(struct state_struct *state,
    
     absfdiffmax_p      D*O    scalar that is the inf norm of fdiff,
  
-    absfvaluerm_p      D*O    scalar that is the abs(flux) at location (rowmax)
+    absfvaluerm_p      D*O    scalar that is the fabs(flux) at location (rowmax)
                               of absfdiffmax
 
-    absfdelrm_p        D*O    scalar that is the abs(fdel) at location (rowmax)
+    absfdelrm_p        D*O    scalar that is the fabs(fdel) at location (rowmax)
                               of absfdiffmax
 
     infnormdfdy_colj_p D*O    scalar that is the inf norm of dfdy_colj
@@ -91,13 +95,23 @@ int num_jac_col(struct state_struct *state,
   double absfdelrm;
   double infnormdfdy_colj;
   double *conc_to_count;
+  double t0;
+  double h;
+  int    origin;
+  int    nsteps;
   int    base_rxn;
   int    k;
   int    success;
   int    rowmax;
+  FILE   *lfp;
+  FILE   *efp;
+/*
+#define DBG 1 
+*/
   success = 1;
   base_rxn      = state->base_reaction;
   conc_to_count = state->conc_to_count;
+  lfp           = state->lfp;
   delj          = *delj_p;
   if ((delj == 0.0) || (j < 0) || (j >= ny)) {
     success = 0;
@@ -128,6 +142,18 @@ int num_jac_col(struct state_struct *state,
     approximate_fluxes(state,y_counts,
 		       forward_rxn_likelihoods,reverse_rxn_likelihoods,
 		       fdel,flux_scaling,base_rxn);
+#ifdef DBG
+    if (lfp) {
+      fprintf(lfp,"num_jac_col: after call to approximate_fluxes\n");
+      origin = j; 
+      t0 = 0.0;
+      h  = 0.0;
+      nsteps = 0;
+      print_concs_fluxes(state,ny,fdel,y,y_counts,
+			 forward_rxn_likelihoods,
+			 reverse_rxn_likelihoods,t0,h,nsteps,origin);
+    }
+#endif
     /*
       Restore y_counts and y vector.
     */
@@ -144,18 +170,18 @@ int num_jac_col(struct state_struct *state,
 	dfdy_colj[k] = 0.0;
       }
     }
-    infnormdfdy_colj = abs(dfdy_colj[0]);
+    infnormdfdy_colj = fabs(dfdy_colj[0]);
     rowmax           = 0;
     for (k=1;k<ny;k++) {
-      absdfdy_coljk = abs(dfdy_colj[k]);
+      absdfdy_coljk = fabs(dfdy_colj[k]);
       if (absdfdy_coljk > infnormdfdy_colj) {
 	infnormdfdy_colj = absdfdy_coljk;
 	rowmax = k;
       }
     }
-    absfdiffmax    = abs(fdiff[rowmax]);
-    absfdelrm      = abs(fdel[rowmax]);
-    absfvaluerm    = abs(f[rowmax]);
+    absfdiffmax    = fabs(fdiff[rowmax]);
+    absfdelrm      = fabs(fdel[rowmax]);
+    absfvaluerm    = fabs(f[rowmax]);
     *absfdiffmax_p = absfdiffmax;
     *absfdelrm_p   = absfdelrm;
     *absfvaluerm_p = absfvaluerm;
