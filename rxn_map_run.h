@@ -20,6 +20,8 @@ under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
+#ifndef _RXN_MAP_RUN_H_
+#define _RXN_MAP_RUN_H_ 1
 extern int rxn_map_run(struct state_struct *state,
-		       struct molecules_matrix_struct *molecules_matrix,
                        int i, int j);
+#endif
