@@ -80,6 +80,7 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
   struct state_struct bltzs;
   struct state_struct *state;
   struct vgrng_state_struct *vgrng_state;
+  struct vgrng_state_struct *vgrng2_state;
   struct rxn_struct *reactions;
   struct istring_elem_struct *cur_molecules;
   struct istring_elem_struct *cur_cmpts;
@@ -192,6 +193,9 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
     vgrng_state = state->vgrng_state;
     vgrng_start_steps = 1001;
     vgrng_start= vgrng_init(vgrng_state,vgrng_start_steps);
+    vgrng2_state = state->vgrng2_state;
+    vgrng_start_steps = 1042;
+    vgrng_start= vgrng_init(vgrng2_state,vgrng_start_steps);
   }
   /*
     Allocate space for the reactions line buffer, and the rxn_file keywords.
