@@ -14,6 +14,7 @@
 #include "lr11_approximate_delta_concs.h"
 #include "lr12_approximate_delta_concs.h"
 #include "lr13_approximate_delta_concs.h"
+#include "lr14_approximate_delta_concs.h"
 #include "ce_approximate_delta_concs.h"
 
 #include "approximate_delta_concs.h"
@@ -154,6 +155,12 @@ int approximate_delta_concs(struct state_struct *state, double *concs,
     break;
   case 13:
     success = lr13_approximate_delta_concs(state,
+					   concs,
+					   flux, 
+					   choice);
+    break;
+  case 14:
+    success = lr14_approximate_delta_concs(state,
 					   concs,
 					   flux, 
 					   choice);
