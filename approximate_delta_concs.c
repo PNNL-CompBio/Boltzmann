@@ -37,6 +37,7 @@ int approximate_delta_concs(struct state_struct *state, double *concs,
                                       uses number_reactions,
 				           unique_moleules,
                                            molecules_matrix,
+					   deriv_thresh,
 					   and lfp,
 				      
 
@@ -51,7 +52,10 @@ int approximate_delta_concs(struct state_struct *state, double *concs,
                                       2 for ce_approximate_delta_concs
 
   */
+  double deriv_thresh;
   int success;
+  int i;
+  int ny;
   int padi;
   FILE *lfp;
   FILE *efp;
@@ -150,5 +154,15 @@ int approximate_delta_concs(struct state_struct *state, double *concs,
       fflush(lfp);
     }
   } /* end switch (choice) */
+  /*
+    Post process the flux vector to zero out fluxes less than deriv_thresh;
+  */
+  ny = state->nunique_molecules;
+  deriv_thresh = state->deriv_thresh;
+  for (i=0;i<ny;i++) {
+    if (fabs(flux[i]) < deriv_thresh) {
+      flux[i] = 0.0;
+    }
+  }
   return(success);
 }
