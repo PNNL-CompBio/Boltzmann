@@ -2,6 +2,9 @@
 
 #include "update_rxn_likelihoods.h"
 #include "lr_approximate_delta_concs.h"
+#include "lr1_approximate_delta_concs.h"
+#include "lr2_approximate_delta_concs.h"
+#include "lr3_approximate_delta_concs.h"
 #include "ce_approximate_delta_concs.h"
 
 #include "approximate_delta_concs.h"
@@ -14,8 +17,11 @@ int approximate_delta_concs(struct state_struct *state, double *counts,
   /*
     Compute approximations to concentartion changes wrt time
     0 for lr_approximate_delta_concs, based on likelihood rations.
+    1 for lr1_approximate_delta_concs, based on likelihood rations.
+    2 for lr2_approximate_delta_concs, based on likelihood rations.
+    3 for lr3_approximate_delta_concs, based on likelihood rations.
 
-    2 for ce_approximate_delta_concs, for debugging only with
+    42 for ce_approximate_delta_concs, for debugging only with
     the reaction rates for the coupledenzyme.in file
 
     Called by: ode23tb, num_jac_col, ode_it_solve
@@ -59,9 +65,53 @@ int approximate_delta_concs(struct state_struct *state, double *counts,
   FILE *efp;
   lfp = state->lfp;
   success = 1;
-  if (choice == 2) {
+  switch(choice) {
+  case 0:
     /*
-      Use debugging flavor with rate constants for coupledenzyme.in
+      Default Likelihood ratio approximation.
+    */
+    success = lr_approximate_delta_concs(state, 
+					 counts,
+					 forward_rxn_likelihoods,
+					 reverse_rxn_likelihoods, 
+					 flux, 
+					 multiplier,
+					 base_rxn, 
+					 choice);
+    break;
+  case 1:
+    success = lr1_approximate_delta_concs(state, 
+					 counts,
+					 forward_rxn_likelihoods,
+					 reverse_rxn_likelihoods, 
+					 flux, 
+					 multiplier,
+					 base_rxn, 
+					 choice);
+    break;
+  case 2:
+    success = lr2_approximate_delta_concs(state, 
+					 counts,
+					 forward_rxn_likelihoods,
+					 reverse_rxn_likelihoods, 
+					 flux, 
+					 multiplier,
+					 base_rxn, 
+					 choice);
+    break;
+  case 3:
+    success = lr3_approximate_delta_concs(state, 
+					 counts,
+					 forward_rxn_likelihoods,
+					 reverse_rxn_likelihoods, 
+					 flux, 
+					 multiplier,
+					 base_rxn, 
+					 choice);
+    break;
+  case 42:
+    /*
+      Use debugging flavor with kinetic rate constants for coupledenzyme.in
     */
     success = ce_approximate_delta_concs(state, 
 					 counts,
@@ -71,25 +121,13 @@ int approximate_delta_concs(struct state_struct *state, double *counts,
 					 multiplier,
 					 base_rxn, 
 					 choice);
-  } else {
-    /*
-      Default Likelihood ratio approximation.
-    */
-    if (choice != 0) {
-      if (lfp) {
-	fprintf(lfp,"approximate_delta_concs: Invalid choice, using default.\n");
-	fflush(lfp);
-      }
-      state->delta_concs_choice = (int64_t)0;
+    break;
+  default :
+    success = 0;
+    if (lfp) {
+      fprintf(lfp,"approximate_delta_concs: invalid delta_concs_choice was %d\n",choice);
+      fflush(lfp);
     }
-    success = lr_approximate_delta_concs(state, 
-					 counts,
-					 forward_rxn_likelihoods,
-					 reverse_rxn_likelihoods, 
-					 flux, 
-					 multiplier,
-					 base_rxn, 
-					 choice);
-  }
+  } /* end switch (choice) */
   return(success);
 }
