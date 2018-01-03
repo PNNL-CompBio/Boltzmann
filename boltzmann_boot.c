@@ -45,6 +45,7 @@ specific language governing permissions and limitations under the License.
 /*
 #include "form_molecules_matrix.h"
 */
+#include "formation_energy_rxn_dg0fs.h"
 #include "compute_ke.h"
 #include "print_rxn_likelihoods_header.h"
 #include "print_free_energy_header.h"
@@ -158,6 +159,7 @@ int boltzmann_boot(char *param_file_name,
   struct istring_elem_struct *unsorted_compartments;
   struct istring_elem_struct *sorted_molecules;
   struct istring_elem_struct *unsorted_molecules;
+  struct formation_energy_struct *formation_energies;
 
   double *dg0s;
   double *free_energy;
@@ -296,6 +298,7 @@ int boltzmann_boot(char *param_file_name,
   minimum_state_size = 0;
   open_flags = O_RDWR | O_CREAT;
   whence     = SEEK_SET;
+  formation_energies = NULL;
   /*
     allocate space for the state struct.
     Allocate space for the reactions line buffer, and the rxn_file keywords.
@@ -601,6 +604,14 @@ int boltzmann_boot(char *param_file_name,
 	  success = form_molecules_matrix(state);
 	  }
 	*/
+	/*
+	  Compute the reaction energies of formation if called for.
+	*/
+	if (success) {
+	  if (state->use_pseudoisomers) {
+	    success = formation_energy_rxn_dg0fs(state,&formation_energies);
+	  }
+	}
 	/*
 	  Compute the reaction ke's.
 	*/
