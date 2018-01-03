@@ -66,6 +66,7 @@ struct state_struct {
   int64_t *transpose_work;           /* unique_molecules+1 */
   int64_t *compartment_ptrs;         /* unique_compartments + 1 */
   int64_t reaction_file_length;
+  int64_t print_output;
   int64_t align_len;
   int64_t align_mask;
   int64_t max_filename_len;
@@ -89,6 +90,8 @@ struct state_struct {
   int64_t usage;
   double  ideal_gas_r;
   double  temp_kelvin;
+  double  ph;
+  double  ionic_strength;
   double  rt;
   double  m_r_rt;
   double  m_rt;
