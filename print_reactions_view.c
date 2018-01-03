@@ -48,6 +48,7 @@ int print_reactions_view(struct state_struct *state) {
   double *rxn_view_data;
   double *rev_rxn_view_data;
   double *activities;
+  double *no_op_likelihood;
   int    *rxn_fire;
 
   int success;
@@ -97,6 +98,16 @@ int print_reactions_view(struct state_struct *state) {
     rxn_fire          	 = state->rxn_fire;
     rxn_view_hist_lngth  = state->rxn_view_hist_lngth;
     nrxns                = state->number_reactions;
+    no_op_likelihood     = state->no_op_likelihood;
+    /*
+      Print out the number of times no reaction was chosen and its likelihoods.
+      Skipping the net reaction fire and activities fields.
+    */
+    fprintf(rxn_view_fp," No Reaction\t0<=>0\t%d\t\t",rxn_fire[nrxns+nrxns]);
+    for(k=0;k<rxn_view_hist_lngth;k++) {
+      fprintf(rxn_view_fp,"\t%le",no_op_likelihood[k]);
+    }
+    fprintf(rxn_view_fp,"\n");
     for (rxns=0;rxns < nrxns;rxns++) {
       if (reaction->title) {
 	fprintf(rxn_view_fp,"%s\t",reaction->title);
