@@ -42,7 +42,7 @@ int sbml_parse_species_key_value(struct sbml2bo_struct *state,
 				 double *init_conc,
 				 int *variable) {
   /*
-    Interpret the attribute value of a key_value attribute paire
+    Interpret the attribute value of a key_value attribute pair
     in a <species> tag. Returns the total length of the key and value
     pair in the line buffer.
     Called by: sbml_process_list_of_species.
