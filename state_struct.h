@@ -212,6 +212,12 @@ struct state_struct {
     reactant species concentratiopns, else use fixed FLUX_SCALING.
   */
   double  flux_scaling;
+  /*
+    min_molecule_dg0tf is the smallest dg0 of formation from molecules 
+    computed in compute_moldeule_dg0tfs and used in 
+    compute_moleculear_partition_probability.
+  */
+  double  min_molecule_dg0tf;
   int64_t *workspace_base;
 
   /* two way data (modified) */
