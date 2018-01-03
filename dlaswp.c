@@ -54,7 +54,7 @@ void dlaswp_( int *n_p,
   int k;
 
   int n32;
-  int ii;
+  int padi;
 
   n    = *n_p;
   lda  = *lda_p;
