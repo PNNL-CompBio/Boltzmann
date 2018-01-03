@@ -63,6 +63,7 @@ int alloc7(struct state_struct *state) {
   double *ode_reverse_lklhds;
   double *ode_counts;
   double *ode_concs;
+  double *ode_f;
   int64_t ask_for;
   int64_t one_l;
   int64_t usage;
@@ -108,16 +109,36 @@ int alloc7(struct state_struct *state) {
     run_workspace_bytes  += ask_for;
     ode_concs = (double *)calloc(one_l,ask_for);
     if (ode_concs == NULL) {
+      success = 0;
       if (lfp) {
 	fprintf(lfp,"alloc7: Error unable to allocate %ld bytes for "
 		"ode_concs\n",ask_for);
 	fflush(lfp);
       }
-      success = 0;
     } else {
       state->ode_concs = ode_concs;
     }
   }
+  /*
+    Allocate space for the ode flux vector used in printing.
+  */
+  if (success) {
+    ask_for = num_species * sizeof(double);
+    usage += ask_for;
+    run_workspace_bytes  += ask_for;
+    ode_f = (double *)calloc(one_l,ask_for);
+    if (ode_f == NULL) {
+      success = 0;
+      if (lfp) {
+	fprintf(lfp,"alloc7: Error unable to allocate %ld bytes for "
+		"ode_f\n",ask_for);
+	fflush(lfp);
+      }
+    } else {
+      state->ode_f = ode_f;
+    }
+  }
+
   /*
     Allocate space for the reactant_terms
   */
