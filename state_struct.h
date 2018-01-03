@@ -32,13 +32,11 @@ specific language governing permissions and limitations under the License.
   1, for the size parameters and floating point constants.
 
   2. for arrays/structs that are both inputs and outputs (4 of these)
-     and 2 scalars, dg_forward and entropy for the whole system
      current_concentrations,
      bndry_flux_concs,
      vgrng_state
      vgrng2_state
-
-
+     and 2 scalars, dg_forward and entropy for the whole system
  
   3. for arrays/structs that are strictly inputs (there are 12 of these
      not counting string pointers).
@@ -56,8 +54,6 @@ specific language governing permissions and limitations under the License.
      reg_drctn,     (int64_t)
      reg_constant,  (double)
      reg_exponent,  (double)
-
-
 
   4. for work space arrays and structs.
      unsorted_molecules,
@@ -171,13 +167,17 @@ struct state_struct {
   int64_t use_regulation;
   int64_t max_regs_per_rxn;
   int64_t rxn_filename_base_length;
+  int64_t base_reaction;
+  int64_t number_base_reaction_reactants;
 
   double  ideal_gas_r;
   double  temp_kelvin;
   double  avogadro;
   double  recip_avogadro;
+  /*
   double  conc_to_count;
   double  count_to_conc;
+  */
   double  ph;
   double  ionic_strength;
   double  rt;
@@ -189,11 +189,16 @@ struct state_struct {
   double  dg_forward;
   double  entropy;
   double  current_concentrations_sum;
-  double  volume;
-  double  recip_volume;
+  double  default_volume;
+  double  recip_default_volume;
   double  conc_units;
   double  ntotal_opt;
   double  ntotal_exp;
+  /*
+    Note that flux_scaling is K_f(base_rxn_reaction)*(product of reactant 
+    concentrations in base reaction).
+  */
+  double  kf_base_reaction;
   int64_t *workspace_base;
 
   /* two way data (modified) */
@@ -209,7 +214,7 @@ struct state_struct {
   */
   /*
     Incoming data not modified, depends only on agent type.
-    (5*number_reactions + 5*unique_molecules) * sizeof(double)
+    (5*number_reactions + 7*unique_molecules) * sizeof(double)
     + 2*number_reactions * max_regs_per_rxn * sizeof(double)
     + 2*number_reactions * max_regs_per_rxn * sizeof(int64_t)
         =
@@ -224,6 +229,8 @@ struct state_struct {
   double  *molecule_dg0tfs; /* len = unique_molecules */
   double  *molecule_probabilities; /* len = unique_molecules */
   double  *molecule_chemical_potentials; /* len = unique_molecules */
+  double  *count_to_conc; /* len = unique_molecules */
+  double  *conc_to_count; /* len = unique_molecules */
   double  *activities;   /* len = number_reactions */
   double  *reg_constant; /* len = number_reactions * max_regs_per_rxn */
   double  *reg_exponent; /* len = number_reactions * max_regs_per_rxn */
@@ -240,6 +247,8 @@ struct state_struct {
      allocated in alloc2 
   */
   struct rxn_matrix_struct *reactions_matrix; /* */
+
+  struct molecules_matrix_struct *molecules_matrix;
   /* 
     sizeof(molecule_struct) * unique_molecules 
     allocated in alloc2 
@@ -302,6 +311,13 @@ struct state_struct {
   double  *forward_rxn_log_likelihood_ratio; /* number_reactions */
   double  *reverse_rxn_log_likelihood_ratio; /* number_reactions */
   double  *rxn_likelihood_ps;      /* number_reactions + 1 */
+  double *flux_vector;   /* flux vector of length number_unique_molecules */
+  double *flux_jacobian; /* number_unique_molecules * number_unique_molecules */
+  double *reactant_term; /* product of reaction reactant concentrations, length number_reactions */
+  double *product_term;  /* product of reaction product concentrations, length number_reactions */
+  double *p_over_r; /* Ratio of product_term to reactant_term. */
+  double *r_over_p;/* Ratio of reactant_term to product_term. */
+  double *concs; /* concentrations from counts. */
   /*
     Workspace only if printing. (debugging);
   */
@@ -310,8 +326,15 @@ struct state_struct {
   double  *rxn_view_likelihoods;    
   /* rxn_view_hist_length * number_reactions */
   double  *rev_rxn_view_likelihoods; 
+  int64_t *transpose_workspace;  /* used in forming molecules_matrix. */
   int  *rxn_fire;                  /* (number_reactions * 2) + 2*/
   int  *rxn_mat_row;               /* (nunique_molecules) */
+
+  int  *base_reactants;            /* List of reactant species (by number)
+				      in the base reaction */
+  int  *base_reactant_indicator;   /* vector of length nunique_molecules
+				      elment i 1 for in species i in
+				      base_reactants list, 0 otherwise. */
 
   FILE *rxn_fp;
   FILE *conc_fp;
