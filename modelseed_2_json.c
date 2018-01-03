@@ -111,22 +111,22 @@ int main(int argc, char **argv) {
 	    }
 	    mp = fgets(mline,line_len,msfp);
 	  }
+	  fclose(mmfp);
 	} else {
 	  fprintf(stderr,"unable to open modelseed_json_mismatches\n");
 	}
+	fclose(m2jfp);
       } else {
 	fprintf(stderr,"unable to open modelseed_2_json.dat\n");
       }
+      fclose(jsfp);
     } else {
       fprintf(stderr,"unable to open kegg_2_json.srt\n");
     }
+    fclose(msfp);
   } else {
     fprintf(stderr,"unable to open kegg_2_modelseed.srt\n");
   }
-  fclose(msfp);
-  fclose(jsfp);
-  fclose(m2jfp);
-  fclose(mmfp);
   system("sort -k 1 -u modelseed_2_json.dat > modelseed_2_json.srt");  
   return(0);
 }
