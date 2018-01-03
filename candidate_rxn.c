@@ -44,6 +44,7 @@ int candidate_rxn(struct state_struct *state, double *scalingp,
   double *forward_rxn_likelihood;
   double *reverse_rxn_likelihood;
   double *activities;
+  double *counts_or_concs;
   double r_sum_likelihood;
   double dchoice;
   double uni_multiplier;
@@ -62,6 +63,9 @@ int candidate_rxn(struct state_struct *state, double *scalingp,
   int direction;
   int use_regulation;
 
+  int count_or_conc;
+  int padi;
+
   success = 1;
   rxn_likelihood_ps      = state->rxn_likelihood_ps;
   num_rxns               = (int)state->number_reactions;
@@ -77,7 +81,9 @@ int candidate_rxn(struct state_struct *state, double *scalingp,
     If we are using regulation, update the activities.
   */
   if (use_regulation) {
-    update_regulations(state);
+    count_or_conc    = 1;
+    counts_or_concs  = state->current_counts;
+    update_regulations(state,counts_or_concs,count_or_conc);
   }
   /*
     Compute the partial sums of the reaction likelihoods.
