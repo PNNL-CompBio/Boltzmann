@@ -4,7 +4,7 @@
 #include "dgemm.h"
 #include "dtrsm.h"
 #include "dgetrf.h"
-void dgetrf(int *m_p, 
+void dgetrf_(int *m_p, 
 	    int *n_p, 
 	    double *a, 
 	    int *lda_p, 
@@ -89,15 +89,12 @@ void dgetrf(int *m_p,
     fflush(stderr);
   } else {
     if ((m > 0) && (n > 0)) {
-      min_m_n = m;
-      if (n < m) {
-	min_m_n = n;
-      }
+      min_m_n = (n < m) ? n : m;
       if ((nb <= 1) || (nb >=  min_m_n)) {
 	/*
 	  Use point algorithm.
 	*/
-	dgetrf2(&m, &n, a, &lda, ipiv, &info);
+	dgetrf2_(&m, &n, a, &lda, ipiv, &info);
       } else {
 	/*
 	  Use block algorithm.
@@ -105,11 +102,8 @@ void dgetrf(int *m_p,
 	j_lda = 0;
 	jb_lda = nb * lda;
 	for (j = 0;j < min_m_n;j += nb) {
-	  jb = nb;
-	  if (min_m_n - j < jb) {
-	    jb = min_m_n - j;
-	    jb_lda = jb * lda;
-	  }
+	  jb = ((min_m_n -j) < nb) ? (min_m_n - j) : nb;
+	  jb_lda = jb * lda;
 	  j_p_jb_lda = j_lda + jb_lda;
 	  /*
 	    Factor diagonal and subdiagonal blocks and test for exact
@@ -117,25 +111,27 @@ void dgetrf(int *m_p,
 	  */
 	  mmj = m-j;
 	  ajj_pos = j_lda + j;
-          dgetrf2(&mmj, &jb, &a[ajj_pos], &lda, &ipiv[j], &iinfo);
+          dgetrf2_(&mmj, &jb, &a[ajj_pos], &lda, &ipiv[j], &iinfo);
 	  /*
             Adjust INFO and the pivot indices.
 	  */
 	  if ((info == 0) && (iinfo > 0) ) {
 	    info = iinfo + j;
 	  }
-	  min_m_j_p_jb = j+jb;
-	  if (m < min_m_j_p_jb) {
-	    min_m_j_p_jb = m;
-	    for (i=j;i<min_m_j_p_jb;i++) {
-	      ipiv[i] = j + ipiv[i];
-	    }
+	  min_m_j_p_jb = (m < (j+jb)) ? m : (j+jb) ;
+	  for (i=j;i<min_m_j_p_jb;i++) {
+	    /*
+	      Here we don't mess with the start from one
+	      fortranism for ipiv as it is on both sides of the
+	      assignment.
+	    */
+	    ipiv[i] = j + ipiv[i];
 	  }
 	  j_p_jb_m1 = j + jb - 1;
 	  /*
             Apply interchanges to columns 0:j-1.
 	  */
-          dlaswp( &j, a, &lda, &j, &j_p_jb_m1, ipiv, &inc1 );
+          dlaswp_( &j, a, &lda, &j, &j_p_jb_m1, ipiv, &inc1 );
 	  
 	  n_m_j_m_jb = n - j - jb;
 	  m_m_j_m_jb = m - j - jb;
@@ -143,12 +139,12 @@ void dgetrf(int *m_p,
 	    /*
 	      Apply interchanges to columns J+JB:N-1.
 	    */
-	    dlaswp(&n_m_j_m_jb, &a[j_p_jb_lda], &lda, &j, &j_p_jb_m1,
+	    dlaswp_(&n_m_j_m_jb, &a[j_p_jb_lda], &lda, &j, &j_p_jb_m1,
 		   ipiv, &inc1);
 	    /*
 	      Compute block row of U.
 	    */
-	    dtrsm(&l_char,&l_char, &n_char, &u_char,
+	    dtrsm_(&l_char,&l_char, &n_char, &u_char,
 		  &jb, &n_m_j_m_jb, &one, &a[ajj_pos], &lda,
 		  &a[j+j_p_jb_lda], &lda);
 
@@ -156,7 +152,7 @@ void dgetrf(int *m_p,
 	      /*
                 Update trailing submatrix.
 	      */
-	      dgemm(&n_char, &n_char, &m_m_j_m_jb,
+	      dgemm_(&n_char, &n_char, &m_m_j_m_jb,
 		    &n_m_j_m_jb, &jb,  &mone,
 		    &a[j_lda + j + jb],&lda,
 		    &a[j_p_jb_lda + j],&lda,&one,
