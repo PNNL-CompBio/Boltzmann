@@ -7,7 +7,7 @@
 #include "io_size_init.h"
 int io_size_init(struct state_struct *state) {
 /*
-  Set the output filenames, open the outputfiles, echo parameters
+  Set the output filenames, open the outputfiles, 
   and size the reactions file.
     
     Called by: boltzmann_init_core
