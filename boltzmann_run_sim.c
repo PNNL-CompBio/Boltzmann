@@ -217,10 +217,11 @@ int boltzmann_run_sim(struct state_struct *state) {
       r_sum_likelihood = 1.0/sum_likelihood;
       for (j=0;j<num_rxns;j++) {
 	scaled_likelihood = forward_rxn_likelihood[j] * r_sum_likelihood;
-	entropy -= (scaled_likelihood * log(scaled_likelihood));
+	if (scaled_likelihood>0) {
+	  entropy -= (scaled_likelihood * log(scaled_likelihood));
+	}
       }
     }
-
   } /* end for(i...) */
   
   if (success) {
