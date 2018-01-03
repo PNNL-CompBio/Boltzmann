@@ -9,7 +9,7 @@ int compute_net_likelihoods(struct state_struct *state,
     Uses the forward_rxn_likelihood and reverse_rxn_likelihood 
     fields in state to set the net_likelilhood field for each 
     reaction.
-    Called by: ode23b
+    Called by: ode23tb
     Calls:
   */
   int64_t number_reactions;
