@@ -31,19 +31,19 @@ int count_nor(char *line) {
     Called by: kegg_from_modelseed.c 
     Calls      strlen(intrinsic).
   */
-  int nor_chars;
+  int number_or_chars;
   int i;
   int c;
-  int or;
+  int or_char;
   /*
     Want to return 0 if line has zero length.
   */
-  or = (int)'|';
-  nor_chars = 0;
+  or_char = (int)'|';
+  number_or_chars = 0;
   for (i=0;i<strlen(line);i++) {
     c  = (int)line[i];
-    if (c == or) break;
-    nor_chars += 1;
+    if (c == or_char) break;
+    number_or_chars += 1;
   }
-  return (nor_chars);
+  return (number_or_chars);
 }
