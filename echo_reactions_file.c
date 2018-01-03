@@ -34,7 +34,8 @@ specific language governing permissions and limitations under the License.
 int echo_reactions_file(struct state_struct *state) {
   /*
     Echo the reactions file to a rxns.echo file.
-    Called by: boltzmann
+    Called by: boltzmann_init
+    Calls:     fopen, fprintf, fclose (intrinsic)
   */
   struct rxn_struct *reactions;
   struct rxn_struct *reaction;
