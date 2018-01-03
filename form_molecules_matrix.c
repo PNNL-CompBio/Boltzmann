@@ -32,7 +32,7 @@ int form_molecules_matrix(struct state_struct *state,
     Called by: boltzmann_init_core, deq_run
     Calls:     
   */
-  struct rxn_matrix_struct *rxn_matrix;
+  struct reactions_matrix_struct *rxn_matrix;
   /*
   struct molecules_matrix_struct *molecules_matrix;
   */
@@ -67,7 +67,7 @@ int form_molecules_matrix(struct state_struct *state,
   molecules_indices = rxn_matrix->molecules_indices;
   rcoef           = rxn_matrix->coefficients;
   molecules_ptrs    = molecules_matrix->molecules_ptrs;
-  rxn_indices     = molecules_matrix->rxn_indices;
+  rxn_indices     = molecules_matrix->reaction_indices;
   scoef           = molecules_matrix->coefficients;
   /*
   transpose_rp    = state->transpose_work;
