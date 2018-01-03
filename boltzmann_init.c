@@ -32,6 +32,7 @@ specific language governing permissions and limitations under the License.
 #include "boltzmann_structs.h"
 #include "alloc0.h"
 #include "read_params.h"
+#include "open_output_files.h"
 #include "vgrng_init.h"
 #include "alloc1.h"
 #include "echo_params.h"
@@ -55,8 +56,6 @@ specific language governing permissions and limitations under the License.
 /*
 #define DBG_BOLTZMANN_INIT  
 */
-
-
 #include "boltzmann_init.h"
 int boltzmann_init(char *param_file_name, struct state_struct **statep) {
   /*
@@ -64,6 +63,7 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
     Called by: boltzmann
     Calls:     alloc0,
                read_params,
+	       open_output_files,
 	       vgrng_init,
 	       alloc1,
 	       echo_params,
@@ -71,47 +71,33 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
 	       alloc2,
 	       parse_reactions_file,
 	       echo_reactions_file,
-	       sort_istrings,
+	       sort_compartments,
+	       unique_compartments,
+	       translate_compartments,
+	       sort_molecules,
 	       unique_molecules,
-	       print_molecues_dictionary,
+	       print_molecules_dictionary,
 	       alloc3,
 	       read_initial_concentrations,
 	       form_molecules_matrix,
 	       compute_ke
+	       print_rxn_likelihoods_header
+	       print_free_energy_header
   */
-  struct state_struct bltzs;
   struct state_struct *state;
   struct vgrng_state_struct *vgrng_state;
   struct vgrng_state_struct *vgrng2_state;
-  struct rxn_struct *reactions;
-  struct istring_elem_struct *cur_molecules;
-  struct istring_elem_struct *cur_cmpts;
-  struct istring_elem_struct *cur_cmpt;
-  char *cmpt_string;
   double *dg0s;
   double *free_energy;
   double *activities;
-  int64_t align_len;
-  int64_t align_mask;
-  int64_t rxn_title_len;
-  int64_t pathway_len;
-  int64_t compartment_len;
-  int64_t molecules_len;
   int64_t vgrng_start;
   int success;
-  int num_state_files;
-
-  int num_rxns;
-  int num_molecules;
-
   int vgrng_start_steps;
-  int i;
 
-  int nu_molecules;
+  int i;
   int padi;
 
-  int oi;
-  int ci;
+
 
   FILE *bndry_flux_fp;
   FILE *lfp;
@@ -127,84 +113,7 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
     success = read_params(param_file_name,state);
   }
   if (success) {
-    if (state->log_file) {
-      /*
-	Open the log file.
-      */
-      state->lfp = fopen(state->log_file,"w");
-      lfp = state->lfp;
-      if (state->lfp == NULL) {
-	fprintf(stderr,
-		"boltzman_init unable to open log_file, %s, quitting.\n",
-		state->log_file);
-	fflush(stderr);
-	success = 0;
-      }
-    }
-  }
-  if (success) {
-    if (state->concs_out_file) {
-      /*
-	Open the concentrations output file.
-      */
-      state->concs_out_fp = fopen(state->concs_out_file,"w");
-      if (state->concs_out_fp == NULL) {
-	fprintf(stderr,
-		"boltzman_init unable to open concs_out_file, %s, quitting.\n",
-		state->concs_out_file);
-	fflush(stderr);
-	success = 0;
-      }
-    }
-  }
-  if (success) {
-    if (state->rxn_lklhd_file) {
-      /*
-	Open the likelihoods output file.
-      */
-      state->rxn_lklhd_fp = fopen(state->rxn_lklhd_file,"w");
-      if (state->rxn_lklhd_fp == NULL) {
-	fprintf(stderr,
-		"boltzman_init unable to open rxn_lklhd_file, %s, quitting.\n",
-		state->rxn_lklhd_file);
-	fflush(stderr);
-	success = 0;
-      }
-    }
-  }
-  if (success) {
-    if (state->free_energy_format > 0) {
-      /*
-	Open the free energy output file.
-      */
-      if (state->free_energy_file) {
-	state->free_energy_fp = fopen(state->free_energy_file,"w");
-	if (state->free_energy_fp == NULL) {
-	  fprintf(stderr,
-		  "boltzman_init unable to open free_energy_file, %s, quitting.\n",
-		  state->free_energy_file);
-	  fflush(stderr);
-	  success = 0;
-	}
-      }
-    }
-  }
-  if (success) {
-    if (state->bndry_flux_file) {
-      /*
-	Open the boundary flux output file.
-      */
-      bndry_flux_fp = fopen(state->bndry_flux_file,"w");
-      if (bndry_flux_fp == NULL) {
-	fprintf(stderr,
-		"boltzman_init unable to open bndry_flux_file, %s, quitting.\n",
-		state->bndry_flux_file);
-	fflush(stderr);
-	success = 0;
-      } else {
-	state->bndry_flux_fp = bndry_flux_fp;
-      }
-    }
+    success = open_output_files(state);
   }
   if (success) {
     /*
@@ -237,8 +146,8 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
     success = size_rxns_file(state);
   }
   if (success) {
-    lfp = state->lfp;
 #ifdef DBG_BOLTZMANN_INIT
+    lfp = state->lfp;
     if (lfp) {
       fprintf(lfp,"boltzmann_init: after startup, success = %d\n",success);
       fprintf(lfp,"boltzmann_init: rxns = %d, cmpts = %d, molecules = %d, "
@@ -261,8 +170,9 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
     reaction titles, pathway descriptions, compartments and molecules
     verbage will take.
     We want an uppercase version of the molecules, so we need two 
-    molecules copies. Also we have an upperbound of the number molecules,
-    state->number_molecules and we can allocate for the molecules sorting.
+    molecules copies. Also we have an upperbound of the number of molecules,
+    state->number_molecules, and we can allocate space for the molecules 
+    sorting.
   */
   if (success) {
     success = alloc2(state);
@@ -319,7 +229,6 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
     Print the molecules dictionary.
   */
   if (success) {
-    nu_molecules = state->unique_molecules;
     success = print_molecules_dictionary(state);
   }
   /*
