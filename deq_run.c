@@ -251,7 +251,7 @@ int deq_run(struct state_struct *state) {
     Convert concs to counts,
   */
   get_counts(unique_molecules,concs,conc_to_count,counts);
-  if (state->no_round_from_deq == 0) {
+  if (state->no_round_from_deq == (int64_t)0) {
     /*
       Convert counts back to integers,
    */
