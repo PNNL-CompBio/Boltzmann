@@ -31,7 +31,7 @@ int alloc4(struct state_struct *state,
   /*
     Allocate space for the molecules_matrix structure and its
     subfields and for the transpose_work space needed to form it.
-    Called by: rxn_map_init
+    Called by: rxn_map_init, deq_run
     Calls:     calloc, fprintf, fflush,
   */
 
