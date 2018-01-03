@@ -44,6 +44,9 @@ int lr8_approximate_delta_concs(struct state_struct *state,
   struct  compartment_struct *compartment;
   struct  molecules_matrix_struct *molecules_matrix;
   struct  reactions_matrix_struct *rxn_matrix;
+  double  *activities;
+  double  *forward_lklhd;
+  double  *reverse_lklhd;
   double  *rfc;
   double  *ke;
   double  *rke;
@@ -91,11 +94,14 @@ int lr8_approximate_delta_concs(struct state_struct *state,
   /*
     Check that base_rxn is in range.
   */
-  success = 1;
-  num_rxns = state->number_reactions;
-  num_species = state->nunique_molecules;
-  molecules   = state->sorted_molecules;
-  compartments = state->sorted_compartments;
+  success          = 1;
+  num_rxns         = state->number_reactions;
+  num_species      = state->nunique_molecules;
+  molecules        = state->sorted_molecules;
+  compartments     = state->sorted_compartments;
+  activities       = state->activities;
+  forward_lklhd    = state->ode_forward_lklhds;
+  reverse_lklhd    = state->ode_reverse_lklhds;
   molecules_matrix = state->molecules_matrix;
   molecules_ptrs   = molecules_matrix->molecules_ptrs;
   rxn_indices      = molecules_matrix->reaction_indices;
@@ -174,7 +180,16 @@ int lr8_approximate_delta_concs(struct state_struct *state,
       avogadro's number - wonder if we really need these two multiplies??
     rfc[i] = (ke[i] * (rt/tp)) - (rke[i] * (pt/tr)) * recip_volume * recip_avogadro;
     */
+    /*
+      Save likelihoods for printing.
+    */
+    forward_lklhd[i] = ke[i] * (rt/tp);
+    reverse_lklhd[i] = rke[i] * (pt/tr);
+    /*
     rfc[i] = (ke[i] * (rt/tp)) - (rke[i] * (pt/tr));
+    NB if use_activities is not set activities[i] will be 1.0 for all i.
+    */
+    rfc[i] = (forward_lklhd[i] - reverse_lklhd[i]) * activities[i];
   }
   if (success) {
     molecule = molecules;
