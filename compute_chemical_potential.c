@@ -37,7 +37,7 @@ specific language governing permissions and limitations under the License.
 #include "boltzmann_structs.h"
 #include "compute_chemical_potential.h"
 
-int compute_chemical_potential(struct formation_energy_struct *fes){
+int compute_chemical_potential(struct state_struct *state){
 
   double  *probabilities; /*len = unique_molecules*/
   double  *chemical_potentials; /*len = unique_molecules */
@@ -54,17 +54,16 @@ int compute_chemical_potential(struct formation_energy_struct *fes){
   success = 1;
   
 
-  nu_molecules        = fes->nunique_molecules;
-  probabilities       = fes->molecule_probabilities;
-  chemical_potentials = fes->molecule_chemical_potentials;
-  current_counts      = fes->current_counts;
+  nu_molecules        = state->nunique_molecules;
+  probabilities       = state->molecule_probabilities;
+  chemical_potentials = state->molecule_chemical_potentials;
+  current_counts      = state->current_counts;
 
   /*
-    -RT is computed in read_params and stored in state->m_rt and 
-    in turn in fes->m_rt;
+    -RT is computed in read_params and stored in state->m_rt.
   */
 
-  m_rt = fes->m_rt;
+  m_rt = state->m_rt;
 
   sum = 0.0;
   for (i=0;i<nu_molecules;i++) {
