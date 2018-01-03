@@ -74,7 +74,7 @@ void print_likelihoods(struct state_struct *state,
   int number_reactions;
   FILE *rxn_lklhd_fp;
 
-  number_reactions     	 = state->number_reactions;
+  number_reactions     	 = (int)state->number_reactions;
   rxn_lklhd_fp         	 = state->rxn_lklhd_fp;
   forward_rxn_likelihood = state->forward_rxn_likelihood;
   reverse_rxn_likelihood = state->reverse_rxn_likelihood;
