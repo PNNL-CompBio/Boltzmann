@@ -55,12 +55,19 @@ int parse_rxn_file_keyword(char *rxn_buffer,struct state_struct *state){
   skip = count_ws(rxn_buffer);
   keyword = (char *)&rxn_buffer[skip];
   kl   = count_nws(keyword);
-  for (i=0;i<num_rxn_file_keywords;i++) {
-    ki = keyword_len[i];
-    if (ki == kl) {
-      if (strncmp(keyword,keywords[i],ki) == 0) {
-	line_type = i;
-	break;
+  /*
+    Check for comment lines (starting with a #)
+  */
+  if (keyword[0] == '#') {
+    line_type = num_rxn_file_keywords;
+  } else {
+    for (i=0;i<num_rxn_file_keywords;i++) {
+      ki = keyword_len[i];
+      if (ki == kl) {
+	if (strncmp(keyword,keywords[i],ki) == 0) {
+	  line_type = i;
+	  break;
+	}
       }
     }
   }
