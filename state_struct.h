@@ -107,6 +107,7 @@ struct state_struct {
   double  *l_thermo;
   double  *rxn_view_likelihoods;
   double  *rev_rxn_view_likelihoods;
+  double  *no_op_likelihood;
   int  *cmpts_map;
   int  *rxn_fire;
 
