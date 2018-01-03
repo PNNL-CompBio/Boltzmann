@@ -107,6 +107,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
     state->rxn_view_freq      = (int64_t)0;
     state->conc_view_freq     = (int64_t)0;
     state->lklhd_view_freq    = (int64_t)0;
+    state->fe_view_freq       = (int64_t)0;
     state->use_activities     = (int64_t)0;
     state->print_output       = (int64_t)0;
     state->use_pseudoisomers  = (int64_t)1;
@@ -204,6 +205,11 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	sscan_ok = sscanf(value,"%ld",&(state->lklhd_view_freq));
 	if (state->lklhd_view_freq < 0) {
 	  state->lklhd_view_freq = 1;
+	}
+      } else if (strncmp(key,"FE_VIEW_FREQ",12) == 0) {
+	sscan_ok = sscanf(value,"%ld",&(state->fe_view_freq));
+	if (state->fe_view_freq < 0) {
+	  state->fe_view_freq = 0;
 	}
       } else if (strncmp(key,"USE_ACTIVITIES",14) == 0) {
 	sscan_ok = sscanf(value,"%ld",&(state->use_activities));
