@@ -54,6 +54,7 @@ int size_rxns_file(struct state_struct *state,
   int64_t compartment_len;
   int64_t line_len;
   int64_t align_len;
+  int64_t max_regs_per_rxn;
   int64_t regulation_len;
   int64_t *keyword_lens;
   char *rxn_buffer;
@@ -219,6 +220,16 @@ int size_rxns_file(struct state_struct *state,
       Always have an empty compartment.
     */
     cmpts += 1;
+    /*
+      We need to add space for padding done in parse_rxns
+    */
+    align_len = state->align_len;
+    max_regs_per_rxn = state->max_regs_per_rxn;
+    molecules_len += molecules * align_len;
+    compartment_len += 2* rxns * align_len;
+    pathway_len += rxns*align_len;
+    rxn_title_len += rxns * align_len;
+    regulation_len += rxns * max_regs_per_rxn * align_len;
     state->number_compartments = cmpts;
     state->molecule_text_length    = molecules_len;
     state->pathway_text_length     = pathway_len;
