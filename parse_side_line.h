@@ -25,6 +25,6 @@ extern int parse_side_line(char *rctnts_p,
 			   int64_t *compartment_pos_p,
 			   int *molecules_p,
 			   int *cmpts_p,
-			   struct rxn_struct *reaction,
+			   struct reaction_struct *reaction,
 			   struct state_struct *state,
 			   int side);
