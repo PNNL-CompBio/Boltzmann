@@ -59,6 +59,8 @@ struct molecule_struct {
 		  compute the intial concentration from energies of formation,
 		  2 to recompute the concentration from energies of formation
 		  at every time step.
+		  
+	solvent: a 1 if this is a solvent molecule, 0 otherwise.
 
      For compartments only the string, c_index and g_index fields are used.
 
