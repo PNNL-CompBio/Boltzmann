@@ -33,8 +33,8 @@ int set_compartment_ptrs(struct state_struct *state) {
     Calls:     
   */
   int64_t *cmpt_ptrs;
-  struct istring_elem_struct *sorted_molecules;
-  struct istring_elem_struct *cur_molecule;
+  struct molecule_struct *sorted_molecules;
+  struct molecule_struct *cur_molecule;
   int nzc;
   int nzm;
 
