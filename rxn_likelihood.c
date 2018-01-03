@@ -132,7 +132,7 @@ double rxn_likelihood(double *counts,
   }
   /*
     Mod here we need to account for concentrations not counts, so we
-    need an left sum of coefficients and a right sum of coeffiecients.
+    need a left sum of coefficients and a right sum of coeffiecients.
   */
   for (j=rxn_ptrs[rxn];j<rxn_ptrs[rxn+1];j++) {
     coeff = rcoef[j];
