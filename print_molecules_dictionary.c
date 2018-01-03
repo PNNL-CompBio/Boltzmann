@@ -67,16 +67,12 @@ int print_molecules_dictionary(struct state_struct *state) {
     fflush(stderr);
     success = 0;
   }
-  if (conc_fp == NULL) {
-    fprintf(stderr,
-	    "print_molecules_dictionary: Error null concs_out_fp\n");
-    fflush(stderr);
-    success = 0;
-  }
   cmpt_string = NULL;
   oi          = -1;
   if (success) {
-    fprintf(conc_fp,"iter");
+    if (conc_fp) {
+      fprintf(conc_fp,"iter");
+    }
     for (i=0;i<nu_molecules;i++) {
       ci = cur_molecules->c_index;
       molecule    = (char *)&molecules_text[cur_molecules->string];
@@ -89,14 +85,20 @@ int print_molecules_dictionary(struct state_struct *state) {
       }
       if (ci > 0) {
 	fprintf(dict_fp,"%d %s %s\n",i,molecule,cmpt_string);
-	fprintf(conc_fp,"\t%s:%s",molecule,cmpt_string);
+	if (conc_fp) {
+	  fprintf(conc_fp,"\t%s:%s",molecule,cmpt_string);
+	}
       } else {
 	fprintf(dict_fp,"%d %s\n",i,molecule);
-	fprintf(conc_fp,"\t%s",molecule);
+	if (conc_fp) {
+	  fprintf(conc_fp,"\t%s",molecule);
+	}
       }
       cur_molecules += 1; /* Caution address arithmetic. */
     }
-    fprintf(conc_fp,"\n");
+    if (conc_fp) {
+      fprintf(conc_fp,"\n");
+    }
     fclose(dict_fp);
   }
   return(success);
