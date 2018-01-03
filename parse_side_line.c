@@ -39,7 +39,12 @@ int parse_side_line(char *rctnts_p,
 		    struct state_struct *state,
 		    int side) {
   /*
-    Parse a left/right line, count and record reactant molecules and coefficients.
+    Parse a left/right line, count and record reactant molecules and 
+    coefficients in the reacstion matrix.
+
+    Called by: parse_reactions_file
+    Calls:     strlen, atoi, fprint, fflush
+
     Variable           TMF    Description
 
     rctnts_p           C*I   Pointer to the string of reactants/products.
@@ -98,6 +103,7 @@ int parse_side_line(char *rctnts_p,
   char    *molecules_text;
   char    *raw_molecules_text;
   char    *compartment;
+  char    *solvent_string;
 
   int     sl;
   int     colon_loc;
@@ -132,6 +138,7 @@ int parse_side_line(char *rctnts_p,
   compartment_text   = state->compartment_text;
   molecules_text     = state->molecules_text;
   raw_molecules_text = state->raw_molecules_text;
+  solvent_string     = state->solvent_string;
 
   pos = 0;
   len = strlen(rctnts);
@@ -216,13 +223,18 @@ int parse_side_line(char *rctnts_p,
       padding = (align_len - (sll & align_mask)) & align_mask;
       strcpy((char *)&molecules_text[molecules_pos],rctnts);
       upcase(sl,(char *)&molecules_text[molecules_pos]);
-
+      
       /*
       unsorted_molecules->string = (char *)&molecules_text[molecules_pos];
       */
       unsorted_molecules->string = molecules_pos;
       unsorted_molecules->m_index  = molecules;
       unsorted_molecules->c_index  = ci;
+      if (strcmp((char *)&molecules_text[molecules_pos],solvent_string) == 0) {
+	unsorted_molecules->solvent = 1;
+      } else {
+	unsorted_molecules->solvent = 0;
+      }
       /*
 	Set the variable field to -1 to track prescence of molecule
 	in the intial concentrations file.
