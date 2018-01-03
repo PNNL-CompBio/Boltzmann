@@ -2,9 +2,9 @@ SUNDIALS_ROOT = ./sundials-2.7.0
 include Makefile.head
 
 EXECS        = boltzmann deq lapack_test sbml2bo kegg_ms_ids ms2js_ids kegg_ids bwarmup boltzmann_test_save_load
-all:  $(EXECS) $(SUNDIALS_LIB_DIR)/libsundials_cvodes.so $(SUNDIALS_LIB_DIR)/libsundials_cvodes.a $(SUNDIALS_LIB_DIR)/libsundials_nvec_ser.a $(SUNDIALS_LIB_DIR)/libsundials_nvec_ser.so $(SUNDIALS_LIB_DIR)/libsundials.so $(SUNDIALS_LIB_DIR)/libsundials.a
+all:  $(EXECS) $(SUNDIALS_LIB_DIR)/libsundials_cvodes.a $(SUNDIALS_LIB_DIR)/libsundials_nvec_ser.a $(SUNDIALS_LIB_DIR)/libsundials.a
 
-$(SUNDIALS_LIB_DIR)/libsundials_cvodes.so $(SUNDIALS_LIB_DIR)/libsundials_cvodes.a $(SUNDIALS_LIB_DIR)/libsundials_nvec_ser.a $(SUNDIALS_LIB_DIR)/libsundials_nvec_ser.so $(SUNDIALS_LIB_DIR)/libsundials.so $(SUNDIALS_LIB_DIR)/libsundials.a:
+$(SUNDIALS_LIB_DIR)/libsundials_cvodes.a $(SUNDIALS_LIB_DIR)/libsundials_nvec_ser.a $(SUNDIALS_LIB_DIR)/libsundials.a:
 	cd $(SUNDIALS_ROOT) && $(MAKE)
 
 default: $(EXECS) $(SUNDIALS_LIBS) libboltzmann.a
