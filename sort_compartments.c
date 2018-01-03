@@ -32,13 +32,13 @@ specific language governing permissions and limitations under the License.
 #include "merge_compartments.h"
 
 #include "sort_compartments.h"
-int sort_compartments(struct istring_elem_struct **unsorted_istrings,
-		      struct istring_elem_struct **sorted_istrings,
+int sort_compartments(struct istring_elem_struct **unsorted_compartments,
+		      struct istring_elem_struct **sorted_compartments,
 		      int n) {
   /*
     Sort the uppercase istring names.
     Called by: boltzman_init
-    Calls    : merge_istrings
+    Calls    : merge_compartments
 
     for now we use a simple merge sort, with strcmp as the
     comparator function. In the future might want to bin sort
@@ -48,8 +48,8 @@ int sort_compartments(struct istring_elem_struct **unsorted_istrings,
     of the same length.
   
   */
-  struct istring_elem_struct *u_istrings;
-  struct istring_elem_struct *s_istrings;
+  struct istring_elem_struct *u_compartments;
+  struct istring_elem_struct *s_compartments;
   struct istring_elem_struct *temp;
 
   int success;
@@ -61,8 +61,8 @@ int sort_compartments(struct istring_elem_struct **unsorted_istrings,
   int ln;
   int j;
   success = 1;
-  u_istrings = *unsorted_istrings;
-  s_istrings = *sorted_istrings;
+  u_compartments = *unsorted_compartments;
+  s_compartments = *sorted_compartments;
   
   if (n > 2) {
     for (step = 1; step < n; step += step) {
@@ -70,9 +70,9 @@ int sort_compartments(struct istring_elem_struct **unsorted_istrings,
 	l1 = step;
 	l2 = n - j - step;
 	if (l2 > step) l2 = step;
-	merge_compartments((struct istring_elem_struct *)&u_istrings[j],
-		       (struct istring_elem_struct *)&u_istrings[j+step],
-	               (struct istring_elem_struct *)&s_istrings[j],l1,l2);
+	merge_compartments((struct istring_elem_struct *)&u_compartments[j],
+		       (struct istring_elem_struct *)&u_compartments[j+step],
+	               (struct istring_elem_struct *)&s_compartments[j],l1,l2);
       }
       /* Now if the last group is <= step they just need to be copied
 	 in to the sorted list.
@@ -80,17 +80,17 @@ int sort_compartments(struct istring_elem_struct **unsorted_istrings,
       ln = n & (step + step - 1);
       if (ln <= step) {
 	for (j = n-ln;j<n;j++) {
-	  s_istrings[j].string = u_istrings[j].string;
-	  s_istrings[j].m_index  = u_istrings[j].m_index;
-	  s_istrings[j].c_index  = u_istrings[j].c_index;
+	  s_compartments[j].string = u_compartments[j].string;
+	  s_compartments[j].m_index  = u_compartments[j].m_index;
+	  s_compartments[j].c_index  = u_compartments[j].c_index;
 	}
       }
-      temp                  = s_istrings;
-      s_istrings            = u_istrings;
-      u_istrings            = temp;
+      temp               = s_compartments;
+      s_compartments     = u_compartments;
+      u_compartments     = temp;
     }
   }
-  *sorted_istrings   = u_istrings;
-  *unsorted_istrings = s_istrings;
+  *sorted_compartments   = u_compartments;
+  *unsorted_compartments = s_compartments;
   return(success);
 }
