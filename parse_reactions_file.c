@@ -173,6 +173,7 @@ int parse_reactions_file(struct state_struct *state,
   max_regs_per_rxn = (int)state->max_regs_per_rxn;
   reg_base         = (int64_t)0;
   reg_pos          = reg_base;
+  line_type        = 0;
   /*
   strcpy(state->reaction_file,reaction_file);
   */
@@ -287,7 +288,7 @@ int parse_reactions_file(struct state_struct *state,
 	success = 0;
 	if (lfp) {
 	  fprintf(lfp,"parse_reactions_file: Error input line longer than"
-		" %lld characters\n",rxn_buff_len);
+		" %ld characters\n",rxn_buff_len);
 	  fflush(lfp);
 	}
 	break;
