@@ -30,6 +30,7 @@ struct state_struct {
   struct istring_elem_struct *sorted_species;
   struct istring_elem_struct *unsorted_cmpts;
   struct istring_elem_struct *sorted_cmpts;
+  struct vgrng_state_struct  *vgrng_state;
   char *params_file;
   char *reaction_file;
   char *init_conc_file;
