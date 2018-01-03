@@ -1,6 +1,5 @@
 #include "boltzmann_structs.h"
 
-#include "compute_flux_scaling.h"
 #include "approximate_delta_concs.h"
 #include "blas.h"
 #include "lapack.h"
@@ -19,9 +18,6 @@ int ode_it_solve(struct state_struct *state,
 		 double *del,
 		 double *rhs,       
 		 double *scratch,   /* used to compute candnrm */
-		 double *y_count,
-		 double *forward_rxn_likelihoods,
-		 double *reverse_rxn_likelihoods,
 		 double d,
 		 double h,
 		 double rtol,
@@ -30,8 +26,7 @@ int ode_it_solve(struct state_struct *state,
 		 int    *iter_count_p) {
   /*
     Iteratively solve nonlinear  Mz = h*f(t,v+d*z) where y = v+d*z.
-    del, rhs, scratch,  y_count, forward_rxn_likelihoods, 
-    and reverse_reaction_likeklihoods are scratch vectors of length ny.    
+    del, rhs, and scratch, are scratch vectors of length ny.    
     computes a result in z, and also modifies y.
     miter and ipivot contain the LU factorization of I-d*h*dfdy,
     Returns 0 on successful iteration, 1 on a fail.
@@ -147,34 +142,7 @@ int ode_it_solve(struct state_struct *state,
   exit_not = 1;
   for (iter = 0; ((iter<max_iter) && exit_not);iter++) {
     iter_count = iter + 1;
-    /*
-      Compute counts to be used in computing concentration derivative.
-    for (i=0;i<ny;i++) {
-      y_count[i] = y[i]*conc_to_count[i];
-    }
-      y_count <- y .* conc_to_count
-    */
-    vec_mul(&ny,y_count,y,conc_to_count);
-    /*
-      rhs <- y', approximate delta concentraions.
-    */
-    
-    flux_scaling = compute_flux_scaling(state,y);
-    approximate_delta_concs(state,y_count,forward_rxn_likelihoods, 
-			    reverse_rxn_likelihoods,
-			    rhs,flux_scaling,base_rxn,choice);
-    /*
-#ifdef DBG
-    if (lfp) {
-      fprintf(lfp,"ode_it_solve: after call to approximate_delta_concs:, flux_scaling = %le\n",flux_scaling);
-      nsteps = 0;
-      origin = 7;
-      print_concs_fluxes(state,ny,rhs,y,y_count,
-			 forward_rxn_likelihoods,
-			 reverse_rxn_likelihoods,t,h,nsteps,origin);
-    }
-#endif
-    */
+    approximate_delta_concs(state,y,rhs,choice);
     /*
       for (i=0;i<ny;i++) {
         rhs[i] = h * rhs[i];
