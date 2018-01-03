@@ -28,7 +28,7 @@ specific language governing permissions and limitations under the License.
 int unique_molecules(struct state_struct *state) {
   /*
     Remove duplicates from the sorted_molecules list
-    and set the column_indices fields in the
+    and set the molecules_indices fields in the
     reactions_matrix appropriately.
     Called by: rxns_init
     Calls:     strcmp (intrinsic)
