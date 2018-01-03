@@ -29,13 +29,9 @@ specific language governing permissions and limitations under the License.
 #include "choose_rxn.h"
 #include "deq_run.h"
 #include "compute_delta_g_forward_entropy_free_energy.h"
+#include "print_rxn_choice.h"
 #include "print_counts.h"
-#include "print_likelihoods.h"
-#include "save_likelihoods.h"
-#include "print_free_energy.h"
-#include "print_boundary_flux.h"
 #include "print_restart_file.h"
-#include "print_reactions_view.h"
 
 #include "bwarmup_run.h"
 int bwarmup_run(struct state_struct *state) {
@@ -48,12 +44,8 @@ int bwarmup_run(struct state_struct *state) {
 	       choose_rxn,
                deq_run,
 	       compute_delta_g_forward_entropy_free_energy
-	       print_counts,
-	       print_likelihoods,
-	       print free_energy,
-	       print boundary_flux,
-	       print_restart_file
-	       print_reactions_view
+	       print_rxn_choice
+	       print_counts
   */
   struct state_struct *nstate;
   double dg_forward;
@@ -186,20 +178,7 @@ int bwarmup_run(struct state_struct *state) {
 	if (choice_view_freq > zero_l) {
 	  choice_view_step = choice_view_step - one_l;
 	  if ((choice_view_step <= zero_l) || (i == (n_warmup_steps-one_l))) {
-	    if (rxn_choice == noop_rxn) {
-	      fprintf(lfp,"%lld\tnone\n",i);
-	    } else {
-	      if (rxn_choice < number_reactions) {
-		fprintf(lfp,"%lld\t%d\t%le\t%le\n",i,rxn_choice,forward_rxn_likelihood[rxn_choice],
-			reverse_rxn_likelihood[rxn_choice]);
-	      } else {
-		rxn_no = rxn_choice - number_reactions;
-		fprintf(lfp,"%lld\t%d\t%le\t%le\n",i,rxn_choice,reverse_rxn_likelihood[rxn_no],
-			forward_rxn_likelihood[rxn_no]);
-	      
-	      }
-	    }
-	    fflush(lfp);
+	    print_rxn_choice(state,i,rxn_choice);
 	    choice_view_step = choice_view_freq;
 	  }
 	}
