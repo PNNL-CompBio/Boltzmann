@@ -63,9 +63,13 @@ int lr9_approximate_delta_concs(struct state_struct *state,
   double  tr;
   double  tp;
   double  conc_mi;
+  double  recip_volume;
+  double  volume;
+  double  multiplier;
+  double  keq_adj;
+  double  rkeq_adj;
   /*
   double  thermo_adj;
-  double  recip_volume;
   double  recip_avogadro;
   */
   double  fluxi;
@@ -92,6 +96,10 @@ int lr9_approximate_delta_concs(struct state_struct *state,
 
   int use_regulation;
   int count_or_conc;
+
+  int sum_coeff;
+  int padi;
+
 
   FILE *lfp;
   FILE *efp;
@@ -148,7 +156,7 @@ int lr9_approximate_delta_concs(struct state_struct *state,
     Compute the reaction flux contributions for each reaction:
 
     rfc   = k_f * product of reactants^stoichiometric_coef -
-            k_r * product of products*stoichiometric_coef,
+            k_r * product of products^stoichiometric_coef,
 
 	 where k_f = forward rate constant
 
@@ -190,15 +198,18 @@ int lr9_approximate_delta_concs(struct state_struct *state,
       rt = 1.0;
       tr = 1.0;
       tp = 1.0;
+      sum_coeff = 0;
       for (j=rxn_ptrs[i];j<rxn_ptrs[i+1];j++) {
 	mi = molecule_indices[j];
 	molecule = (struct molecule_struct *)&molecules[mi];
 	ci = molecules->c_index;
 	compartment = (struct compartment_struct *)&compartments[ci];
+	volume  = compartment->volume;
+	recip_volume = compartment->recip_volume;
 	/*
-	  recip_volume       = compartment->recip_volume;
 	*/
-	klim = rcoefficients[j];
+	klim = coefficients[j];
+	sum_coeff += klim;
 	conc_mi = concs[mi];
 	if (klim < 0) {
 	  for (k=0;k<(-klim);k++) {
@@ -212,18 +223,41 @@ int lr9_approximate_delta_concs(struct state_struct *state,
 	  }
 	}
       } /* end for (j ... ) */
+      keq_adj = 1.0;
+      rkeq_adj = 1.0;
+      multiplier = 1.0;
+      if (sum_coeff > 0) {
+	multiplier = recip_volume;
+      } else {
+	if (sum_coeff < 0) {
+	  multiplier = volume;
+	  sum_coeff = - sum_coeff;
+	} 
+      }
+      for (k=0;k < sum_coeff; k++) {
+	keq_adj *= multiplier;
+      }
+      rkeq_adj = 1.0/keq_adj;
       /*
 	Save likelihoods for printing.
       */
       if (pt != 0.0) {
-	forward_lklhd[i] = ke[i] * (rt/pt);
+	forward_lklhd[i] = ke[i] * keq_adj * (rt/pt);
       } else {
-	forward_lklhd[i] = 1.0;
+	if (rt != 0) {
+	  forward_lklhd[i] = 1.0;
+	} else {
+	  forward_lklhd[i] = 0.0;
+	}
       }
       if (rt != 0.0) {  
-	reverse_lklhd[i] = rke[i] * (pt/rt);
+	reverse_lklhd[i] = rke[i] * rkeq_adj * (pt/rt);
       } else {
-	reverse_lklhd[i] = 1.0;
+	if (pt != 0) {
+	  reverse_lklhd[i] = 1.0;
+	} else {
+	  reverse_lklhd[i] = 0.0;
+	}
       }
       /*
 	rfc[i] = (ke[i] * (rt/tp)) - (rke[i] * (pt/tr));
@@ -238,7 +272,7 @@ int lr9_approximate_delta_concs(struct state_struct *state,
 	for (j=molecules_ptrs[i];j<molecules_ptrs[i+1];j++) {
 	  rxn = rxn_indices[j];
 	  if (coefficients[j] != 0) {
-	    fluxi += (rfc[rxn]/((double)coefficients[j]));
+	    fluxi += (rfc[rxn]*((double)coefficients[j]));
 	  }
 	} /* end for(j...) */
 	flux[i] = flux_scaling * fluxi;
