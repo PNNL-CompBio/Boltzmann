@@ -65,6 +65,7 @@ int alloc0_a(struct state_struct *state) {
        ode_lklhd_file,
        ode_bflux_file,
        concs_out_file,
+       ode_concs_file,
 
        solvent_string
   */
