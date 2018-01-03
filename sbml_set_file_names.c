@@ -47,6 +47,7 @@ int sbml_set_file_names(struct sbml2bo_struct *state) {
   id_name_file   = state->id_name_file;
   log_file       = state->log_file;
   max_file_name_len = state->file_name_len;
+  success        = 1;
   /* Determine the length of the base name - this is just the sbml file name
      minus the .sbml if it ends in one, else the full file name.
   */
