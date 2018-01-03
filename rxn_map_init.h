@@ -20,5 +20,7 @@ under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
-extern int rxn_map_init(char *param_file_name, struct state_struct **statep,
-			struct molecules_matrix_struct **molecules_matrix_p);
+#ifndef _RXN_MAP_INIT_H_
+#define _RXN_MAP_INIT_H_ 1
+extern int rxn_map_init(char *param_file_name, struct state_struct **statep);
+#endif
