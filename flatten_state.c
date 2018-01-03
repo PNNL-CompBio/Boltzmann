@@ -102,6 +102,8 @@ int flatten_state(struct state_struct *boot_state,
   int64_t dg0s_size;
   int64_t ke_offset;
   int64_t ke_size;
+  int64_t rke_offset;
+  int64_t rke_size;
   int64_t kss_size;
   int64_t kss_offset;
   int64_t kss_e_val_size;
@@ -263,7 +265,9 @@ int flatten_state(struct state_struct *boot_state,
   dg0s_size            = number_reactions + (number_reactions & 1);
   ke_offset            = dg0s_offset + dg0s_size;
   ke_size              = dg0s_size;
-  kss_offset           = ke_offset + ke_size;
+  rke_offset           = ke_offset + ke_size;
+  rke_size             = ke_size;
+  kss_offset           = rke_offset + rke_size;
   kss_size             = ke_size + ke_size;
   kss_e_val_size       = unique_molecules + (unique_molecules & 1);
   kss_e_val_offset     = kss_offset + kss_size;
@@ -491,6 +495,7 @@ int flatten_state(struct state_struct *boot_state,
     new_state->vgrng2_state = (struct vgrng_state_struct *)&new_state_l[vgrng2_offset];
     new_state->dg0s = (double*)&new_state_l[dg0s_offset];
     new_state->ke   = (double*)&new_state_l[ke_offset];
+    new_state->rke  = (double*)&new_state_l[rke_offset];
     new_state->kss  = (double*)&new_state_l[kss_offset];
     new_state->kssr = (double*)&new_state_l[kss_offset+ke_size];
     new_state->kss_e_val  = (double*)&new_state_l[kss_e_val_offset];
@@ -556,6 +561,7 @@ int flatten_state(struct state_struct *boot_state,
       move_size = number_reactions*sizeof(double);
       memcpy(new_state->dg0s,boot_state->dg0s,move_size);
       memcpy(new_state->ke,boot_state->ke,move_size);
+      memcpy(new_state->rke,boot_state->rke,move_size);
       move_size = kss_size * sizeof(double);
       memcpy(new_state->kss,boot_state->kss,move_size);
       move_size = unique_molecules * sizeof(double);
