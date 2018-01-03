@@ -204,6 +204,7 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
   if (success) {
     success = sort_compartments(&state->unsorted_cmpts,
 				&state->sorted_cmpts,
+				state->compartment_text,
 				state->number_compartments);
   }
   /*
@@ -226,8 +227,9 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
   */
   if (success) {
     success = sort_molecules(&state->unsorted_molecules,
-			    &state->sorted_molecules,
-			    state->number_molecules);
+			     &state->sorted_molecules,
+			     state->molecules_text,
+			     state->number_molecules);
   }
   /*
     Then we extract the unique molecules and set the
@@ -276,10 +278,10 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
   }
   /*
     Compute the molecules matrix.
-  */
   if (success) {
     success = form_molecules_matrix(state);
   }
+  */
   /*
     Compute the reaction ke's.
   */
