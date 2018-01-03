@@ -70,7 +70,7 @@ int alloc5(int64_t num_cpds,
   formation_energies = (struct formation_energy_struct *)calloc(one_l,ask_for);
   
   if (formation_energies == NULL) {
-    fprintf(stderr,"alloc5: Error, unable to allocate %ld bytes of space for "
+    fprintf(stderr,"alloc5: Error, unable to allocate %lld bytes of space for "
 	    "formation_energy struct\n",ask_for);
     fflush(stderr);
     success = 0;
@@ -85,7 +85,7 @@ int alloc5(int64_t num_cpds,
     *usage   += ask_for;
     pseudoisomers = (struct pseudoisomer_struct *)calloc(one_l,ask_for);
     if (pseudoisomers == NULL) {
-      fprintf(stderr,"alloc5: Error, unable to allocate %ld bytes of space "
+      fprintf(stderr,"alloc5: Error, unable to allocate %lld bytes of space "
 	      "for pseudoisomer data \n",ask_for);
       fflush(stderr);
       success = 0;
@@ -97,7 +97,7 @@ int alloc5(int64_t num_cpds,
     *usage += ask_for;
     pseudoisomer_strings = (char *)calloc(one_l,ask_for);
     if (pseudoisomer_strings == NULL) {
-      fprintf(stderr,"alloc5: Error, unable to allocate %ld bytes of space "
+      fprintf(stderr,"alloc5: Error, unable to allocate %lld bytes of space "
 	      "for pseudoisomer_strings data \n",ask_for);
       fflush(stderr);
       success = 0;
@@ -113,7 +113,7 @@ int alloc5(int64_t num_cpds,
     *usage += ask_for;
     sorted_pseudoisomers_indices = (int*)calloc(one_l,ask_for);
     if (sorted_pseudoisomer_indices == NULL) {
-      fprintf(stderr,"alloc5: Error, unable to allocate %ld bytes of space "
+      fprintf(stderr,"alloc5: Error, unable to allocate %lld bytes of space "
 	      "for sorted_pseudoisomer_indices.\n",ask_for);
       fflush(stderr);
       success = 0;
@@ -126,7 +126,7 @@ int alloc5(int64_t num_cpds,
     *usage += ask_for;
     pseudoisomer_scratch = (int*)calloc(one_l,ask_for);
     if (pseudoisomer_scratch == NULL) {
-      fprintf(stderr,"alloc5: Error, unable to allocate %ld bytes of space "
+      fprintf(stderr,"alloc5: Error, unable to allocate %lld bytes of space "
 	      "for pseudoisomer_scratch.\n",ask_for);
       fflush(stderr);
       success = 0;
