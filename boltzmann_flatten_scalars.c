@@ -577,10 +577,16 @@ int boltzmann_flatten_scalars(struct state_struct *state,
   } else {
     state->ode_stop_thresh = dflattened[word_pos];
   }
+  word_pos += 1;
+  if (direction == 0) {
+    dflattened[word_pos] = state->nj_thresh;
+  } else {
+    state->nj_thresh = dflattened[word_pos];
+  }
   /*
     Leave some extra space.
   */
-  word_pos += 7;
+  word_pos += 6;
   *word_pos_p  = word_pos;
   return(success);
 }
