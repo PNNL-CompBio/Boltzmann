@@ -34,12 +34,12 @@ void print_boundary_flux(struct state_struct *state) {
     Name           TMF       Descripton
     state          G*I       state structure. No fields are modified.
                              Used fields are sorted_molecules, 
-			     bndry_flux_fp, sorted_cmpts,
+			     bndry_flux_fp, sorted_compartments,
 			     unqiue_molecules and bndry_flux_counts.
   */
   struct molecule_struct *sorted_molecules;
   struct molecule_struct *molecule;
-  struct compartment_struct *sorted_cmpts;
+  struct compartment_struct *sorted_compartments;
   struct compartment_struct *cur_cmpt;
   double *bndry_flux_counts;
   char *molecules_text;
@@ -56,7 +56,7 @@ void print_boundary_flux(struct state_struct *state) {
 
   sorted_molecules  = state->sorted_molecules;
   bndry_flux_fp     = state->bndry_flux_fp;
-  sorted_cmpts      = state->sorted_cmpts;
+  sorted_compartments = state->sorted_compartments;
   unique_molecules  = state->nunique_molecules;
   bndry_flux_counts = state->bndry_flux_counts;
   molecules_text    = state->molecules_text;
@@ -71,7 +71,7 @@ void print_boundary_flux(struct state_struct *state) {
       if (ci != oi) {
 	oi = ci;
 	if (ci > 0) {
-	  cur_cmpt = (struct compartment_struct *)&(sorted_cmpts[ci]);
+	  cur_cmpt = (struct compartment_struct *)&(sorted_compartments[ci]);
 	  cmpt_string = (char *)&compartment_text[cur_cmpt->string];
 	} else {
 	  cmpt_string = NULL;
