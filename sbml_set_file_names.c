@@ -20,7 +20,7 @@ under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
-#include "sbml2bo_structs.h"
+#include "boltzmann_structs.h"
 #include "sbml_set_file_names.h"
 
 int sbml_set_file_names(struct sbml2bo_struct *state) {
