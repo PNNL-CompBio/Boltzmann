@@ -177,8 +177,9 @@ int print_reactions_view(struct state_struct *state) {
       /*
 	Now repeat the process for the reverse reaction.
       */
-      if (reaction->title) {
-	fprintf(rxn_view_fp,"%s\t",reaction->title);
+      if (reaction->title >= 0) {
+	title = (char *)&rxn_title_text[reaction->title];
+	fprintf(rxn_view_fp,"%s\t",title);
       }
       nr = 0;
       for (j=rxn_ptrs[rxns];j<rxn_ptrs[rxns+1];j++) {
