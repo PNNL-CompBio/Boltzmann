@@ -207,6 +207,11 @@ struct state_struct {
     concentrations in base reaction).
   */
   double  kf_base_reaction;
+  /*
+    Flux scaling, if 0 then use kf_base_raction * product of base reaction 
+    reactant species concentratiopns, else use fixed FLUX_SCALING.
+  */
+  double  flux_scaling;
   int64_t *workspace_base;
 
   /* two way data (modified) */
@@ -299,6 +304,9 @@ struct state_struct {
   char *rxn_mat_file;      /* max_filename_len */
   char *dg0ke_file;        /* max_filename_len */
   char *dictionary_file;   /* max_filename_len */
+  char *ode_flux_file;     /* max_filename_len */
+  char *ode_lklhd_file;    /* max_filename_len */
+  char *ode_bflux_file;    /* max_filename_len */
   char *solvent_string;    /* Length is 64. Allocated in alloc0 */
 
   char *rxn_title_text;    /* rxn_title_text_length. Allocated in alloc2  */
@@ -371,6 +379,11 @@ struct state_struct {
   FILE *bndry_flux_fp;
   FILE *cmpt_fp;
 
+  FILE *ode_flux_fp;
+  FILE *ode_lklhd_fp;
+  
+  FILE *ode_bflux_fp;
+  FILE *efp;
   /*
     Instrumentation.     
   */
