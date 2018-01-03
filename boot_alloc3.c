@@ -85,7 +85,7 @@ int boot_alloc3(struct boot_state_struct *boot_state) {
     if (molecule_text_ws == NULL) {
       success = 0;
       if (lfp) {
-	fprintf(lfp,"boot_alloc3: Error could not allocate %ld "
+	fprintf(lfp,"boot_alloc3: Error could not allocate %lld "
     		"bytes for molecule_text_ws\n",molecule_text_length);
     	fflush(lfp);
       }
@@ -97,7 +97,7 @@ int boot_alloc3(struct boot_state_struct *boot_state) {
     if (compartment_text_ws == NULL) {
       success = 0;
       if (lfp) {
-	fprintf(lfp,"boot_alloc3: Error could not allocate %ld "
+	fprintf(lfp,"boot_alloc3: Error could not allocate %lld "
 	      "bytes for compartment_text_ws\n",compartment_text_length);
 	fflush(lfp);
       }
@@ -110,7 +110,7 @@ int boot_alloc3(struct boot_state_struct *boot_state) {
     if (molecule_sort_ws == NULL) {
       success  = 0;
       if (lfp) {
-	fprintf(lfp,"boot_alloc3: Error could not allocate %ld "
+	fprintf(lfp,"boot_alloc3: Error could not allocate %lld "
 		"bytes for molecule_sort_ws\n",ask_for);
 	fflush(lfp);
       }
@@ -123,7 +123,7 @@ int boot_alloc3(struct boot_state_struct *boot_state) {
     compartment_sort_ws = (struct compartment_struct*)calloc(one_l,ask_for);
     if (compartment_sort_ws == NULL) {
       if (lfp) {
-	fprintf(lfp,"boot_alloc3: Error could not allocate %ld "
+	fprintf(lfp,"boot_alloc3: Error could not allocate %lld "
 	      "bytes for compartment_sort_ws\n",ask_for);
 	fflush(lfp);
 	success  = 0;
@@ -137,7 +137,7 @@ int boot_alloc3(struct boot_state_struct *boot_state) {
     if (compartment_list == NULL) {
       success  = 0;
       if (lfp) {
-	fprintf(lfp,"boot_alloc3: Error could not allocate %ld "
+	fprintf(lfp,"boot_alloc3: Error could not allocate %lld "
 		"bytes for compartment_list\n",ask_for);
 	fflush(lfp);
       }
@@ -150,7 +150,7 @@ int boot_alloc3(struct boot_state_struct *boot_state) {
     if (compartment_map == NULL) {
       success  = 0;
       if (lfp) {
-	fprintf(lfp,"boot_alloc3: Error could not allocate %ld "
+	fprintf(lfp,"boot_alloc3: Error could not allocate %lld "
 	      "bytes for compartment_map\n",ask_for);
 	fflush(lfp);
       }
@@ -163,7 +163,7 @@ int boot_alloc3(struct boot_state_struct *boot_state) {
     if (molecule_map == NULL) {
       success  = 0;
       if (lfp) {
-	fprintf(lfp,"boot_alloc3: Error could not allocate %ld "
+	fprintf(lfp,"boot_alloc3: Error could not allocate %lld "
 	      "bytes for molecule_map\n",ask_for);
 	fflush(lfp);
       }
