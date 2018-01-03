@@ -71,11 +71,11 @@ int alloc2(struct state_struct *state, int setup) {
       reg_species,
       vgrng_state,
       vgnrg2_state
+      
 
     Called by: boltzmann_init, boltzmann_flatten_alloc1
     Calls:     alloc2_a, calloc, fprintf, fflush 
   */
-  struct vgrng_state_struct vss;
   struct reaction_struct rs;
   struct reactions_matrix_struct rms;
   struct reactions_matrix_struct *reactions_matrix;
@@ -95,7 +95,6 @@ int alloc2(struct state_struct *state, int setup) {
   int64_t double_size;
   int64_t int64_t_size;
   int success;
-  int padi;
   success    	     = 1;
   usage      	     = state->usage;
   one_l      	     = (int64_t)1;
@@ -344,6 +343,8 @@ int alloc2(struct state_struct *state, int setup) {
       success = 0;
     }
   }
+  /* 
+     These are allocated in alloc0!
   if (success) {
     ask_for = (int64_t)sizeof(vss);
     usage += ask_for;
@@ -368,6 +369,7 @@ int alloc2(struct state_struct *state, int setup) {
       fflush(stderr);
     }
   }
+  */
   state->usage = usage;
   return(success);
 }
