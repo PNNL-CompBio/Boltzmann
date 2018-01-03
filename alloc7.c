@@ -63,7 +63,7 @@ int alloc7(struct state_struct *state) {
     usage += ask_for;
     flux_vector  = (double *)calloc(one_l,ask_for);
     if (flux_vector == NULL) {
-      fprintf(stderr,"alloc7: Error unable to allocate %ld bytes for "
+      fprintf(stderr,"alloc7: Error unable to allocate %lld bytes for "
 	      "flux_vector\n",ask_for);
       fflush(stderr);
       success = 0;
@@ -79,7 +79,7 @@ int alloc7(struct state_struct *state) {
     usage += ask_for;
     flux_jacobian = (double *)calloc(one_l,ask_for); 
     if (flux_jacobian == NULL) {
-      fprintf(stderr,"alloc7: Error unable to allocate %ld bytes for "
+      fprintf(stderr,"alloc7: Error unable to allocate %lld bytes for "
 	      "flux_jacobiann",ask_for);
       fflush(stderr);
       success = 0;
@@ -95,7 +95,7 @@ int alloc7(struct state_struct *state) {
     usage += ask_for;
     reactant_term = (double *)calloc(one_l,ask_for);
     if (reactant_term == NULL) {
-      fprintf(stderr,"alloc7: Error unable to allocate %ld bytes for "
+      fprintf(stderr,"alloc7: Error unable to allocate %lld bytes for "
 	      "reactant_term\n",ask_for);
       fflush(stderr);
       success = 0;
@@ -111,7 +111,7 @@ int alloc7(struct state_struct *state) {
     usage += ask_for;
     product_term = (double *)calloc(one_l,ask_for);
     if (product_term == NULL) {
-      fprintf(stderr,"alloc7: Error unable to allocate %ld bytes for "
+      fprintf(stderr,"alloc7: Error unable to allocate %lld bytes for "
 	      "product_term\n",ask_for);
       fflush(stderr);
       success = 0;
@@ -127,7 +127,7 @@ int alloc7(struct state_struct *state) {
     usage += ask_for;
     p_over_r = (double *)calloc(one_l,ask_for);
     if (p_over_r == NULL) {
-      fprintf(stderr,"alloc7: Error unable to allocate %ld bytes for "
+      fprintf(stderr,"alloc7: Error unable to allocate %lld bytes for "
 	      "p_over_r\n",ask_for);
       fflush(stderr);
       success = 0;
@@ -143,7 +143,7 @@ int alloc7(struct state_struct *state) {
     usage += ask_for;
     r_over_p = (double *)calloc(one_l,ask_for);
     if (r_over_p == NULL) {
-      fprintf(stderr,"alloc7: Error unable to allocate %ld bytes for "
+      fprintf(stderr,"alloc7: Error unable to allocate %lld bytes for "
 	      "r_over_p\n",ask_for);
       fflush(stderr);
       success = 0;
@@ -160,7 +160,7 @@ int alloc7(struct state_struct *state) {
     usage += ask_for;
     concs = (double *)calloc(one_l,ask_for);
     if (concs == NULL) {
-      fprintf(stderr,"alloc7: Error unable to allocate %ld bytes for "
+      fprintf(stderr,"alloc7: Error unable to allocate %lld bytes for "
 	      "concs\n",ask_for);
       fflush(stderr);
       success = 0;
