@@ -32,9 +32,13 @@ int alloc6(struct formation_energy_struct *formation_energies,
     Called by: compute_standard_energies
     Calls:     calloc
   */
+  /*
   int64_t ask_for;
+  */
   int64_t nu_molecules;
+  /*
   int64_t enu_molecules;
+  */
   int64_t one_l;
   int success;
   success = 1;
