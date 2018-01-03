@@ -313,7 +313,7 @@ int ode23tb (struct state_struct *state, double *concs,
     if (dfdy == NULL) {
       success = 0;
       if (lfp) {
-	fprintf(lfp,"ode23tb: Error could not allocate %lld bytes "
+	fprintf(lfp,"ode23tb: Error could not allocate %ld bytes "
 		"for double scratch space.\n",ask_for);
 	fflush(lfp);
       }
@@ -1019,6 +1019,9 @@ int ode23tb (struct state_struct *state, double *concs,
   } /* end if success - allocation succeeded */
 
   dcopy_(&ny,y,&inc1,concs,&inc1);
+  if (dfdy != NULL) {
+    free(dfdy);
+  }
   return (success);
 }
 
