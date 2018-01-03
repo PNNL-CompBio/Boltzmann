@@ -389,13 +389,16 @@ int parse_reactions_file(struct state_struct *state) {
 	      } else {
 		coefficients[species] = 1;
 	      }
-	      matrix_text[species] = (char*)&species_text[species_pos];
+	      matrix_text[species] = (char*)&raw_species_text[species_pos];
 	      prdcts[sl] = '\0';
 	      sll = (int64_t)sl + (int64_t)1;
 	      padding = (align_len - (sll & align_mask)) & align_mask;
 	      strcpy((char *)&raw_species_text[species_pos],prdcts);
 	      upcase(sl,(char *)&raw_species_text[species_pos],
 		     (char *)&species_text[species_pos]);
+	      unsorted_species->string = (char *)&species_text[species_pos];
+	      unsorted_species->index  = species;
+	      unsorted_species += 1; /* Caution address arithmetic. */
 	      species_pos += (int64_t)(sll + padding);
 	      prdcts[sl] = ' ';
 
