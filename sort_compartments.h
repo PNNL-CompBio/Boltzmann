@@ -20,7 +20,7 @@ under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
-extern int sort_compartments(struct molecule_struct *unsorted_compartments,
-			     struct molecule_struct *sorted_compartments,
+extern int sort_compartments(struct compartment_struct *unsorted_compartments,
+			     struct compartment_struct *sorted_compartments,
 			     char *compartment_text,
 			     int n);
