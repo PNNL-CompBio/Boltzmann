@@ -65,8 +65,8 @@ int read_params (char *param_file_name, struct state_struct *state) {
     /*
       Set defaults.
     */
-    strcpy(state->reaction_file,"./rxns.in");
-    strcpy(state->init_conc_file,"./concs.in");
+    strcpy(state->reaction_file,"./rxns.dat");
+    strcpy(state->init_conc_file,"./rxns.concs");
     strcpy(state->log_file,"./boltzmann.log");
     strcpy(state->output_file,"./boltzmann.out");
     strcpy(state->concs_out_file,"./concs.out");
@@ -111,6 +111,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	sscan_ok = sscanf(value,"%s",state->init_conc_file);
       } else if (strncmp(key,"IN_DIR",6) == 0) {
 	sscan_ok = sscanf(value,"%s",state->input_dir);
+
       } else if (strncmp(key,"OUT_DIR",7) == 0) {
 	sscan_ok = sscanf(value,"%s",state->output_dir);
       } else if (strncmp(key,"OUT_FILE",8) == 0) {
