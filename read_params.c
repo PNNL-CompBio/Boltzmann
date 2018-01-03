@@ -42,6 +42,8 @@ int read_params (char *param_file_name, struct state_struct *state) {
   double min_conc;
   double default_volume_candidate;
   int64_t max_param_line_len;
+  int64_t ode_solver_choice;
+  int64_t delta_concs_choice;
   char *param_buffer;
   char *key;
   char *value;
@@ -145,6 +147,8 @@ int read_params (char *param_file_name, struct state_struct *state) {
     state->use_regulation      = (int64_t)1;
     state->max_regs_per_rxn    = (int64_t)4;
     state->base_reaction       = (int64_t)0;
+    state->ode_solver_choice   = (int64_t)0;
+    state->delta_concs_choice  = (int64_t)0;
 
     state->default_initial_count = (int64_t)0;
     param_buffer       = state->param_buffer;
@@ -309,6 +313,10 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	}
       } else if (strncmp(key,"BASE_REACTION",13) == 0) {
 	sscan_ok = sscanf(value,"%ld",&(state->base_reaction));
+      } else if (strncmp(key,"ODE_SOLVER_CHOICE",17) == 0) {
+	sscan_ok = sscanf(value,"%ld",&(state->ode_solver_choice));
+      } else if (strncmp(key,"DELTA_CONCS_CHOICE",18) == 0) {
+	sscan_ok = sscanf(value,"%ld",&(state->delta_concs_choice));
       } else if (strncmp(key,"PRINT_OUTPUT",12) == 0) {
 	sscan_ok = sscanf(value,"%ld",&(state->print_output));
       } else if (strncmp(key,"RECORD_STEPS",12) == 0) {
