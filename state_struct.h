@@ -102,6 +102,7 @@ struct state_struct {
   double  x_coord;
   double  y_coord;
   double  z_coord;
+  double  epsilon; /* used in choose_rxn */
   int64_t num_partitions;       	
   int64_t two_way_data_length;  	
   int64_t two_way_data_offset;  	
