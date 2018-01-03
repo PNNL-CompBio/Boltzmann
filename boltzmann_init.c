@@ -65,7 +65,6 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
                read_params,
 	       open_output_files,
 	       vgrng_init,
-	       alloc1,
 	       echo_params,
 	       size_rxns_file,
 	       alloc2,
