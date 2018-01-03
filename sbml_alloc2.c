@@ -65,7 +65,7 @@ int sbml_alloc2(struct sbml2bo_struct *state,
     kg2js_data = (struct t2js_struct*)calloc(one_l,ask_for);
     if (kg2js_data == NULL) {
       success = 0;
-      fprintf(lfp,"sbml_alloc2: Error unable to allocate %lld bytes for kg2js_data\n",ask_for);
+      fprintf(lfp,"sbml_alloc2: Error unable to allocate %ld bytes for kg2js_data\n",ask_for);
       fflush(lfp);
     }
   }
@@ -75,7 +75,7 @@ int sbml_alloc2(struct sbml2bo_struct *state,
     ms2js_strings = (char*)calloc(one_l,ask_for);
     if (ms2js_strings == NULL) {
       success = 0;
-      fprintf(lfp,"sbml_alloc2: Error unable to allocate %lld bytes for ms2js_strings\n",ask_for);
+      fprintf(lfp,"sbml_alloc2: Error unable to allocate %ld bytes for ms2js_strings\n",ask_for);
       fflush(lfp);
     }
   }
@@ -85,7 +85,7 @@ int sbml_alloc2(struct sbml2bo_struct *state,
     ms_ids  = (char **)calloc(one_l,ask_for);
     if (ms_ids == NULL) {
       success = 0;
-      fprintf(lfp,"sbml_alloc2: Error unable to allocate %lld bytes for ms_ids\n",ask_for);
+      fprintf(lfp,"sbml_alloc2: Error unable to allocate %ld bytes for ms_ids\n",ask_for);
       fflush(lfp);
     }
   }
@@ -100,7 +100,7 @@ int sbml_alloc2(struct sbml2bo_struct *state,
     kg2js_strings = (char*)calloc(one_l,ask_for);
     if (kg2js_strings == NULL) {
       success = 0;
-      fprintf(lfp,"sbml_alloc2: Error unable to allocate %lld bytes for kg2js_strings\n",ask_for);
+      fprintf(lfp,"sbml_alloc2: Error unable to allocate %ld bytes for kg2js_strings\n",ask_for);
       fflush(lfp);
     }
   }
@@ -110,7 +110,7 @@ int sbml_alloc2(struct sbml2bo_struct *state,
     kegg_ids = (char **)calloc(one_l,ask_for);
     if (kegg_ids == NULL) {
       success = 0;
-      fprintf(lfp,"sbml_alloc2: Error unable to allocate %lld bytes for kegg_ids\n",ask_for);
+      fprintf(lfp,"sbml_alloc2: Error unable to allocate %ld bytes for kegg_ids\n",ask_for);
       fflush(lfp);
     }
   }
@@ -126,7 +126,7 @@ int sbml_alloc2(struct sbml2bo_struct *state,
     json_ids = (char **)calloc(one_l,ask_for);
     if (json_ids == NULL) {
       success = 0;
-      fprintf(lfp,"sbml_alloc2: Error unable to allocate %lld bytes for json_ids and sort_json_scratch\n",ask_for);
+      fprintf(lfp,"sbml_alloc2: Error unable to allocate %ld bytes for json_ids and sort_json_scratch\n",ask_for);
       fflush(lfp);
     }
   }
