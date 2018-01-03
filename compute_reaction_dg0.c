@@ -43,12 +43,11 @@ int compute_reaction_dg0(struct formation_energy_struct *fes){
   double rxn_dg0_tf;
   double m_dg0_tf;
 
-
+  /*
   struct pseudoisomer_struct *pseudoisomers;
-
+  */
   struct rxn_struct *reactions;
   struct rxn_struct *reaction;
-  struct molecule_struct *sorted_molecules;
   struct rxn_matrix_struct *rxns_matrix;
   int64_t *rxn_ptrs;
   int64_t *molecules_indices;
@@ -65,11 +64,11 @@ int compute_reaction_dg0(struct formation_energy_struct *fes){
   int nrxns;
   int rxns;
 
-  int nr;
   int j;
-
   int k;
+
   int coeff;
+  int padi;
 
 
   FILE* lfp;
