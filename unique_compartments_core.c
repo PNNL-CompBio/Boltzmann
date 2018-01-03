@@ -44,7 +44,7 @@ int unique_compartments_core(int nzr,
     Remove duplicates from the sorted_compartments list
     and set the compartment_indices fields in the
     reactions_matrix appropriately.
-    Called by: boltzmann_init
+    Called by: unique_compartments, boltzmann_boot
     Calls:     strcmp (intrinsic)
   */
   struct istring_elem_struct *srtd_cmpts;
@@ -74,10 +74,13 @@ int unique_compartments_core(int nzr,
       cstring = (char*)&compartment_text[srtd_cmpts->string];
       cmpt_size = strlen(cstring);
       pad_size = (align_len  - (cmpt_size & align_mask)) & align_mask;
+      if (cmpt_size == 0) {
+	pad_size = 16;
+	compartment_indices[srtd_cmpts->c_index] = 0;
+      }
       compartment_len += (pad_size + cmpt_size);
     } else {
-      compartment_indices[srtd_cmpts->c_index] = -1;
-      cstring = NULL;
+      compartment_indices[srtd_cmpts->c_index] = 0;
     }
     cur_cmpt = srtd_cmpts;
     srtd_cmpts += 1; /* Caution address arithmetic. */
@@ -91,7 +94,7 @@ int unique_compartments_core(int nzr,
 	nu_cmpts += 1;
 	cur_cmpt = srtd_cmpts;
 	cstring  = sstring;
-	cmpt_size = strlen(cstring);
+	cmpt_size = strlen(cstring) + 1;
 	pad_size = (align_len  - (cmpt_size & align_mask)) & align_mask;
 	compartment_len += (int64_t)(pad_size + cmpt_size);
 	ucmpts_next->string = cur_cmpt->string;
@@ -99,7 +102,7 @@ int unique_compartments_core(int nzr,
       }
       compartment_indices[srtd_cmpts->c_index] = nu_cmpts;
     } else {
-      compartment_indices[srtd_cmpts->c_index] = -1;
+      compartment_indices[srtd_cmpts->c_index] = 0;
     }
     srtd_cmpts += 1; /* Caution address arithmetic. */
   }
