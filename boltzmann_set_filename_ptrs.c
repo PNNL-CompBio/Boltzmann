@@ -28,7 +28,7 @@ void boltzmann_set_filename_ptrs(struct state_struct *statep) {
   /*
     Set the char * pointer fields of the state vector that
     point to filenames for input and output files and directories.
-    Called by: alloc0,flatten_state.
+    Called by: alloc0_a,flatten_state.
   */
 
   int64_t max_file_name_len;
