@@ -97,11 +97,7 @@ double rxn_likelihood_postselection(double *concs,
     }
     if (coeff < 0) {
       for (k=0;k<(0-coeff);k++) {
-	if ((conc - k) <= 0) {
-	  left_concs = left_concs *.5;
-	} else {
-	  left_concs = left_concs * (conc-k);	
-	}
+	left_concs = left_concs * (conc-k);	
       } 
     } else {
       /*
@@ -109,7 +105,7 @@ double rxn_likelihood_postselection(double *concs,
 	is not to be used in computing likelihoods.
       */
       if (coeff > 0) {
-	for (k=0;k<coeff;k++) {
+	for (k=1;k<=coeff;k++) {
 	  right_concs = right_concs * (conc+k);
 	} 
       }
