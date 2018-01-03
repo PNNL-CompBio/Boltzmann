@@ -32,7 +32,7 @@ int parse_rxn_file_keyword(char *rxn_buffer,struct state_struct *state){
   /*
     Parse the reaction file keyword theoretically at the start of 
     rxn_buffer.
-    Called by: size_rxns_file
+    Called by: size_rxns_file, parse_reactions_file
     Calls:     count_ws, count_nws
   */
   char **keywords;
@@ -55,7 +55,7 @@ int parse_rxn_file_keyword(char *rxn_buffer,struct state_struct *state){
   /*
     Check for comment lines (starting with a #)
   */
-  if (keyword[0] == '#') {
+  if (keyword[0] == '#')  {
     line_type = num_rxn_file_keywords;
   } else {
     for (i=0;i<num_rxn_file_keywords;i++) {
