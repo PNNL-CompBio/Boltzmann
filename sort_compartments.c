@@ -24,12 +24,12 @@ specific language governing permissions and limitations under the License.
 #include "merge_compartments.h"
 
 #include "sort_compartments.h"
-int sort_compartments(struct istring_elem_struct *unsorted_compartments,
-		      struct istring_elem_struct *sorted_compartments,
+int sort_compartments(struct molecule_struct *unsorted_compartments,
+		      struct molecule_struct *sorted_compartments,
 		      char *compartment_text,
 		      int n) {
   /*
-    Sort the uppercase istring names.
+    Sort the uppercase compartment names.
     Called by: boltzmann_init, boltzmann_boot, rxn_map_init
     Calls    : merge_compartments, memmove
 
@@ -41,10 +41,10 @@ int sort_compartments(struct istring_elem_struct *unsorted_compartments,
     of the same length.
   
   */
-  struct istring_elem_struct *u_compartments;
-  struct istring_elem_struct *s_compartments;
-  struct istring_elem_struct *temp;
-  struct istring_elem_struct ies;
+  struct molecule_struct *u_compartments;
+  struct molecule_struct *s_compartments;
+  struct molecule_struct *temp;
+  struct molecule_struct ies;
   int64_t move_size;
 
   int success;
@@ -65,9 +65,9 @@ int sort_compartments(struct istring_elem_struct *unsorted_compartments,
 	l1 = step;
 	l2 = n - j - step;
 	if (l2 > step) l2 = step;
-	merge_compartments((struct istring_elem_struct *)&u_compartments[j],
-		       (struct istring_elem_struct *)&u_compartments[j+step],
-			   (struct istring_elem_struct *)&s_compartments[j],
+	merge_compartments((struct molecule_struct *)&u_compartments[j],
+		       (struct molecule_struct *)&u_compartments[j+step],
+			   (struct molecule_struct *)&s_compartments[j],
 			   compartment_text,l1,l2);
       }
       /* Now if the last group is <= step they just need to be copied
