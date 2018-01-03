@@ -51,11 +51,14 @@ int print_molecules_dictionary(struct state_struct *state) {
 
   FILE *dict_fp;
   FILE *counts_fp;
+  FILE *concs_fp;
+  FILE *lfp;
   success = 1;
   nu_molecules     = state->nunique_molecules;
   cur_molecules    = state->sorted_molecules;
-  cur_cmpts        = state->sorted_cmpts;
+  cur_cmpts        = state->sorted_compartments;
   counts_fp        = state->counts_out_fp;
+  concs_fp         = state->concs_out_fp;
   molecule_dg0tfs  = state->molecule_dg0tfs;
   molecules_text   = state->molecules_text;
   compartment_text = state->compartment_text;
@@ -87,16 +90,22 @@ int print_molecules_dictionary(struct state_struct *state) {
       }
       if (ci > 0) {
 	fprintf(dict_fp,"%d %s %s %le\n",i,molecule,cmpt_string,molecule_dg0tfs[i]);
-	if (counts_fp) {
-	  if (i != solvent_pos) {
+	if (i != solvent_pos) {
+	  if (counts_fp) {
 	    fprintf(counts_fp,"\t%s:%s",molecule,cmpt_string);
+	  }
+	  if (concs_fp) {
+	    fprintf(concs_fp,"\t%s:%s",molecule,cmpt_string);
 	  }
 	}
       } else {
 	fprintf(dict_fp,"%d %s %le\n",i,molecule,molecule_dg0tfs[i]);
-	if (counts_fp) {
-	  if (i != solvent_pos) {
+	if (i != solvent_pos) {
+	  if (counts_fp) {
 	    fprintf(counts_fp,"\t%s",molecule);
+	  }
+	  if (concs_fp) {
+	    fprintf(concs_fp,"\t%s",molecule);
 	  }
 	}
       }
