@@ -96,9 +96,7 @@ int lr5_approximate_delta_concs(struct state_struct *state,
   }
   success = update_rxn_likelihoods(state,counts,forward_rxn_likelihoods,
 				   reverse_rxn_likelihoods);
-  /*
-    Fill the reactant_terms and product_terms vectors for each reaction.
-    We really just need to know whether or not there are nonzero concentrations
+  /*    We really just need to know whether or not there are nonzero concentrations
     for species on each side of each reaction, so as not to use our
     flux approximations that assume presence of species.
   */
