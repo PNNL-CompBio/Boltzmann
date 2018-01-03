@@ -34,7 +34,7 @@ int count_nws(char *line) {
   /*
     Return the number of leading non-white space characters (<=32) 
     int the character string, line.\
-    Called by: count_species.
+    Called by: count_molecules.
     Calls      strlen(intrinsic).
   */
   int nws_chars;
