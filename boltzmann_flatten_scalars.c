@@ -362,10 +362,28 @@ int boltzmann_flatten_scalars(struct state_struct *state,
   } else {
     state->cvodes_prec_fill = lflattened[word_pos];
   }
+  word_pos += 1; /* 90 */
+  if (direction == 0) {
+    lflattened[word_pos] = state->ode_stop_norm;
+  } else {
+    state->ode_stop_norm = lflattened[word_pos];
+  }
+  word_pos += 1; /* 91 */
+  if (direction == 0) {
+    lflattened[word_pos] = state->ode_stop_rel;
+  } else {
+    state->ode_stop_rel = lflattened[word_pos];
+  }
+  word_pos += 1; /* 92 */
+  if (direction == 0) {
+    lflattened[word_pos] = state->ode_stop_style;
+  } else {
+    state->ode_stop_style = lflattened[word_pos];
+  }
   /*
     Leave a litle extra space, round up to 62 data words 
   */
-  word_pos += 7;
+  word_pos += 4;
   if (direction == 0) {
     lflattened[word_pos] = 40;
   }
@@ -547,10 +565,22 @@ int boltzmann_flatten_scalars(struct state_struct *state,
   } else {
     state->epsilon = dflattened[word_pos];
   }
+  word_pos += 1;
+  if (direction == 0) {
+    dflattened[word_pos] = state->deriv_thresh;
+  } else {
+    state->deriv_thresh = dflattened[word_pos];
+  }
+  word_pos += 1;
+  if (direction == 0) {
+    dflattened[word_pos] = state->ode_stop_thresh;
+  } else {
+    state->ode_stop_thresh = dflattened[word_pos];
+  }
   /*
     Leave some extra space.
   */
-  word_pos += 9;
+  word_pos += 7;
   *word_pos_p  = word_pos;
   return(success);
 }
