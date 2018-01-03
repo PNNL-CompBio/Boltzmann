@@ -120,9 +120,7 @@ int read_initial_concentrations(struct state_struct *state) {
 	    num_fixed_concs += 1;
 	  }
 	  if (strncmp(variable_c,"V",one_l) == 0) {
-	    variable = 0;
-	    num_fixed_concs += 1;
-	    solvent  = 1;
+	    variable = 1;
 	  }
 	}
 	compute_conc = 1;
