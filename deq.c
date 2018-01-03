@@ -23,6 +23,12 @@ specific language governing permissions and limitations under the License.
 #include "boltzmann_structs.h"
 
 /*
+  Initialize the boltzmann system, set up the ode solver and
+  solve the ode's to get a steady state restart file printed out.
+  Calls:  boltzmann_init, deq_run, print_restart
+*/
+
+/*
   Maybe only for linux systems.
 #ifdef LIBUNWIND
 #include <libunwind.h>
@@ -44,11 +50,6 @@ struct timing_struct timing_data;
 #include "print_restart_file.h"
 int main(int argc, char **argv)
 {
-  /*
-    Calls:
-      boltzmann_init
-      boltzmann_run
-  */
   struct state_struct *state;
   char *param_file_name;
   int success;
