@@ -1,7 +1,9 @@
 #include "boltzmann_structs.h"
 
 #include "print_net_lklhd_bndry_flux.h"
-void print_net_lklhd_bndry_flux(struct state_struct *state, double time) {
+void print_net_lklhd_bndry_flux(struct state_struct *state, 
+				double *net_lklhd_bndry_flux,
+				double time) {
   /*
     Print the net likelihood boundary fluxes.
     Called by: ode23tb
@@ -9,7 +11,6 @@ void print_net_lklhd_bndry_flux(struct state_struct *state, double time) {
   */
   struct molecule_struct *molecule;
   int64_t nunique_molecules;
-  double  *net_lklhd_bndry_flux;
 
   int i;
   int padi;
@@ -19,7 +20,6 @@ void print_net_lklhd_bndry_flux(struct state_struct *state, double time) {
 
   nunique_molecules = state->nunique_molecules;
   molecule  = state->sorted_molecules;
-  net_lklhd_bndry_flux = state->net_lklhd_bndry_flux;
   nl_bndry_flx_fp  = state->nl_bndry_flx_fp;
   if (nl_bndry_flx_fp != NULL) {
     fprintf(nl_bndry_flx_fp,"%le",time);
