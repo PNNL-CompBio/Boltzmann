@@ -5,6 +5,7 @@
 #include "read_compartment_sizes.h"
 #include "read_initial_concentrations.h"
 #include "check_initial_concentrations.h"
+#include "set_count_trans.h"
 
 #include "species_init.h"
 int species_init(struct state_struct *state) {
