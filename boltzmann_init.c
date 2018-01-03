@@ -91,13 +91,13 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
   double *free_energy;
   double *activities;
   int64_t vgrng_start;
+  int64_t i;
+
   int success;
   int vgrng_start_steps;
 
-  int i;
+  int print_output;
   int padi;
-
-
 
   FILE *bndry_flux_fp;
   FILE *lfp;
@@ -113,7 +113,10 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
     success = read_params(param_file_name,state);
   }
   if (success) {
-    success = open_output_files(state);
+    print_output = (int)state->print_output;
+    if (print_output) {
+      success = open_output_files(state);
+    }
   }
   if (success) {
     /*
@@ -138,7 +141,9 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
     /*
       Echo the input parameters to the log file.
     */
-    success = echo_params(state->lfp,state);
+    if (print_output) {
+      success = echo_params(state->lfp,state);
+    }
   }
   /*
     Read reactions file to count molecules and reactions
@@ -152,7 +157,7 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
     lfp = state->lfp;
     if (lfp) {
       fprintf(lfp,"boltzmann_init: after startup, success = %d\n",success);
-      fprintf(lfp,"boltzmann_init: rxns = %d, cmpts = %d, molecules = %d, "
+      fprintf(lfp,"boltzmann_init: rxns = %ld, cmpts = %ld, molecules = %ld, "
 	      "reaction_file_length = %ld\n",
 	      state->number_reactions,state->number_compartments,
 	      state->number_molecules,
@@ -186,10 +191,12 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
     success = parse_reactions_file(state);
   }
   if (success) {
-    /*
-      Echo the reactions to the log file.
-    */
-    success = echo_reactions_file(state);
+    if (print_output) {
+      /*
+	Echo the reactions to the log file.
+      */
+      success = echo_reactions_file(state);
+    }
   }
   /*
     First we need to sort the compartments.
@@ -234,7 +241,9 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
     the concentrations output file.
   */
   if (success) {
-    success = print_molecules_dictionary(state);
+    if (print_output) {
+      success = print_molecules_dictionary(state);
+    }
   }
   /*
     Now we need to allocate space for the concentrations,
@@ -284,11 +293,13 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
     print_rxn_likelihoods_header(state);
   }
   if (success) {
-    if (state->free_energy_format > 0) {
-      /*
-	Print the header lines for the free energy output file.
-      */
-      print_free_energy_header(state);
+    if (state->free_energy_format > (int64_t)0) {
+      if (print_output) {
+	/*
+	  Print the header lines for the free energy output file.
+	*/
+	print_free_energy_header(state);
+      }
     }
   }
   /*
