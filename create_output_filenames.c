@@ -32,6 +32,8 @@ int create_output_filenames(struct state_struct *state) {
   char *dictionary_filename;
   char *aux_data_filename;
   char *ode_counts_filename;
+  char *ode_sens_filename;
+  char *ode_dsens_filename;
   int64_t output_filename_base_length;
   int output_filename_length;
   int success;
@@ -62,6 +64,8 @@ int create_output_filenames(struct state_struct *state) {
   ode_lklhd_filename   = state->ode_lklhd_file;
   ode_bflux_filename   = state->ode_bflux_file;
   aux_data_filename    = state->aux_data_file;
+  ode_sens_filename    = state->ode_sens_file;
+  ode_dsens_filename   = state->ode_dsens_file;
 
   dictionary_filename  = state->dictionary_file;
 
@@ -189,6 +193,14 @@ int create_output_filenames(struct state_struct *state) {
     if (dictionary_filename[0] == '\0') {
       strncpy(dictionary_filename,output_filename,output_filename_base_length);
       strcpy((char*)&dictionary_filename[output_filename_base_length],".dict");
+    }
+    if (ode_sens_filename[0] == '\0') {
+      strncpy(ode_sens_filename,output_filename,output_filename_base_length);
+      strcpy((char*)&ode_sens_filename[output_filename_base_length],".sens");
+    }
+    if (ode_dsens_filename[0] == '\0') {
+      strncpy(ode_dsens_filename,output_filename,output_filename_base_length);
+      strcpy((char*)&ode_dsens_filename[output_filename_base_length],".dsens");
     }
   }
   return(success);
