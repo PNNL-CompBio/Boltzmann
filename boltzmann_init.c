@@ -339,6 +339,7 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
       fflush(state->free_energy_fp);
     }
   }
+  /*
   if (success) {
     if (state->num_fixed_concs >0) {
       if (bndry_flux_fp) {
@@ -362,12 +363,15 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
 	      fprintf(bndry_flux_fp,"\t%s",cur_molecules->string);
 	    }
 	  }
-	  cur_molecules += 1; /* Caution address arithmetic. */
+	  cur_molecules += 1; // Caution Address arithmetic.
 	}
 	fprintf(bndry_flux_fp,"\n");
-      } /* end if (bndry_flux_fp) */
-    } /* end if (state->num_fixed_concs...) */
+      } // end if (bndry_flux_fp).
+    
+    
+    } // end if (state->num_fixed_concs...) 
   }
+  */
   if (success) {
     dg0s = state->dg0s;
     free_energy  = state->free_energy;
@@ -389,4 +393,4 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
   }
 
   return(success);
-  }
+}
