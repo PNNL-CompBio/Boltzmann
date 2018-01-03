@@ -61,7 +61,7 @@ int boltzmann_flatten_rmatrix(struct state_struct *state,
     }
     rxn_ptrs_len = (number_reactions + 1) * sizeof(int64_t);
     nz_len       = nz * sizeof(double);
-    solventc_len = number_reactions *sizeof(int64_t);
+    solventc_len = 2* number_reactions *sizeof(int64_t);
     
     word_pos += 1;
     rxn_ptrs = (void*)&lfstate[word_pos];
@@ -101,7 +101,7 @@ int boltzmann_flatten_rmatrix(struct state_struct *state,
     /*
       NB we need to leave word_pos pointing at the last word set.
     */
-    word_pos += (number_reactions - 1);
+    word_pos += (number_reactions + number_reactions - 1);
   } /* end if (success) */
   *word_pos_p = word_pos;
   return(success);
