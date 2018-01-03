@@ -35,11 +35,14 @@ int size_rxns_file(struct state_struct *state,
   /*
     Determine the number of reactions,
     Total length of molecules names, and
-    max possiblie number of molecules, and
+    max possible number of molecules, and
     total length of the file. Total length
     of compartment names.
     Called by: io_size_init
-    Calls    : count_ws,
+    Calls    : init_rxn_file_keywords
+               parse_rxn_file_keyword
+               count_ws,
+	       count_nws,
                count_molecules,
                fopen, fgets, fprintf, fflush (intrinsic)
   */
