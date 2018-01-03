@@ -34,11 +34,13 @@ specific language governing permissions and limitations under the License.
 int alloc0(struct state_struct **state) {
   /*
     Allocate space for boltzmann_state data and the associated state
-    file names. And the parameter file input buffer line
+    file names. And the parameter file input buffer line, and
+    the random number generator state.
     Called by boltzmann main program.
   */
   struct state_struct bltzs;
   struct state_struct *statep;
+  struct vgrng_state_struct vss;
   int64_t max_file_name_len;
   int64_t max_param_line_len;
   int64_t ask_for;
@@ -101,6 +103,17 @@ int alloc0(struct state_struct **state) {
       statep->param_value = statep->param_key + (max_param_line_len>>1);
     }
     statep->usage = usage;
+  }
+  if (success) {
+    ask_for = (int64_t)sizeof(vss);
+    statep->vgrng_state = (struct vgrng_state_struct *)calloc(one_l,ask_for);
+    if (statep->vgrng_state == NULL) {
+      success = 0;
+      fprintf(stderr,
+	      "alloc0: unable to allocate %ld bytes for state->vgrng_state.\n",
+	      ask_for);
+      fflush(stderr);
+    }
   }
   return(success);
 }
