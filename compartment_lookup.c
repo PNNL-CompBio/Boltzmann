@@ -44,7 +44,7 @@ int compartment_lookup(char *compartment_name, struct state_struct *state) {
 
   index = -1;
   if (compartment_name) {
-    sorted_compartments = state->sorted_cmpts;
+    sorted_compartments = state->sorted_compartments;
     n     = state->nunique_compartments;
     compartment_text = state->compartment_text;
     compartment = (char *)&compartment_text[sorted_compartments[0].string];
