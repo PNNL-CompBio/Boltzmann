@@ -118,19 +118,6 @@ double rxn_likelihood_postselection(double *concs,
       } 
     }
   }
-  /*
-  if ((left_concs < 1.0) && (right_concs > 1.0)) {
-    //left_concs = small_nonzero;
-    left_concs = 1.0;
-    rxn_likelihood = 0;
-  } else {
-    if (right_concs < 1.0) {
-      //right_concs = small_nonzero;
-      right_concs = 1.0;
-    }
-  } 
-  */
   rxn_likelihood = eq_k * (left_concs/ right_concs);
-
   return(rxn_likelihood);
 }
