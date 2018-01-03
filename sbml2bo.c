@@ -25,18 +25,26 @@ specific language governing permissions and limitations under the License.
 
 #include "alloc0.h"
 #include "size_ms2js_file.h"
+#include "size_kg2js_file.h"
 #include "sbml_alloc0.h"
 #include "sbml_set_file_names.h"
-#include "sbml_alloc1.h"
+#include "sbml_alloc2.h"
+#include "read_ms2js.h"
+#include "read_kg2js.h"
+#include "sort_json_ids.h"
+
 #include "sbml_count_cmpts.h"
+#include "sbml_count_species.h"
+#include "sbml_alloc1.h"
 #include "parse_sbml.h"
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
   struct state_struct *state;
   struct sbml2bo_struct *sbml_state;
   int64_t num_modelseed_ids;
+  int64_t num_kegg_ids;
   int64_t length_ms2js_strings;
+  int64_t length_kg2js_strings;
   int success;
   int base_len;
 
@@ -57,13 +65,23 @@ int main(int argc, char **argv)
   */
   state->align_len = 16;
   strcpy(state->ms2js_file,"./modelseed_2_json.srt");
-  success = size_ms2js_file(state,&num_modelseed_ids,
+  strcpy(state->kg2js_file,"./kegg_2_json.srt");
+
+  if (success) {
+    success = size_ms2js_file(state,&num_modelseed_ids,
 			    &length_ms2js_strings);
+  }
+  if (success) {
+    success = size_kg2js_file(state,&num_kegg_ids,
+			      &length_kg2js_strings);
+  }
   /*
     Need to allocate space for the sbml_state structure and its
     filename fields.
   */
-  success = sbml_alloc0(&sbml_state);
+  if (success) {
+    success = sbml_alloc0(&sbml_state);
+  }
   /*
     Need to read input file name and generate output file names.
   */
@@ -79,18 +97,6 @@ int main(int argc, char **argv)
     success = sbml_set_file_names(sbml_state);
   }
   if (success) {
-    strcpy(sbml_state->ms2js_file,state->ms2js_file);
-    sbml_state->num_modelseed_ids = num_modelseed_ids;
-    sbml_state->default_comp_size = 1.0e-15;
-    sbml_state->length_ms2js_strings = length_ms2js_strings;
-    success = sbml_alloc2(sbml_state,num_modelseed_ids,length_ms2js_strings);
-    if (success) {
-      success = read_ms2js(sbml_state);
-    }
-  }
-  if (success) {
-  }
-  if (success) {
     lfp = fopen(sbml_state->log_file,"w");
     if (lfp == NULL) {
       fprintf(stderr,"sbml2bo: Error could not open log file for writing.\n");
@@ -99,10 +105,37 @@ int main(int argc, char **argv)
     sbml_state->log_fp = lfp;
   }
   if (success) {
+    strcpy(sbml_state->ms2js_file,state->ms2js_file);
+    strcpy(sbml_state->kg2js_file,state->kg2js_file);
+    sbml_state->num_modelseed_ids    = num_modelseed_ids;
+    sbml_state->num_kegg_ids         = num_kegg_ids;
+    sbml_state->length_ms2js_strings = length_ms2js_strings;
+    sbml_state->length_kg2js_strings = length_kg2js_strings;
+    sbml_state->default_comp_size    = 1.0e-15;
+    success = sbml_alloc2(sbml_state,num_modelseed_ids,length_ms2js_strings,
+			  num_kegg_ids,length_kg2js_strings);
+  }
+  if (success) {
+    success = read_ms2js(sbml_state);
+  }
+  if (success) {
+    success = read_kg2js(sbml_state);
+  }
+  if (success) {
+    /*
+      We also need to have a sorted list of json_id's to look up.
+      We will use those corresponding to the kegg_ids as the list.
+    */
+    success = sort_json_ids(sbml_state);
+  }
+  if (success) {
     /*
       Count the compartments, setting the num_cmpts field in sbml_state.
     */
     success = sbml_count_cmpts(sbml_state);
+  }
+  if (success) {
+    success = sbml_count_species(sbml_state);
   }
   if (success) {
     success = sbml_alloc1(sbml_state);
