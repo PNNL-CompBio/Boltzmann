@@ -40,54 +40,6 @@ int alloc6(struct formation_energy_struct *formation_energies,
   success = 1;
   one_l   = (int64_t)1;
   nu_molecules = formation_energies->nunique_molecules;
-  if (success) {
-    ask_for = nu_molecules * ((int64_t)sizeof(double));
-    *usage += ask_for;
-    /*
-      Allocate space for the standard transformed free energy of formation 
-      of molecules buffer.
-    */
-    formation_energies->molecule_dg0tfs = (double*)calloc(one_l,ask_for);
-    if (formation_energies->molecule_dg0tfs == NULL) {
-      fprintf(stderr,
-	      "alloc6: Unable to allocate %ld bytes for molecule_dg0tfs\n",
-	      ask_for);
-      fflush(stderr);
-      success = 0;
-    }
-  }
-  /*
-    Allocate space for the molecule probabilities buffer.
-  */
-  if (success) {
-    ask_for = nu_molecules * ((int64_t)sizeof(double));
-    *usage == ask_for;
-    formation_energies->molecule_probabilities = (double*)calloc(one_l,ask_for);
-    if (formation_energies->molecule_dg0tfs == NULL) {
-      fprintf(stderr,
-	      "alloc6: Unable to allocate %ld bytes for molecule_probabilities\n",
-	      ask_for);
-      fflush(stderr);
-      success = 0;
-    }
-  }
-  /*
-    Allocate space for the molecule chemical potentials buffer.
-  */
-  if (success) {
-    ask_for = nu_molecules * ((int64_t)sizeof(double));
-    *usage == ask_for;
-    formation_energies->molecule_chemical_potentials = 
-      (double*)calloc(one_l,ask_for);
-    if (formation_energies->molecule_chemical_potentials == NULL) {
-      fprintf(stderr,
-	      "alloc6: Unable to allocate %ld bytes for "
-	      "molecule_chemical_potentials\n",
-	      ask_for);
-      fflush(stderr);
-      success = 0;
-    }
-  }
   /*
     allocate space for ordering molecule names.
     not used for now.
