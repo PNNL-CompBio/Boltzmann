@@ -1,6 +1,6 @@
 #include "system_includes.h"
 #include "lsame.h"
-int lsame_(char *ca_p, char *cb_p) {
+int lsame_(char *ca_p, char *cb_p, int len_ca, int len_cb) {
 /*
   lsame.c adapted from lapack lsame.f
 
