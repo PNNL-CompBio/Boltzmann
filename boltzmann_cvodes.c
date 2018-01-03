@@ -1,13 +1,14 @@
 #include "boltzmann_structs.h"
 #include "boltzmann_cvodes_headers.h"
-
+#include "cvodes_params_struct.h"
 #include "boltzmann_size_jacobian.h"
 #include "boltzmann_cvodes_rhs.h"
 #include "boltzmann_print_cvodeinit_errors.h"
 #include "boltzmann_cvodes_init.h"
 #include "boltzmann_print_cvode_error.h"
 #include "boltzmann_monitor_ode.h"
-
+#include "boltzmann_print_sensitivities.h"
+#include "vec_set_constant.h"
 #include "boltzmann_cvodes.h"
 int boltzmann_cvodes(struct state_struct *state, double *concs) {
   /*
@@ -36,6 +37,8 @@ int boltzmann_cvodes(struct state_struct *state, double *concs) {
     concs.
   */
   N_Vector y0;
+  N_Vector *ys0;
+  N_Vector *dys;
   double *drfc;
   double *dfdy_a;
   double *dfdy_at;
@@ -46,6 +49,10 @@ int boltzmann_cvodes(struct state_struct *state, double *concs) {
   double *recip_diag_u;
   double *frow;
   double *srow;
+  double *p;
+  double *rp;
+  double *pbar;
+  double *ys0v;
   double *dfdy;
   double *fac;
   double *thresh;
@@ -66,6 +73,7 @@ int boltzmann_cvodes(struct state_struct *state, double *concs) {
   int    *uindex;
   int    *column_mask;
   int    *sindex;
+  int    *plist;
   double t0;
   double tfinal;
   double tout;
@@ -107,7 +115,7 @@ int boltzmann_cvodes(struct state_struct *state, double *concs) {
   int nnzu;
 
   int drfc_len;
-  int padi;
+  int ns;
 
   FILE *lfp;
   FILE *efp;
@@ -117,6 +125,7 @@ int boltzmann_cvodes(struct state_struct *state, double *concs) {
   ny                = state->nunique_molecules;
   drfc_len          = state->number_molecules;
   lfp               = state->lfp;
+  ns                = state->number_reactions;
   jacobian_choice   = state->ode_jacobian_choice;
   ode_rxn_view_freq = state->ode_rxn_view_freq;
   print_output  = state->print_output;
@@ -124,6 +133,7 @@ int boltzmann_cvodes(struct state_struct *state, double *concs) {
   if (jacobian_choice == 0) {
     ode23tb_params = (struct ode23tb_params_struct *)state->ode23tb_params;
   }
+  cvodes_params->ns = ns;
   lmm = cvodes_params->linear_multistep_method;
   iter = cvodes_params->iterative_method;
   cvode_mxsteps = cvodes_params->mxsteps;
@@ -142,6 +152,8 @@ int boltzmann_cvodes(struct state_struct *state, double *concs) {
     prec_row (nunique_molecules)
     frow (nunique_molecules)
     srow (nunique_molecules)
+    pbar (number_reactions)
+    ys0v (nunqiue_molecules * number_reactions)
 
     ints 
     dfdy_ia(nunqiue_molecules+1)
@@ -160,6 +172,7 @@ int boltzmann_cvodes(struct state_struct *state, double *concs) {
     uindex (unique_molecules)
     column_mask (unique_molecules)
     sindex (unique_molecules)
+    plist  (number_reactions)
     
     Actually though much less space might be needed there 
     might be a formula to compute the needed size of dfdy based on the reaction
@@ -176,8 +189,8 @@ int boltzmann_cvodes(struct state_struct *state, double *concs) {
   nnzm = cvodes_params->nnzm;
   nnzl = cvodes_params->nnzl;
   nnzu = cvodes_params->nnzu;
-  num_doubles = (nnz + nnz + nnzm + nnzl + nnzu + 4*ny);
-  num_ints    = (num_doubles + 5*ny + 5);
+  num_doubles = (nnz + nnz + nnzm + nnzl + nnzu + (4*ny) + (3*ns) + (ns*ny));
+  num_ints    = (num_doubles + 5*ny + 5 + ns);
   num_doubles = num_doubles + (num_ints + (num_ints & 1))/2;
   drfc_len    = state->number_molecules * 2;
   ask_for = (num_doubles + drfc_len) << 3;
@@ -198,7 +211,11 @@ int boltzmann_cvodes(struct state_struct *state, double *concs) {
     recip_diag_u = &prec_row[ny];
     frow         = &recip_diag_u[ny];
     srow         = &frow[ny];
-    dfdy_ia  	 = (int*)&srow[ny];
+    p            = &srow[ny];
+    rp           = &p[ns];
+    pbar         = &rp[ns];
+    ys0v         = &pbar[ns];
+    dfdy_ia  	 = (int*)&ys0v[ny*ns];
     dfdy_ja  	 = &dfdy_ia[ny+1];
     dfdy_iat     = &dfdy_ja[nnz];
     dfdy_jat     = &dfdy_iat[ny+1];
@@ -212,6 +229,7 @@ int boltzmann_cvodes(struct state_struct *state, double *concs) {
     uindex       = &lindex[ny];
     column_mask  = &uindex[ny];
     sindex       = &column_mask[ny];
+    plist        = &sindex[ny];
     cvodes_params->drfc         = drfc;
     cvodes_params->dfdy_a  	= dfdy_a;
     cvodes_params->dfdy_at  	= dfdy_at;
@@ -222,6 +240,10 @@ int boltzmann_cvodes(struct state_struct *state, double *concs) {
     cvodes_params->recip_diag_u = recip_diag_u;
     cvodes_params->frow         = frow;
     cvodes_params->srow         = srow;
+    cvodes_params->p            = p;
+    cvodes_params->rp           = rp;
+    cvodes_params->pbar         = pbar;
+    cvodes_params->ys0v         = ys0v;
     cvodes_params->dfdy_ia      = dfdy_ia;
     cvodes_params->dfdy_ja      = dfdy_ja;
     cvodes_params->dfdy_iat     = dfdy_iat;
@@ -236,6 +258,7 @@ int boltzmann_cvodes(struct state_struct *state, double *concs) {
     cvodes_params->uindex       = uindex;
     cvodes_params->column_mask  = column_mask;
     cvodes_params->sindex       = sindex;
+    cvodes_params->plist        = plist;
   }
   if (success) {
     if (jacobian_choice == 0) {
@@ -306,6 +329,7 @@ int boltzmann_cvodes(struct state_struct *state, double *concs) {
     This must set the internal problems size, ny from the nvector y0.
   */
   if (success) {
+    cvodes_params->y0 = y0;
     t0 = 0.0;
     cvodes_params->cvode_mem = cvode_mem;
     flag = CVodeInit(cvode_mem,boltzmann_cvodes_rhs,t0,y0);
@@ -319,7 +343,7 @@ int boltzmann_cvodes(struct state_struct *state, double *concs) {
     the cvodes_params structure.
   */
   if (success) {
-    success = boltzmann_cvodes_init(cvode_mem,state);
+    success = boltzmann_cvodes_init(cvode_mem,state,concs);
   }
   if (success) {
     num_steps = cvodes_params->num_cvode_steps;
@@ -415,6 +439,16 @@ int boltzmann_cvodes(struct state_struct *state, double *concs) {
     } /* end else num_cvodes_steps == 0 */
     
   } /* end if (success) */
+  if (success) {
+    if (state->compute_sensitivities) {
+      boltzmann_print_sensitivities(state);
+    }
+  }
+  /*
+    Unset the compute_sensitivities field so as to use the original ke vector
+    in subsequent boltzmann record-step iterations.
+  */
+  state->compute_sensitivities = 0;
   /*
     Free cvodes memory.
   */
