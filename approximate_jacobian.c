@@ -77,7 +77,22 @@ int approximate_jacobian(struct state_struct *state,
   ode_solver_choice = state->ode_solver_choice;
   ny                = (int)state->nunique_molecules;
   switch (choice) {
+  case 8:
+    success = lr8_approximate_jacobian(state,concs,delta_concs,t,choice);
+    /*
+      Now if the ode choice is not cvodes we need to convert
+      dfdy_a, dfdy_ia, dfdy_ja to dfdy for ode23tb.
+    */
+    if (ode_solver_choice == 0) {
+      dfdy_a  = cvodes_params->dfdy_a;
+      dfdy_ia = cvodes_params->dfdy_ia;
+      dfdy_ja = cvodes_params->dfdy_ja;
+      dfdy    = ode23tb_params->dfdy;
+      boltzmann_sparse_to_dense(ny,dfdy_a,dfdy_ia,dfdy_ja,dfdy);
+    }
+    break;
   case 0:
+  default:
     /*
       This should be a numerical jacobian approximation.
     */
@@ -104,20 +119,6 @@ int approximate_jacobian(struct state_struct *state,
       dfdy_ia = cvodes_params->dfdy_ia;
       dfdy_ja = cvodes_params->dfdy_ja;
       boltzmann_dense_to_sparse(ny,dfdy,dfdy_a,dfdy_ia,dfdy_ja);
-    }
-    break;
-  case 8:
-    success = lr8_approximate_jacobian(state,concs,delta_concs,t,choice);
-    /*
-      Now if the ode choice is not cvodes we need to convert
-      dfdy_a, dfdy_ia, dfdy_ja to dfdy for ode23tb.
-    */
-    if (ode_solver_choice == 0) {
-      dfdy_a  = cvodes_params->dfdy_a;
-      dfdy_ia = cvodes_params->dfdy_ia;
-      dfdy_ja = cvodes_params->dfdy_ja;
-      dfdy    = ode23tb_params->dfdy;
-      boltzmann_sparse_to_dense(ny,dfdy_a,dfdy_ia,dfdy_ja,dfdy);
     }
     break;
   } /* end switch (choicee) */
