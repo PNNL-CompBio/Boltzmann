@@ -179,8 +179,8 @@ SERIAL_OBJS1 = boltzmann_boot.o boltzmann_mmap_superstate.o \
 	parse_side_line.o upcase.o find_colon.o echo_reactions_file.o \
 	sort_molecules.o merge_molecules.o unique_molecules.o \
 	unique_molecules_core.o print_dg0_ke.o \
-	zero_solvent_coefficients.o sort_compartments.o \
-	merge_compartments.o unique_compartments.o \
+	zero_solvent_coefficients.o recover_solvent_coefficients.o \
+	sort_compartments.o merge_compartments.o unique_compartments.o \
 	unique_compartments_core.o translate_compartments.o \
 	print_molecules_dictionary.o alloc3.o set_compartment_ptrs.o \
 	read_initial_concentrations.o read_compartment_sizes.o \
@@ -631,6 +631,7 @@ libboltzmann.a: $(SERIAL_OBJS1) $(SERIAL_OBJS1_5) $(SERIAL_OBJS2) $(SERIAL_OBJS3
 	$(AR) $(ARFLAGS) libboltzmann.a compute_kss.o
 	$(AR) $(ARFLAGS) libboltzmann.a print_dg0_ke.o
 	$(AR) $(ARFLAGS) libboltzmann.a zero_solvent_coefficients.o
+	$(AR) $(ARFLAGS) libboltzmann.a recover_solvent_coefficients.o
 	$(AR) $(ARFLAGS) libboltzmann.a print_rxn_likelihoods_header.o
 	$(AR) $(ARFLAGS) libboltzmann.a print_free_energy_header.o
 	$(AR) $(ARFLAGS) libboltzmann.a check_initial_concentrations.o
@@ -841,6 +842,9 @@ print_dg0_ke.o: $(SERIAL_INCS) print_dg0_ke.c print_dg0_ke.h
 zero_solvent_coefficients.o: $(SERIAL_INCS) zero_solvent_coefficients.c zero_solvent_coefficients.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c zero_solvent_coefficients.c
 
+recover_solvent_coefficients.o: $(SERIAL_INCS) recover_solvent_coefficients.c recover_solvent_coefficients.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c recover_solvent_coefficients.c
+
 sort_compartments.o: $(SERIAL_INCS) sort_compartments.c sort_compartments.h merge_compartments.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c sort_compartments.c
 
@@ -943,7 +947,7 @@ print_free_energy_header.o: $(SERIAL_INCS) print_free_energy_header.c print_free
 flatten_state.o: $(SERIAL_INCS) flatten_state.c flatten_state.h boltzmann_set_filename_ptrs.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c flatten_state.c
 
-print_reactions_matrix.o: $(SERIAL_INCS) print_reactions_matrix.c print_reactions_matrix.h
+print_reactions_matrix.o: $(SERIAL_INCS) print_reactions_matrix.c print_reactions_matrix.h zero_solvent_coefficients.h recover_solvent_coefficients.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c print_reactions_matrix.c
 
 flatten_super_state.o: $(SERIAL_INCS) flatten_super_state.c flatten_super_state.h
