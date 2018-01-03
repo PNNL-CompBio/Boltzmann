@@ -24,6 +24,7 @@ specific language governing permissions and limitations under the License.
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
+#include <math.h>
 #include <float.h>
 #include <signal.h>
 #include <unistd.h>
