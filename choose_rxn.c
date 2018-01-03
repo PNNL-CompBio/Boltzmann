@@ -34,7 +34,7 @@ specific language governing permissions and limitations under the License.
 #include "vgrng.h"
 #include "candidate_rxn.h"
 #include "bndry_flux_update.h"
-#include "rxn_likelihood.h"
+#include "rxn_likelihood_postselection.h"
 
 #include "choose_rxn.h"
 int choose_rxn(struct state_struct *state) {
@@ -47,12 +47,11 @@ int choose_rxn(struct state_struct *state) {
     
   */
   struct vgrng_state_struct *vgrng2_state;
-  double *rxn_likelihood_ps;
   double *forward_rxn_likelihood;
   double *reverse_rxn_likelihood;
   double *activities;
   double *activities_save;
-  double *concs;
+  double *future_concs;
   double *ke;
   double dchoice;
   double scaling;
@@ -78,13 +77,12 @@ int choose_rxn(struct state_struct *state) {
   int padi;
 
   success = 1;
-  rxn_likelihood_ps      = state->rxn_likelihood_ps;
   num_rxns               = state->number_reactions;
   forward_rxn_likelihood = state->forward_rxn_likelihood;
   reverse_rxn_likelihood = state->reverse_rxn_likelihood;
   activities             = state->activities;
   activities_save        = state->activities_save;
-  concs                  = state->future_concentrations;
+  future_concs                  = state->future_concentrations;
   vgrng2_state            = state->vgrng2_state;
   num_rxns_t2            = num_rxns << 1;
   /*
@@ -111,14 +109,17 @@ int choose_rxn(struct state_struct *state) {
       Testing with no rejection.
     return(rxn_choice);
     */
-    /*
-      If reaction was forward or reverse ( No-op is rxn_choice >= num_rxns_t2).
-    */
     if (rxn_choice < num_rxns_t2) {
+      /*
+	The Metropolis method follows.
+	If reaction was forward or reverse 
+	( No-op is rxn_choice >= num_rxns_t2).
+      */
       /*
 	Compute the reaction likelihood for this reaction.
       */
-      likelihood = rxn_likelihood(concs,state,rxn_direction,i);
+      likelihood = rxn_likelihood_postselection(future_concs,
+						state,rxn_direction,i);
       if (likelihood < 1.0) {
 	/*
 	  An unlikely reaction but we do give a small but nonzero
@@ -141,15 +142,6 @@ int choose_rxn(struct state_struct *state) {
 	  */
 	  success = bndry_flux_update(i,rxn_direction,state);
 	} else {
-	  /*
-	    Record existing activity levels for restoration later.
-	  if (not_saved) {
-	    for (k=0;k<num_rxns;k++) {
-	      activities_save[k] = activities[k];
-	    }
-	    not_saved = 0;
-	  }
-	  */
 	  /*
 	    Prevent this reaction from happening again.
 	  */
@@ -177,16 +169,6 @@ int choose_rxn(struct state_struct *state) {
       accept = 1;
     }
   } /* end for (j...) */
-  /*
-    Recover the original activities if necessary.
-  */
-  /*
-  if (not_saved == 0) {
-    for (k=0;k<num_rxns;k++) {
-      activities[k] = activities_save[k];
-    }
-  }
-  */
   if (accept == 0) {
     /*
       No reactions were accepted. Print error message.
