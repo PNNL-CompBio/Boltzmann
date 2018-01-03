@@ -18,8 +18,8 @@
 #include "ode23tb_enforce_nonneg.h"
 #include "update_rxn_likelihoods.h"
 #include "get_counts.h"
-/*
 #include "ode_print_lklhds.h"
+/*
 #include "ode_print_bflux.h"
 #include "compute_net_likelihoods.h"
 #include "compute_net_lklhd_bndry_flux.h"
@@ -938,8 +938,10 @@ int ode23tb (struct state_struct *state, double *concs,
 	  if (ode_rxn_view_step == zero_l) {
 	    ode_print_concs(state,t,y);
 	    get_counts(ny,y,conc_to_count,counts);
+	    /*
 	    ierr = update_rxn_likelihoods(state,counts,forward_rxn_likelihoods,
 					  reverse_rxn_likelihoods);
+	    */
 	    ode_print_lklhds(state,t,forward_rxn_likelihoods,
 			     reverse_rxn_likelihoods);
 	    approximate_delta_concs(state,y,f0,delta_concs_choice);
