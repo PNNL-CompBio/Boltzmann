@@ -93,6 +93,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
     state->conc_view_freq     = (int64_t)0;
     state->lklhd_view_freq    = (int64_t)0;
     state->use_activities     = (int64_t)0;
+    state->print_output       = (int64_t)0;
     param_buffer       = state->param_buffer;
     max_param_line_len = state->max_param_line_len;
     key                = state->param_key;
@@ -164,6 +165,8 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	if (state->use_activities < 0) {
 	  state->use_activities = 0;
 	}
+      } else if (strncmp(key,"PRINT_OUTPUT",12) == 0) {
+	sscan_ok = sscanf(value,"%ld",&(state->print_output));
       } else if (strncmp(key,"RECORD_STEPS",12) == 0) {
 	sscan_ok = sscanf(value,"%ld",&(state->record_steps));
       } else if (strncmp(key,"FREE_ENERGY_FORMAT",12) == 0) {
