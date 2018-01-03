@@ -158,7 +158,9 @@ int rxn_map_run(struct state_struct *state,
   path_pos            = 0;
   path_ptrs           = &stack[stack_pos_lim];
   path_list           = &path_ptrs[path_count_lim];
-  direction_list      = &path_list[
+  /*
+  direction_list      = &path_list[]
+  */
   
   if (success) {
     /*
@@ -232,7 +234,9 @@ int rxn_map_run(struct state_struct *state,
 	      break;
 	    } else {
 	      path_list[path_pos] = stack[k];
+	      /*
 	      direction_list[path_pos] = stack[k+1];
+	      */
 	      if (stack[k+1] < 0) {
 		fprintf(stdout,"-%ld\n",path_list[path_pos]);
 	      } else {
