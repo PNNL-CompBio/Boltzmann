@@ -91,6 +91,7 @@ int parse_side_line(char *rctnts_p,
   struct rxn_matrix_struct *rxns_matrix;
   int64_t *molecules_indices;
   int64_t *coefficients;
+  int64_t *matrix_text;
   int64_t molecules_pos;
   int64_t compartment_pos;
   int64_t align_len;
@@ -103,7 +104,7 @@ int parse_side_line(char *rctnts_p,
   char    *compartment_text;
   char    *molecules_text;
   char    *raw_molecules_text;
-  char    **matrix_text;
+  char    *compartment;
 
   int     sl;
   int     colon_loc;
@@ -192,16 +193,20 @@ int parse_side_line(char *rctnts_p,
 	    state->min_compartment_len = compartment_len;
 	  }
 	}
+	/*
 	unsorted_cmpts->string = (char *)&compartment_text[compartment_pos];
+	*/
+	unsorted_cmpts->string = compartment_pos;
+	compartment = (char *)&compartment_text[compartment_pos];
 	unsorted_cmpts->c_index  = cmpts;
 	unsorted_cmpts += 1; /* Caution address arithmetic */
 	ci = cmpts;
 	cmpts += 1;
-	strcpy(unsorted_cmpts->string,(char*)&rctnts[colon_loc+1]);
-	upcase(compartment_len,unsorted_cmpts->string,
-	       unsorted_cmpts->string);
+	strcpy(compartment,(char*)&rctnts[colon_loc+1]);
+	upcase(compartment_len,compartment,
+	       compartment);
 	padding = (align_len - (compartment_len & align_mask)) & align_mask;
-		compartment_pos += compartment_len + padding;
+	compartment_pos += compartment_len + padding;
       }
       if (sl > state->max_molecule_len) {
 	state->max_molecule_len = sl;
@@ -210,13 +215,19 @@ int parse_side_line(char *rctnts_p,
 	  state->min_molecule_len = sl;
 	}
       }
+      /*
       matrix_text[molecules] = (char*)&raw_molecules_text[molecules_pos];
+      */
+      matrix_text[molecules] = molecules_pos;
       sll = (int64_t)sl + (int64_t)1;
       padding = (align_len - (sll & align_mask)) & align_mask;
       strcpy((char *)&raw_molecules_text[molecules_pos],rctnts);
       upcase(sl,(char *)&raw_molecules_text[molecules_pos],
 	     (char *)&molecules_text[molecules_pos]);
+      /*
       unsorted_molecules->string = (char *)&molecules_text[molecules_pos];
+      */
+      unsorted_molecules->string = molecules_pos;
       unsorted_molecules->m_index  = molecules;
       unsorted_molecules->c_index  = ci;
       unsorted_molecules += 1; /* Caution address arithmetic. */
