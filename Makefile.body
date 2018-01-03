@@ -5,7 +5,7 @@ LUNWIND_DEPS = luwtb.h luwtb1.h luwtb2.h
 
 SERIAL_INCS = boltzmann_structs.h state_struct.h rxn_struct.h rxn_matrix_struct.h molecules_matrix_struct.h vgrng_state_struct.h $(TIMING_DEPS) $(LUNWIND_DEPS)
 
-SERIAL_OBJS = boltzmann_drv.o boltzmann_init.o alloc0.o read_params.o vgrng_init.o vgrng.o alloc1.o echo_params.o size_rxns_file.o init_rxn_file_keywords.o parse_rxn_file_keyword.o count_molecules.o count_ws.o count_nws.o is_a_coef.o alloc2.o parse_reactions_file.o upcase.o find_colon.o echo_reactions_file.o sort_molecules.o merge_molecules.o unique_molecules.o sort_compartments.o merge_compartments.o unique_compartments.o translate_compartments.o print_molecules_dictionary.o alloc3.o set_compartment_ptrs.o read_initial_concentrations.o compartment_lookup.o molecules_lookup.o form_molecules_matrix.o compute_ke.o boltzmann_run_sim.o free_energy_changes.o rxn_log_likelihoods.o rxn_likelihoods.o binary_search_l_u_b.o forward_rxn_conc_update.o reverse_rxn_conc_update.o print_restart_file.o print_reactions_view.o
+SERIAL_OBJS = boltzmann_drv.o boltzmann_init.o alloc0.o read_params.o vgrng_init.o vgrng.o alloc1.o echo_params.o size_rxns_file.o init_rxn_file_keywords.o parse_rxn_file_keyword.o count_molecules.o count_ws.o count_nws.o is_a_coef.o alloc2.o parse_reactions_file.o upcase.o find_colon.o echo_reactions_file.o sort_molecules.o merge_molecules.o unique_molecules.o sort_compartments.o merge_compartments.o unique_compartments.o translate_compartments.o print_molecules_dictionary.o alloc3.o set_compartment_ptrs.o read_initial_concentrations.o compartment_lookup.o molecules_lookup.o form_molecules_matrix.o compute_ke.o boltzmann_run_sim.o free_energy_changes.o choose_rxn.o candidate_rxn.o rxn_likelihood.o rxn_log_likelihoods.o rxn_likelihoods.o binary_search_l_u_b.o forward_rxn_conc_update.o reverse_rxn_conc_update.o print_restart_file.o print_reactions_view.o
 
 boltzmann: $(SERIAL_OBJS) $(MMAP_OBJS) $(TIMING_LIB)
 	$(CLINKER) $(LFLAGS) -o boltzmann $(SERIAL_OBJS) $(MMAP_OBJS) $(TIMING_LIB)
@@ -111,11 +111,20 @@ compartment_lookup.o: $(SERIAL_INCS) compartment_lookup.c compartment_lookup.h
 form_molecules_matrix.o: $(SERIAL_INCS) form_molecules_matrix.c form_molecules_matrix.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c form_molecules_matrix.c
 
-boltzmann_run_sim.o: $(SERIAL_INCS) boltzmann_run_sim.c boltzmann_run_sim.h free_energy_changes.h vgrng.h binary_search_l_u_b.h forward_rxn_conc_update.h reverse_rxn_conc_update.h rxn_log_likelihoods.h
+boltzmann_run_sim.o: $(SERIAL_INCS) boltzmann_run_sim.c boltzmann_run_sim.h free_energy_changes.h choose_rxn.h rxn_log_likelihoods.h print_restart_file.h print_reactions_view.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_run_sim.c
 
 free_energy_changes.o: $(SERIAL_INCS) free_energy_changes.c free_energy_changes.h rxn_log_likelihoods.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c free_energy_changes.c
+
+choose_rxn.o: ${SERIAL_INCS} choose_rxn.c choose_rxn.h candidate_rxn.h rxn_likelihood.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c choose_rxn.c
+
+candidate_rxn.o: $(SERIAL_INCS) candidate_rxn.c candidate_rxn.h vgrng.h binary_search_l_u_b.h forward_rxn_conc_update.h reverse_rxn_conc_update.h 
+	$(CC) $(DCFLAGS) $(TFLAGS) -c candidate_rxn.c
+
+rxn_likelihood.o: $(SERIAL_INCS) rxn_likelihood.c rxn_likelihood.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c rxn_likelihood.c
 
 rxn_log_likelihoods.o: $(SERIAL_INCS) rxn_log_likelihoods.c rxn_log_likelihoods.h rxn_likelihoods.h 
 	$(CC) $(DCFLAGS) $(TFLAGS) -c rxn_log_likelihoods.c
