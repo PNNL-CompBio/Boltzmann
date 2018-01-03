@@ -92,10 +92,10 @@ int print_restart_file(struct state_struct *state) {
       ci = cur_molecules->c_index;
       if (ci != oi) {
 	oi = ci;
+	cur_cmpt   = (struct molecule_struct *)&(cur_cmpts[ci]);
+	multiplier = cur_cmpt->count_to_conc;
 	if (ci > 0) {
-	  cur_cmpt = (struct molecule_struct *)&(cur_cmpts[ci]);
 	  cmpt_string = (char*)&compartment_text[cur_cmpt->string];
-	  multiplier = cur_cmpt->count_to_conc;
 	}
       }
       if (cur_molecules->variable) {
