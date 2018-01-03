@@ -97,9 +97,9 @@ int rxn_likelihoods(double *free_energy,
   rcoef             = rxns_matrix->coefficients;
   molecules_indices = rxns_matrix->molecules_indices;
   ke                = state->ke;
-  left_concs        = 1.0;
-  right_concs       = 1.0;
   for (i=0;i<nrxns;i++) {
+    left_concs        = 1.0;
+    right_concs       = 1.0;
     for (j=rxn_ptrs[i];j<rxn_ptrs[i+1];j++) {
       coeff = rcoef[j];
       conc  = concs[molecules_indices[j]];
