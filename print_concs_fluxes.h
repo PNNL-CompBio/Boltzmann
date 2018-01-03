@@ -3,9 +3,6 @@
 extern int print_concs_fluxes(struct state_struct *state,int ny,
 			      double *fluxes, 
 			      double *concs, 
-			      double *counts,
-			      double *forward_rxn_likelihoods,
-			      double *reverse_rxn_likelihoods,
 			      double time, double h,
 			      int step, int origin);
 #endif
