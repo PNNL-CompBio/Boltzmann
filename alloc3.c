@@ -64,7 +64,7 @@ int alloc3(struct state_struct *state) {
   usage      		  = state->usage;
   align_mask 		  = state->align_mask;
   align_len  		  = state->align_len;
-  nu_molecules            = (int)state->unique_molecules;
+  nu_molecules            = (int)state->nunique_molecules;
   nzr                     = (int)state->number_molecules;
   nrxns                   = (int)state->number_reactions;
   max_molecule_len        = (int)state->max_molecule_len + 1;
@@ -75,7 +75,7 @@ int alloc3(struct state_struct *state) {
     length is unique_compartments + 1;
   */
   if (success) {
-    ask_for = ((int64_t)state->unique_compartments + one_l) * 
+    ask_for = ((int64_t)state->nunique_compartments + one_l) * 
       ((int64_t)sizeof(int64_t));
     state->compartment_ptrs = (int64_t*)calloc(one_l,ask_for);
     if (state->compartment_ptrs == NULL) {
