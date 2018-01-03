@@ -25,7 +25,6 @@ specific language governing permissions and limitations under the License.
 #define DBG_BOLTZMANN_RUN 1
 */
 
-#include "flatten_state.h"
 #include "update_rxn_log_likelihoods.h"
 #include "choose_rxn.h"
 #include "deq_run.h"
@@ -45,8 +44,7 @@ int bwarmup_run(struct state_struct *state) {
     boltzmann_init has been called to allocate and initialize state structure.
 
     Called by: boltzmann/client
-    Calls:     flatten_state,
-               update_rxn_log_likelihoods,
+    Calls:     update_rxn_log_likelihoods,
 	       choose_rxn,
                deq_run,
 	       compute_delta_g_forward_entropy_free_energy
@@ -68,9 +66,9 @@ int bwarmup_run(struct state_struct *state) {
   double *bndry_flux_counts;
   double *activities;
   double *no_op_likelihood;
-  int    *rxn_fire;
   double *dg0s;
   double *free_energy;
+  int64_t *rxn_fire;
   int64_t i;
   int64_t n_warmup_steps;
   int64_t n_record_steps;
@@ -113,13 +111,15 @@ int bwarmup_run(struct state_struct *state) {
   int rxn_no;
   int j;
 
+  int step;
+  int padi;
+
   FILE *lfp;
   success = 1;
   one_l   = (int64_t)1;
   zero_l  = (int64_t)0;
   nstate = state;
   state->workspace_base = NULL;
-  success = flatten_state(state,&nstate);
   n_warmup_steps    	 = state->warmup_steps;
   n_record_steps    	 = state->record_steps;
   number_reactions       = (int)state->number_reactions;
@@ -219,6 +219,7 @@ int bwarmup_run(struct state_struct *state) {
 							     &entropy);
       */
     } /* end for(i...) */
+    step = -2;
   } else {
     /*
       Use ode solver to move from initial concentrations to
@@ -226,9 +227,11 @@ int bwarmup_run(struct state_struct *state) {
     */
     state->print_ode_concs = 0;
     success = deq_run(state);
+    step = -1;
   }
   if (success) {
     success = print_restart_file(state);
   }
+  print_counts(state,step);
   return(success);
 }
