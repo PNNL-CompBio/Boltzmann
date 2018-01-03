@@ -31,7 +31,7 @@ int sort_molecules(struct molecule_struct *unsorted_molecules,
 		   int n) {
   /*
     Sort the uppercase molecule names.
-    Called by: boltzmann_init, boltzmann_boot, rxn_map_init
+    Called by: rxns_init, rxn_map_init
     Calls    : merge_molecules, memmove
 
     for now we use a simple merge sort, with strcmp as the
