@@ -46,6 +46,9 @@ struct timing_struct timing_data;
 #include "boltzmann_load_aux_data.h"
 #include "open_output_files.h"
 #include "boltzmann_run.h"
+#include "print_boundary_flux.h"
+#include "print_restart_file.h"
+#include "boltzmann_free_state.h"
 int main(int argc, char **argv) {
   /*
     Calls:
@@ -55,6 +58,7 @@ int main(int argc, char **argv) {
   struct state_struct *state;
   struct state_struct *recovered_state;
   void *flattened_state;
+  void *agent_data;
   char *param_file_name;
   char *aux_data;
   int success;
@@ -77,13 +81,14 @@ int main(int argc, char **argv) {
   success = boltzmann_init(param_file_name,&state);
   if (success) {
     flattened_state = NULL;
-    success = boltzmann_save_state(state,&flattened_state);
+    success = boltzmann_save_state(state,&flattened_state,&agent_data);
   }
   if (success) {
     success = boltzmann_save_aux_data(state,(void**)&aux_data);
   }
   if (success) {
-    boltzmann_load_state(flattened_state,&recovered_state);
+    free(agent_data);
+    boltzmann_load_state(flattened_state,&recovered_state,&agent_data);
     recovered_state->lfp = state->lfp;
   }
   if (success) {
@@ -116,7 +121,23 @@ int main(int argc, char **argv) {
   }
   TIMING_STOP(INITIALIZE);
   if (success) {
-    success = boltzmann_run(recovered_state);
+    success = boltzmann_run(recovered_state,agent_data);
+  }
+  if (recovered_state->print_output == 0) {
+    if (recovered_state->num_fixed_concs > (int64_t)0) {
+      recovered_state->bndry_flux_fp = 
+	fopen(recovered_state->bndry_flux_file,"w");
+      print_boundary_flux(recovered_state);
+    } /* end if (state->num_fixed_concs ...) */
+    if (success) {
+      success = print_restart_file(recovered_state);
+    }
+  }
+  if (success) {
+  boltzmann_free_state(state);
+    boltzmann_free_state(recovered_state);
+    free(flattened_state);
+    free(agent_data);
   }
   TIMING_STOP(TOTAL_TIME);
   TIMING_PRINT(stdout);
