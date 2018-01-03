@@ -41,6 +41,8 @@ int read_initial_concentrations(struct state_struct *state) {
   struct istring_elem_struct *sorted_molecules;
   struct istring_elem_struct *molecule;
   double  conc;
+  double  conc_multiple;
+  double  c_multiple;
   double *concs;
   double *bndry_flux_concs;
   int64_t molecules_buff_len;
@@ -61,13 +63,18 @@ int read_initial_concentrations(struct state_struct *state) {
   int cmpt_len;
 
   int num_fixed_concs;
+  int solvent;
+
+  int compute_conc;
   int padi;
   
   char *molecules_buffer;
   char *molecule_name;
   char *compartment_name;
   char *variable_c;
+  char *compute_c;
   char vc[2];
+  char cc[2];
   char *fgp;
   
   FILE *conc_fp;
@@ -82,6 +89,7 @@ int read_initial_concentrations(struct state_struct *state) {
   success = 1;
   one_l = (int64_t)1;
   variable_c = (char *)&vc[0];
+  compute_c  = (char *)&cc[0];
   for (i=0;i<nu_molecules;i++) {
     concs[i] = -1.0;
     bndry_flux_concs[i] = -1;
@@ -89,21 +97,61 @@ int read_initial_concentrations(struct state_struct *state) {
   num_fixed_concs = 0;
   conc_fp = fopen(state->init_conc_file,"r");
   if (conc_fp) {
+
     while (!feof(conc_fp)) {
       fgp = fgets(molecules_buffer,molecules_buff_len,conc_fp);
       if (fgp) {
-	nscan = sscanf(molecules_buffer,"%s %le %1s",
-		       molecule_name, &conc,variable_c);
+	nscan = sscanf(molecules_buffer,"%s %le %1s %1s %le",
+		       molecule_name, &conc, variable_c, compute_c, 
+		       &c_multiple);
 	variable = 1;
-	if (nscan == 3) {
+	solvent  = 0;
+	if (nscan >= 3) {
 	  /*
 	    A variable or constant specifier was givven.
 	  */
+	  /*
+	    Upper case the variable character.
+          */
 	  vc[0] = vc[0] & 95;
-	  if (strncmp(variable_c,"C",one_l) == 0) {
+
+	  if (strncmp(variable_c,"F",one_l) == 0) {
 	    variable = 0;
 	    num_fixed_concs += 1;
 	  }
+	  if (strncmp(variable_c,"V",one_l) == 0) {
+	    variable = 0;
+	    num_fixed_concs += 1;
+	    solvent  = 1;
+	  }
+	}
+	compute_conc = 1;
+	if (nscan >= 4) {
+	  /*
+	    A fixed or compute value was given for the initial concentration.
+	    Upper case the compute value character.
+	  */
+	  cc[0] = cc[0] & 95;
+	  if (strncmp(compute_c,"U",one_l) == 0) {
+	    compute_conc = 0;
+	  } else {
+	    if (strncmp(compute_c,"I",one_l) == 0) {
+	      compute_conc = 1;
+	    } else {
+	      if (strncmp(compute_c,"C",one_l) == 0) {
+		compute_conc = 2;
+	      } else {
+		compute_conc =0;
+	      }
+	    }
+	  }
+	}
+        conc_multiple = 1.0;
+	if (nscan == 5) {
+	  /*
+	    A multiplicative factor was given for the initial concentration.
+	  */
+	  conc_multiple = c_multiple;
 	}
 	mol_len = strlen(molecule_name);
 	compartment_name = molecule_name;
@@ -129,6 +177,9 @@ int read_initial_concentrations(struct state_struct *state) {
 	    concs[si] = conc;
 	    molecule = (struct istring_elem_struct *)&sorted_molecules[si];
 	    molecule->variable = variable;
+	    molecule->compute_init_conc = compute_conc;
+	    molecule->conc_multiple     = conc_multiple;
+	    molecule->solvent           = solvent;
 	  } else {
 	    fprintf(stderr,"read_initial_concentrations: Error "
 		    "unrecognized molecule in %s was %s\n",
