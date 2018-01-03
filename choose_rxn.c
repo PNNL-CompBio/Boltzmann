@@ -34,7 +34,7 @@ int choose_rxn(struct state_struct *state,
     Called by: boltzmann_run
     Calls:     candidate_rxn,
                bndry_flux_update
-	       metroplis
+	       metropolis
 
     Arguments: 
     Name        TMF   Description
