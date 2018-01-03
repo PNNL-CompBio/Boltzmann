@@ -52,9 +52,10 @@ int echo_params (FILE *lfp, struct state_struct *state) {
     fprintf(lfp,"state->align_len          = %ld\n",state->align_len);
     fprintf(lfp,"state->max_filename_len   = %ld\n",state->max_filename_len);
     fprintf(lfp,"state->max_param_line_len = %ld\n",state->max_param_line_len);
-    fprintf(lfp,"state->rxn_buff_len       = %ld\n",state->rxn_buff_len);
     fprintf(lfp,"state->ideal_gas_r        = %le\n",state->ideal_gas_r);
     fprintf(lfp,"state->temp_kelvin        = %le\n",state->temp_kelvin);
+    fprintf(lfp,"state->ph                 = %le\n",state->ph);
+    fprintf(lfp,"state->ionic_strength     = %le\n",state->ionic_strength);
   }
   return (success);
 }
