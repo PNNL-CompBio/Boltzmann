@@ -42,7 +42,7 @@ void print_free_energy_header(struct state_struct *state) {
   int i;
   int free_energy_format;
 
-  free_energy = (int)state->free_energy_format;
+  free_energy_format = (int)state->free_energy_format;
   /*
     Print header lines for the free energy file.
   */
