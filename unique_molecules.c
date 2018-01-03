@@ -33,17 +33,11 @@ int unique_molecules(struct state_struct *state) {
     Called by: rxns_init
     Calls:     strcmp (intrinsic)
   */
-  struct rxn_struct *reactions;
   struct rxn_matrix_struct *rxns_matrix;
   int64_t *molecules_indices;
-  int64_t *compartment_indices;
   struct molecule_struct *sorted_molecules;
-  struct molecule_struct *cur_molecule;
-  struct molecule_struct *umolecules_next;
   char *molecules_text;
   char *solvent_string;
-  char *cstring;
-  char *sstring;
   int64_t sum_molecule_len;
   int64_t nunique_molecules;
   int64_t align_len;
