@@ -104,6 +104,9 @@ int boltzmann_run_sim(struct state_struct *state) {
   int conc_view_step;
   int conc_view_freq;
 
+  int print_output;
+  int padi;
+
   FILE *lfp;
   success = 1;
   
@@ -117,6 +120,7 @@ int boltzmann_run_sim(struct state_struct *state) {
   activities        	 = state->activities;
   rxn_fire          	 = state->rxn_fire;
   no_op_likelihood  	 = state->no_op_likelihood;
+  print_output           = (int)state->print_output;
   number_reactions_t2    = number_reactions << 1;
   number_reactions_t2_p1 = number_reactions_t2 + 1;
   rxn_view_freq        	 = (int)state->rxn_view_freq;
@@ -169,8 +173,10 @@ int boltzmann_run_sim(struct state_struct *state) {
     /*
       Set the rxn_fire counts to 0.
     */
-    for (i=0;i<number_reactions_t2;i++) {
-      rxn_fire[i] = 0;
+    if (print_output) {
+      for (i=0;i<number_reactions_t2;i++) {
+	rxn_fire[i] = 0;
+      }
     }
     /*
       Initialize the boundary fluxes to 0.
@@ -186,8 +192,10 @@ int boltzmann_run_sim(struct state_struct *state) {
       */
       rxn_choice = choose_rxn(state,&r_sum_likelihood);
       if (rxn_choice < 0) break;
-      if (rxn_choice <= number_reactions_t2) {
-	rxn_fire[rxn_choice] += 1;
+      if (print_output) {
+	if (rxn_choice <= number_reactions_t2) {
+	  rxn_fire[rxn_choice] += 1;
+	}
       }
       /*
 	Copy the future concentrations, the result of the reaction firing
@@ -213,53 +221,59 @@ int boltzmann_run_sim(struct state_struct *state) {
 							    &dg_forward,
 							    &entropy,
 							    i);
-      /* 
-	 print the concentrations. 
-      */
-      conc_view_step = conc_view_step - 1;
-      if ((conc_view_step <= 0) || (i == (n_record_steps-1))) {
-	print_concentrations(state,i);
-	conc_view_step = conc_view_freq;
-      }
-      /* 
-	 print the entropy, dg_forward and the reaction likelihoods, 
-      */
-      lklhd_view_step = lklhd_view_step - 1;
-      if ((lklhd_view_step <= 0) || (i == (n_record_steps-1))) {
-	print_likelihoods(state,entropy,dg_forward,i) ;
-	lklhd_view_step = lklhd_view_freq;
-      }
-      if (rxn_view_freq > 0) {
-	rxn_view_step = rxn_view_step - 1;
-	/*
-	  Save the likelihoods on a per reaction basis for later 
-	  printing to the rxns.view file.
+      if (print_output) {
+	/* 
+	  print the concentrations. 
 	*/
-	if ((rxn_view_step <= 0) || (i == (n_record_steps-1))) {
-	  no_op_likelihood[rxn_view_pos] = r_sum_likelihood;
-	  save_likelihoods(state,rxn_view_pos);
-	  rxn_view_step = rxn_view_freq;
-	  rxn_view_pos  += 1;
+	conc_view_step = conc_view_step - 1;
+	if ((conc_view_step <= 0) || (i == (n_record_steps-1))) {
+	  print_concentrations(state,i);
+	  conc_view_step = conc_view_freq;
+	}
+	/* 
+	  print the entropy, dg_forward and the reaction likelihoods, 
+	*/
+	lklhd_view_step = lklhd_view_step - 1;
+	if ((lklhd_view_step <= 0) || (i == (n_record_steps-1))) {
+	  print_likelihoods(state,entropy,dg_forward,i) ;
+	  lklhd_view_step = lklhd_view_freq;
+	}
+	if (rxn_view_freq > 0) {
+	  rxn_view_step = rxn_view_step - 1;
+	  /*
+	    Save the likelihoods on a per reaction basis for later 
+	    printing to the rxns.view file.
+	  */
+	  if ((rxn_view_step <= 0) || (i == (n_record_steps-1))) {
+	    no_op_likelihood[rxn_view_pos] = r_sum_likelihood;
+	    save_likelihoods(state,rxn_view_pos);
+	    rxn_view_step = rxn_view_freq;
+	    rxn_view_pos  += 1;
+	  }
+	}
+	/*
+	  If user has requested them, print out free energies as well.
+	*/
+	if (state->free_energy_format > (int64_t)0) {
+	  print_free_energy(state,i);
+	}
+      } /* end if (print_output) */
+    } /* end for(i...) */
+    if (print_output) {
+      if (state->num_fixed_concs > (int64_t)0) {
+	print_boundary_flux(state);
+      } /* end if (state->num_fixed_concs ...) */
+      if (success) {
+	success = print_restart_file(state);
+      }
+      if (success) {
+	if (rxn_view_freq > 0) {
+	  success = print_reactions_view(state);
 	}
       }
-      /*
-	If user has requested them, print out free energies as well.
-      */
-      if (state->free_energy_format > (int64_t)0) {
-	print_free_energy(state,i);
-      }
-    } /* end for(i...) */
-    if (state->num_fixed_concs > (int64_t)0) {
-      print_boundary_flux(state);
-    } /* end if (state->num_fixed_concs ...) */
-    if (success) {
-      success = print_restart_file(state);
     }
-    if (success) {
-      if (rxn_view_freq > 0) {
-	success = print_reactions_view(state);
-      }
-    }
+    state->entropy = entropy;
+    state->dg_forward = dg_forward;
   }
   return(success);
 }
