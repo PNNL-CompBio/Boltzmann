@@ -27,17 +27,26 @@ void ode_print_lklhds(struct state_struct *state,
 		      double t,
 		      double *forward_rxn_likelihoods,
 		      double *reverse_rxn_likelihoods) {
+  /*
+    Print last likelilhoods used by approximate_delta_concs
+    scaled by activities.
+  */
+  double *activities;
+  double forward;
+  double reverse;
   int nrxns;
   int j;
   FILE *ode_lklhd_fp;
   FILE *lfp;
   nrxns        = state->number_reactions;
   ode_lklhd_fp = state->ode_lklhd_fp;
+  activities   = state->activities;
   if (ode_lklhd_fp) {
     fprintf(ode_lklhd_fp,"%le",t);
     for(j=0;j<nrxns;j++) {
-      fprintf(ode_lklhd_fp,"\t%le\t%le",forward_rxn_likelihoods[j],
-	      reverse_rxn_likelihoods[j]);
+      forward = forward_rxn_likelihoods[j] * activities[j];
+      reverse = reverse_rxn_likelihoods[j] * activities[j];
+      fprintf(ode_lklhd_fp,"\t%le\t%le",forward,reverse);
     }
     fprintf(ode_lklhd_fp,"\n");
     fflush(ode_lklhd_fp);
