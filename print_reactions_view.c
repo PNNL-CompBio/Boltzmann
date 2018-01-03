@@ -47,6 +47,7 @@ int print_reactions_view(struct state_struct *state) {
   char **matrix_text;
   double *rxn_view_data;
   double *rev_rxn_view_data;
+  int    *rxn_fire;
 
   int success;
   int rxns;
@@ -62,6 +63,9 @@ int print_reactions_view(struct state_struct *state) {
 
   int k;
   int lthl;
+
+  int nrxns;
+  int net_fire;
 
   FILE *rxn_view_fp;
   FILE *lfp;
@@ -88,8 +92,10 @@ int print_reactions_view(struct state_struct *state) {
     matrix_text    = rxns_matrix->text;
     rxn_view_data  = state->rxn_view_likelihoods;
     rev_rxn_view_data = state->rev_rxn_view_likelihoods;
+    rxn_fire          = state->rxn_fire;
     lthl              = state->lthl;
-    for (rxns=0;rxns < state->number_reactions;rxns++) {
+    nrxns             = state->number_reactions;
+    for (rxns=0;rxns < nrxns;rxns++) {
       if (reaction->title) {
 	fprintf(rxn_view_fp,"%s\t",reaction->title);
       }
@@ -128,6 +134,11 @@ int print_reactions_view(struct state_struct *state) {
 	  }
 	}
       }
+      /*
+	Print out the rxn fire count.
+      */
+      net_fire = rxn_fire[rxns] - rxn_fire[rxns+nrxns];
+      fprintf(rxn_view_fp,"\t%d\t%d",rxn_fire[rxns],net_fire);
       /*
 	Now print the reaction likelihoods for this reaction.
       */
@@ -177,6 +188,11 @@ int print_reactions_view(struct state_struct *state) {
 	  }
 	}
       }
+      /*
+	Print out the reverse rxn_fire count.
+      */
+      net_fire = -net_fire;
+      fprintf(rxn_view_fp,"\t%d\t%d",rxn_fire[nrxns+rxns],net_fire);
       /*
 	Now print the reaction likelihoods for this reverse reaction.
       */
