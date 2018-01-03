@@ -1024,6 +1024,7 @@ int ode23tb (struct state_struct *state, double *concs,
       if (ode_rxn_view_freq > 0) {
 	ode_rxn_view_step -= one_l;
 	if (ode_rxn_view_step == zero_l) {
+	  /*
           nl_success = compute_net_likelihoods(state,forward_rxn_likelihoods,
 					       reverse_rxn_likelihoods,
 					       net_likelihoods);
@@ -1033,6 +1034,7 @@ int ode23tb (struct state_struct *state, double *concs,
 					 net_lklhd_bndry_flux);
 	    print_net_lklhd_bndry_flux(state,net_lklhd_bndry_flux,t);
 	  }
+	  */
 	  ode_print_concs(state,t,y);
 	  ode_print_lklhds(state,t,forward_rxn_likelihoods,
 			   reverse_rxn_likelihoods);
