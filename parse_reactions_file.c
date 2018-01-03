@@ -514,6 +514,11 @@ int parse_reactions_file(struct state_struct *state,
 	    success = 0;
 	    break;
 	  }
+	  /*
+	    Set the reaction deltag0_computed flag to -1 to show that 
+	    a dgzero line was supplied for the reaction in the .dat file.
+	  */
+	  reaction->deltag0_computed = -1;
 	  break;
 	case 8:
 	  /* 
