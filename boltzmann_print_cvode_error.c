@@ -1,5 +1,6 @@
 #include "boltzmann_structs.h"
 #include "boltzmann_cvodes_headers.h"
+#include "cvodes_params_struct.h"
 #include "boltzmann_print_cvode_error.h"
 void boltzmann_print_cvode_error(int flag,void *cvode_mem,  struct state_struct *state) {
   /*
