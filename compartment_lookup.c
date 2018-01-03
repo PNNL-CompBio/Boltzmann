@@ -47,39 +47,42 @@ int compartment_lookup(char *compartment_name, struct state_struct *state) {
 
   int mid;
   int crslt;
+
   index = -1;
-  sorted_compartments = state->sorted_cmpts;
-  n     = state->unique_compartments;
-  crslt = strcmp(compartment_name,sorted_compartments[0].string);
-  if (crslt >= 0) {
-    if (crslt == 0) {
-      index = 0;
-    } else {
-      left = 0;
-      crslt = strcmp(compartment_name,sorted_compartments[n-1].string);
-      if (crslt <= 0) {
-	if (crslt == 0) {
-	  index = n-1;
-	} else {
-	  right = n-1;
-	  mid = (left + right) >> 1;
-	  while (mid != left) {
-	    crslt = strcmp(compartment_name,sorted_compartments[mid].string);
-	    if (crslt == 0) {
-	      index = mid;
-	      break;
-	    } else {
-	      if (crslt  < 0) {
-		right = mid;
+  if (compartment_name) {
+    sorted_compartments = state->sorted_cmpts;
+    n     = state->unique_compartments;
+    crslt = strcmp(compartment_name,sorted_compartments[0].string);
+    if (crslt >= 0) {
+      if (crslt == 0) {
+        index = 0;
+      } else {
+        left = 0;
+        crslt = strcmp(compartment_name,sorted_compartments[n-1].string);
+        if (crslt <= 0) {
+	  if (crslt == 0) {
+	    index = n-1;
+	  } else {
+	    right = n-1;
+	    mid = (left + right) >> 1;
+	    while (mid != left) {
+	      crslt = strcmp(compartment_name,sorted_compartments[mid].string);
+	      if (crslt == 0) {
+		index = mid;
+		break;
 	      } else {
-		left  = mid;
+		if (crslt  < 0) {
+		  right = mid;
+		} else {
+		  left  = mid;
+		}
+		mid = (left + right) >> 1;
 	      }
-	      mid = (left + right) >> 1;
 	    }
 	  }
-	}
+        }
       }
-    }
+    } 
   }
   return(index);
 }
