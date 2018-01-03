@@ -61,7 +61,7 @@ int sort_molecules(struct istring_elem_struct *unsorted_molecules,
   u_molecules = unsorted_molecules;
   s_molecules = sorted_molecules;
   
-  if (n > 2) {
+  if (n >= 2) {
     for (step = 1; step < n; step += step) {
       for(j=0;j<(n-step);j = j + step + step) {
 	l1 = step;
