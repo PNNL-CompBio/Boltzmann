@@ -28,18 +28,7 @@ specific language governing permissions and limitations under the License.
   Calls:  boltzmann_init, deq_run, print_restart
 */
 
-/*
-  Maybe only for linux systems.
-#ifdef LIBUNWIND
-#include <libunwind.h>
-#include <unwind.h>
-#include "luwtb.h"
-#endif
-*/
 
-#ifdef TIMING_ON
-struct timing_struct timing_data;
-#endif
 
 /*
 */
@@ -54,26 +43,13 @@ int main(int argc, char **argv)
   char *param_file_name;
   int success;
   int j;
-  int print_concs;
-  int padi;
-  /*
-#ifdef LIBUNWIND
-#include "luwtb1.h"
-#endif
-#ifdef LIBUNWIND
-#include "luwtb2.h"
-#endif
-  */
-  TIMING_INIT("./timingi.h");
-  TIMING_START(TOTAL_TIME);
-  TIMING_START(INITIALIZE);
+
   if (argc > 1) {
     param_file_name = argv[1];
   } else {
     param_file_name = NULL;
   }
   success = boltzmann_init(param_file_name,&state);
-  TIMING_STOP(INITIALIZE);
   if (success) {
     state->print_ode_concs = 1;
     success = deq_run(state);
@@ -81,8 +57,6 @@ int main(int argc, char **argv)
     print_counts(state,j);
     print_restart_file(state);
   }
-  TIMING_STOP(TOTAL_TIME);
-  TIMING_PRINT(stdout);
   fflush(stdout);
   exit(0);
 }
