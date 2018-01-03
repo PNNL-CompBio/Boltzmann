@@ -37,7 +37,7 @@ int alloc7(struct state_struct *state) {
     and concs of length num_species.
     Also an integer vector, rxn_has_flux of length num_rxns.
 
-    Called by: deq_run
+    Called by: deq_run, boltzmann_flatten_alloc1
     Calls:     calloc, fprintf, fflush,
     Sets the following fields of state:
       ode_counts,
@@ -66,6 +66,7 @@ int alloc7(struct state_struct *state) {
   int64_t ask_for;
   int64_t one_l;
   int64_t usage;
+  int64_t run_workspace_bytes;
   int    *rxn_has_flux;
   int    *base_reactants;
   int    *base_reactant_indicator;
@@ -82,6 +83,7 @@ int alloc7(struct state_struct *state) {
   num_rxns      = (int)state->number_reactions;
   lfp           = state->lfp;
   success       = 1;
+  run_workspace_bytes  = state->run_workspace_bytes;
   /*
     Allocate space for the ode_counts vector to be computed
     from the molecule concentrations and compartment sizes.
@@ -89,6 +91,7 @@ int alloc7(struct state_struct *state) {
   if (success) {
     ask_for = num_species * sizeof(double);
     usage += ask_for;
+    run_workspace_bytes  += ask_for;
     ode_counts = (double *)calloc(one_l,ask_for);
     if (ode_counts == NULL) {
       fprintf(stderr,"alloc7: Error unable to allocate %lld bytes for "
@@ -102,6 +105,7 @@ int alloc7(struct state_struct *state) {
   if (success) {
     ask_for = num_species * sizeof(double);
     usage += ask_for;
+    run_workspace_bytes  += ask_for;
     ode_concs = (double *)calloc(one_l,ask_for);
     if (ode_concs == NULL) {
       if (lfp) {
@@ -120,6 +124,7 @@ int alloc7(struct state_struct *state) {
   if (success) {
     ask_for = num_rxns * sizeof(double);
     usage += ask_for;
+    run_workspace_bytes  += ask_for;
     reactant_term = (double *)calloc(one_l,ask_for);
     if (reactant_term == NULL) {
       if (lfp) {
@@ -138,6 +143,7 @@ int alloc7(struct state_struct *state) {
   if (success) {
     ask_for = num_rxns * sizeof(double);
     usage += ask_for;
+    run_workspace_bytes  += ask_for;
     product_term = (double *)calloc(one_l,ask_for);
     if (product_term == NULL) {
       if (lfp) {
@@ -156,6 +162,7 @@ int alloc7(struct state_struct *state) {
   if (success) {
     ask_for = num_rxns * sizeof(double);
     usage += ask_for;
+    run_workspace_bytes  += ask_for;
     rxn_q = (double *)calloc(one_l,ask_for);
     if (rxn_q == NULL) {
       if (lfp) {
@@ -174,6 +181,7 @@ int alloc7(struct state_struct *state) {
   if (success) {
     ask_for = num_rxns * sizeof(double);
     usage += ask_for;
+    run_workspace_bytes  += ask_for;
     recip_rxn_q = (double *)calloc(one_l,ask_for);
     if (recip_rxn_q == NULL) {
       if (lfp) {
@@ -192,6 +200,7 @@ int alloc7(struct state_struct *state) {
   if (success) {
     ask_for = num_rxns * sizeof(double);
     usage += ask_for;
+    run_workspace_bytes  += ask_for;
     log_kf_rel = (double *)calloc(one_l,ask_for);
     if (log_kf_rel == NULL) {
       if (lfp) {
@@ -210,6 +219,7 @@ int alloc7(struct state_struct *state) {
   if (success) {
     ask_for = num_rxns * sizeof(double);
     usage += ask_for;
+    run_workspace_bytes  += ask_for;
     log_kr_rel = (double *)calloc(one_l,ask_for);
     if (log_kr_rel == NULL) {
       if (lfp) {
@@ -225,6 +235,7 @@ int alloc7(struct state_struct *state) {
   if (success) {
     ask_for = num_rxns * sizeof(double);
     usage += ask_for;
+    run_workspace_bytes  += ask_for;
     ode_forward_lklhds = (double *)calloc(one_l,ask_for);
     if (ode_forward_lklhds == NULL) {
       if (lfp) {
@@ -240,6 +251,7 @@ int alloc7(struct state_struct *state) {
   if (success) {
     ask_for = num_rxns * sizeof(double);
     usage += ask_for;
+    run_workspace_bytes  += ask_for;
     ode_reverse_lklhds = (double *)calloc(one_l,ask_for);
     if (ode_reverse_lklhds == NULL) {
       if (lfp) {
@@ -260,6 +272,7 @@ int alloc7(struct state_struct *state) {
   if (success) {
     ask_for = (num_rxns + (num_rxns & 1)) * sizeof(int);
     usage += ask_for;
+    run_workspace_bytes  += ask_for;
     rxn_has_flux = (int*)calloc(one_l,ask_for);
     if (rxn_has_flux == NULL) {
       if (lfp) {
@@ -275,6 +288,7 @@ int alloc7(struct state_struct *state) {
   if (success) {
     ask_for = (int64_t)(num_species+num_species)*sizeof(int);
     usage += ask_for;
+    run_workspace_bytes  += ask_for;
     base_reactant_indicator = (int*)calloc(ask_for,one_l);
     if (base_reactant_indicator == NULL) {
       success = 0;
@@ -291,5 +305,7 @@ int alloc7(struct state_struct *state) {
     state->base_reactants          = base_reactants;
   }
   state->usage = usage;
+  state->run_workspace_bytes  = run_workspace_bytes;
+
   return(success);
 }
