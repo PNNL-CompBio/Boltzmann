@@ -70,7 +70,7 @@ int alloc0(struct state_struct **state) {
   }
   if (success) {
     /*
-      Right now we only have 24 file_names 
+      Right now we only have 28 file_names 
       but we leave space for additional ones.
     */
     statep->num_files = (int64_t)32;
