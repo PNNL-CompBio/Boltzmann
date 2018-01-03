@@ -56,17 +56,10 @@ int choose_rxn(struct state_struct *state,
   double *forward_rxn_likelihood;
   double *reverse_rxn_likelihood;
   double *future_counts;
-  double *ke;
-  double dchoice;
   double scaling;
-  double likelihood;
-  int64_t choice;
 
   int number_reactions;
   int number_reactions_t2;
-
-  int number_reactions_p1;
-  int success;
 
   int accept;
   int i;
@@ -75,9 +68,9 @@ int choose_rxn(struct state_struct *state,
   int rxn_direction;
 
   int j;
-  int k;
-
   int use_metropolis;
+
+  int success;
   int padi;
   
   success                = 1;
