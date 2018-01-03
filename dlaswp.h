@@ -1,6 +1,6 @@
 #ifndef _DLASWP_H_
 #define _DLASWP_H_ 1
-extern void dlaswp( int *n_p,
+extern void dlaswp_( int *n_p,
 		    double *a,
 		    int *lda_p,
 		    int *k1_p,
