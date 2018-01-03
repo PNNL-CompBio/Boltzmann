@@ -81,6 +81,10 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
   struct state_struct *state;
   struct vgrng_state_struct *vgrng_state;
   struct rxn_struct *reactions;
+  struct istring_elem_struct *cur_molecules;
+  struct istring_elem_struct *cur_cmpts;
+  struct istring_elem_struct *cur_cmpt;
+  char *cmpt_string;
   double *dg0s;
   double *free_energy;
   int64_t align_len;
@@ -99,6 +103,13 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
   int vgrng_start_steps;
   int i;
 
+  int nu_molecules;
+  int padi;
+
+  int oi;
+  int ci;
+
+  FILE *bndry_flux_fp;
   FILE *lfp;
   /*
     allocate space for the state struct.
@@ -159,6 +170,20 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
 	  fflush(stderr);
 	  success = 0;
 	}
+      }
+    }
+  }
+  if (success) {
+    if (state->bndry_flux_file) {
+      bndry_flux_fp = fopen(state->bndry_flux_file,"w");
+      if (bndry_flux_fp == NULL) {
+	fprintf(stderr,
+		"boltzman_init unable to open bndry_flux_file, %s, quitting.\n",
+		state->bndry_flux_file);
+	fflush(stderr);
+	success = 0;
+      } else {
+	state->bndry_flux_fp = bndry_flux_fp;
       }
     }
   }
@@ -251,6 +276,7 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
     success = unique_molecules(state);
   }
   if (success) {
+    nu_molecules = state->unique_molecules;
     success = print_molecules_dictionary(state);
   }
   /*
@@ -309,6 +335,35 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
     }
   }
   if (success) {
+    if (state->num_fixed_concs >0) {
+      if (bndry_flux_fp) {
+	cur_molecules = state->sorted_molecules;
+	cur_cmpts     = state->sorted_cmpts;
+	fprintf(bndry_flux_fp,"iter");
+	cmpt_string = NULL;
+	oi          = -1;
+	for (i=0;i<nu_molecules;i++) {
+	  ci = cur_molecules->c_index;
+	  if (ci != oi) {
+	    oi = ci;
+	    cur_cmpt = (struct istring_elem_struct *)&(cur_cmpts[ci]);
+	    cmpt_string = cur_cmpt->string;
+	  }
+	  if (cur_molecules->variable == 0) {
+	    if (ci != -1) {
+	      fprintf(bndry_flux_fp,"\t%s:%s",
+		      cur_molecules->string,cmpt_string);
+	    } else {
+	      fprintf(bndry_flux_fp,"\t%s",cur_molecules->string);
+	    }
+	  }
+	  cur_molecules += 1; /* Caution address arithmetic. */
+	}
+	fprintf(bndry_flux_fp,"\n");
+      } /* end if (bndry_flux_fp) */
+    } /* end if (state->num_fixed_concs...) */
+  }
+  if (success) {
     dg0s = state->dg0s;
     free_energy  = state->free_energy;
     for (i=0;i<state->number_reactions;i++) {
@@ -316,4 +371,4 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
     }
   }
   return(success);
-}
+  }
