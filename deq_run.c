@@ -33,6 +33,11 @@ specific language governing permissions and limitations under the License.
 #include "alloc7.h"
 #include "update_rxn_log_likelihoods.h"
 #include "ode_print_concs_header.h"
+#include "ode_print_flux_header.h"
+#include "ode_print_bflux_header.h"
+#include "ode_print_lklhd_header.h"
+#include "print_net_likelihood_header.h"
+#include "print_net_lklhd_bndry_flux_header.h"
 /*
 #include "fill_flux_pieces.h"
 #include "ode23tb.h"
@@ -88,6 +93,7 @@ int deq_run(struct state_struct *state) {
   double *r_over_p;
   double *concs;
   double *conc_to_count;
+  double *count_to_conc;
   int    *rxn_fire;
   char   *cmpt_string;
   double *dg0s;
@@ -144,7 +150,7 @@ int deq_run(struct state_struct *state) {
   int print_ode_concs;
 
   int solver_choice;
-  int padi;
+  int ode_rxn_view_freq;
 
 
   FILE *lfp;
@@ -168,6 +174,7 @@ int deq_run(struct state_struct *state) {
   reverse_rxn_likelihood = state->reverse_rxn_likelihood;
   print_output           = (int)state->print_output;
   conc_to_count          = state->conc_to_count;
+  count_to_conc          = state->count_to_conc;
   min_conc               = state->min_conc;
   number_reactions_t2    = number_reactions << 1;
   number_reactions_t2_p1 = number_reactions_t2 + 1;
@@ -179,6 +186,7 @@ int deq_run(struct state_struct *state) {
   molecules              = state->sorted_molecules;
   compartments           = state->sorted_cmpts;
   print_ode_concs        = state->print_ode_concs;
+  ode_rxn_view_freq      = state->ode_rxn_view_freq;
   solver_choice          = (int)state->ode_solver_choice;
   rxn_view_pos         	 = zero_l;
   choice_view_freq       = lklhd_view_freq;
@@ -240,7 +248,7 @@ int deq_run(struct state_struct *state) {
       molecule  = (struct molecule_struct *)&molecules[i];
       cindex = molecule->c_index;
       compartment = (struct compartment_struct *)&compartments[cindex];
-      concs[i] = compartment->recip_volume * counts[i];
+      concs[i] = counts[i] * count_to_conc[i];
     }
   }
   /*
@@ -256,8 +264,13 @@ int deq_run(struct state_struct *state) {
   htry = 0.0;
   nonnegative = 1.0;
   if (success) {
-    if (print_ode_concs) {
+    if (ode_rxn_view_freq > 0) {
       ode_print_concs_header(state);
+      ode_print_lklhd_header(state);
+      ode_print_flux_header(state);
+      ode_print_bflux_header(state);
+      print_net_likelihood_header(state);
+      print_net_lklhd_bndry_flux_header(state);
     }
     success = ode_solver(state,counts,htry,nonnegative,normcontrol,
 			 print_ode_concs,solver_choice);
