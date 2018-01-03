@@ -59,7 +59,7 @@ int sbml_alloc0(struct sbml2bo_struct **state_p) {
   state = (struct sbml2bo_struct *)calloc(one_l,ask_for);
   if (state == NULL) {
     fprintf(stderr,
-	    "sbml_alloc0: Error, unable to allocate %lld bytes for "
+	    "sbml_alloc0: Error, unable to allocate %ld bytes for "
 	    "sbml2bo_state\n",ask_for);
     fflush(stderr);
     success = 0;
@@ -72,7 +72,7 @@ int sbml_alloc0(struct sbml2bo_struct **state_p) {
     sbml_file = (char *)calloc(one_l,ask_for);
     if (sbml_file == NULL) {
       fprintf(stderr,
-	    "sbml_alloc0: Error, unable to allocate %lld bytes for "
+	    "sbml_alloc0: Error, unable to allocate %ld bytes for "
 	    "file names\n",ask_for);
       fflush(stderr);
       success = 0;
