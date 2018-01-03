@@ -28,6 +28,7 @@ specific language governing permissions and limitations under the License.
 #include "flatten_state.h"
 #include "update_rxn_log_likelihoods.h"
 #include "choose_rxn.h"
+#include "deq_run.h"
 #include "compute_delta_g_forward_entropy_free_energy.h"
 #include "print_counts.h"
 #include "print_likelihoods.h"
@@ -44,8 +45,15 @@ int boltzmann_run(struct state_struct *state) {
     boltzmann_init has been called.
 
     Called by: boltzmann/client
-    Calls:     update_rxn_log_likelihoods,
+    Calls:     flatten_state,
+               update_rxn_log_likelihoods,
 	       choose_rxn,
+               deq_run,
+	       compute_delta_g_forward_entropy_free_energy
+	       print_counts,
+	       print_likelihoods,
+	       print free_energy,
+	       print boundary_flux,
 	       print_restart_file
 	       print_reactions_view
   */
@@ -97,6 +105,8 @@ int boltzmann_run(struct state_struct *state) {
   int64_t fe_view_step;
   int64_t fe_view_freq;
 
+  int64_t use_deq;
+
   int success;
   int number_reactions;
 
@@ -139,6 +149,7 @@ int boltzmann_run(struct state_struct *state) {
   lklhd_view_freq        = state->lklhd_view_freq;
   count_view_freq        = state->count_view_freq;
   fe_view_freq           = state->fe_view_freq;
+  use_deq                = state->use_deq;
   rxn_view_pos         	 = zero_l;
   choice_view_freq       = lklhd_view_freq;
   rxn_view_step        	 = one_l;
@@ -162,60 +173,68 @@ int boltzmann_run(struct state_struct *state) {
 	    "\nWarmup_step rxn_choice forward_likelihood "
 	    "reverse_likelihood\n");
   }
-  for (i=0;i<n_warmup_steps;i++) {
-    /*
-      Compute the reaction likelihoods: forward_rxn_likelihood, 
-      and reverse_rxn_likelihood fields of state..
-    */
-    success = update_rxn_log_likelihoods(state);
-    /*
-      Choose a reaction by computing the partial sums of the reaction 
-      likelihoods and then using a uniform random number generator to pick one
-      with probability proportional to the relative size of the reaction
-      likelihood ratio. A second step called the metropolis method is 
-      employed to allow reactions that use the last reactant molecules or
-      produce the first product molecules to fire.
-      This call call also updates the future_counts vector.
-    */
-    rxn_choice = choose_rxn(state,&r_sum_likelihood);
-    if (rxn_choice < 0) break;
-    if ((print_output > 1) && lfp) {
-      if (choice_view_freq > zero_l) {
-	choice_view_step = choice_view_step - one_l;
-	if ((choice_view_step <= zero_l) || (i == (n_warmup_steps-one_l))) {
-	  if (rxn_choice == noop_rxn) {
-	    fprintf(lfp,"%ld\tnone\n",i);
-	  } else {
-	    if (rxn_choice < number_reactions) {
-	      fprintf(lfp,"%ld\t%d\t%le\t%le\n",i,rxn_choice,forward_rxn_likelihood[rxn_choice],
-		      reverse_rxn_likelihood[rxn_choice]);
+  if (use_deq == zero_l) {
+    for (i=0;i<n_warmup_steps;i++) {
+      /*
+	Compute the reaction likelihoods: forward_rxn_likelihood, 
+	and reverse_rxn_likelihood fields of state..
+      */
+      success = update_rxn_log_likelihoods(state);
+      /*
+	Choose a reaction by computing the partial sums of the reaction 
+	likelihoods and then using a uniform random number generator to pick one
+	with probability proportional to the relative size of the reaction
+	likelihood ratio. A second step called the metropolis method is 
+	employed to allow reactions that use the last reactant molecules or
+	produce the first product molecules to fire.
+	This call call also updates the future_counts vector.
+      */
+      rxn_choice = choose_rxn(state,&r_sum_likelihood);
+      if (rxn_choice < 0) break;
+      if ((print_output > 1) && lfp) {
+	if (choice_view_freq > zero_l) {
+	  choice_view_step = choice_view_step - one_l;
+	  if ((choice_view_step <= zero_l) || (i == (n_warmup_steps-one_l))) {
+	    if (rxn_choice == noop_rxn) {
+	      fprintf(lfp,"%ld\tnone\n",i);
 	    } else {
-	      rxn_no = rxn_choice - number_reactions;
-	      fprintf(lfp,"%ld\t%d\t%le\t%le\n",i,rxn_choice,reverse_rxn_likelihood[rxn_no],
-		      forward_rxn_likelihood[rxn_no]);
+	      if (rxn_choice < number_reactions) {
+		fprintf(lfp,"%ld\t%d\t%le\t%le\n",i,rxn_choice,forward_rxn_likelihood[rxn_choice],
+			reverse_rxn_likelihood[rxn_choice]);
+	      } else {
+		rxn_no = rxn_choice - number_reactions;
+		fprintf(lfp,"%ld\t%d\t%le\t%le\n",i,rxn_choice,reverse_rxn_likelihood[rxn_no],
+			forward_rxn_likelihood[rxn_no]);
 	      
+	      }
 	    }
+	    fflush(lfp);
+	    choice_view_step = choice_view_freq;
 	  }
-	  fflush(lfp);
-	  choice_view_step = choice_view_freq;
 	}
       }
-    }
+      /*
+	Copy the future counts, resulting from the reaction firing
+	to the current counts.
+      */
+      for (j=0;j<unique_molecules;j++) {
+	current_counts[j] = future_counts[j];
+      }
+      /*
+	Doug thinks we can remove these calls.
+	success = update_rxn_log_likelihoods(state);
+	success = compute_delta_g_forward_entropy_free_energy(state,
+	                                                     &dg_forward,
+							     &entropy);
+      */
+    } /* end for(i...) */
+  } else {
     /*
-      Copy the future counts, resulting from the reaction firing
-      to the current counts.
+      Use ode solver to move from initial concentrations to
+      steady state.
     */
-    for (j=0;j<unique_molecules;j++) {
-      current_counts[j] = future_counts[j];
-    }
-    /*
-      Doug thinks we can remove these calls.
-    success = update_rxn_log_likelihoods(state);
-    success = compute_delta_g_forward_entropy_free_energy(state,
-							  &dg_forward,
-							  &entropy);
-    */
-  } /* end for(i...) */
+    success = deq_run(state);
+  }
   if (success) {
     success = update_rxn_log_likelihoods(state);
   }
