@@ -86,11 +86,25 @@ specific language governing permissions and limitations under the License.
 #include "sbml_alloc1.h"
 #include "parse_sbml.h"
 
-
-
 #include "sbml_to_boltzmann.h"
 
 int sbml_to_boltzmann(struct state_struct *state) {
+  /*
+    Convert an sbml input file to a rxns.dat and concs.in files.
+    Called by: io_size_init
+    Calls:     size_ms2js_file.h,
+    	       size_kg2js_file.h,
+    	       sbml_alloc0.h,
+    	       sbml_set_file_names.h,
+    	       sbml_alloc2.h,
+    	       read_ms2js.h,
+    	       read_kg2js.h,
+    	       sort_json_ids.h,
+    	       sbml_count_cmpts.h,
+    	       sbml_count_species.h,
+    	       sbml_alloc1.h,
+    	       parse_sbml.h
+  */
   struct sbml2bo_struct *sbml_state;
   struct compartment_struct *unsorted_compartments;
   struct compartment_struct *sorted_compartments;
@@ -151,7 +165,7 @@ int sbml_to_boltzmann(struct state_struct *state) {
   /*
     Now we need to actually count the compartment tabs in the sbml file to
     get a handle on the number of compartments and allocate
-    an array to store comparment names and volumes in order to sort them
+    an array to store compartment names and volumes in order to sort them
     and be able to look them up when processing the list_of_species tab
     in computing concentrations from the amounts and corresponding 
     compartment volumes. We will assume that the first listed compartment
