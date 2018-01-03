@@ -63,13 +63,13 @@ int set_compartment_ptrs(struct state_struct *state) {
   cmpt_ptrs[0] = 0;
   i = 1;
   cni = cur_molecule->c_index;
+  if (cni != -1) {
+    cmpt_ptrs[1] = 0;
+    i = 2;
+  }
   if (nzc < 2) {
-    cmpt_ptrs[1] = (int64_t)state->unique_molecules;
+    cmpt_ptrs[i] = nzm;
   } else {
-    if (cni != -1) {
-      cmpt_ptrs[1] = 0;
-      i = 2;
-    }
     for (j = 1; j < nzm; j++) {
       cur_molecule += 1; /* Caution address arithmetic */
       fni  = cur_molecule->c_index;
