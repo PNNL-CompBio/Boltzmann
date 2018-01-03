@@ -44,8 +44,6 @@ int boltzmann_global_to_local_fluxes(struct super_state_struct *super_state,
   int64_t *molecule_map_starts;
   int64_t *molecule_map;
   int64_t *molecule_maps;
-  int64_t ask_for;
-  int64_t one_l;
   int64_t state_index;
   int64_t nunique_molecules;
   int64_t i;
