@@ -48,7 +48,6 @@ specific language governing permissions and limitations under the License.
 /*
   Data structures include files.
 */
+#include "state_struct.h"
 #include "sbml2bo_struct.h"
-#include "sbml_cmpt_struct.h"
-#include "sbml_species_struct.h"
 #endif
