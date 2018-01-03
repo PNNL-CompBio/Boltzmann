@@ -25,9 +25,9 @@ specific language governing permissions and limitations under the License.
 struct state_struct {
   struct rxn_struct *reactions;
   struct rxn_matrix_struct *reactions_matrix;
-  struct species_matrix_struct *species_matrix;
-  struct istring_elem_struct *unsorted_species;
-  struct istring_elem_struct *sorted_species;
+  struct molecules_matrix_struct *molecules_matrix_matrix;
+  struct istring_elem_struct *unsorted_molecules;
+  struct istring_elem_struct *sorted_molecules;
   struct istring_elem_struct *unsorted_cmpts;
   struct istring_elem_struct *sorted_cmpts;
   struct vgrng_state_struct  *vgrng_state;
@@ -47,9 +47,9 @@ struct state_struct {
   char *rxn_title_text;
   char *pathway_text;
   char *compartment_text;
-  char *species_text;
-  char *species_name;
-  char *raw_species_text;
+  char *molecules_text;
+  char *molecule_name;
+  char *raw_molecules_text;
   char **rxn_file_keywords;
   int64_t *rxn_file_keyword_lengths;
   int64_t *transpose_work;
@@ -62,15 +62,15 @@ struct state_struct {
   int64_t rxn_title_len;
   int64_t pathway_len;
   int64_t compartment_len;
-  int64_t species_len;
+  int64_t molecules_len;
   int64_t rxn_title_space;
   int64_t pathway_space;
   int64_t compartment_space;
-  int64_t species_space;
+  int64_t molecules_space;
   int64_t rxn_title_pos;
   int64_t pathway_pos;
   int64_t compartment_pos;
-  int64_t species_pos;
+  int64_t molecules_pos;
   int64_t mixed_case_pos;
   int64_t usage;
   double  ideal_gas_r;
@@ -78,19 +78,29 @@ struct state_struct {
   double  cal_gm_per_joule;
   double  joule_per_cal_gm;
   double  default_initial_conc;
+  double  small_nonzero;
   double  *concentrations;
+  double  *dg0s;
+  double  *dgs;
+  double  *q_r;
+  double  *ke;
   int  *cmpts_map;
+
   int  number_reactions;
   int  number_compartments;
 
-  int  number_species;
-  int  unique_species;
+  int  number_molecules;
+  int  unique_molecules;
 
-  int  max_species_len;
-  int  min_species_len;
+  int  max_molecule_len;
+  int  min_molecule_len;
 
   int  molecules_or_conc;
   int  num_rxn_file_keywords;
+
+  int  warmup_steps;
+  int  record_steps;
+
 #ifdef TIMING_ON
   struct timing_struct timing_data;
 #endif
