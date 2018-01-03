@@ -2,12 +2,12 @@ CC      = gcc
 CLINKER = gcc
 AR = ar
 ARFLAGS = -crv
-OPT_FLAGS = -O2
+OPT_FLAGS = -O2 -fPIC
 #OPT_FLAGS = -g -O0 -Wall
 #
 ### End User configurable options ###
 LIBS = libboltzmann.a -lm 
-EXECS = boltzmann boltzmann_boot_test
+EXECS = boltzmann boltzmann_test_save_load sbml2bo
 DBG_FLAGS = -O0 -g -Wall
 NO_OPT_FLAGS = -O0 -g -Wall
 CFLAGS = ${OPT_FLAGS}
