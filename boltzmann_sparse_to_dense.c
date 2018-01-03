@@ -23,10 +23,11 @@ void boltzmann_sparse_to_dense(int ny,
   vec_set_constant(ny2, dfdy, zero);
   rowi = dfdy;
   for (i=0;i<ny;i++) {
-    for (k=dfdy_ia[i];k<dfdy_ia[i+1];i++) {
+    for (k=dfdy_ia[i];k<dfdy_ia[i+1];k++) {
       j = dfdy_ja[k];
       colj = rowi + (j * ny); /* caution address arithmetic here */
       *colj = dfdy_a[k];
     }
+    rowi += 1; /* Caution address arithmetic here. */
   }
 }
