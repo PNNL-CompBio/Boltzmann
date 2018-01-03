@@ -64,7 +64,6 @@ void print_counts(struct state_struct *state, int64_t step) {
   concs_out_fp           = state->concs_out_fp;
   unique_molecules       = state->nunique_molecules;
   current_counts         = state->current_counts;
-  cur_molecule           = state->sorted_molecules;
   concs_or_counts        = (int)state->concs_or_counts;
   count_to_conc          = state->count_to_conc;
   if (concs_or_counts & 1) {
@@ -82,10 +81,12 @@ void print_counts(struct state_struct *state, int64_t step) {
       default:
 	fprintf(counts_out_fp,"%ld",step);
       }
+      cur_molecule           = state->sorted_molecules;
       for (j=0;j<unique_molecules;j++) {
-	if (j != solvent_pos) {
+	if ((cur_molecule->solvent == 0) || (cur_molecule->variable == 1)) {
 	  fprintf(state->counts_out_fp,"\t%le",current_counts[j]);
 	}
+	cur_molecule += 1; /* caution address arithmetic.*/
       }
       fprintf(state->counts_out_fp,"\n");
     }
@@ -105,6 +106,7 @@ void print_counts(struct state_struct *state, int64_t step) {
       default:
 	fprintf(concs_out_fp,"%ld",step);
       }
+      cur_molecule           = state->sorted_molecules;
       for (j=0;j<unique_molecules;j++) {
 	if ((cur_molecule->solvent == 0) || (cur_molecule->variable == 1)) {
 	  conc = current_counts[j] * count_to_conc[j];
