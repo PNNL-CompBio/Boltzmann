@@ -38,15 +38,8 @@ int count_ws(char *line) {
   */
   ws_chars = 0;
   for (i=0;i<strlen(line);i++) {
-    ws_chars = i;
     c  = (int)line[i];
     if (c > 32) break;
-  }
-  /*
-    It might be the the line only had whitespace in which case
-    we need to bump ws_chars by 1.
-  */
-  if (line[ws_chars] <= 32) {
     ws_chars += 1;
   }
   return (ws_chars);
