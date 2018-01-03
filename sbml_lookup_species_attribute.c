@@ -34,11 +34,12 @@ int sbml_lookup_species_attribute(char *key) {
     3 hasOnlySubstanceUnits
     4 id
     5 initialAmount
-    6 name
-    7 substanceUnits
+    6 initialConcentration
+    7 name
+    8 substanceUnits
   Returns -1 if key is not in list.
 
-  Called by: sbml_process_list_of_species
+  Called by: sbml_parse_species_key_value
   Calls:     strcmp
 */
   int cmp0;
@@ -49,6 +50,7 @@ int sbml_lookup_species_attribute(char *key) {
   int cmp5;
   int cmp6;
   int cmp7;
+  int cmp8;
   int tag;
   int fc;
   int bfc;
@@ -90,7 +92,7 @@ int sbml_lookup_species_attribute(char *key) {
   } else {
     if (fc >= sfc) {
       if (strcmp(key,"substanceUnits") == 0) {
-	tag = 7;
+	tag = 8;
       } 
     } else {
       if (fc == ifc) {
@@ -99,12 +101,16 @@ int sbml_lookup_species_attribute(char *key) {
 	} else {
 	  if (strcmp(key,"initialAmount") == 0) {
 	    tag = 5;
+	  } else {
+	    if (strcmp(key,"initialConcentration") == 0) {
+		tag = 6;
+	    }
 	  }
 	}
       } else {
 	if (fc == nfc) {
 	  if (strcmp(key,"name") == 0) {
-	    tag = 6;
+	    tag = 7;
 	  }
 	}
       }
@@ -112,5 +118,4 @@ int sbml_lookup_species_attribute(char *key) {
   }
   return(tag);
 }
-
 
