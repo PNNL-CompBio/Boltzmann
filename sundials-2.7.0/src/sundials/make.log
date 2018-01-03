@@ -1,0 +1,24 @@
+ar -rcv /home/dbaxter/sundials/sundials-2.7.0/lib/libsundials.a sundials_band.o
+a - sundials_band.o
+ar -rcv /home/dbaxter/sundials/sundials-2.7.0/lib/libsundials.a sundials_dense.o
+a - sundials_dense.o
+ar -rcv /home/dbaxter/sundials/sundials-2.7.0/lib/libsundials.a sundials_direct.o
+a - sundials_direct.o
+ar -rcv /home/dbaxter/sundials/sundials-2.7.0/lib/libsundials.a sundials_iterative.o
+a - sundials_iterative.o
+ar -rcv /home/dbaxter/sundials/sundials-2.7.0/lib/libsundials.a sundials_math.o
+a - sundials_math.o
+ar -rcv /home/dbaxter/sundials/sundials-2.7.0/lib/libsundials.a sundials_nvector.o
+a - sundials_nvector.o
+ar -rcv /home/dbaxter/sundials/sundials-2.7.0/lib/libsundials.a sundials_pcg.o
+a - sundials_pcg.o
+ar -rcv /home/dbaxter/sundials/sundials-2.7.0/lib/libsundials.a sundials_sparse.o
+a - sundials_sparse.o
+ar -rcv /home/dbaxter/sundials/sundials-2.7.0/lib/libsundials.a sundials_spbcgs.o
+a - sundials_spbcgs.o
+ar -rcv /home/dbaxter/sundials/sundials-2.7.0/lib/libsundials.a sundials_spfgmr.o
+a - sundials_spfgmr.o
+ar -rcv /home/dbaxter/sundials/sundials-2.7.0/lib/libsundials.a sundials_spgmr.o
+a - sundials_spgmr.o
+ar -rcv /home/dbaxter/sundials/sundials-2.7.0/lib/libsundials.a sundials_sptfqmr.o
+a - sundials_sptfqmr.o

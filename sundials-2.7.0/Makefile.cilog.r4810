@@ -1,0 +1,5 @@
+r4810 | dbaxter | 2017-11-10 15:21:19 -0800 (Fri, 10 Nov 2017) | 3 lines
+
+Change clean target actions to just remove .a and .so files
+M    Makefile
+

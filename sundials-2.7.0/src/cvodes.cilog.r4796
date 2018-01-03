@@ -1,0 +1,5 @@
+r4796 | dbaxter | 2017-11-10 10:52:37 -0800 (Fri, 10 Nov 2017) | 3 lines
+
+Removed shared library stuff.
+M    Makefile
+
