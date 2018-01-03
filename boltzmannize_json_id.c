@@ -23,7 +23,7 @@ specific language governing permissions and limitations under the License.
 #include "boltzmann_structs.h"
 
 #include "boltzmannize_json_id.h"
-int boltzmannize_json_id(char *json_id) {
+void boltzmannize_json_id(char *json_id) {
   int i;
   int len;
   int ic;
