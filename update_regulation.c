@@ -62,7 +62,7 @@ int update_regulation (struct state_struct *state, int rxn) {
     direction = reg_drctn[i];
     ndirection = 1.0 - direction;
     count = current_counts[species];
-    if (count > 0) {
+    if (count > 0.0) {
       molecule = (struct molecule_struct *)&sorted_molecules[rxn];
       c_index   = molecule->c_index;
       if (c_index >= 0) {
