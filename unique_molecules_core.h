@@ -23,8 +23,10 @@ specific language governing permissions and limitations under the License.
 extern int unique_molecules_core(int nzr,
 				 struct molecule_struct *sorted_molecules,
 				 char *molecules_text,
+				 char *solvent_string,
 				 int64_t *molecules_map,
 				 int64_t *nunique_molecules,
 				 int64_t *sum_molecule_len,
+				 int     *solvent_pos,
 				 int64_t align_len,
 				 int64_t align_mask);
