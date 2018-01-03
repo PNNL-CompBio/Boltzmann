@@ -35,6 +35,8 @@ int form_molecules_matrix(struct state_struct *state) {
   /*
   struct molecules_matrix_struct *molecules_matrix;
   */
+  double *rscoeffs;
+  double *rrcoeffs;
   int64_t *rxn_ptrs;
   int64_t *molecules_ptrs;
   int64_t *rcoef;
@@ -67,9 +69,11 @@ int form_molecules_matrix(struct state_struct *state) {
   rxn_ptrs          = rxn_matrix->rxn_ptrs;
   molecules_indices = rxn_matrix->molecules_indices;
   rcoef             = rxn_matrix->coefficients;
+  rrcoeffs          = rxn_matrix->recip_coeffs;
   molecules_ptrs    = molecules_matrix->molecules_ptrs;
   rxn_indices       = molecules_matrix->reaction_indices;
   scoef             = molecules_matrix->coefficients;
+  rscoeffs          = molecules_matrix->recip_coeffs;
 
   for (i=0;i<nu_molecules;i++) {
     transpose_rp[i]  = 0;
@@ -95,6 +99,7 @@ int form_molecules_matrix(struct state_struct *state) {
       m = transpose_rp[k];
       rxn_indices[m] = i;
       scoef[m]     = rcoef[j];
+      rscoeffs[m]  = rrcoeffs[j];
       transpose_rp[k] += 1;
     }
   }
