@@ -44,12 +44,17 @@ int print_reactions_view(struct state_struct *state) {
   int64_t *rxn_ptrs;
   int64_t *molecules_indices;
   int64_t *coefficients;
-  char **matrix_text;
+  int64_t *matrix_text;
   double *rxn_view_data;
   double *rev_rxn_view_data;
   double *activities;
   double *no_op_likelihood;
   int    *rxn_fire;
+
+  char *molecules_text;
+  char *rxn_title_text;
+  char *title;
+  char *molecule;
 
   int success;
   int rxns;
@@ -64,7 +69,7 @@ int print_reactions_view(struct state_struct *state) {
   int j;
 
   int k;
-  int rxn_view_hist_lngth;
+  int rxn_view_hist_length;
 
   int nrxns;
   int net_fire;
@@ -77,6 +82,8 @@ int print_reactions_view(struct state_struct *state) {
 
   tab  = (char)9;
   success = 1;
+  molecules_text   = state->molecules_text;
+  rxn_title_text   = state->rxn_title_text;
 
   rxn_view_fp = fopen(state->rxn_view_file,"w+");
   if (rxn_view_fp == NULL) {
@@ -96,7 +103,7 @@ int print_reactions_view(struct state_struct *state) {
     rxn_view_data  	 = state->rxn_view_likelihoods;
     rev_rxn_view_data 	 = state->rev_rxn_view_likelihoods;
     rxn_fire          	 = state->rxn_fire;
-    rxn_view_hist_lngth  = state->rxn_view_hist_lngth;
+    rxn_view_hist_length = state->rxn_view_hist_length;
     nrxns                = (int)state->number_reactions;
     no_op_likelihood     = state->no_op_likelihood;
     /*
@@ -104,13 +111,14 @@ int print_reactions_view(struct state_struct *state) {
       Skipping the net reaction fire and activities fields.
     */
     fprintf(rxn_view_fp," No Reaction\t0<=>0\t%d\t\t",rxn_fire[nrxns+nrxns]);
-    for(k=0;k<rxn_view_hist_lngth;k++) {
+    for(k=0;k<rxn_view_hist_length;k++) {
       fprintf(rxn_view_fp,"\t%le",no_op_likelihood[k]);
     }
     fprintf(rxn_view_fp,"\n");
     for (rxns=0;rxns < nrxns;rxns++) {
-      if (reaction->title) {
-	fprintf(rxn_view_fp,"%s\t",reaction->title);
+      if (reaction->title>=0) {
+	title = (char *)&rxn_title_text[reaction->title];
+	fprintf(rxn_view_fp,"%s\t",title);
       }
       nr = 0;
       for (j=rxn_ptrs[rxns];j<rxn_ptrs[rxns+1];j++) {
@@ -120,7 +128,8 @@ int print_reactions_view(struct state_struct *state) {
 	    coeff = -coeff;
 	    fprintf(rxn_view_fp,"%d ",coeff);
 	  }
-	  fprintf(rxn_view_fp,"%s",matrix_text[j]);
+	  molecule = (char*)&molecules_text[matrix_text[j]];
+	  fprintf(rxn_view_fp,"%s",molecule);
 	  nr += 1;
 	  if (nr < reaction->num_reactants) {
 	    fprintf(rxn_view_fp," + ");
@@ -137,7 +146,8 @@ int print_reactions_view(struct state_struct *state) {
 	  if (coeff > 1) {
 	    fprintf(rxn_view_fp,"%d ",coeff);
 	  }
-	  fprintf(rxn_view_fp,"%s",matrix_text[j]);
+	  molecule = (char*)&molecules_text[matrix_text[j]];
+	  fprintf(rxn_view_fp,"%s",molecule);
 	  np += 1;
 	  if (np < reaction->num_products) {
 	    fprintf(rxn_view_fp," + ");
@@ -159,7 +169,7 @@ int print_reactions_view(struct state_struct *state) {
       /*
 	Now print the reaction likelihoods for this reaction.
       */
-      for(k=0;k<rxn_view_hist_lngth;k++) {
+      for(k=0;k<rxn_view_hist_length;k++) {
 	fprintf(rxn_view_fp,"\t%le",*rxn_view_data);
 	rxn_view_data++; /* Caution address arithmetic here.*/
       }
@@ -178,7 +188,8 @@ int print_reactions_view(struct state_struct *state) {
 	    coeff = -coeff;
 	    fprintf(rxn_view_fp,"%d ",coeff);
 	  }
-	  fprintf(rxn_view_fp,"%s",matrix_text[j]);
+	  molecule = (char*)&molecules_text[matrix_text[j]];
+	  fprintf(rxn_view_fp,"%s",molecule);
 	  nr += 1;
 	  if (nr < reaction->num_reactants) {
 	    fprintf(rxn_view_fp," + ");
@@ -195,7 +206,8 @@ int print_reactions_view(struct state_struct *state) {
 	  if (coeff > 1) {
 	    fprintf(rxn_view_fp,"%d ",coeff);
 	  }
-	  fprintf(rxn_view_fp,"%s",matrix_text[j]);
+	  molecule = (char*)&molecules_text[matrix_text[j]];
+	  fprintf(rxn_view_fp,"%s",molecule);
 	  np += 1;
 	  if (np < reaction->num_products) {
 	    fprintf(rxn_view_fp," + ");
@@ -217,7 +229,7 @@ int print_reactions_view(struct state_struct *state) {
       /*
 	Now print the reaction likelihoods for this reverse reaction.
       */
-      for(k=0;k<rxn_view_hist_lngth;k++) {
+      for(k=0;k<rxn_view_hist_length;k++) {
 	fprintf(rxn_view_fp,"\t%le",*rev_rxn_view_data);
 	rev_rxn_view_data++; /* Caution address arithmetic here.*/
       }
