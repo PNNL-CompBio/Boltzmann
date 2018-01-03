@@ -35,9 +35,59 @@ int alloc0(struct state_struct **statep, int setup) {
     If setup is 1 allocate all the pieces
     Called by: boltzmann_init, boltzmann_flatten_state
     Calls    : calloc, fprintf, fflush (intrinsic)
+    Sets the following fields in state:
+
+      set in alloc0_a:
+       	num_files,
+       	max_filename_len,
+
+       	params_file,
+       	reaction_file,
+       	init_conc_file,
+       	input_dir,
+       	output_file,
+       	log_file,
+       	counts_out_file,
+       	ode_concs_file,
+       	net_lklhd_file     
+       	nl_bndry_flx_file
+       	rxn_lklhd_file,
+       	free_energy_file,
+       	restart_file,
+       	rxn_view_file,
+       	bndry_flux_file,
+       	pseudoisomer_file,
+       	compartment_file,
+       	sbml_file,
+       	ms2js_file,
+       	kg2js_file,
+       	rxn_echo_file,
+       	rxn_mat_file,
+       	dg0ke_file,
+       	dictionary_file,
+       	ode_dconcs_file,
+       	ode_lklhd_file,
+       	ode_bflux_file,
+       	concs_out_file,
+
+        solvent_string
+
+      Set after alloc0_a call
+
+      version_no,
+      max_param_line_len,
+      param_buffer,
+      vgrng_state,
+      vgnrg2_state,
+      num_rxn_file_keywords,
+      rxn_file_keywords,
+      keyword_buffer_length,
+      rxn_file_keyword_buffer,
+      rxn_file_keyword_lengths
   */
   struct state_struct bltzs;
   struct state_struct *state;
+  struct vgrng_state_struct vss;
   int64_t *rxn_file_keyword_lengths;
   char    *rxn_keyword_buff;
   char    **rxn_keywords;
@@ -96,6 +146,34 @@ int alloc0(struct state_struct **statep, int setup) {
 		ask_for);
 	fflush(stderr);
       } 
+    }
+    /*
+      Allocate space for the random number generator states, vgrng_state
+      and vgrng2_state.
+    */
+    if (success) {
+      ask_for = (int64_t)sizeof(vss);
+      usage += ask_for;
+      state->vgrng_state = (struct vgrng_state_struct *)calloc(one_l,ask_for);
+      if (state->vgrng_state == NULL) {
+	success = 0;
+	fprintf(stderr,
+		"alloc0: unable to allocate %ld bytes for state->vgrng_state.\n",
+		ask_for);
+	fflush(stderr);
+      }
+    }
+    if (success) {
+      ask_for = (int64_t)sizeof(vss);
+      usage += ask_for;
+      state->vgrng2_state = (struct vgrng_state_struct *)calloc(one_l,ask_for);
+      if (state->vgrng2_state == NULL) {
+	success = 0;
+	fprintf(stderr,
+		"alloc0: unable to allocate %ld bytes for state->vgrng2_state.\n",
+		ask_for);
+	fflush(stderr);
+      }
     }
     /*
       Allocate space for processing the reactions file.
