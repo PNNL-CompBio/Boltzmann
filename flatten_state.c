@@ -160,6 +160,10 @@ int flatten_state(struct state_struct *boot_state,
   int64_t rxn_fire_offset;
   int64_t rxn_fire_size;
   int64_t move_size;
+  int64_t sorted_molecules_offset_in_bytes;
+  int64_t sorted_compartments_offset_in_bytes;
+  int64_t molecules_text_offset_in_bytes;
+  int64_t compartments_text_offset_in_bytes;
   int success;
   int load_from_boot;
   one_l   = (int64_t)1;
@@ -172,7 +176,7 @@ int flatten_state(struct state_struct *boot_state,
   meta_size    = (int64_t)sizeof(ss);
   meta_pad     = (align_len - (align_mask & meta_size)) & align_mask;
   two_way_data_offset = state_offset + ((meta_size + meta_pad) >> log2_word_len);
-  unique_molecules    = boot_state->unique_molecules;
+  unique_molecules    = boot_state->nunique_molecules;
   print_output = boot_state->print_output;
 
   dg_forward_offset  = two_way_data_offset;
@@ -196,7 +200,7 @@ int flatten_state(struct state_struct *boot_state,
   number_reactions     = boot_state->number_reactions;
   number_molecules     = boot_state->number_molecules;
   number_compartments  = boot_state->number_compartments;
-  unique_compartments  = boot_state->unique_compartments;
+  unique_compartments  = boot_state->nunique_compartments;
   max_filename_len     = boot_state->max_filename_len;
   num_files            = (int64_t)13;
   dg0s_offset          = incoming_data_offset;
@@ -226,10 +230,12 @@ int flatten_state(struct state_struct *boot_state,
   text_offset            = coefficients_offset + coefficients_size;
   text_size              = molecules_indices_size;
   sorted_molecules_offset = text_offset + text_size;
+  sorted_molecules_offset_in_bytes = sorted_molecules_offset << log2_word_len;
   sorted_molecules_size   = sizeof(ies) * number_molecules;
   sorted_molecules_pad    = (align_len - (sorted_molecules_size & align_mask)) & align_mask;
   sorted_molecules_size   = (sorted_molecules_size + sorted_molecules_pad) >> log2_word_len;
   sorted_cmpts_offset     = sorted_molecules_offset + sorted_molecules_size;
+  sorted_compartments_offset_in_bytes = sorted_cmpts_offset << log2_word_len;
   sorted_cmpts_size       = sizeof(ies) * unique_compartments;
   sorted_cmpts_pad        = (align_len - (sorted_cmpts_size & align_mask)) & align_mask;
   sorted_cmpts_size       = (sorted_cmpts_size + sorted_cmpts_pad) >> log2_word_len;
@@ -245,8 +251,10 @@ int flatten_state(struct state_struct *boot_state,
   pathway_offset          = rxn_title_offset + rxn_title_size;
   pathway_size            = boot_state->pathway_space >> log2_word_len;
   compartment_offset      = pathway_offset + pathway_size;
+  compartments_text_offset_in_bytes = compartment_offset << log2_word_len;
   compartment_size        = boot_state->compartment_space >> log2_word_len;
   molecules_offset        = compartment_offset + compartment_size;
+  molecules_text_offset_in_bytes = molecules_offset << log2_word_len;
   molecules_size          = boot_state->molecules_space >> log2_word_len;
 
   auxiliary_end           = molecules_offset + molecules_size;
@@ -322,6 +330,10 @@ int flatten_state(struct state_struct *boot_state,
       new_state->workspace_base        = workspace_base;
       new_state->workspace_offset      = workspace_offset;
       new_state->workspace_length      = workspace_length;
+      new_state->sorted_molecules_offset_in_bytes = sorted_molecules_offset_in_bytes;
+      new_state->sorted_compartments_offset_in_bytes = sorted_compartments_offset_in_bytes;
+      new_state->molecules_text_offset_in_bytes = molecules_text_offset_in_bytes;
+      new_state->compartments_text_offset_in_bytes = compartments_text_offset_in_bytes;
       load_from_boot = 1;
     } else {
       fprintf(stderr,"flatten_state: Error unable to allocate %ld bytes for new_state\n",ask_for);
