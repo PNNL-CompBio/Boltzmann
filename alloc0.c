@@ -22,7 +22,7 @@ specific language governing permissions and limitations under the License.
 ******************************************************************************/
 
 #include "boltzmann_structs.h"
-#include "boltzmann_set_filename_ptrs.h"
+#include "alloc0_a.h"
 
 #include "alloc0.h"
 int alloc0(struct state_struct **statep, int setup) {
@@ -69,50 +69,23 @@ int alloc0(struct state_struct **statep, int setup) {
 	    ask_for);
     fflush(stderr);
   }
-  if (success) {
-    /*
-      Right now we only have 28 file_names 
-      but we leave space for additional ones.
-    */
-    state->num_files = (int64_t)32;
-    num_state_files   = state->num_files;
-    state->max_filename_len = max_file_name_len;
-    ask_for = ((int64_t)num_state_files) * max_file_name_len;
-    usage   += ask_for;
-    state->params_file = (char *)calloc(one_l,ask_for);
-    if (state->params_file == NULL) {
-      success = 0;
-      fprintf(stderr,
-	      "alloc0: unable to allocate %lld bytes for state file names.\n",
-	      ask_for);
-      fflush(stderr);
-    }
-  }
   if (setup) {
+    /*
+      Allocate space for filename strings and solvent string
+      These are considered auxilliary strings, needed only for setup
+      and printing, not for running.
+      This sets state->max_filename_len, the num_files parameter
+      and allocates space for the filenames and the solvent string.
+    */
     if (success) {
-      state->max_filename_len   = max_file_name_len;
-      boltzmann_set_filename_ptrs(state);
-      /*
-	state->reaction_file      = state->params_file + max_file_name_len;
-	state->init_conc_file     = state->reaction_file + max_file_name_len;
-	state->input_dir          = state->init_conc_file + max_file_name_len;
-	state->output_file        = state->input_dir + max_file_name_len;
-	state->log_file           = state->output_file + max_file_name_len;
-	state->output_dir         = state->log_file + max_file_name_len;
-	state->counts_out_file    = state->output_dir + max_file_name_len;
-	state->ode_concs_file     = state->counts_out_file + max_file_name_len;
-	state->rxn_lklhd_file     = state->ode_concs_file + max_file_name_len;
-	state->free_energy_file   = state->rxn_lklhd_file + max_file_name_len;
-	state->restart_file       = state->free_energy_file + max_file_name_len;
-	state->rxn_view_file      = state->restart_file + max_file_name_len;
-	state->bndry_flux_file    = state->rxn_view_file + max_file_name_len;
-	state->pseudoisomer_file  = state->bndry_flux_file + max_file_name_len;
-	state->compartment_file   = state->pseudoisomer_file + max_file_name_len;
-	state->sbml_file          = state->compartment_file + max_file_name_len;
-	state->ms2js_file         = state->sbml_file + max_file_name_len;
-	state->kg2js_file         = state->ms2js_file + max_file_name_len;
-      */
-
+      state->usage = usage;
+      success = alloc0_a(state);
+      usage = state->usage;
+    }
+    /*
+      Allocate_space for reading the parameter file.
+    */
+    if (success) {
       state->max_param_line_len = max_param_line_len;
       ask_for                    = max_param_line_len << 1;
       usage                      += ask_for;
@@ -125,26 +98,9 @@ int alloc0(struct state_struct **statep, int setup) {
 	fflush(stderr);
       } 
     }
-  }
-  if (setup) {
-    if (success) {
-      ask_for = ((int64_t)64) * sizeof(char);
-      usage += ask_for;
-      solvent_string = (char *)calloc(one_l,ask_for);
-      if (solvent_string) {
-	state->solvent_string = solvent_string;
-      } else {
-	fprintf(stderr,"alloc0: Error unable to allocate %lld bytes of space "
-		"for solvent_string\n",ask_for);
-	fflush(stderr);
-	success = 0;
-      }
-    }
-  }
-  /*
-    Allocate space for processing the reactions file.
-  */
-  if (setup) {
+    /*
+      Allocate space for processing the reactions file.
+    */
     if (success) {
       keyword_buffer_length = (int64_t)256;
       state->keyword_buffer_length = keyword_buffer_length;
@@ -194,7 +150,7 @@ int alloc0(struct state_struct **statep, int setup) {
 	success = 0;
       }
     }
-  }
+  } /* end if setup */
   state->usage = usage;
   return(success);
 }
