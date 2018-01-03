@@ -26,7 +26,7 @@ void ode_print_bflux_header(struct state_struct *state) {
 
   nunique_molecules = state->nunique_molecules;
   molecule          = state->sorted_molecules;
-  sorted_cmpts      = state->sorted_cmpts;
+  sorted_cmpts      = state->sorted_compartments;
   molecules_text    = state->molecules_text;
   compartment_text  = state->compartment_text;
   ode_bflux_file    = state->ode_bflux_file;
