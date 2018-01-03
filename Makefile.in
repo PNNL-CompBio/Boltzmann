@@ -171,8 +171,8 @@ SERIAL_OBJS4 = rxn_map_init.o rxn_map_parse_start_stop_line.o rxn_map_run.o allo
 SERIAL_OBJS5 = boltzmann_boot.o boot_init.o boot_alloc0.o boot_alloc1.o boot_io_init.o size_rxns_list.o boot_alloc2.o parse_rxn_list_line.o save_and_count_local_state.o boot_alloc3.o catenate_compartments_and_molecules.o global_merge_and_map_compartments.o sort_global_compartments.o global_merge_molecules.o sort_global_molecules.o boot_alloc4.o condense_strings.o fill_meta_data.o write_super_state.o copy_local_states.o boltzmann_mmap_superstate.o boltzmann_boot_check.o flatten_super_state.o boltzmann_rep_state_i.o
 SERIAL_OBJS6 = boltzmann_global_to_local_counts.o boltzmann_global_to_local_fluxes.o boltzmann_local_to_global_counts.o boltzmann_local_to_global_fluxes.o size_file.o boltzmann_load.o boltzmann_number_of_reaction_files.o boltzmann_global_molecule_count.o boltzmann_length_state_i.o boltzmann_max_local_state_size.o boltzmann_size_superstate.o
 
-#SERIAL_OBJS7 = deq_run.o alloc7.o fill_flux_pieces.o ode23tb.o init_base_reactants.o ode_num_jac.o num_jac_col.o blas.o ode_it_solve.o compute_flux_scaling.o approximate_fluxes.o ce_approximate_fluxes.o update_rxn_likelihoods.o print_concs_fluxes.o ode_print_concs_header.o ode_print_concs.o
-SERIAL_OBJS7 = deq_run.o alloc7.o ode23tb.o init_base_reactants.o ode_num_jac.o num_jac_col.o blas.o ode_it_solve.o compute_flux_scaling.o approximate_fluxes.o ce_approximate_fluxes.o update_rxn_likelihoods.o print_concs_fluxes.o lsame.o dtrsm.o dlaswp.o dgetrf2.o dgetrf.o dgetrs.o dgemm.o ode_print_concs_header.o ode_print_concs.o
+#SERIAL_OBJS7 = deq_run.o alloc7.o fill_flux_pieces.o ode23tb.o init_base_reactants.o ode_num_jac.o num_jac_col.o blas.o ode_it_solve.o compute_flux_scaling.o approximate_fluxes.o vec_abs.o vec_div.o vec_max.o vec_mul.o ce_approximate_fluxes.o update_rxn_likelihoods.o print_concs_fluxes.o ode_print_concs_header.o ode_print_concs.o
+SERIAL_OBJS7 = deq_run.o alloc7.o ode23tb.o init_base_reactants.o ode_num_jac.o num_jac_col.o blas.o ode_it_solve.o compute_flux_scaling.o approximate_fluxes.o vec_abs.o vec_div.o vec_max.o vec_mul.o ce_approximate_fluxes.o update_rxn_likelihoods.o print_concs_fluxes.o lsame.o dtrsm.o dlaswp.o dgetrf2.o dgetrf.o dgetrs.o dgemm.o ode_print_concs_header.o ode_print_concs.o
 SBML_OBJS = sbml_to_boltzmann.o size_ms2js_file.o size_kg2js_file.o \
 	sbml_alloc0.o sbml_set_file_names.o sbml_alloc2.o read_ms2js.o \
 	read_kg2js.o sort_json_ids.o merge_sorted_strings.o \
@@ -765,6 +765,10 @@ libboltzmann.a: $(SERIAL_OBJS1)  $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SERIAL_OBJS4)
 	$(AR) $(ARFLAGS) libboltzmann.a ode_num_jac.o
 	$(AR) $(ARFLAGS) libboltzmann.a compute_flux_scaling.o
 	$(AR) $(ARFLAGS) libboltzmann.a approximate_fluxes.o
+	$(AR) $(ARFLAGS) libboltzmann.a vec_abs.o
+	$(AR) $(ARFLAGS) libboltzmann.a vec_div.o
+	$(AR) $(ARFLAGS) libboltzmann.a vec_max.o
+	$(AR) $(ARFLAGS) libboltzmann.a vec_mul.o
 	$(AR) $(ARFLAGS) libboltzmann.a ce_approximate_fluxes.o
 	$(AR) $(ARFLAGS) libboltzmann.a num_jac_col.o
 	$(AR) $(ARFLAGS) libboltzmann.a ode_it_solve.o
@@ -1327,6 +1331,18 @@ compute_flux_scaling.o: compute_flux_scaling.c compute_flux_scaling.h $(SERIAL_I
 
 approximate_fluxes.o: approximate_fluxes.c approximate_fluxes.h update_rxn_likelihoods.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c approximate_fluxes.c 
+
+vec_abs.o: vec_abs.c vec_abs.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c vec_abs.c
+
+vec_div.o: vec_div.c vec_div.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c vec_div.c
+
+vec_max.o: vec_max.c vec_max.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c vec_max.c
+
+vec_mul.o: vec_mul.c vec_mul.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c vec_mul.c
 
 ce_approximate_fluxes.o: ce_approximate_fluxes.c ce_approximate_fluxes.h update_rxn_likelihoods.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c ce_approximate_fluxes.c 
