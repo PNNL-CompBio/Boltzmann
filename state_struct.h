@@ -75,6 +75,7 @@ struct state_struct {
   int64_t usage;
   double  ideal_gas_r;
   double  temp_kelvin;
+  double  m_r_rt;
   double  cal_gm_per_joule;
   double  joule_per_cal_gm;
   double  default_initial_conc;
@@ -82,8 +83,8 @@ struct state_struct {
   double  *concentrations;
   double  *dg0s;
   double  *dgs;
-  double  *q_r;
   double  *ke;
+  double  *log_rxn_ratio;
   int  *cmpts_map;
 
   int  number_reactions;
