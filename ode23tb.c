@@ -2,15 +2,17 @@
 
 #include "init_base_reactants.h"
 #include "approximate_fluxes.h"
+#include "ce_approximate_fluxes.h"
 #include "compute_flux_scaling.h"
 #include "ode_num_jac.h"
 #include "ode_it_solve.h"
 #include "print_concs_fluxes.h"
 #include "blas.h"
+#include "lapack.h"
 
 #include "ode23tb.h"
 int ode23tb (struct state_struct *state, double *counts,
-	     double htry, int nonnegative) {
+	     double htry, int nonnegative, int normcontrol) {
 
   /*
     NB. This is adapted from the ode23tb matlab code .
@@ -26,10 +28,11 @@ int ode23tb (struct state_struct *state, double *counts,
                approximate_fluxes, ode_num_jac, ode_it_solve,
                print_concs_fluxes,
 	       dnrm2, dgemv, dscal
-	       sizeof, calloc, sqrt, pow, fabs
+	       sizeof, calloc, sqrt, pow, fabs, dgetrf, dgetrs
 
   */
   double *dfdy; /* length nunique_molecules * nunique_molecules */
+  double *miter; /* length nunique_molecules * nunique_molecules */
   double *y0; /* length nunique_molecules */
   double *y;  /* length nunique_molecules */
   double *y1; /* length nunique_molecules */
@@ -49,10 +52,13 @@ int ode23tb (struct state_struct *state, double *counts,
   double *z_scratch; /* length nunique_molecules */
   double *del_scratch; /* length nunique_molecules */
   double *est1; /* length nunique_molecules */
+  double *est2; /* length nunique_molecules */
   double *fac; /* length nunique_molecules */
   double *thresh; /* length nunique_molecules */
   double *delfdelt; /* length nunique_molecules */
   double *ynew_counts; /* length nunique_molecules */
+  double *wti; /* length nunique_molecules */
+  double *pivot; /* length nunique_molecules */
   double *ode_num_jac_scratch; /* length 10*unique_molecules */
   double *forward_rxn_likelihoods; /* length nrxns */
   double *reverse_rxn_likelihoods; /* length nrxns */
@@ -97,11 +103,13 @@ int ode23tb (struct state_struct *state, double *counts,
   double scalar;
   double recip_cube_root_rtol;
   double wt;
+  double wt2;
   double normy;
   double normyp;
   double normy2;
   double normynew;
   double err1;
+  double err2;
   double err;
   double absh;
   double abslasth;
@@ -111,8 +119,15 @@ int ode23tb (struct state_struct *state, double *counts,
   double rtol;
   double norm_delfdelt;
   double err1_est;
+  double err2_est;
   double rtol_o_err;
   double min_conc;
+  double yp_o_wt;
+  double max_yp_o_wt;
+  double norm_delfdelt_o_wt;
+  double norm_delfdelt_o_wti;
+  double dzero;
+  double mdh;
 
   int64_t ask_for;
   int64_t one_l;
@@ -128,6 +143,7 @@ int ode23tb (struct state_struct *state, double *counts,
 
   int *base_reactant_indicator; /* length nunique_molecules */
   int *base_reactants;          /* length nunique_molecules */
+  int *ipivot;                  /* overlaid on pivot space */
 
   int ny;
   int first_time;
@@ -139,34 +155,46 @@ int ode23tb (struct state_struct *state, double *counts,
   int base_rxn;
 
   int need_new_j;
+  int need_new_m;
+
+  int need_new_lu;
+  int i;
+
   int jcurrent;
+  int mcurrent;
+
 
   int one;
-  int trans;
+  int nrhs;
 
   int nrxns;
-  int itfail1;
-
-  int itfail2;
   int nofailed;
 
-  int i;
+  int itfail1;
+  int itfail2;
+
   int unsuccessful_step;
-
   int tolerance_met;
-  int iter_count;
 
+  int iter_count;
   int nnrejectstep;
-  int done;
 
   int number_base_reaction_reactants;
   int nnreset_znew;
 
   int origin;
-  int padi;
+  int done;
+
+  int nysq;
+  int info;
+
+  char  trans_chars[8];
+  char  *trans;
 
   FILE *lfp;
   FILE *efp;
+  /*
+  */
 #define DBG 1
   success = 1;
   t0      = 0.0;
@@ -177,22 +205,28 @@ int ode23tb (struct state_struct *state, double *counts,
   nsteps   = (int64_t)0;
   nfailed  = nsteps;
   npds     = nsteps;
-  ndecomps = nsteps;
-  nsolves  = nsteps;
+  ndecomps = 0;
+  nsolves  = 0;
   rtol     = 0.001;
+  dzero    = 0.0;
   count_to_conc = state->count_to_conc;
   conc_to_count = state->conc_to_count;
   base_rxn      = state->base_reaction;
   ny            = state->nunique_molecules;
+  nysq          = ny * ny;
   nrxns         = state->number_reactions;
   min_conc      = state->min_conc;
   lfp           = state->lfp;
+  trans_chars[0] = 'N';
+  trans_chars[1] = 'T';
+  trans_chars[3] = 'C';
+  trans = &trans_chars[0];
   /*
     Allocate double space needed for scratch vectors and matrices.
-    actually 26*ny but we'll throw in an extra 7ny for future needs.
+    actually 31*ny but we'll throw in an extra ny for future needs.
   */
   if (success) {
-    ask_for = ((ny * 32) + (ny*ny) + (2*nrxns)) * sizeof(double);
+    ask_for = ((ny * 32) + (2*ny*ny) + (2*nrxns)) * sizeof(double);
     dfdy = (double*)calloc(ask_for,one_l);
     if (dfdy == NULL) {
       success = 0;
@@ -204,11 +238,12 @@ int ode23tb (struct state_struct *state, double *counts,
     }
   }
   if (success) {
-    y0   = &dfdy[ny*ny];
-    y    = &y0[ny];
-    y1   = &y[ny];
-    y2   = &y1[ny];
-    ynew = &y2[ny];
+    miter = &dfdy[nysq];
+    y0    = &miter[nysq];
+    y     = &y0[ny];
+    y1    = &y[ny];
+    y2    = &y1[ny];
+    ynew  = &y2[ny];
     yp   = &ynew[ny];
     y_counts = &yp[ny];
     y1_counts = &y_counts[ny];
@@ -223,12 +258,16 @@ int ode23tb (struct state_struct *state, double *counts,
     z_scratch = &znew[ny];
     del_scratch = &z_scratch[ny];
     est1        = &del_scratch[ny];
-    fac         = &est1[ny];
+    est2        = &est1[ny];
+    fac         = &est2[ny];
     thresh      = &fac[ny];
     delfdelt    = &thresh[ny];
     ynew_counts = &delfdelt[ny];
-    ode_num_jac_scratch  = &ynew_counts[ny];
-    forward_rxn_likelihoods = &ode_num_jac_scratch[4*ny];
+    wti         = &ynew_counts[ny];
+    pivot       = &wti[ny];
+    ipivot      = (int*)pivot;
+    ode_num_jac_scratch  = &pivot[ny];
+    forward_rxn_likelihoods = &ode_num_jac_scratch[5*ny];
     reverse_rxn_likelihoods = &forward_rxn_likelihoods[nrxns];
     /*
       We need to move from stochastic counts to contiuous counts
@@ -238,7 +277,7 @@ int ode23tb (struct state_struct *state, double *counts,
       Compute initial concentratiosn from molecule counts.
       Also fill f0 from fluxes input.
     */
-    threshold = 1.0e-6;
+    threshold = 1.0e-3;
     for (i=0;i<ny;i++) {
       y0[i] = counts[i] * count_to_conc[i];
       y[i]  = y0[i];
@@ -258,13 +297,29 @@ int ode23tb (struct state_struct *state, double *counts,
       concentrations in base reaction).
     */
     flux_scaling = compute_flux_scaling(state,y0);
+    ce_approximate_fluxes(state,y_counts,
+		       forward_rxn_likelihoods,reverse_rxn_likelihoods,
+		       f0,flux_scaling,base_rxn);
+#ifdef DBG
+    if (lfp) {
+      fprintf(lfp," ode23tb: After first call to ce_approximate_fluxes\n");
+      origin = 0; 
+      t = 0;
+      h = 0;
+      print_concs_fluxes(state,ny,f0,y,y_counts,
+			 forward_rxn_likelihoods,
+			 reverse_rxn_likelihoods,t,h,nsteps,origin);
+    }
+#endif
     approximate_fluxes(state,y_counts,
 		       forward_rxn_likelihoods,reverse_rxn_likelihoods,
 		       f0,flux_scaling,base_rxn);
 #ifdef DBG
     if (lfp) {
-      fprintf(lfp," ode23tb: After first call to approximate_fluxes\n");
+      fprintf(lfp," ode23tb: After first call to approximate_fluxes, flux_scaling = %le\n",flux_scaling);
       origin = 0; 
+      t = 0;
+      h = 0;
       print_concs_fluxes(state,ny,f0,y,y_counts,
 			 forward_rxn_likelihoods,
 			 reverse_rxn_likelihoods,t,h,nsteps,origin);
@@ -282,9 +337,12 @@ int ode23tb (struct state_struct *state, double *counts,
     */
     ode_num_jac(state,first_time,
 		dfdy,t0,y,f0,fac,thresh,ode_num_jac_scratch, &nf);
+
     first_time = 0;
     nfevals += nf;
     jcurrent = 1;
+    mcurrent = 1;
+    need_new_m = 0;
     need_new_j = 1-jcurrent;
     t = t0;
     eps_hex       = 0x3CB0000000000000L;
@@ -305,7 +363,11 @@ int ode23tb (struct state_struct *state, double *counts,
     p32       = 2.5 + (root2 + root2);
     p33       = -(6.0 + (4.5*root2));
     inc1      = 1;
+    /*
     recip_70p = 1.0/0.7;
+    to match matlab we use
+    */
+    recip_70p = 1.43;
     /*
     recip_cube_root_rtol = 1.0 / (pow(rtol,third));
     */
@@ -313,8 +375,8 @@ int ode23tb (struct state_struct *state, double *counts,
     for (i=0;i<ny;i++) {
       yp[i] = f0[i];
     }
-    hmin      = 1.e-9;
-    hmax      = 0.1;
+    hmin      = 0;
+    hmax      = 1;
     normy     = dnrm2(&ny,y,&inc1);
     normyp    = dnrm2(&ny,yp,&inc1);
     need_new_j = 0;
@@ -328,11 +390,30 @@ int ode23tb (struct state_struct *state, double *counts,
       /*
       wt = max(normy,threshold);
       */
-      wt = normy;
-      if (threshold > wt) {
-	wt = threshold;
+      if (normcontrol) {
+	wt2 = normy;
+	if (threshold > wt2) {
+	  wt2 = threshold;
+	}
+	for (i=0;i<ny;i++) {
+	  wti[i] = wt2;
+	}
+	rh = (recip_70p * (normyp/wt2)) * recip_cube_root_rtol;
+      } else {
+	max_yp_o_wt = 0.0;
+	for (i=0;i<ny;i++) {
+	  wt = fabs(y[i]);
+	  if (threshold > wt) {
+	    wt = threshold;
+	  }
+	  wti[i] = wt;
+	  yp_o_wt = fabs(yp[i])/wt;
+	  if (yp_o_wt > max_yp_o_wt) {
+	    max_yp_o_wt = yp_o_wt;
+	  }
+	}
+	rh = recip_70p * max_yp_o_wt * recip_cube_root_rtol;
       }
-      rh = (recip_70p * (normyp/wt)) * recip_cube_root_rtol;
       /*
       absh = min(hmax, htspan);
       */
@@ -376,14 +457,14 @@ int ode23tb (struct state_struct *state, double *counts,
       tdel = tdir * tdel;
       tdel = (t + tdel) - t;
       /*
-	f1   = flux at t+tdel, y + tdel*yp
-	So we need to first recompute concentrations y = y + tdel*yp;
+	f1   = flux at t+tdel, y
 	conc = count/volume
       */
     /*
       Now the flux concentration needs likelihoods which needs counts,
       so we need to convert the y1 to counts.
     */
+      /*
       for (i=0;i<ny;i++) {
 	y1[i] = y[i] + tdel * yp[i];
 	if (y1[i] < min_conc) {
@@ -400,13 +481,30 @@ int ode23tb (struct state_struct *state, double *counts,
 	}
 	y1_counts[i] = y1[i] * conc_to_count[i];
       }
-      flux_scaling1 = compute_flux_scaling(state,y1);
       approximate_fluxes(state,y1_counts,
+			 forward_rxn_likelihoods,reverse_rxn_likelihoods,
+			 f1,flux_scaling1,base_rxn);
+      */
+      flux_scaling1 = compute_flux_scaling(state,y1);
+      ce_approximate_fluxes(state,y_counts,
+			 forward_rxn_likelihoods,reverse_rxn_likelihoods,
+			 f1,flux_scaling1,base_rxn);
+
+#ifdef DBG
+      if (lfp) {
+	fprintf(lfp,"ode23tb: After call to ce_approximate_fluxes in f1\n");
+	origin = 1; 
+	print_concs_fluxes(state,ny,f1,y1,y1_counts,
+			   forward_rxn_likelihoods,
+			   reverse_rxn_likelihoods,t,h,nsteps,origin);
+      }
+#endif
+      approximate_fluxes(state,y_counts,
 			 forward_rxn_likelihoods,reverse_rxn_likelihoods,
 			 f1,flux_scaling1,base_rxn);
 #ifdef DBG
       if (lfp) {
-	fprintf(lfp,"ode23tb: After htry==0 call to approximate_fluxes\n");
+	fprintf(lfp,"ode23tb: After call to approximate_fluxes in f1, flux_scaling = %le\n",flux_scaling);
 	origin = 1; 
 	print_concs_fluxes(state,ny,f1,y1,y1_counts,
 			   forward_rxn_likelihoods,
@@ -419,18 +517,29 @@ int ode23tb (struct state_struct *state, double *counts,
 	/*
 	dfdt[i] = (f1[i] - f0[i]) * recip_tdel;
 	delfdelt[i] = dfdt[i];
-	*/
 	delfdelt[i] = (f1[i] - f0[i]) * recip_tdel;
+	*/
+	delfdelt[i] = 0.0;
       }
       /*
 	delfdelt = dfdt + dfdy * yp
       */
-      trans = 0;
       scalar = 1.0;
-      dgemv(&trans,&ny,&ny,&scalar,dfdy,&ny,yp,&inc1,&scalar,delfdelt,&inc1);
+      dgemv(trans,&ny,&ny,&scalar,dfdy,&ny,yp,&inc1,&scalar,delfdelt,&inc1);
   
-      norm_delfdelt = dnrm2(&ny,delfdelt,&inc1);
-      rh = (recip_70p * (norm_delfdelt/wt)) * recip_cube_root_rtol;
+      if (normcontrol) {
+	norm_delfdelt = dnrm2(&ny,delfdelt,&inc1);
+	norm_delfdelt_o_wt = norm_delfdelt/wt2;
+      } else {
+	norm_delfdelt_o_wt = 0.0;
+	for (i=0;i<ny;i++) {
+	  norm_delfdelt_o_wti = fabs(delfdelt[i])/wti[i];
+	  if (norm_delfdelt_o_wti > norm_delfdelt_o_wt) {
+	    norm_delfdelt_o_wt = norm_delfdelt_o_wti;
+	  }
+	}
+      }
+      rh = (recip_70p * sqrt(.5*norm_delfdelt_o_wt)) * recip_cube_root_rtol;
       /*
       absh = min(hmax,htspan);
       */
@@ -467,7 +576,9 @@ int ode23tb (struct state_struct *state, double *counts,
     /*
       Main loop.
     */
+    need_new_lu = 1;
     not_done = 1;
+    info = 0;
     while (not_done) {
       hmin = 16.0*eps*fabs(t);
       abslasth = absh;
@@ -489,6 +600,7 @@ int ode23tb (struct state_struct *state, double *counts,
       if (absh != abslasth) {
 	h_ratio = absh/abslasth;
 	dscal(&ny,&h_ratio,z,&inc1);
+	need_new_lu = 1;
       }
       nofailed = 1;
       unsuccessful_step = 1;
@@ -500,9 +612,22 @@ int ode23tb (struct state_struct *state, double *counts,
 	/*
 	wt = max(normy,threshold);
 	*/
-	wt = normy;
-	if (threshold > wt) {
-	  wt = threshold;
+	if (normcontrol) {
+	  wt2 = normy;
+	  if (threshold > wt2) {
+	    wt2 = threshold;
+	  }
+	  for (i=0;i<ny;i++) {
+	    wti[i] = wt2;
+	  }
+	} else {
+	  for (i=0;i<ny;i++) {
+	    wt = fabs(y[i]);
+	    if (threshold > wt) {
+	      wt = threshold;
+	    }
+	    wti[i] = wt;
+	  }
 	}
 	if (need_new_j) {
 	  /*
@@ -510,12 +635,25 @@ int ode23tb (struct state_struct *state, double *counts,
 	    compute f0. at current y.
 	  */
 	  flux_scaling = compute_flux_scaling(state,y);
+	  ce_approximate_fluxes(state,y_counts,
+			     forward_rxn_likelihoods,reverse_rxn_likelihoods,
+			     f0,flux_scaling,base_rxn);
+
+#ifdef DBG
+	  if (lfp) {
+	    fprintf(lfp,"ode23tb: after new Jacobian call to ce_approximate_fluxes\n");
+	    origin = 2; 
+	    print_concs_fluxes(state,ny,f0,y,y_counts,
+			       forward_rxn_likelihoods,
+			       reverse_rxn_likelihoods,t,h,nsteps,origin);
+	  }
+#endif
 	  approximate_fluxes(state,y_counts,
 			     forward_rxn_likelihoods,reverse_rxn_likelihoods,
 			     f0,flux_scaling,base_rxn);
 #ifdef DBG
 	  if (lfp) {
-	    fprintf(lfp,"ode23tb: after new Jacobian call to approximate_fluxes\n");
+	    fprintf(lfp,"ode23tb: after new Jacobian call to approximate_fluxes, flux_scaling = %le\n",flux_scaling);
 	    origin = 2; 
 	    print_concs_fluxes(state,ny,f0,y,y_counts,
 			       forward_rxn_likelihoods,
@@ -532,6 +670,51 @@ int ode23tb (struct state_struct *state, double *counts,
 	  npds += 1;
 	  jcurrent = 1;
 	  need_new_j = 0;
+	  need_new_lu = 1;
+	}
+	if (need_new_m) {
+	  mcurrent = 1;
+	  need_new_m = 0;
+	  need_new_lu = 1;
+	}
+	if (need_new_lu) {
+	  /*
+	    This could be its own subroutine say ode_build_miter:
+	  */
+	  /*
+	    Set miter to be all 0.
+	  */
+	  dscal(&nysq,&dzero,miter,&inc1);
+	  /*
+	    Set miter to be the identity matrix.
+	  */
+	  for (i=0;i<ny*ny;i += (ny+1)) {
+	    miter[i] = 1.0;
+	  }
+	  /*
+	    set miter to be I - (d*h)*dfdy
+	  */
+	  mdh = 0.0 - (d*h);
+	  daxpy(&nysq,&mdh,dfdy,&inc1,miter,&inc1);
+	  /*
+	    Now we need to factor miter with say dgetrf (lapack routines)
+	    overwrites miter with its factorization, generating
+	    a pivot vector, ipivot,
+	    as arguments to ode_it_solve, 
+	  */
+	  info = 0;
+	  dgetrf(&ny,&ny,miter,&ny,ipivot,&info);
+	  if (info != 0) {
+	    if (lfp) {
+	      fprintf(lfp,"ode23tb: dgetrf call failed with info = %d\n",
+		      info);
+	      fflush(lfp);
+	    }
+	    break;
+	  }
+	  ndecomps = ndecomps + 1;
+	  rate = 0.0;
+	  need_new_lu = 0;
 	}
 	/*
 	  Stage 1.
@@ -552,6 +735,7 @@ int ode23tb (struct state_struct *state, double *counts,
 	  y2_counts[i] = y2[i] * conc_to_count[i];
 	  z2[i] = z[i];
 	}
+	/*
 #ifdef DBG
 	if (lfp) {
 	  fprintf(lfp," Stage1 y2, y2_counts, and z2 before ode_it_solve\n");
@@ -561,11 +745,14 @@ int ode23tb (struct state_struct *state, double *counts,
 			     reverse_rxn_likelihoods,t,h,nsteps,origin);
 	}
 #endif
+	*/
 	iter_count = 0;
-	itfail1 = ode_it_solve(state,t2,y2,z2,del_scratch,z_scratch,
+	itfail1 = ode_it_solve(state,miter,ipivot,t2,y2,z2,
+			       del_scratch,z_scratch,
 			       y2_counts,forward_rxn_likelihoods,
-			       reverse_rxn_likelihoods,d,h,rtol,wt,
+			       reverse_rxn_likelihoods,d,h,rtol,wti,
 			       &rate, &iter_count);
+	/*
 #ifdef DBG
 	if (lfp) {
 	  fprintf(lfp," Stage1 y2, y2_counts, and z2 after ode_it_solve\n");
@@ -575,16 +762,30 @@ int ode23tb (struct state_struct *state, double *counts,
 			     reverse_rxn_likelihoods,t,h,nsteps,origin);
 	}
 #endif
+	*/
 	nfevals += iter_count;
+	nsolves += iter_count;
 	itfail2 = 0;
 	if (itfail1 == 0) {
 	  /* Stage 2. */
-	  normy2 = dnrm2(&ny,y2,&inc1);
-	  /*
-	  wt     = max(wt,normy2)
-	  */
-	  if (normy2 > wt) {
-	    wt = normy2;
+	  if (normcontrol) {
+	    normy2 = dnrm2(&ny,y2,&inc1);
+	    /*
+	      wt     = max(wt,normy2)
+	    */
+	    if (normy2 > wt2) {
+	      wt2 = normy2;
+	      for (i=0;i<ny;i++) {
+		wti[i] = wt2;
+	      }
+	    }
+	  } else {
+	    for (i=0;i<ny;i++) {
+	      wt = fabs(y2[i]);
+	      if (wt > wti[i]) {
+		wti[i] = wt;
+	      }
+	    }
 	  }
 	  tnew = t + h;
 	  if (done) {
@@ -608,6 +809,7 @@ int ode23tb (struct state_struct *state, double *counts,
 	    ynew_counts[i] = ynew[i] * conc_to_count[i];
 	  }
 	  iter_count = 0;
+	  /*
 #ifdef DBG
 	  if (lfp) {
 	    fprintf(lfp," Stage2 ynew, ynew_counts, and znew "
@@ -618,11 +820,15 @@ int ode23tb (struct state_struct *state, double *counts,
 			       reverse_rxn_likelihoods,t,h,nsteps,origin);
 	  }
 #endif
-	  itfail2 = ode_it_solve(state,tnew,ynew,znew,del_scratch,z_scratch,
+	  */
+	  itfail2 = ode_it_solve(state,miter,ipivot,tnew,ynew,znew,
+				 del_scratch,z_scratch,
 				 ynew_counts,forward_rxn_likelihoods,
-				 reverse_rxn_likelihoods,d,h,rtol,wt,
+				 reverse_rxn_likelihoods,d,h,rtol,wti,
 				 &rate, &iter_count);
 	  nfevals += iter_count;
+	  nsolves += iter_count;
+	  /*
 #ifdef DBG
 	  if (lfp) {
 	    fprintf(lfp," Stage2 ynew, ynew_counts, and znew "
@@ -633,11 +839,12 @@ int ode23tb (struct state_struct *state, double *counts,
 			       reverse_rxn_likelihoods,t,h,nsteps,origin);
 	  }
 #endif
-	}
+	  */
+	} /* end if (itfail1 == 0) */
 	if (itfail1 || itfail2) {
 	  nofailed = 0;
 	  nfailed += 1;
-	  if (jcurrent) {
+	  if (jcurrent & mcurrent) {
 	    if (absh <= hmin) {
 	      if (lfp) {
 		fprintf(lfp,"ode23tb: Error integration tolerance not met, t= %le, hmin = %le\n",t,hmin);
@@ -659,19 +866,33 @@ int ode23tb (struct state_struct *state, double *counts,
 	      h_ratio = absh/abslasth;
 	      dscal(&ny,&h_ratio,z,&inc1);
 	      done = 0;
+	      need_new_lu = 1;
 	      not_done = 1;
 	    }
 	  } else {
 	    need_new_j = 1 - jcurrent;
+	    need_new_m = 1 - mcurrent;
 	  }
 	} else {
 	  /* stage 1 and 2 succeeded, estimate local truncation error.*/
-	  normynew = dnrm2(&ny,ynew,&inc1);
+	  if (normcontrol) {
+	    normynew = dnrm2(&ny,ynew,&inc1);
 	  /*
-	  wt = max(wt,normynew);
+	  wt2 = max(wt,normynew);
 	  */
-	  if (normynew > wt) {
-	    wt = normynew;
+	    if (normynew > wt2) {
+	      wt2 = normynew;
+	    }
+	    for (i=0;i<ny;i++) {
+	      wti[i] = wt2;
+	    }
+	  } else {
+	    for (i=0;i<ny;i++) {
+	      wt = fabs(ynew[i]);
+	      if (wt > wti[i]) {
+		wti[i] = wt;
+	      }
+	    }
 	  }
 	  err1 = 0.0;
 	  for (i=0;i<ny;i++) {
@@ -680,12 +901,38 @@ int ode23tb (struct state_struct *state, double *counts,
             /*
 	    err1 = max(fabs(est1[i]/wt),err1);
 	    */
-	    err1_est = fabs(err1_est/wt);
+	    err1_est = fabs(err1_est/wti[i]);
 	    if (err1_est > err1) {
 	      err1 = err1_est;
 	    }
 	  }
+	  /*
+	    Here we need to solve miter * est2 = est1
+	    With calls to something like dgetrs
+	  */
+	  nrhs = 1;
+	  dcopy(&ny,est1,&inc1,est2,&inc1);
+	  dgetrs(trans,&ny,&nrhs,miter,&ny,ipivot,est2,&ny,&info);
+	  if (info != 0) {
+	    if (lfp) {
+	      fprintf(lfp,"ode23tb: dgetrs call failed with info = %d\n",
+		      info);
+	      fflush(lfp);
+	    }
+	    break;
+	  }
+	  nsolves += 1;
+	  err2 = 0.0;
+	  for (i=0;i<ny;i++) {
+	    err2_est = fabs(est2[i]/wti[i]);
+	    if (err2_est > err2) {
+	      err2 = err2_est;
+	    }
+	  }
 	  err = err1/16.0;
+	  if (err2 > err) {
+	    err = err2;
+	  }
 	  nnrejectstep = 0;
 	  errnn = 0.0;
 	  if (nonnegative) {
@@ -694,8 +941,13 @@ int ode23tb (struct state_struct *state, double *counts,
 		if (ynew[i] < 0.0) {
 		  errnn += (ynew[i] * ynew[i]);
 		}
-	      } 
-	      errnn = sqrt(errnn)/wt;
+	      }
+	      errnn = sqrt(errnn);
+	      if (normcontrol) {
+		errnn = errnn/wt2;
+	      } else {
+		errnn  = errnn/threshold;
+	      }
 	      if (errnn > rtol) {
 		err = errnn;
 		nnrejectstep = 1;
@@ -746,6 +998,7 @@ int ode23tb (struct state_struct *state, double *counts,
 	      for (i=0;i<ny;i++) {
 		z[i] *= h_ratio;
 	      }
+	      need_new_lu = 1;
 	      not_done = 1;
 	      unsuccessful_step = 1;
 	    }
@@ -755,6 +1008,9 @@ int ode23tb (struct state_struct *state, double *counts,
 	  }
 	} /* end else iterative solves succeeded. */
       } /* end while (unsuccessful_step && tolerance_met) */
+      if (info != 0) {
+	break;
+      }
       nsteps = nsteps + 1;
       nnreset_znew = 0;
       if (nonnegative) {
