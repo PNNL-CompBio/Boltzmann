@@ -33,9 +33,9 @@ int print_reactions_matrix(struct state_struct *state) {
   */
   struct rxn_struct *reaction;
   struct rxn_matrix_struct *rxns_matrix;
-  struct istring_elem_struct *molecules;
-  struct istring_elem_struct *compartments;
-  struct istring_elem_struct *cur_cmpt;
+  struct molecule_struct *molecules;
+  struct molecule_struct *compartments;
+  struct molecule_struct *cur_cmpt;
   int64_t *rxn_ptrs;
   int64_t *molecules_indices;
   int64_t *coefficients;
@@ -119,7 +119,7 @@ int print_reactions_matrix(struct state_struct *state) {
       ci = molecules->c_index;
       molecule    = (char *)&molecules_text[molecules->string];
       if (ci > 0) {
-	cur_cmpt = (struct istring_elem_struct *)&(compartments[ci]);
+	cur_cmpt = (struct molecule_struct *)&(compartments[ci]);
 	  cmpt_string = (char *)&compartment_text[cur_cmpt->string];
 	fprintf(rxn_mat_fp,"\t%s:%s",molecule,cmpt_string);
       } else {
