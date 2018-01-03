@@ -297,6 +297,18 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	if (state->count_view_freq < 0) {
 	  state->count_view_freq = 1;
 	}
+      } else if (strncmp(key,"CONC_VIEW_FREQ",14) == 0) {
+	/*
+	  NB counts and concs print frequency is really controled by
+	  the count_view_freq field and the CONCS_OR_COUNTS field.
+	  If CONCS_OR_COUNTS is 2 or 3 concentrations are printed 
+	  every count_view_freq steps, if CONCS_OR_COUNTS is 1 or 3
+	  counts are printed every count_view_freq steps.
+	*/
+	sscan_ok = sscanf(value,"%lld",&(state->count_view_freq));
+	if (state->count_view_freq < 0) {
+	  state->count_view_freq = 1;
+	}
       } else if (strncmp(key,"LKLHD_VIEW_FREQ",15) == 0) {
 	sscan_ok = sscanf(value,"%lld",&(state->lklhd_view_freq));
 	if (state->lklhd_view_freq < 0) {
@@ -310,6 +322,11 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	  state->fe_view_freq = 0;
 	}
       } else if (strncmp(key,"USE_ACTIVITIES",14) == 0) {
+	sscan_ok = sscanf(value,"%lld",&(state->use_activities));
+	if (state->use_activities < 0) {
+	  state->use_activities = 0;
+	}
+      } else if (strncmp(key,"USE_ENZYME_LEVELS",17) == 0) {
 	sscan_ok = sscanf(value,"%lld",&(state->use_activities));
 	if (state->use_activities < 0) {
 	  state->use_activities = 0;
