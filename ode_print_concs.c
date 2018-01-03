@@ -47,7 +47,7 @@ void ode_print_concs(struct state_struct *state, double time, double *concs) {
   */
   struct molecule_struct *cur_molecule;
   double *counts;
-  double *concs_to_counts;
+  double *conc_to_count;
   int unique_molecules;
   int j;
 
@@ -66,7 +66,7 @@ void ode_print_concs(struct state_struct *state, double time, double *concs) {
   unique_molecules       = state->nunique_molecules;
   cur_molecule           = state->sorted_molecules;
   counts                 = state->ode_counts;
-  concs_to_counts        = state->concs_to_counts;
+  conc_to_count          = state->conc_to_count;
 
   do_concs = 0;
   do_counts = 0;
@@ -79,7 +79,7 @@ void ode_print_concs(struct state_struct *state, double time, double *concs) {
     if (ode_counts_fp) {
       do_counts = 1;
       for (j=0;j<unique_molecules;j++) {
-	counts[j] = concs[j] * concs_to_counts[j];
+	counts[j] = concs[j] * conc_to_count[j];
       }
     }
   }
