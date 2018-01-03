@@ -31,6 +31,9 @@ int echo_reactions_file(struct state_struct *state) {
   */
   struct reaction_struct *reaction;
   struct reactions_matrix_struct *rxns_matrix;
+  struct molecule_struct *molecules;  
+  struct molecule_struct *moleculex;  
+  
   double  *reg_constant;
   double  *reg_exponent;
   double  *reg_drctn;
@@ -84,6 +87,7 @@ int echo_reactions_file(struct state_struct *state) {
     success = 0;
   }
   if (success) {
+    molecules         = state->sorted_molecules;
     rxn_title_text    = state->rxn_title_text;
     pathway_text      = state->pathway_text;
     compartment_text  = state->compartment_text; 
@@ -178,15 +182,23 @@ int echo_reactions_file(struct state_struct *state) {
       if (use_regulation) {
 	for (i=0;i<max_regs_per_rxn;i++) {
 	  metabolite = reg_species[reg_base+i];
+	  /*
+	    At this point metabolite is not the pointer into regulation text,
+	    as was set in parse_reactions file,
+	    but the sorted molecule number, as set by 
+	    translate_regulation_metabolites.
+	  */
 	  if (metabolite >= 0) {
+	    moleculex = (struct molecule_struct *)&molecules[metabolite];
+	    molecule  = (char *)&molecules_text[moleculex->string];
 	    if (reg_drctn[reg_base+i] > 0.0) {
 	      fprintf(rxn_echo_fp,"PREGULATION\t%s\t%le\t%le\n",
-		      (char *)&regulation_text[metabolite],
+		      molecule,
 		      reg_constant[reg_base+i],
 		      reg_exponent[reg_base+i]);
 	    } else {
 	      fprintf(rxn_echo_fp,"NREGULATION\t%s\t%le\t%le\n",
-		      (char *)&regulation_text[metabolite],
+		      molecule,
 		      reg_constant[reg_base+i],
 		      reg_exponent[reg_base+i]);
 	    }
