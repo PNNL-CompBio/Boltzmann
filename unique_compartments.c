@@ -77,43 +77,6 @@ int unique_compartments(struct state_struct *state) {
 				     &sum_compartment_len,
 				     align_len,
 				     align_mask);
-  /*				     
-  sum_compartment_len = (int64_t)0;
-  //* loop over sorted compartments. 
-  nu_cmpts = 0;
-  if (nzr > 1) {
-    if (sorted_cmpts->string >= 0) {
-      compartment_indices[sorted_cmpts->c_index] = nu_cmpts;
-      cstring = (char*)&compartment_text[sorted_cmpts->string];
-      sum_compartment_len += ((int64_t)strlen(cstring));
-    } else {
-      compartment_indices[sorted_cmpts->c_index] = -1;
-      cstring = NULL;
-    }
-    cur_cmpt = sorted_cmpts;
-    sorted_cmpts += 1; //* Caution address arithmetic. 
-    ucmpts_next  = sorted_cmpts;
-  }
-  for (i=1;i<nzr;i++) {
-    if (sorted_cmpts->string>=0) {
-      sstring = (char*)&compartment_text[sorted_cmpts->string];
-      if ((cur_cmpt->string < 0) ||
-	  (strcmp(sstring,cstring) != 0)) {
-	nu_cmpts += 1;
-	cur_cmpt = sorted_cmpts;
-	cstring  = sstring;
-	sum_compartment_len += ((int64_t)strlen(cstring));
-	ucmpts_next->string = cur_cmpt->string;
-	ucmpts_next += 1; //* Caution address arithmetic.
-      }
-      compartment_indices[sorted_cmpts->c_index] = nu_cmpts;
-    } else {
-      compartment_indices[sorted_cmpts->c_index] = -1;
-    }
-    sorted_cmpts += 1; //* Caution address arithmetic. 
-  }
-  state->nunique_compartments = nu_cmpts + 1;
-  */
   state->nunique_compartments = nunique_compartments;
   state->sum_compartment_len  = sum_compartment_len;
   return(success);
