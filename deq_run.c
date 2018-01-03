@@ -132,9 +132,11 @@ int deq_run(struct state_struct *state) {
   success = 1;
   one_l   = (int64_t)1;
   zero_l  = (int64_t)0;
+  /*
   nstate = state;
   state->workspace_base = NULL;
   success = flatten_state(state,&nstate);
+  */
   n_warmup_steps    	 = state->warmup_steps;
   n_record_steps    	 = state->record_steps;
   number_reactions       = (int)state->number_reactions;
