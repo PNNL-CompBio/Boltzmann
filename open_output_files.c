@@ -27,7 +27,7 @@ int open_output_files(struct state_struct *state) {
   /*
     Open the log, counts, rxn_likelihoods, free_energy, and 
     bndry_flux output files.
-    Called by: boltzmann_init
+    Called by: io_size_init
     Calls:     fopen, fprintf, fflush.
   */
   int success;
