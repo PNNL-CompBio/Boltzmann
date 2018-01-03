@@ -63,7 +63,7 @@ int print_restart_file(struct state_struct *state) {
 
   FILE *restart_fp;
   success = 1;
-  nu_molecules  = state->unique_molecules;
+  nu_molecules  = state->nunique_molecules;
   cur_molecules = state->sorted_molecules;
   cur_cmpts     = state->sorted_cmpts;
   cconcs        = state->current_concentrations;
