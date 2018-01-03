@@ -25,8 +25,8 @@ specific language governing permissions and limitations under the License.
 #include "merge_compartments.h"
 
 #include "sort_global_compartments.h"
-int sort_global_compartments(struct molecule_struct **unsorted_compartments,
-			     struct molecule_struct **sorted_compartments,
+int sort_global_compartments(struct compartment_struct **unsorted_compartments,
+			     struct compartment_struct **sorted_compartments,
 			     int64_t *compartment_map_indices,
 			     char *compartment_text,
 			     int n) {
@@ -50,9 +50,13 @@ int sort_global_compartments(struct molecule_struct **unsorted_compartments,
     
   
   */
-  struct molecule_struct *u_compartments;
-  struct molecule_struct *s_compartments;
-  struct molecule_struct *temp;
+  struct compartment_struct *u_compartments;
+  struct compartment_struct *s_compartments;
+  struct compartment_struct *temp;
+  struct compartment_struct ces;
+  size_t e_size;
+  size_t move_size;
+
   int global_compartments;
   int success;
   int step;
@@ -70,6 +74,7 @@ int sort_global_compartments(struct molecule_struct **unsorted_compartments,
   u_compartments = *unsorted_compartments;
   s_compartments = *sorted_compartments;
   global_compartments = compartment_map_indices[n];
+  e_size = (size_t)sizeof(ces);
   if (n == 1) {
     /*
       Only 1 Global compartment nothing to be done.
@@ -86,9 +91,9 @@ int sort_global_compartments(struct molecule_struct **unsorted_compartments,
 	if ((j + step + step) < n) {
 	  l2 = compartment_map_indices[j+step+step] - list2_first;
 	}
-	merge_compartments((struct molecule_struct *)&u_compartments[list1_first],
-		       (struct molecule_struct *)&u_compartments[list2_first],
-			   (struct molecule_struct *)&s_compartments[list1_first],
+	merge_compartments((struct compartment_struct *)&u_compartments[list1_first],
+		       (struct compartment_struct *)&u_compartments[list2_first],
+			   (struct compartment_struct *)&s_compartments[list1_first],
 			   compartment_text,l1,l2);
       }
       /* Now if the last group is <= step they just need to be copied
@@ -98,13 +103,24 @@ int sort_global_compartments(struct molecule_struct **unsorted_compartments,
       if (ln <= step) {
 	list1_first = compartment_map_indices[n-ln];
 	l1 = global_compartments - list1_first;
+	if (l1 > 0) {
+	  move_size = ((size_t)l1) * e_size;
+	  memcpy((void*)&(s_compartments[list1_first]),
+		 (void*)&(u_compartments[list1_first]),move_size);
+	}
+	/*	 
 	for (j = list1_first;j<global_compartments;j++) {
+	  s_compartments[j].volume   = u_compartments[j].volume;
+	  s_compartments[j].recip_volume   = u_compartments[j].recip_volume;
+	  s_compartments[j].ntotal_exp     = u_compartments[j].ntotal_exp;
+	  s_compartments[j].ntotal_opt     = u_compartments[j].ntotal_opt;
+	  s_compartments[j].conc_to_count  = u_compartments[j].conc_to_count;
+	  s_compartments[j].count_to_conc  = u_compartments[j].count_to_conc;
 	  s_compartments[j].string   = u_compartments[j].string;
-	  s_compartments[j].m_index  = u_compartments[j].m_index;
 	  s_compartments[j].c_index  = u_compartments[j].c_index;
 	  s_compartments[j].g_index  = u_compartments[j].g_index;
-	  s_compartments[j].variable = u_compartments[j].variable;
 	}
+	*/
       }
       temp               = s_compartments;
       s_compartments     = u_compartments;
