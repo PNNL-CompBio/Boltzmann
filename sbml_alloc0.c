@@ -33,8 +33,6 @@ int sbml_alloc0(struct sbml2bo_struct **state_p) {
   */
   struct sbml2bo_struct state_instance;
   struct sbml2bo_struct *state;
-  struct ms2js_struct ms2js_instance;
-  struct ms2js_struct *ms2js_data;
   int64_t ask_for;
   int64_t one_l;
   int64_t *ms_ids;
@@ -44,9 +42,9 @@ int sbml_alloc0(struct sbml2bo_struct **state_p) {
   char *rxns_dat_file;
   char *cmpts_dat_file;
   char *ms2js_file;
+  char *kg2js_file;
   char *id_name_file;
   char *log_file;
-  char *ms2js_strings;
   int     max_file_name_len;
   int     success;
   int     num_files;
@@ -87,21 +85,25 @@ int sbml_alloc0(struct sbml2bo_struct **state_p) {
     rxns_dat_file  = (char*)&concs_in_file[max_file_name_len];
     cmpts_dat_file = (char*)&rxns_dat_file[max_file_name_len];
     ms2js_file     = (char*)&cmpts_dat_file[max_file_name_len];
-    id_name_file   = (char*)&ms2js_file[max_file_name_len];
+    kg2js_file     = (char*)&ms2js_file[max_file_name_len];
+    id_name_file   = (char*)&kg2js_file[max_file_name_len];
     log_file       = (char*)&id_name_file[max_file_name_len];
     state->sbml_file      = sbml_file;
     state->concs_in_file  = concs_in_file;
     state->rxns_dat_file  = rxns_dat_file;
     state->cmpts_dat_file = cmpts_dat_file;
+    state->ms2js_file     = ms2js_file;
+    state->kg2js_file     = kg2js_file;
     state->id_name_file   = id_name_file;
     state->log_file       = log_file;
-    state->ms2js_file     = ms2js_file;
     state->num_reactions  = 0;
     state->num_species    = 0;
     state->num_cmpts      = 0;
     state->alignment      = 16;
     state->align_mask     = state->alignment-1;
     state->max_compartment_len = 1024;
+    state->max_specid_len      = 1024;
+    state->max_species_len     = 1024;
   }
   return(success);
 }
