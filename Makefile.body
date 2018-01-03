@@ -5,12 +5,12 @@ LUNWIND_DEPS = luwtb.h luwtb1.h luwtb2.h
 
 SERIAL_INCS = boltzmann_structs.h state_struct.h rxn_struct.h rxn_matrix_struct.h $(TIMING_DEPS) $(LUNWIND_DEPS)
 
-SERIAL_OBJS = boltzmann.o alloc0.o read_params.o alloc1.o echo_params.o size_rxns_file.o init_rxn_file_keywords.o parse_rxn_file_keyword.o count_species.o count_ws.o count_nws.o is_a_coef.o
+SERIAL_OBJS = boltzmann.o alloc0.o read_params.o alloc1.o echo_params.o size_rxns_file.o init_rxn_file_keywords.o parse_rxn_file_keyword.o count_species.o count_ws.o count_nws.o is_a_coef.o alloc2.o parse_reactions_file.o upcase.o echo_reactions_file.o sort_istrings.o merge_istrings.o unique_species.o print_species_dictionary.o
 
 boltzmann: $(SERIAL_OBJS) $(MMAP_OBJS) $(TIMING_LIB)
 	$(CLINKER) $(LFLAGS) -o boltzmann $(SERIAL_OBJS) $(MMAP_OBJS) $(TIMING_LIB)
 
-boltzmann.o: $(SERIAL_INCS) boltzmann.c alloc0.h read_params.h echo_params.h size_rxns_file.h
+boltzmann.o: $(SERIAL_INCS) boltzmann.c alloc0.h read_params.h echo_params.h size_rxns_file.h alloc1.h alloc2.h parse_reactions_file.h echo_reactions_file.h sort_istrings.h unique_species.h print_species_dictionary.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann.c
 
 alloc0.o: $(SERIAL_INCS) alloc0.c alloc0.h
@@ -42,6 +42,31 @@ count_ws.o: $(SERIAL_INCS) count_ws.c count_ws.h
 
 count_nws.o: $(SERIAL_INCS) count_nws.c count_nws.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c count_nws.c
+
+alloc2.o: $(SERIAL_INCS) alloc2.c alloc2.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c alloc2.c
+
+parse_reactions_file.o: $(SERIAL_INCS) parse_reactions_file.h parse_reactions_file.c parse_rxn_file_keyword.h count_ws.h count_nws.h upcase.h is_a_coef.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c parse_reactions_file.c
+
+upcase.o: upcase.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c upcase.c
+
+echo_reactions_file.o: $(SERIAL_INCS) echo_reactions_file.h echo_reactions_file.c 
+	$(CC) $(DCFLAGS) $(TFLAGS) -c echo_reactions_file.c
+
+
+sort_istrings.o: $(SERIAL_INCS) sort_istrings.c sort_istrings.h merge_istrings.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c sort_istrings.c
+
+merge_istrings.o: $(SERIAL_INCS) merge_istrings.c merge_istrings.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c merge_istrings.c
+
+unique_species.o: $(SERIAL_INCS) unique_species.c unique_species.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c unique_species.c
+
+print_species_dictionary.o: $(SERIAL_INCS) print_species_dictionary.c print_species_dictionary.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c print_species_dictionary.c
 
 clean:
 	-/bin/rm -f *.o *~ $(EXECS)
