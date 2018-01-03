@@ -125,7 +125,7 @@ int sbml_alloc2(struct sbml2bo_struct *state,
       We need a list of sorted json id's for the json id's matching a kegg id.
     */
     ask_for = (int64_t)((num_kegg_ids << 1) + num_kegg_ids) * sizeof(char *);
-    json_ids = calloc(one_l,ask_for);
+    json_ids = (char **)calloc(one_l,ask_for);
     if (json_ids == NULL) {
       success = 0;
       fprintf(lfp,"sbml_alloc2: Error unable to allocate %ld bytes for json_ids and sort_json_scratch\n",ask_for);
@@ -134,7 +134,7 @@ int sbml_alloc2(struct sbml2bo_struct *state,
   }
   if (success) {
     state->json_ids = json_ids;
-    state->sort_json_ids_scratch = (char*)&json_ids[num_kegg_ids];
+    state->sort_json_ids_scratch = (char**)&json_ids[num_kegg_ids];
   }
   return(success);
 }
