@@ -35,10 +35,10 @@ int compute_kss(struct state_struct *state) {
     Called by: energy_init
     Calls:     fprintf, fflush
   */
-  struct rxn_struct *reactions;
-  struct rxn_struct *reaction;
+  struct reaction_struct *reactions;
+  struct reaction_struct *reaction;
 
-  struct rxn_matrix_struct *rxns_matrix;
+  struct reactions_matrix_struct *rxns_matrix;
   struct compartment_struct *compartments;
   struct compartment_struct *compartment;
   double *kss_e_val;
@@ -98,7 +98,7 @@ int compute_kss(struct state_struct *state) {
   kss_e_val                = state->kss_e_val;
   kss_u_val                = state->kss_u_val;
   ke                       = state->ke;
-  compartments             = state->sorted_cmpts;
+  compartments             = state->sorted_compartments;
   lfp                      = state->lfp;
   print_output             = print_output && lfp;
   if (print_output) {
