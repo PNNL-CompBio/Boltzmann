@@ -77,7 +77,7 @@ int parse_reactions_file(struct state_struct *state,
   struct rxn_matrix_struct *rxns_matrix;
   struct molecule_struct *unsorted_molecules;
   struct molecule_struct *rxn_molecules;
-  struct molecule_struct *unsorted_cmpts;
+  struct compartment_struct *unsorted_cmpts;
   double *activities;
   int64_t *keyword_lens;
   int64_t *rxn_ptrs;
@@ -216,7 +216,6 @@ int parse_reactions_file(struct state_struct *state,
       Build in the empty compartment.
     */
     unsorted_cmpts->string = compartment_pos;
-    unsorted_cmpts->m_index  = -1;
     unsorted_cmpts->c_index  = 0;
     unsorted_cmpts += 1; /* Caution address arithmetic */
     compartment_text[0] = '\0';
@@ -334,7 +333,6 @@ int parse_reactions_file(struct state_struct *state,
 	  */
 	  unsorted_cmpts->string = compartment_pos;
 	  unsorted_cmpts->volume = 0.0;
-	  unsorted_cmpts->m_index  = -1;
 	  unsorted_cmpts->c_index  = cmpts;
 	  unsorted_cmpts += 1; /* Caution address arithmetic */
 	  compartment_pos += compartment_len + padding;
@@ -366,6 +364,7 @@ int parse_reactions_file(struct state_struct *state,
 	  unsorted_cmpts->string = lcompartment;
 	  */
 	  unsorted_cmpts->string = compartment_pos;
+	  unsorted_cmpts->volume = 0.0;
 	  unsorted_cmpts->c_index  = cmpts;
 	  unsorted_cmpts += 1; /* Caution address arithmetic */
 	  compartment_pos += compartment_len + padding;
@@ -397,6 +396,7 @@ int parse_reactions_file(struct state_struct *state,
 	  unsorted_cmpts->string = rcompartment;
 	  */
 	  unsorted_cmpts->string = compartment_pos;
+	  unsorted_cmpts->volume = 0.0;
 	  unsorted_cmpts->c_index  = cmpts;
 	  unsorted_cmpts += 1; /* Caution address arithmetic */
 	  compartment_pos += compartment_len + padding;
