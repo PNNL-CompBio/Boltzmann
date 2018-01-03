@@ -48,7 +48,6 @@ libboltzmann.a: $(SERIAL_OBJS1) $(SERIAL_OBJS2)
 	$(AR) $(ARFLAGS) libboltzmann.a read_initial_concentrations.o
 	$(AR) $(ARFLAGS) libboltzmann.a compartment_lookup.o
 	$(AR) $(ARFLAGS) libboltzmann.a molecules_lookup.o
-	$(AR) $(ARFLAGS) libboltzmann.a form_molecules_matrix.o
 	$(AR) $(ARFLAGS) libboltzmann.a compute_ke.o
 	$(AR) $(ARFLAGS) libboltzmann.a print_rxn_likelihoods_header.o
 	$(AR) $(ARFLAGS) libboltzmann.a print_free_energy_header.o
