@@ -101,23 +101,17 @@ specific language governing permissions and limitations under the License.
     This struct is allocated in alloc0.
 */
 struct state_struct {
-  int64_t agent_type;
-  int64_t state_length;         	
-  int64_t thread_id;
+  int64_t state_length; 
+  int64_t flattened_size;         	
   int64_t version_no;
+  int64_t agent_type;
+  int64_t mpi_rank;
+  int64_t thread_id;
+  int64_t current_counts_offset;
   double  x_coord;
   double  y_coord;
   double  z_coord;
-  double  epsilon; /* used in choose_rxn */
-  int64_t num_partitions;       	
-  int64_t two_way_data_length;  	
-  int64_t two_way_data_offset;  	
-  int64_t incoming_data_length; 	
-  int64_t incoming_data_offset; 	
-  int64_t auxiliary_data_length;
-  int64_t auxiliary_data_offset;
-  int64_t workspace_length;    	
-  int64_t workspace_offset;    	
+
   int64_t number_reactions;     	
   int64_t number_molecules;            
   int64_t nunique_molecules;     	
@@ -163,7 +157,6 @@ struct state_struct {
   int64_t base_reaction;
   int64_t number_base_reaction_reactants;
   int64_t print_ode_concs;
-
   /*
     sizes used to self-describe this state vector.
     only needed for parallel version multiple instantiations
@@ -172,112 +165,22 @@ struct state_struct {
   int64_t keyword_buffer_length;
   int64_t num_rxn_file_keywords;
   int64_t rxn_file_keyword_len;
-  int64_t per_keyword_pointer_size;
   int64_t max_param_line_len;
   int64_t reaction_titles_length;
   int64_t pathway_text_length;
   int64_t compartment_text_length;
   int64_t molecule_text_length;
   int64_t regulation_text_length;
-  int64_t per_molecule_double_size;
-  int64_t per_reaction_double_size;
-  int64_t per_compartment_double_size;
-  int64_t vgrng_state_size;
-  int64_t reaction_data_size;
-  int64_t molecule_data_size;
-  int64_t compartment_data_size;
-  int64_t reactions_matrix_size;
-  int64_t molecules_matrix_size;
-  int64_t reactions_ptrs_size;
-  int64_t molecules_ptrs_size;
-  int64_t reactions_matrix_field_size;
-  int64_t molecules_matrix_field_size;
-  int64_t file_names_size;
-  int64_t solvent_string_size;
+  int64_t run_workspace_bytes;
   /*
     offsets used to self-describe this state vector.
     only needed for parallel version multiple instantiations
     when using boltzmann_boot and boltzmann_load, with flatten_state.
   */
-  int64_t state_offset;
-  int64_t current_counts_offset;
-  int64_t bndry_flux_counts_offset;
-  int64_t net_lklhd_bndry_flux_offset;
-  int64_t net_likelihood_offset;
-  int64_t vgrng_offset;
-  int64_t vgrng2_offset;
-
-  int64_t dg0s_offset;
-  int64_t ke_offset;
-  int64_t rke_offset;
-  int64_t kss_offset;
-  int64_t kssr_offset;
-  int64_t kss_e_val_offset;
-  int64_t kss_u_val_offset;
-  int64_t molecule_dg0tfs_offset;
-  int64_t molecule_probabilities_offset;
-  int64_t molecule_chemical_potentials_offset;
-  int64_t count_to_conc_offset;
-  int64_t conc_to_count_offset;
-  int64_t activites_offset;
-  int64_t reg_constant_offset;
-  int64_t reg_exponent_offset;
-  int64_t reg_direction_offset;
-  int64_t reg_species_offset;
-  
-  int64_t reactions_offset;
-  int64_t sorted_molecules_offset;
-  int64_t sorted_compartments_offset;
-  int64_t reactions_matrix_offset;
-  int64_t molecules_matrix_offset;
-  int64_t reactions_ptrs_offset;
-  int64_t molecules_indices_offset;
-  int64_t compartment_indices_offset;
-  int64_t reactions_coefficients_offset;
-  int64_t text_indices_offset;
-  int64_t solvent_coefficients_offset;
-  int64_t molecules_ptrs_offset;
-  int64_t reaction_indices_offset;
-  int64_t molecules_coefficients_offset;
-
-  int64_t file_names_offset;
-  int64_t solvent_string_offset;
-  int64_t reaction_titles_offset;
-  int64_t pathway_text_offset;
-  int64_t compartment_text_offset;
-  int64_t molecules_text_offset;
-  int64_t regulation_text_offset;
-
-  int64_t unsorted_molecules_offset;
-  int64_t unsorted_compartments_offset;
-  int64_t keyword_buff_offset;
-  int64_t keyword_lengths_offset;
-  int64_t keywords_offset;
-  int64_t raw_molecules_text_offset;
-  int64_t transpose_workspace_offset;
-  int64_t future_counts_offset;
-  int64_t free_energy_offset;
-  int64_t forward_rxn_likelihood_offset;
-  int64_t reverse_rxn_likelihood_offset;
-  int64_t forward_rxn_log_likelihood_ratio_offset;
-  int64_t reverse_rxn_log_likelihood_ratio_offset;
-  int64_t rxn_likelihood_ps_offset;
-  int64_t reactant_term_offset;
-  int64_t product_term_offset;
-  int64_t rxn_q_offset;
-  int64_t recip_rxn_q_offset;
-  int64_t log_kf_rel_offset;
-  int64_t log_kr_rel_offset;
-  int64_t ode_counts_offset;
-  int64_t ode_concs_offset;
-  int64_t ode_forward_lklhds_offset;
-  int64_t ode_reverse_lklhds_offset;
-  int64_t base_reactant_indicator_offset;
-  int64_t base_reactants_offset;
-  int64_t rxn_has_flux_offset;
   /*
     Floating point scalars
   */
+  double  epsilon; /* used in choose_rxn */
   double  ideal_gas_r;
   double  temp_kelvin;
   double  avogadro;
@@ -424,6 +327,7 @@ struct state_struct {
   char *ode_lklhd_file;    /* max_filename_len */
   char *ode_bflux_file;    /* max_filename_len */
   char *concs_out_file;    /* max_filename_len */
+  char *aux_data_file;     /* max_filename_len */
   char *solvent_string;    /* Length is 64. Allocated in alloc0 */
 
   char *rxn_title_text;    /* rxn_title_text_length. Allocated in alloc2  */
@@ -484,7 +388,6 @@ struct state_struct {
   double  *rev_rxn_view_likelihoods; 
   int64_t *rxn_fire;                  /* (number_reactions * 2) + 2*/
   int  *rxn_mat_row;               /* (nunique_molecules) */
-
 
 
   FILE *rxn_fp;
