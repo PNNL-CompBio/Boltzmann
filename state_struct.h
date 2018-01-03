@@ -126,7 +126,7 @@ struct state_struct {
   int64_t warmup_steps;           
   int64_t record_steps;           
   int64_t print_output;
-  int64_t concs_or_counts;
+  int64_t print_concs_or_counts;
   int64_t number_compartments;  	
   int64_t nunique_compartments;  	
   int64_t align_len;
@@ -353,6 +353,7 @@ struct state_struct {
   char *ode_bflux_file;    /* max_filename_len */
   char *concs_out_file;    /* max_filename_len */
   char *aux_data_file;     /* max_filename_len */
+  char *ode_counts_file;   /* max_filename_len */
   char *solvent_string;    /* Length is 64. Allocated in alloc0 */
 
   char *rxn_title_text;    /* rxn_title_text_length. Allocated in alloc2  */
@@ -445,6 +446,9 @@ struct state_struct {
 
   FILE *ode_lklhd_fp;
   FILE *ode_bflux_fp;
+
+  FILE *ode_counts_fp;
+  FILE *aux_data_fp;
   /*
     Instrumentation.     
   */
