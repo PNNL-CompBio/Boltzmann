@@ -61,11 +61,8 @@ int compute_molecular_partition_probability(struct state_struct *state){
   int success;
   int i;
 
-  int ci;
   int nu_molecules;
-
   int print_output;
-  int padi;
 
   FILE *lfp;
   FILE *efp;
