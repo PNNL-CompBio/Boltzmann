@@ -28,7 +28,7 @@ specific language governing permissions and limitations under the License.
 int read_compartment_sizes(struct state_struct *state) {
   /*
     Read in the sizes of compartments.
-    Called by: boltzmann_init, boltzmann_boot.
+    Called by: species_init
     Calls:     fopen, fprintf, fflush, fgets, fclose
   */
   struct compartment_struct *compartments;
