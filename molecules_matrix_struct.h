@@ -25,7 +25,7 @@ specific language governing permissions and limitations under the License.
 struct molecules_matrix_struct {
   int64_t *molecules_ptrs;
   /*
-    rxn_indices indicate which reactiosn the molecules are present in 
+    rxn_indices indicate which reactions the molecules are present in 
     as reactants or and products.
   */
   int64_t *rxn_indices;
