@@ -45,7 +45,7 @@ void print_counts(struct state_struct *state, int step) {
                   
     
   */
-  double *current_concentrations;
+  double *current_counts;
   int unique_molecules;
   int j;
   int solvent_pos;
@@ -54,7 +54,7 @@ void print_counts(struct state_struct *state, int step) {
   FILE *counts_out_fp;
   counts_out_fp          = state->counts_out_fp;
   unique_molecules       = state->nunique_molecules;
-  current_concentrations = state->current_concentrations;
+  current_counts         = state->current_counts;
   solvent_pos            = (int)state->solvent_pos;
   if (counts_out_fp) {
     if (step < 0) {
@@ -64,7 +64,7 @@ void print_counts(struct state_struct *state, int step) {
     }
     for (j=0;j<unique_molecules;j++) {
       if (j != solvent_pos) {
-	fprintf(state->counts_out_fp,"\t%le",current_concentrations[j]);
+	fprintf(state->counts_out_fp,"\t%le",current_counts[j]);
       }
     }
     fprintf(state->counts_out_fp,"\n");
