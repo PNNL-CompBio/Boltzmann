@@ -41,6 +41,7 @@ int echo_params (FILE *lfp, struct state_struct *state) {
     fprintf(lfp,"state->output_file    	       = %s\n",state->output_file);
     fprintf(lfp,"state->log_file      	       = %s\n",state->log_file);
     fprintf(lfp,"state->counts_out_file        = %s\n",state->counts_out_file);
+    fprintf(lfp,"state->concs_out_file         = %s\n",state->concs_out_file);
     fprintf(lfp,"state->rxn_lklhd_file         = %s\n",state->rxn_lklhd_file);
     fprintf(lfp,"state->free_energy_file       = %s\n",state->free_energy_file);
     fprintf(lfp,"state->restart_file           = %s\n",state->restart_file);
@@ -57,7 +58,7 @@ int echo_params (FILE *lfp, struct state_struct *state) {
     fprintf(lfp,"state->dictionary_file        = %s\n",state->dictionary_file);
     fprintf(lfp,"state->ode_concs_file         = %s\n",state->ode_concs_file);
     fprintf(lfp,"state->ode_lklhd_file         = %s\n",state->ode_lklhd_file);
-    fprintf(lfp,"state->ode_flux_file          = %s\n",state->ode_flux_file);
+    fprintf(lfp,"state->ode_dconcs_file        = %s\n",state->ode_dconcs_file);
     fprintf(lfp,"state->ode_bflux_file         = %s\n",state->ode_bflux_file);
     fprintf(lfp,"state->net_lklhd_file         = %s\n",state->net_lklhd_file);
     fprintf(lfp,"state->nl_bndry_flx_file      = %s\n",state->nl_bndry_flx_file);
