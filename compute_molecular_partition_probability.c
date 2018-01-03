@@ -149,7 +149,11 @@ int compute_molecular_partition_probability(struct formation_energy_struct *fes)
       }
       cur_molecules += 1; /* Caution address arithmetic. */
     }
-    fprintf(lfp,"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n");
+    if (print_output) {
+      if (lfp) {
+	fprintf(lfp,"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n");
+      }
+    }
   }
   return (success);
 }
