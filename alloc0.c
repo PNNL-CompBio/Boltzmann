@@ -105,10 +105,7 @@ int alloc0(struct state_struct **state) {
 	      "alloc0: unable to allocate %ld bytes for state->param_buffer.\n",
 	      ask_for);
       fflush(stderr);
-    } else {
-      statep->param_key = statep->param_buffer + max_param_line_len;
-      statep->param_value = statep->param_key + (max_param_line_len>>1);
-    }
+    } 
     statep->usage = usage;
   }
   return(success);
