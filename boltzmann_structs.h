@@ -49,6 +49,7 @@ specific language governing permissions and limitations under the License.
   Data structures include files.
 */
 #include "super_state_struct.h"
+#include "boot_state_struct.h"
 #include "super_state_pointers_struct.h"
 #include "state_struct.h"
 #include "rxn_struct.h"
