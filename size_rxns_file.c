@@ -43,8 +43,10 @@ int size_rxns_file(struct state_struct *state) {
     max possiblie number of molecules, and
     total length of the file. Total length
     of compartment names.
-    Called by: boltzmann
-    Calls    : count_ws
+    Called by: boltzmann_init
+    Calls    : count_ws,
+               count_molecules,
+               fopen, fgets, fprintf, fflush (intrinsic)
   */
   int64_t rxn_buff_len;
   int64_t total_length;
