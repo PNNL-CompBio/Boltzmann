@@ -30,6 +30,8 @@ int boltzmann_init_core(struct state_struct *state) {
   */
   int success;
   int print_output;
+  int one;
+  int padi;
 
   print_output = state->print_output;
   success = io_size_init(state);
@@ -43,7 +45,8 @@ int boltzmann_init_core(struct state_struct *state) {
     sorting.
   */
   if (success) {
-    success = alloc2(state);
+    one = 1;
+    success = alloc2(state,one);
   }
   /*
     Read reactions file to count molecules and reactions,
