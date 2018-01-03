@@ -72,9 +72,9 @@ modelseed_json_mismatches               modelseed_2_json.c       "w"
 
 <init_conc_file>                        read_initial_concentrations.c "r"
 
-<kg2js_file>                            read_kg2js.c "r"
+<kg2js_file>                            read_kg2js.c "r" "kegg_2_json.srt"
 
-<ms2js_file>                            read_ms2js.c "r"
+<ms2js_file>                            read_ms2js.c "r" "modelseed_2_json.srt"
 
 <params_file>                           read_params.c "r"
 
@@ -163,15 +163,45 @@ struct rxn_struct {
 
 AUXILLIARY EXECUTABLES
 the auxilliary executables are (from grep CLINKER Makefile.body)
-ms2js_ids
-keg_ms_ids
-keg_ids
-boltzmann_boot_test
-deq
-sbml2bo
+
+kegg_ids: main program is in kegg_from_pseudoisomer.c
+    This routine produces a file of unique json_id's sorted by kegg_id, 
+    "kegg_2_json.srt" from the "pseudoisomer_dg0f.txt" file.
+    It also produces a sorted list of json_ids with space replaced by
+    underscores in "json_ids_with_spaces.txt".
+    It uses scratch files "unsorted_json_ids_with_spaces.txt", and
+    "unsorted_ids.txt".
+
+kegg_ms_ids: main program is in kegg_from_modelseed.c
+    This routine produces a file of unique modelseed_id's sorted by kegg_id,
+    "kegg_2_modelseed.srt" from the "modelseeed_compounds_db.txt" file.
+
+    It also produces a "modelseed_multiple_kegg_id.txt" file which is a list 
+    of modelseed id's having more than one kegg_id.
+    In the process it creates a sorted list of modelseed id's with spaces
+    replaced by underscores in "modelseed_ids_with_spaces.txt"
+    and creates scratch files: "unsorted_modelseed_ids_with_spaces.txt"
+    and "unsorted_modelseed_ids.txt"
+
+ms2js_ids: main program is in modelseed_2_json.c
+  creates the "modelseed_2_json.srt" file and the "modelseed_json_mismatches"
+  file from the "kegg_to_modelseed.srt" and "kegg_2_json.srt" files. 
+  It produces the scratch file "modelseed_2_json.dat"
 
 
+boltzmann_boot_test: main program is in boltzmann_boot_test.c
+    Program to test the boltzmann_boot interface for biocellion.
 
+deq: main program is in deq.c
+    Runs the boltzmann program through the initialization stage and replaces
+    the warm up loop with a call to the ode_solver resulting in a restart
+    file of initial concentrations for the achieved "steady state"
+
+sbml2bo: main program is in sbml2bo.c
+    Translates an sbml reaction file to boltzmann format rxns.dat file,
+    and generates a init_concs file if that information is available.
+    It uses the keg_2_json.srt and modelseed_2_json.srt files as 
+    well as the pseudoisomer file.
 
 
 General Characteristics
@@ -187,5 +217,5 @@ collisions with variables, and other macros.
 Calloc is used as the allocation routine
 No allocations in loops, allocate once free never that is an OS function
 (see exception for biocellion interface) 
-All struct types end in _struct and struct x is defined in x_struct.h
+All struct types end in _struct and struct x_struct is defined in x_struct.h
 
