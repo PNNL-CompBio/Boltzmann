@@ -67,7 +67,7 @@ int recover_solvent_coefficients (struct state_struct *state) {
       solvent_coef_count += 1;
     } else {
       molecule = (struct molecule_struct *)&sorted_molecules[index];
-      if (molecule->solvent && use_bulk_water) {
+      if (molecule->solvent && (use_bulk_water || (molecule->variable == 0))) {
 	rcoef[j] = scoef[solvent_coef_count];
 	solvent_coef_count += 1;
       }
