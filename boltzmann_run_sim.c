@@ -147,7 +147,7 @@ int boltzmann_run_sim(struct state_struct *state) {
   lthf           = state->lthf;
   lthl           = state->lthl;
   view_pos       = 0;
-  view_step      = lthf;
+  view_step      = 1;
   for (i=0;i<n_warmup_steps;i++) {
     /*
       Compute the reaction likelihoods - forward_rxn_likelihood, 
@@ -330,7 +330,7 @@ int boltzmann_run_sim(struct state_struct *state) {
 	/*
 	  Save the likelihoods on a per reaction basis.
 	*/
-	if ((view_step == 0) || (i == n_record_steps-1)) {
+	if ((view_step <= 0) || (i == n_record_steps-1)) {
 	  rxn_view_p = (double *)&rxn_view_data[view_pos];
 	  rrxn_view_p = (double *)&rrxn_view_data[view_pos];
 	  for (j = 0; j < num_rxns;j++) {
