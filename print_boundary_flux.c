@@ -35,13 +35,13 @@ void print_boundary_flux(struct state_struct *state) {
     state          G*I       state structure. No fields are modified.
                              Used fields are sorted_molecules, 
 			     bndry_flux_fp, sorted_cmpts,
-			     unqiue_molecules and bndry_flux_concs.
+			     unqiue_molecules and bndry_flux_counts.
   */
   struct molecule_struct *sorted_molecules;
   struct molecule_struct *molecule;
   struct molecule_struct *sorted_cmpts;
   struct molecule_struct *cur_cmpt;
-  double *bndry_flux_concs;
+  double *bndry_flux_counts;
   char *molecules_text;
   char *compartment_text;
   char *cmpt_string;
@@ -54,13 +54,13 @@ void print_boundary_flux(struct state_struct *state) {
   int j;
   int unique_molecules;
 
-  sorted_molecules = state->sorted_molecules;
-  bndry_flux_fp    = state->bndry_flux_fp;
-  sorted_cmpts     = state->sorted_cmpts;
-  unique_molecules = state->nunique_molecules;
-  bndry_flux_concs = state->bndry_flux_concs;
-  molecules_text   = state->molecules_text;
-  compartment_text = state->compartment_text;
+  sorted_molecules  = state->sorted_molecules;
+  bndry_flux_fp     = state->bndry_flux_fp;
+  sorted_cmpts      = state->sorted_cmpts;
+  unique_molecules  = state->nunique_molecules;
+  bndry_flux_counts = state->bndry_flux_counts;
+  molecules_text    = state->molecules_text;
+  compartment_text  = state->compartment_text;
   if (bndry_flux_fp) {
     fprintf(bndry_flux_fp,"final flux\n");
     molecule    = sorted_molecules;
@@ -81,10 +81,10 @@ void print_boundary_flux(struct state_struct *state) {
 	molecule_str = (char *)&molecules_text[molecule->string];
 	if (ci > 0) {
 	  fprintf(bndry_flux_fp,"%s:%s\t%le\n",molecule_str,
-		  cmpt_string,bndry_flux_concs[j]);
+		  cmpt_string,bndry_flux_counts[j]);
 	} else {
 	  fprintf(bndry_flux_fp,"%s\t%le\n",molecule_str,
-		  bndry_flux_concs[j]);
+		  bndry_flux_counts[j]);
 	}
       }
       molecule += 1; /* Caution address arithmetic.*/
