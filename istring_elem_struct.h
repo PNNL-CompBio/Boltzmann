@@ -49,14 +49,15 @@ struct istring_elem_struct {
 	          routine indicating whether or not this molecule is 
 		  held fixed in concentration.
 		  
-       The padi field is just a padding field to make the length a multiple
-       of 8.
+	g_index	  The global index of the molecule or compartment, as set 
+	          by the global reader.
+	
   */
   int64_t string;
   int  m_index;
   int  c_index;
   int  variable;
-  int  padi;
+  int  g_index;
 }
 ;
 #endif
