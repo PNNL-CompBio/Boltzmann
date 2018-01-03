@@ -43,7 +43,7 @@ int set_count_trans(struct state_struct *state) {
 
   success = 1;
   cur_molecule  = state->sorted_molecules;
-  compartments  = state->sorted_cmpts;
+  compartments  = state->sorted_compartments;
   nzm           = state->nunique_molecules;
   count_to_conc = state->count_to_conc;
   conc_to_count = state->conc_to_count;
