@@ -65,6 +65,7 @@ int create_output_filenames(struct state_struct *state) {
 
 
   output_filename_empty = 0;
+  output_filename_length = strlen(output_filename);
   if (output_filename_length == 0) {
     output_filename_empty = 1;
     /*
@@ -72,7 +73,6 @@ int create_output_filenames(struct state_struct *state) {
     */
     strcpy(output_filename,rxn_filename);
   }
-  output_filename_length = strlen(output_filename);
   no_slash_or_dot = 1;
   output_filename_base_length = -1;
   for (i=output_filename_length-1;((i>=1) && no_slash_or_dot);i--) {
