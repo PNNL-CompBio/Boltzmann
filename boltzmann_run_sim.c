@@ -41,6 +41,7 @@ specific language governing permissions and limitations under the License.
 #include "forward_rxn_conc_update.h"
 #include "reverse_rxn_conc_update.h"
 #include "rxn_log_likelihoods.h"
+#include "print_restart_file.h"
 
 #include "boltzmann_run_sim.h"
 int boltzmann_run_sim(struct state_struct *state) {
@@ -331,6 +332,9 @@ int boltzmann_run_sim(struct state_struct *state) {
 	}
       }
     } /* end for(i...) */
+    if (success) {
+      success = print_restart_file(state);
+    }
   }
   return(success);
 }
