@@ -266,9 +266,15 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
     success = alloc2(state);
   }
   if (success) {
+    /*
+      Read and parse the reactions file.
+    */
     success = parse_reactions_file(state);
   }
   if (success) {
+    /*
+      Echo the reactions to the log file.
+    */
     success = echo_reactions_file(state);
   }
   /*
@@ -279,6 +285,9 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
 				&state->sorted_cmpts,
 				state->number_compartments);
   }
+  /*
+    Then we extract the unique compartments.
+  */
   if (success) {
     success = unique_compartments(state);
   }
@@ -298,9 +307,15 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
 			    &state->sorted_molecules,
 			    state->number_molecules);
   }
+  /*
+    Then we extract the unique molecules.
+  */
   if (success) {
     success = unique_molecules(state);
   }
+  /*
+    Print the molecules dictionary.
+  */
   if (success) {
     nu_molecules = state->unique_molecules;
     success = print_molecules_dictionary(state);
@@ -321,16 +336,28 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
   if (success) {
     success = set_compartment_ptrs(state);
   }
+  /*
+    Read initial concentrations.
+  */
   if (success) {
     success = read_initial_concentrations(state);
   }
+  /*
+    Compute the molecules matrix.
+  */
   if (success) {
     success = form_molecules_matrix(state);
   }
+  /*
+    Compute the reaction ke's.
+  */
   if (success) {
     success = compute_ke(state);
   }
   if (success) {
+    /*
+      Print the header lines for the reaction likelihoods output file.
+    */
     fprintf(state->rxn_lklhd_fp,"iter\tentropy\tdg_forward\tforward_rxn_likelihood\treverse_rxn_likelihood\n");
     fprintf(state->rxn_lklhd_fp,"iter\tentropy\tdg_forward");
     reactions                   = state->reactions;
@@ -343,6 +370,9 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
   }
   if (success) {
     if (state->free_energy_format > 0) {
+      /*
+	Print header lines for the free energy file.
+      */
       if (state->free_energy_format == 1) {
 	fprintf(state->free_energy_fp,"negative_log_likelihoods\n");
       } else if (state->free_energy_format == 2) {
@@ -360,39 +390,6 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
       fflush(state->free_energy_fp);
     }
   }
-  /*
-  if (success) {
-    if (state->num_fixed_concs >0) {
-      if (bndry_flux_fp) {
-	cur_molecules = state->sorted_molecules;
-	cur_cmpts     = state->sorted_cmpts;
-	fprintf(bndry_flux_fp,"       iter       ");
-	cmpt_string = NULL;
-	oi          = -1;
-	for (i=0;i<nu_molecules;i++) {
-	  ci = cur_molecules->c_index;
-	  if (ci != oi) {
-	    oi = ci;
-	    cur_cmpt = (struct istring_elem_struct *)&(cur_cmpts[ci]);
-	    cmpt_string = cur_cmpt->string;
-	  }
-	  if (cur_molecules->variable == 0) {
-	    if (ci != -1) {
-	      fprintf(bndry_flux_fp,"\t%s:%s",
-		      cur_molecules->string,cmpt_string);
-	    } else {
-	      fprintf(bndry_flux_fp,"\t%s",cur_molecules->string);
-	    }
-	  }
-	  cur_molecules += 1; // Caution Address arithmetic.
-	}
-	fprintf(bndry_flux_fp,"\n");
-      } // end if (bndry_flux_fp).
-    
-    
-    } // end if (state->num_fixed_concs...) 
-  }
-  */
   if (success) {
     dg0s = state->dg0s;
     free_energy  = state->free_energy;
