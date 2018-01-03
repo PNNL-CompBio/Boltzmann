@@ -622,9 +622,7 @@ int parse_reactions_file(struct state_struct *state,
 	    // reaction terminator line
 	  */
 	  reaction->self_id = rxns;
-	  /*
-	  activities[rxns]  = reaction->activity;
-	  */
+	  activities[rxns]  = reaction->enzyme_level;
 	  enzyme_level[rxns] = reaction->enzyme_level;
 	  /*
 	    Since a compartment line could have come any where in
