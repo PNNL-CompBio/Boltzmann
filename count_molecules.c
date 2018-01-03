@@ -1,3 +1,4 @@
+
 /* count_molecules.c
 *******************************************************************************
 boltzmann
@@ -40,12 +41,11 @@ int count_molecules(char* molecules_line, int64_t *molecules_len) {
   int line_len;
   int pos;
 
-  int cur_pos;
-  int c;
-
   int molecules;
   int sl;
+
   int wsl;
+  int padi;
 
   line_len = strlen(molecules_line);
   molecules = 0;
