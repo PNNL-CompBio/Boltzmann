@@ -20,6 +20,7 @@ under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
-extern int form_molecules_matrix(struct state_struct *state,
-				 struct molecules_matrix_struct *molecules_matrix,
-				 int64_t *transpose_work);
+#ifndef _FORM_MOLECULES_MATRIX_H_
+#define _FORM_MOLECULES_MATRIX_H_ 1
+extern int form_molecules_matrix(struct state_struct *state);
+#endif
