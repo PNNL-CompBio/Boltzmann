@@ -206,7 +206,7 @@ int lr6_approximate_delta_concs(struct state_struct *state,
  
      For a reactant species the sign is merely flipped.    
 
-     NB one might want to factor out kr instead of kb above then we 
+     NB one might want to factor out kr instead of kf above then we 
      have 
               c = kr * (ke * R - P)
 
