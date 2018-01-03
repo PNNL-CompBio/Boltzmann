@@ -32,7 +32,7 @@ int rxns_init(struct state_struct *state) {
   */
   if (success) {
     success = sort_compartments(state->unsorted_cmpts,
-				state->sorted_cmpts,
+				state->sorted_compartments,
 				state->compartment_text,
 				state->number_compartments);
   }
