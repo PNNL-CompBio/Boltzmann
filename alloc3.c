@@ -33,8 +33,10 @@ int alloc3(struct state_struct *state) {
     compartment_pointers   	     (nunique_compartments + 1) 
     current_counts         	     (nunique_molecules)
     bndry_flux_counts      	     (nunique_molecules)
+    net_lklhd_bndry_flux             (nunique_molecules)
     count_to_conc          	     (nunique_molecules)
     conc_to_count          	     (nunique_molecules)
+    net_likelihood                   (number_reactions)
     dg0s                   	     (number_reactions)  
     ke                     	     (number_reactions) 
     kss                    	     (number_reactions)
@@ -118,6 +120,21 @@ int alloc3(struct state_struct *state) {
   }
   if (success) {
     /*
+      Allocate space for the net likelihod boudary flux buffer.
+      Used in tracking progress in the ode solver.
+    */
+    ask_for = ((int64_t)nu_molecules) * ((int64_t)sizeof(double));
+    usage += ask_for;
+    state->net_lklhd_bndry_flux =  (double *)calloc(one_l,ask_for);
+    if (state->net_lklhd_bndry_flux == NULL) {
+      fprintf(stderr,"alloc3: Error unable to allocate %lld bytes for "
+	      "net_lklhd_bndry_flux field\n",ask_for);
+      fflush(stderr);
+      success = 0;
+    }
+  }
+  if (success) {
+    /*
       Allocate space for the count_to_conc vector.
     */
     ask_for = ((int64_t)nu_molecules) * ((int64_t)sizeof(double));
@@ -144,7 +161,21 @@ int alloc3(struct state_struct *state) {
       success = 0;
     }
   }    
-
+  /*
+    Allocate space for the net_likelihood vector used in tracking
+    progress in the ode solver.
+  */
+  if (success) {
+    ask_for = ((int64_t)nrxns) * ((int64_t)sizeof(double));
+    usage += ask_for;
+    state->net_likelihood = (double *)calloc(one_l,ask_for);
+    if (state->net_likelihood == NULL) {
+      fprintf(stderr,"alloc3: Error unable to allocate %lld bytes for "
+	      "state->net_likelihood field.\n",ask_for);
+      fflush(stderr);
+      success = 0;
+    } 
+  }
   /*
     Allocate space for the change in Gibb's free energy.
   */
