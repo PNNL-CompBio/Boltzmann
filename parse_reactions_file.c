@@ -85,6 +85,7 @@ int parse_reactions_file(struct state_struct *state,
   double *reg_drctn;
   double *forward_rc;
   double *reverse_rc;
+  double *recip_coeffs;
   int64_t *keyword_lens;
   int64_t *rxn_ptrs;
   int64_t *molecules_indices;
@@ -230,6 +231,7 @@ int parse_reactions_file(struct state_struct *state,
     rxn_ptrs                    = rxns_matrix->rxn_ptrs;
     molecules_indices           = rxns_matrix->molecules_indices;
     coefficients                = rxns_matrix->coefficients;
+    recip_coeffs                = rxns_matrix->recip_coeffs;
     reaction                    = reactions;
     /*
       Initialize first reaction.
