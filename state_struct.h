@@ -202,6 +202,12 @@ struct state_struct {
   double  ntotal_opt;
   double  ntotal_exp;
   double  ode_t_final;
+  /* 
+    max_log_g0_sum should be set to maximum argument allowed for
+    exp function, for double precision about 704
+  */
+  double  max_log_g0_sum; 
+  double  dg0_scale_factor;
   /*
     Note that flux_scaling is K_f(base_rxn_reaction)*(product of reactant 
     concentrations in base reaction).
@@ -243,6 +249,7 @@ struct state_struct {
   */
   double  *dg0s;      /* len = number_reactions  */
   double  *ke;        /* len = number_reactions  */
+  double  *rke;       /* len = number_reactions  */
   double  *kss;       /* len = number_reactions  */
   double  *kssr;       /* len = number_reactions  */
   double  *kss_e_val; /* len = unique_molecules  */
@@ -344,8 +351,8 @@ struct state_struct {
   double *product_term;  /* product of reaction product concentrations, length number_reactions */
   double *rxn_q; /* Ratio  product_term to reactant_term.  */
   double *recip_rxn_q;/* Ratio of reactant_term to product_term. */
-  double *kf_rel;
-  double *kr_rel;
+  double *log_kf_rel;
+  double *log_kr_rel;
   double *ode_counts; /* counts from concentrations */
   double *ode_concs;  /* concentrations from counts. */
   double *ode_forward_lklhds;
