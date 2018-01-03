@@ -109,7 +109,7 @@ int read_initial_concentrations(struct state_struct *state) {
   molecule_name       = molecules_buffer + state->max_param_line_len;
   compartment_name    = molecule_name + (state->max_param_line_len>>1);
   sorted_molecules    = state->sorted_molecules;
-  sorted_compartments = state->sorted_cmpts;
+  sorted_compartments = state->sorted_compartments;
   counts              = state->current_counts;
   kss_e_val           = state->kss_e_val; 
   kss_u_val           = state->kss_u_val; 
