@@ -10,7 +10,6 @@ void print_net_likelihoods(struct state_struct *state,
     Caleld by: ode23tb
     Calls: fopen, fprint, fflush
   */
-  struct rxn_struct *reaction;
   int64_t number_reactions;
   int  i;
   int  padi;
