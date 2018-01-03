@@ -196,9 +196,9 @@ int boltzmann_flatten_scalars(struct state_struct *state,
   }
   word_pos += 1; /* 62 */
   if (direction == 0) {
-    lflattened[word_pos] = state->concs_or_counts;
+    lflattened[word_pos] = state->print_concs_or_counts;
   } else {
-    state->concs_or_counts = lflattened[word_pos];
+    state->print_concs_or_counts = lflattened[word_pos];
   }
   word_pos += 1; /* 63 */
   if (direction == 0) {
