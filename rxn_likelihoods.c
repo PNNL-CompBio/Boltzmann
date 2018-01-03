@@ -55,12 +55,42 @@ int rxn_likelihoods(double *concs,
 
     Called by: rxn_log_likelihoods
     Calls      rxn_likelihood
+    Arguments:
+     Name           TMF          Descripton  
+
+     concs          D*I          double precision vector of length number-
+                                 unique-molecules with the molecule
+				 concentrations to be use in the reaction
+				 likelihood computation.
+				 
+     rxn_likelihood_values       double precision vector of length 
+                    D*O          number_reactions with the reaction likelihood 
+		                 ratios for all of the reactions in the
+				 direction specified by rxn_direction.
+		                 
+ 				 
+
+     state          G*I		 The boltzmann state structure. No fields
+                                 of this structure are modified by this
+				 routine. The number_reactions, and
+				 reactions fields are used as inputs,
+				 and within the reactions field,
+				 the rxns_ptrs, coefficients, and 
+				 molecules_indices fields are used.
+
+     rxn_direction  ISI          Scalar integer. -1 for compute the likelihood
+                                 of the reverse reaction, +1 for compute the
+				 likelihood of the forward reaction.
+
+    Return value:
+     success        ISO          Always 1 for this function.
   */
   int success;
   int nrxns;
 
   int i;
   int padi;
+
   success           = 1;
   nrxns             = state->number_reactions;
   for (i=0;i<nrxns;i++) {
