@@ -3,13 +3,15 @@
 #include "echo_reactions_file.h"
 #include "print_molecules_dictionary.h"
 #include "print_dg0_ke.h"
+/*
 #include "print_reactions_matrix.h"
+*/
 
 #include "echo_inputs.h"
 int echo_inputs(struct state_struct *state) {
 /*
     Echo the paramters, reactions, molecules dictionary,
-    delta g0's, ke's and the reactions matrix to output files.
+    delta g0's, and the ke's to output files.
     
     Called by: boltzmann_init_core
     Calls:     echo_params,
@@ -62,9 +64,10 @@ int echo_inputs(struct state_struct *state) {
   }
   if (success) {
     /*
-      Create the rxns.mat file.
-    */
+      Create the rxns.mat file. print_reactions_matrix needs
+      rxn_mat_row which is only set by flatten_state.
     success = print_reactions_matrix(state);
+    */
   }
   return(success);
 }
