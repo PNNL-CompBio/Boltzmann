@@ -32,7 +32,7 @@ int recover_solvent_coefficients (struct state_struct *state) {
     Called by print_rxns_matrix.
     Calls:
   */
-  struct rxn_matrix_struct *rxns_matrix;
+  struct reactions_matrix_struct *rxns_matrix;
   int64_t num_molecules;
   int64_t *rcoef;
   int64_t *scoef;
