@@ -59,6 +59,9 @@ int boltzmann_run_sim(struct state_struct *state) {
 	       rxn_log_likelihoods,
   */
   struct vgrng_state_struct *vgrng_state;
+  struct istring_elem_struct *molecule;
+  struct istring_elem_struct *sorted_molecules;
+
   int64_t choice;
   double dchoice;
   double uni_multiplier;
@@ -82,6 +85,7 @@ int boltzmann_run_sim(struct state_struct *state) {
   double *rxn_view_p;
   double *rrxn_view_data;
   double *rrxn_view_p;
+  double *bndry_flux_concs;
   double cal_gm_per_joule;
   /*
   double *lthermo;
@@ -117,6 +121,7 @@ int boltzmann_run_sim(struct state_struct *state) {
   FILE *lfp;
   FILE *concs_out_fp;
   FILE *rxn_lklhd_fp;
+  FILE *bndry_flux_fp;
   success = 1;
   forward = 1;
   
@@ -130,6 +135,8 @@ int boltzmann_run_sim(struct state_struct *state) {
   nu             = state->unique_molecules;
   cconcs         = state->current_concentrations;
   fconcs         = state->future_concentrations;
+  bndry_flux_concs  = state->bndry_flux_concs;
+
   m_rt           = state->m_rt;
   rxn_view_data  = state->rxn_view_likelihoods;
   rrxn_view_data  = state->rev_rxn_view_likelihoods;
@@ -144,6 +151,8 @@ int boltzmann_run_sim(struct state_struct *state) {
   uni_multiplier = vgrng_state->uni_multiplier;
   concs_out_fp   = state->concs_out_fp;
   rxn_lklhd_fp   = state->rxn_lklhd_fp;
+  bndry_flux_fp  = state->bndry_flux_fp;
+  sorted_molecules = (struct istring_elem_struct *)state->sorted_molecules;
   lthf           = state->lthf;
   lthl           = state->lthl;
   view_pos       = 0;
@@ -312,11 +321,26 @@ int boltzmann_run_sim(struct state_struct *state) {
       /* 
 	 print the concentrations. 
       */
-      fprintf(state->concs_out_fp,"%d",i);
-      for (j=0;j<nu;j++) {
-	fprintf(state->concs_out_fp,"\t%le",cconcs[j]);
+      if (concs_out_fp) {
+	fprintf(concs_out_fp,"%d",i);
+	for (j=0;j<nu;j++) {
+	  fprintf(state->concs_out_fp,"\t%le",cconcs[j]);
+	}
+	fprintf(state->concs_out_fp,"\n");
       }
-      fprintf(state->concs_out_fp,"\n");
+      if (state->num_fixed_concs > 0) {
+	if (bndry_flux_fp) {
+	  fprintf(bndry_flux_fp,"%d",i);
+	  molecule = sorted_molecules;
+	  for (j=0;j<nu;j++) {
+	    if (molecule->variable == 0) {
+	      fprintf(state->bndry_flux_fp,"\t%le",bndry_flux_concs[j]);
+	    }
+	    molecule += 1; /* Caution address arithmetic.*/
+	  }
+	}
+	fprintf(state->bndry_flux_fp,"\n");
+      }
       /* 
 	 print the entropy, dg_forward and the reaction likelihoods, 
       */
