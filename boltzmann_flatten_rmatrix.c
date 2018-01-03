@@ -14,6 +14,7 @@ int boltzmann_flatten_rmatrix(struct state_struct *state,
     that is only used in setup.
   */
   struct reactions_matrix_struct *rmatrix;
+  double  *dfstate;
   int64_t *lfstate;
   int64_t  number_reactions;
   int64_t rxn_ptrs_len;
@@ -23,8 +24,9 @@ int boltzmann_flatten_rmatrix(struct state_struct *state,
   void *molecules_indices;
   void *compartment_indices;
   void *coefficients;
+  void *recip_coeffs;  
   void *solvent_coefficients;
-  
+
   int success;
   int word_pos;
 
@@ -39,8 +41,9 @@ int boltzmann_flatten_rmatrix(struct state_struct *state,
   word_pos = *word_pos_p;
 
   lfstate = (int64_t *)fstate;
+  dfstate = (double  *)fstate;
 
-  rmatrix_len = (int64_t)3 + (2*number_reactions)  + (3*nz);
+  rmatrix_len = (int64_t)3 + (2*number_reactions)  + (4*nz);
 
   word_pos += 1;
   if (direction == 0) {
@@ -90,6 +93,13 @@ int boltzmann_flatten_rmatrix(struct state_struct *state,
       memcpy(coefficients,rmatrix->coefficients,nz_len);
     } else {
       memcpy(rmatrix->coefficients,coefficients,nz_len);
+    }
+    word_pos += nz;
+    recip_coeffs = (void *)&dfstate[word_pos];
+    if (direction == 0) {
+      memcpy(recip_coeffs,rmatrix->recip_coeffs,nz_len);
+    } else {
+      memcpy(rmatrix->recip_coeffs,recip_coeffs,nz_len);
     }
     word_pos += nz;
     solvent_coefficients = (void *)&lfstate[word_pos];
