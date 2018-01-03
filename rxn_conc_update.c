@@ -61,7 +61,7 @@ int rxn_conc_update(int rxn_no, int direction,
   success           = 1;
   current_concs     = state->current_concentrations;
   future_concs      = state->future_concentrations;
-  nu_molecules      = state->unique_molecules;
+  nu_molecules      = state->nunique_molecules;
   sorted_molecules  = state->sorted_molecules;
   rxns_matrix       = state->reactions_matrix;
   rxn_ptrs          = rxns_matrix->rxn_ptrs;
