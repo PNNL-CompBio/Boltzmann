@@ -1114,6 +1114,9 @@ dgetrs.o: dgetrs.c dgetrs.h system_includes.h lsame.h dlaswp.h dtrsm.h
 
 boltzmann_test_save_load.o: boltzmann_test_save_load.c $(SERIAL_INCS) boltzmann_init.h boltzmann_save_state.h boltzmann_save_aux_data.h boltzmann_load_state.h boltzmann_load_aux_data.h open_output_files.h boltzmann_free_state.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_test_save_load.c
+
+boltzmann_free_state.o: boltzmann_free_state.c boltzmann_free_state.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_free_state.c
 			    
 boltzmann_save_state.o: boltzmann_save_state.c boltzmann_save_state.h $(SERIAL_INCS) boltzmann_flatten_state.h boltzmann_build_agent_data_block.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_save_state.c
