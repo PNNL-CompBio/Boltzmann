@@ -38,9 +38,6 @@ int run_init(struct state_struct *state, struct state_struct **flattened_state) 
   int print_output;
   int padi;
   
-  FILE *lfp;
-  FILE *efp;
-
   success = 1;
   print_output = state->print_output;
   activities = state->activities;
