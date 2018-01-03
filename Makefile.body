@@ -5,13 +5,16 @@ LUNWIND_DEPS = luwtb.h luwtb1.h luwtb2.h
 
 SERIAL_INCS = boltzmann_structs.h state_struct.h rxn_struct.h rxn_matrix_struct.h molecules_matrix_struct.h vgrng_state_struct.h $(TIMING_DEPS) $(LUNWIND_DEPS)
 
-SERIAL_OBJS = boltzmann.o alloc0.o read_params.o vgrng_init.o vgrng.o alloc1.o echo_params.o size_rxns_file.o init_rxn_file_keywords.o parse_rxn_file_keyword.o count_molecules.o count_ws.o count_nws.o is_a_coef.o alloc2.o parse_reactions_file.o upcase.o echo_reactions_file.o sort_istrings.o merge_istrings.o unique_molecules.o print_molecules_dictionary.o alloc3.o read_initial_concentrations.o molecules_lookup.o form_molecules_matrix.o 
+SERIAL_OBJS = boltzmann_drv.o boltzmann_init.o alloc0.o read_params.o vgrng_init.o vgrng.o alloc1.o echo_params.o size_rxns_file.o init_rxn_file_keywords.o parse_rxn_file_keyword.o count_molecules.o count_ws.o count_nws.o is_a_coef.o alloc2.o parse_reactions_file.o upcase.o echo_reactions_file.o sort_istrings.o merge_istrings.o unique_molecules.o print_molecules_dictionary.o alloc3.o read_initial_concentrations.o molecules_lookup.o form_molecules_matrix.o 
 
 boltzmann: $(SERIAL_OBJS) $(MMAP_OBJS) $(TIMING_LIB)
 	$(CLINKER) $(LFLAGS) -o boltzmann $(SERIAL_OBJS) $(MMAP_OBJS) $(TIMING_LIB)
 
-boltzmann.o: $(SERIAL_INCS) boltzmann.c alloc0.h read_params.h vgrng_init.o vgrng.o echo_params.h size_rxns_file.h alloc1.h alloc2.h parse_reactions_file.h echo_reactions_file.h sort_istrings.h unique_molecules.h print_molecules_dictionary.h alloc3.h read_initial_concentrations.h form_molecules_matrix.h vgrng_init.h vgrng.h
-	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann.c
+boltzmann_drv.o: $(SERIAL_INCS) boltzmann_drv.c boltzmann_init.h 
+	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_drv.c
+
+boltzmann_init.o: $(SERIAL_INCS) boltzmann_init.c boltzmanb_init.h alloc0.h read_params.h vgrng_init.o vgrng.o echo_params.h size_rxns_file.h alloc1.h alloc2.h parse_reactions_file.h echo_reactions_file.h sort_istrings.h unique_molecules.h print_molecules_dictionary.h alloc3.h read_initial_concentrations.h form_molecules_matrix.h vgrng_init.h vgrng.h compute_ke.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_init.c
 
 alloc0.o: $(SERIAL_INCS) alloc0.c alloc0.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c alloc0.c
