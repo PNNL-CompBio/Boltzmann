@@ -44,7 +44,10 @@ int print_molecules_dictionary(struct state_struct *state) {
   struct istring_elem_struct *cur_molecules;
   struct istring_elem_struct *cur_cmpts;
   struct istring_elem_struct *cur_cmpt;
+  char *compartment_text;
+  char *molecules_text;
   char *cmpt_string;
+  char *molecule;
   int nzr;
   int i;
 
@@ -57,10 +60,12 @@ int print_molecules_dictionary(struct state_struct *state) {
   FILE *dict_fp;
   FILE *conc_fp;
   success = 1;
-  nu_molecules     = state->unique_molecules;
+  nu_molecules     = state->nunique_molecules;
   cur_molecules = state->sorted_molecules;
   cur_cmpts     = state->sorted_cmpts;
   conc_fp       = state->concs_out_fp;
+  molecules_text = state->molecules_text;
+  compartment_text = state->compartment_text;
   dict_fp = fopen("molecules.dict","w+");
   if (dict_fp == NULL) {
     fprintf(stderr,
@@ -81,17 +86,18 @@ int print_molecules_dictionary(struct state_struct *state) {
     fprintf(conc_fp,"iter");
     for (i=0;i<nu_molecules;i++) {
       ci = cur_molecules->c_index;
+      molecule    = (char *)&molecules_text[cur_molecules->string];
       if (ci != oi) {
 	oi = ci;
 	cur_cmpt = (struct istring_elem_struct *)&(cur_cmpts[ci]);
-	cmpt_string = cur_cmpt->string;
+	cmpt_string = (char *)&compartment_text[cur_cmpt->string];
       }
       if (ci != -1) {
-	fprintf(dict_fp,"%d %s %s\n",i,cur_molecules->string,cmpt_string);
-	fprintf(conc_fp,"\t%s:%s",cur_molecules->string,cmpt_string);
+	fprintf(dict_fp,"%d %s %s\n",i,molecule,cmpt_string);
+	fprintf(conc_fp,"\t%s:%s",molecule,cmpt_string);
       } else {
-	fprintf(dict_fp,"%d %s\n",i,cur_molecules->string);
-	fprintf(conc_fp,"\t%s",cur_molecules->string);
+	fprintf(dict_fp,"%d %s\n",i,molecule);
+	fprintf(conc_fp,"\t%s",molecule);
       }
       cur_molecules += 1; /* Caution address arithmetic. */
     }
