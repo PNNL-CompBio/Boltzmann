@@ -75,7 +75,7 @@ void crs_column_sort_rows(int m,
     Now we transpose back
   */
   for (j=0;j<n;j++) {
-    for (i=iat[j];i<iat[j+1];j++) {
+    for (i=iat[j];i<iat[j+1];i++) {
       row = jat[i];
       val = at[i];
       tpos = ia[row];
