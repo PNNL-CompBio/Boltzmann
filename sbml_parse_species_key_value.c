@@ -84,8 +84,8 @@ int sbml_parse_species_key_value(struct sbml2bo_struct *state,
   }
   max_key_len = 1023;
   max_val_len = 1023;
-  pseudo_state.compartment_text = state->compartment_text;
-  pseudo_state.sorted_cmpts = state->sorted_compartments;
+  pseudo_state.compartment_text     = state->compartment_text;
+  pseudo_state.sorted_compartments  = state->sorted_compartments;
   pseudo_state.nunique_compartments = state->num_cmpts;
 
   tl = sbml_read_key_value(line,key,value,max_key_len,max_val_len);
