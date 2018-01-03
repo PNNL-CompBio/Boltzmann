@@ -46,6 +46,35 @@ int parse_reactions_file(struct state_struct *state) {
     total length of the file, total length
     of compartment names, total length of pathway_names,
     total_length reaction titles.
+
+    This routine fills the unsorted_molecules and unsorted_cmpts
+    istring_elem structures. 
+    It also sets the molecules_indices, coefficients,
+    and text fields of the reactions matrix.
+   
+    An istring_elem_struct has 4 fields. The first three are set by 
+    this routine.
+    
+        string  - pointer to a null terminated string that
+	          contains the molecule or compartment string.
+	m_index - If string points to a molecule, m_index
+         	  is the ordinal position of the molecule in the
+		  LEFT and RIGHT lines of the reactions.dat input file.
+		  If the string is a compartment name m_index will be -1.
+        c_index - If the string points to a compartment, c_indix is the
+	          ordinal position of the compartment name in the
+		  COMPARTMENT, LEFT_COMPARTMENT, RIGHT_COMPARTMENT line, or
+		  colon preceded fields of the LEFT and RIGHT lines in 
+		  the reactions.dat input file.
+		  If the string points to a molecule and the molecule
+		  is in a compartment, c_index is set to the ordinal number
+		  of the containing compartment, otherwise if the 
+		  molecule is not in a compartment its c_index is -1.
+
+	variable - An indicator set by the read_initial_concentrations
+	          routine indicating whether or not this molecule is 
+		  held fixed in concentration.
+
     Called by: boltzmann_init
     Calls    : parse_rxn_file_keyword
                count_ws
