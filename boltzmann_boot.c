@@ -151,15 +151,15 @@ int boltzmann_boot(char *param_file_name,
   struct state_struct local_state;
   struct vgrng_state_struct *vgrng_state;
   struct vgrng_state_struct *vgrng2_state;
-  struct istring_elem_struct ies;
-  struct istring_elem_struct *istrings;
-  struct istring_elem_struct *local_compartment;
-  struct istring_elem_struct *compartment_sort_ws;
-  struct istring_elem_struct *molecule_sort_ws;
-  struct istring_elem_struct *sorted_compartments;
-  struct istring_elem_struct *unsorted_compartments;
-  struct istring_elem_struct *sorted_molecules;
-  struct istring_elem_struct *unsorted_molecules;
+  struct molecule_struct mes;
+  struct molecule_struct *molecules;
+  struct molecule_struct *compartments;
+  struct molecule_struct *compartment_sort_ws;
+  struct molecule_struct *molecule_sort_ws;
+  struct molecule_struct *sorted_compartments;
+  struct molecule_struct *unsorted_compartments;
+  struct molecule_struct *sorted_molecules;
+  struct molecule_struct *unsorted_molecules;
   struct formation_energy_struct *formation_energies;
 
   double *dg0s;
@@ -242,7 +242,6 @@ int boltzmann_boot(char *param_file_name,
   int64_t msi;
   int64_t compartment_space;
   int64_t molecule_space;
-  int64_t istring_space;	  
   int64_t pad_size;
   int64_t cmpt_size;
   int64_t mlcl_size;
@@ -746,7 +745,7 @@ int boltzmann_boot(char *param_file_name,
       which we also fill in the global compartment numbers from
       the compartment map.
     	we need to parse the sorted_molecules and sorted_compartment
-    	istring_elem_struct components of the local states, so we
+    	molecule_struct components of the local states, so we
     	need to know their maximum size: unique_molecules_max
     	 and unique_compartments_max.
 
@@ -772,9 +771,9 @@ int boltzmann_boot(char *param_file_name,
     }
   }
   if (success) {
-    ask_for = (int64_t)(2*sizeof(ies)) * 
+    ask_for = (int64_t)(2*sizeof(mes)) * 
       global_number_of_molecules;
-    molecule_sort_ws = (struct istring_elem_struct *)calloc(one_l,ask_for);
+    molecule_sort_ws = (struct molecule_struct *)calloc(one_l,ask_for);
     if (molecule_sort_ws == NULL) {
       fprintf(stderr,"boltzmann_boot: Error could not allocate %ld "
 	      "bytes for molecule_sort_ws\n",ask_for);
@@ -783,9 +782,9 @@ int boltzmann_boot(char *param_file_name,
     }
   }
   if (success) {
-    ask_for = (int64_t)(2*sizeof(ies)) * 
+    ask_for = (int64_t)(2*sizeof(mes)) * 
       global_number_of_compartments;
-    compartment_sort_ws = (struct istring_elem_struct*)calloc(one_l,ask_for);
+    compartment_sort_ws = (struct molecule_struct*)calloc(one_l,ask_for);
     if (compartment_sort_ws == NULL) {
       fprintf(stderr,"boltzmann_boot: Error could not allocate %ld "
 	      "bytes for compartment_sort_ws\n",ask_for);
@@ -883,19 +882,19 @@ int boltzmann_boot(char *param_file_name,
       }
       if (success) {
 	/*
-	  read in the istrings for the compartments.
+	  read in the meta data  for the compartments.
 	*/
 	nunique_compartments = local_state.nunique_compartments;
-	istring_space = nunique_compartments * sizeof(ies);
+	compartment_space = nunique_compartments * sizeof(mes);
 	lseek_pos = offset + local_state.sorted_compartments_offset_in_bytes;
 	lseek(tmp_state_fd,lseek_pos,whence);
 	ci_base = compartment_list_starts[i];
-	istrings = (struct istring_elem_struct *)&compartment_sort_ws[ci_base];
-	nr = read(tmp_state_fd,istrings,istring_space);
-	if (nr != istring_space) {
+	compartments = (struct molecule_struct *)&compartment_sort_ws[ci_base];
+	nr = read(tmp_state_fd,compartments,compartment_space);
+	if (nr != compartment_space) {
 	  fprintf(stderr,"boltzmann_boot: Error i = %ld, could not read "
-		  "%ld bytes for sorted compartments istrings\n",i,
-		  istring_space);
+		  "%ld bytes for sorted compartments meta data\n",i,
+		  compartment_space);
 	  fflush(stderr);
 	  success = 0;
 	} else {
@@ -903,32 +902,31 @@ int boltzmann_boot(char *param_file_name,
 	    Set up global_compartment string pointers, from the
 	    local_compartment string field.
 	  */
-	  local_compartment = istrings;
 	  for (j=0;j<nunique_compartments;j++) {
-	    istrings->c_index = ci_base + j;
-	    istrings->g_index = i;
-	    istrings->string += cws_pos;
-	    istrings++; /* Caution address arithmetic. */
+	    compartments->c_index = ci_base + j;
+	    compartments->g_index = i;
+	    compartments->string += cws_pos;
+	    compartments++; /* Caution address arithmetic. */
 	  }
 	  cws_pos += compartment_space;
 	}
       }
       if (success) {
 	/*
-	  read in the istrings for the molecules;
+	  read in the metadata for the molecules;
 	*/
 	nunique_molecules = local_state.nunique_molecules;
-	istring_space = nunique_molecules * sizeof(ies);
+	molecule_space = nunique_molecules * sizeof(mes);
 	lseek_pos = offset + local_state.sorted_molecules_offset_in_bytes;
 	lseek(tmp_state_fd,lseek_pos,whence);
 	mi_base = molecule_map_starts[i];
-	istrings = (struct istring_elem_struct *)&molecule_sort_ws[mi_base];
+	molecules = (struct molecule_struct *)&molecule_sort_ws[mi_base];
 	nr = read(tmp_state_fd,
-		  (struct istring_elem_struct *)istrings,istring_space);
-	if (nr != istring_space) {
+		  (struct molecule_struct *)molecules,molecule_space);
+	if (nr != molecule_space) {
 	  fprintf(stderr,"boltzmann_boot: Error i = %ld, could not read "
-		  "%ld bytes for sorted molecules istrings\n",i,
-		  istring_space);
+		  "%ld bytes for sorted molecules meta data\n",i,
+		  molecule_space);
 	  fflush(stderr);
 	  success = 0;
 	} else {
@@ -937,10 +935,10 @@ int boltzmann_boot(char *param_file_name,
 	    local_molecule string field.
 	  */
 	  for (j=0;j<nunique_molecules;j++) {
-	    istrings->m_index = mi_base + j;
-	    istrings->string  += mws_pos;
-	    istrings->g_index = i;
-	    istrings++; /* Caution address arithmetic. */
+	    molecules->m_index = mi_base + j;
+	    molecules->string  += mws_pos;
+	    molecules->g_index = i;
+	    molecules++; /* Caution address arithmetic. */
 	  }
 	  mws_pos += molecule_space;
 	}
@@ -950,16 +948,16 @@ int boltzmann_boot(char *param_file_name,
   }
   /*
     at this juncture 
-    compartment_sort_ws is a vector of istring_elem_struct's of length 
+    compartment_sort_ws is a vector of molecule_struct's of length 
     2*global_number_of_compartments, the first half is filled
-    with istrings where the c_index field is the global index 
+    with compartments where the c_index field is the global index 
     of the compartment, the g_index field is the reaction file number
     and the string field is an offset into the compartment_text_ws array.
     
     Similarly
-    molecule_sort_ws in a vector of istring_elem_struct's of length
+    molecule_sort_ws in a vector of molecule_struct's of length
     2*global_number_of_molecules, the first half is filled with
-    with istrings where the m_index field is the global index of the
+    with molecules where the m_index field is the global index of the
     molecule, the c_index field is the local compartment number
     within the reaction file, the g_index field is the reaction file 
     number, and the string field is an offset into the molecule_text_ws
@@ -970,8 +968,8 @@ int boltzmann_boot(char *param_file_name,
     are already sorted so its just a matter of merging these lists.
   */
   if (success) {
-    unsorted_compartments = (struct istring_elem_struct *)&compartment_sort_ws[0];
-    sorted_compartments   = (struct istring_elem_struct *)&compartment_sort_ws[global_number_of_compartments];
+    unsorted_compartments = (struct molecule_struct *)&compartment_sort_ws[0];
+    sorted_compartments   = (struct molecule_struct *)&compartment_sort_ws[global_number_of_compartments];
     success = sort_global_compartments(&unsorted_compartments,
 				       &sorted_compartments,
 				       compartment_list_starts,
@@ -998,19 +996,19 @@ int boltzmann_boot(char *param_file_name,
       Replace the local compartment indices with global compartment
       indices in the unsorted_molecules.
     */
-    istrings = (struct istring_elem_struct *)&molecule_sort_ws[0];
+    molecules = (struct molecule_struct *)&molecule_sort_ws[0];
     for (i=0;i<global_number_of_molecules;i++) {
       /*
-	compartment_list is a list of all unique compartment names with in
+	compartment_list is a list of all unique compartment names within
 	each reaction file by reaction file.
-	istrings->g_index is the reaction_file number.
-	compartment_list_starts[istrings->g_index] points to where
-	in the compartment_list to start, and istrings->c_index gives
+	molecules->g_index is the reaction_file number.
+	compartment_list_starts[molecules->g_index] points to where
+	in the compartment_list is to start, and molecules->c_index gives
 	the offset from the start.
       */
-      istrings->c_index = compartment_list[compartment_list_starts[istrings->g_index] + istrings->c_index];
-      compartment_map[i] = istrings->c_index;
-      istrings++; /* Caution address arithmetic */
+      molecules->c_index = compartment_list[compartment_list_starts[molecules->g_index] + molecules->c_index];
+      compartment_map[i] = molecules->c_index;
+      molecules++; /* Caution address arithmetic */
     }
   }
   /*
@@ -1018,8 +1016,8 @@ int boltzmann_boot(char *param_file_name,
     are already sorted so its just a matter of merging these lists.
   */
   if (success) {
-    unsorted_molecules = (struct istring_elem_struct *)&molecule_sort_ws[0];
-    sorted_molecules   = (struct istring_elem_struct *)&molecule_sort_ws[global_number_of_molecules];
+    unsorted_molecules = (struct molecule_struct *)&molecule_sort_ws[0];
+    sorted_molecules   = (struct molecule_struct *)&molecule_sort_ws[global_number_of_molecules];
     success = sort_global_molecules(&unsorted_molecules,
 				    &sorted_molecules,
 				    molecule_map_starts,
@@ -1085,28 +1083,28 @@ int boltzmann_boot(char *param_file_name,
   }
   if (success) {
     cws_pos = (int64_t)0;
-    istrings = sorted_compartments;
+    compartments = sorted_compartments;
     for (i=0;i<unique_global_compartments;i++) {
-      cstring   = (char*)&compartment_text_ws[istrings->string];
+      cstring   = (char*)&compartment_text_ws[compartments->string];
       cmpt_size = (int64_t)strlen(cstring) + one_l;
       pad_size = (align_len  - (cmpt_size & align_mask)) & align_mask;
       strcpy((char*)&(compartment_text[cws_pos]),cstring);
       compartment_names[i] = cws_pos;
-      istrings->string = cws_pos;
+      compartments->string = cws_pos;
       cws_pos += (cmpt_size + pad_size);
-      istrings++; /* Caution address arithmetic */
+      compartments++; /* Caution address arithmetic */
     }
     mws_pos = (int64_t)0;
-    istrings = sorted_molecules;
+    molecules = sorted_molecules;
     for (i=0;i<unique_global_molecules;i++) {
-      mstring = (char*)&molecule_text_ws[istrings->string];
+      mstring = (char*)&molecule_text_ws[molecules->string];
       mlcl_size = (int64_t)strlen(mstring) + one_l;
       pad_size = (align_len  - (mlcl_size & align_mask)) & align_mask;
       strcpy((char*)&(molecule_text[mws_pos]),mstring);
       molecule_names[i] = mws_pos;
-      istrings->string = mws_pos;
+      molecules->string = mws_pos;
       mws_pos += (mlcl_size + pad_size);
-      istrings++; /* Caution address arithmetic */
+      molecules++; /* Caution address arithmetic */
     }
     compartment_text_length = cws_pos;
     molecule_text_length = mws_pos;
