@@ -46,7 +46,7 @@ double rxn_likelihood_postselection(double *counts,
     to sort reactant and product concentrations and take the product of 
     successive quotients which we would expect to be well scaled.
 
-    Called by: choose_rxn
+    Called by: metropolis
     Calls      fprintf, fflush, log (intrinsic)
   */
   struct rxn_matrix_struct *rxns_matrix;
