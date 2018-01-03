@@ -36,7 +36,7 @@ specific language governing permissions and limitations under the License.
 int compute_molecular_partition_probability(struct formation_energy_struct *fes){
   /*
     Compute the partition_funcs and probabilities arrays (length unique_molecules)
-    Called by: boltzmann_init
+    Called by: compute_standard_energies
     Calls:     exp,fopen,fprintf,fflush
   */
 
