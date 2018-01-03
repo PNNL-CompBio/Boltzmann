@@ -290,10 +290,10 @@ int alloc3(struct state_struct *state) {
   if (success) {
     ask_for = ((int64_t)nrxns) * ((int64_t)sizeof(double));
     usage += ask_for;
-    state->current_rxn_log_likelihood_ratio = (double *)calloc(one_l,ask_for);
-    if (state->current_rxn_log_likelihood_ratio == NULL) {
+    state->forward_rxn_log_likelihood_ratio = (double *)calloc(one_l,ask_for);
+    if (state->forward_rxn_log_likelihood_ratio == NULL) {
       fprintf(stderr,"alloc3: Error unable to allocate %ld bytes for "
-	      "state->current_rxn_log_likelihood_ratio field.\n",ask_for);
+	      "state->forward_rxn_log_likelihood_ratio field.\n",ask_for);
       fflush(stderr);
       success = 0;
     } 
@@ -301,10 +301,10 @@ int alloc3(struct state_struct *state) {
   if (success) {
     ask_for = ((int64_t)nrxns) * ((int64_t)sizeof(double));
     usage += ask_for;
-    state->future_rxn_log_likelihood_ratio = (double *)calloc(one_l,ask_for);
-    if (state->future_rxn_log_likelihood_ratio == NULL) {
+    state->reverse_rxn_log_likelihood_ratio = (double *)calloc(one_l,ask_for);
+    if (state->reverse_rxn_log_likelihood_ratio == NULL) {
       fprintf(stderr,"alloc3: Error unable to allocate %ld bytes for "
-	      "state->future_rxn_log_likelihood_ratio field.\n",ask_for);
+	      "state->reverse_rxn_log_likelihood_ratio field.\n",ask_for);
       fflush(stderr);
       success = 0;
     } 
