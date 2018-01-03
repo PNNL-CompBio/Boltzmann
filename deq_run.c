@@ -31,6 +31,7 @@ specific language governing permissions and limitations under the License.
 #include "form_molecules_matrix.h"
 */
 #include "alloc7.h"
+#include "init_base_reactants.h"
 #include "update_rxn_log_likelihoods.h"
 #include "ode_print_concs_header.h"
 #include "ode_print_flux_header.h"
@@ -56,6 +57,7 @@ int deq_run(struct state_struct *state) {
     Called by: deq, boltzmann_run
     Calls:     flatten_state,
 	       alloc7,
+	       init_base_reactants,
 	       update_rxn_log_likelihoods
 	       ode_solver
   */ 
@@ -73,7 +75,6 @@ int deq_run(struct state_struct *state) {
   double *activities;
   double *no_op_likelihood;
   double *flux_vector;
-  double *flux_jacobian;
   double *reactant_term;
   double *product_term;
   double *p_over_r;
@@ -173,25 +174,14 @@ int deq_run(struct state_struct *state) {
   noop_rxn               = number_reactions + number_reactions;
   normcontrol            = 0;
   /*
-    NB alloc4 and form_molecules matrix are now called from 
-    boltzmann_init_core
-    Allocate space for forming the molecules matrix.
-  if (success) {
-    success = alloc4(state,&molecules_matrix,&transpose_work);
-  }
-  */
-  /*
-    Compute the molecules matrix.
-  if (success) {
-    success = form_molecules_matrix(state,molecules_matrix,transpose_work);
-  }
-  */
-  /*
-    We need to allocate space for a flux vector ( lenth = num_species)
-    The Jacobian of the flux vector (length = num_species * num_species);
-    the reactant_term vector (length = num_rxns), 
-    product_term_vector (length = num_rxns),  p_over_r, r_over_p both of 
-    length num_rxns.
+    We need to allocate space needed by the derivative approximation routine
+    ode_counts (length = num_species)
+    reactant_term vector (length = num_rxns), 
+    product_term_vector (length = num_rxns),  
+    p_over_r, (length = num_rxns),  
+    r_over_p, (length = num_rxns),  
+    ode_forward_lklhds (length = num_rxns)
+    ode_reverse_lklhds (length = num_rxns)
   */
   if (success) {
     success = alloc7(state);
@@ -201,17 +191,23 @@ int deq_run(struct state_struct *state) {
   */
   if (success) {
     flux_vector = state->flux_vector;
-    flux_jacobian = state->flux_jacobian;
     reactant_term = state->reactant_term;
     product_term  = state->product_term;
     p_over_r       = state->p_over_r;
     r_over_p       = state->r_over_p;
-    concs          = state->concs;
+    concs          = state->ode_concs;
     dg0s = state->dg0s;
     free_energy  = state->free_energy;
     for (i=0;i<state->number_reactions;i++) {
       free_energy[i] = dg0s[i];
     }
+  }
+  /*
+    Fill the base_reactant_indicator, and base_reactants vectors,
+    and set number_base_reaction_reactants.
+  */
+  if (success) {
+    success = init_base_reactants(state);
   }
   /*
     Compute concentrations from counts;
@@ -247,7 +243,7 @@ int deq_run(struct state_struct *state) {
       print_net_likelihood_header(state);
       print_net_lklhd_bndry_flux_header(state);
     }
-    success = ode_solver(state,counts,htry,nonnegative,normcontrol,
+    success = ode_solver(state,concs,htry,nonnegative,normcontrol,
 			 print_ode_concs,solver_choice);
   }
   /*
@@ -258,6 +254,7 @@ int deq_run(struct state_struct *state) {
     Convert counts back to integers,
   */
   for (i=0;i<unique_molecules;i++) {
+    counts[i] = concs[i] * conc_to_count[i];
     if (counts[i] <= 0.0) {
       counts[i] = (double)((int64_t)(counts[i] + 0.5));
     }
