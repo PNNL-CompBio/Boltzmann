@@ -29,7 +29,7 @@ void print_rxn_likelihoods_header(struct state_struct *state) {
     Called by: run_init .
     Calls    : fprintf,fflush.
   */
-  struct rxn_struct *reactions;
+  struct reaction_struct *reactions;
   double *kss;
   double *kssr;
   char *rxn_title_text;
