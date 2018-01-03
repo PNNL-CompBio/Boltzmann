@@ -57,7 +57,6 @@ int choose_rxn(struct state_struct *state,
   struct vgrng_state_struct *vgrng2_state;
   double *forward_rxn_likelihood;
   double *reverse_rxn_likelihood;
-  double *activities;
   double *future_counts;
   double *ke;
   double dchoice;
@@ -87,7 +86,6 @@ int choose_rxn(struct state_struct *state,
   number_reactions       = (int)state->number_reactions;
   forward_rxn_likelihood = state->forward_rxn_likelihood;
   reverse_rxn_likelihood = state->reverse_rxn_likelihood;
-  activities             = state->activities;
   future_counts          = state->future_counts;
   vgrng2_state           = state->vgrng2_state;
   use_metropolis         = (int)state->use_metropolis;
