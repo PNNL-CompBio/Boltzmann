@@ -6,7 +6,7 @@ int boltzmann_flatten_aux_name(struct state_struct *state,
   /* 
     Transfer auxiliary file name, to or from flattened state.
 
-    While there are only 7 external constants right now, we 
+    While there are only 9 external constants right now, we 
     allocate space for 10 for ease of expansion.
     Word_pos is assumed to point to the last set/read word position 
     in flattened.
