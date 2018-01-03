@@ -8,7 +8,14 @@ int update_rxn_likelihoods(struct state_struct *state, double *counts,
     Update the forward_rxn_likelihood, and reverse_rxn_likelihood
     vectors input counts field.
 
-    Called by: deq_run, lr_approximate_delta_concs
+    Called by: deq_run, print_concs_fluxes,
+               lr_approximate_delta_concs,
+	       lr1_approximate_delta_concs,
+	       lr2_approximate_delta_concs,
+	       lr3_approximate_delta_concs,
+	       lr4_approximate_delta_concs,
+	       lr5_approximate_delta_concs,
+	       
     Calls      rxn_likelihoods
 
     Arguments:
