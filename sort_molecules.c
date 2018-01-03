@@ -34,6 +34,7 @@ specific language governing permissions and limitations under the License.
 #include "sort_molecules.h"
 int sort_molecules(struct istring_elem_struct **unsorted_molecules,
 		   struct istring_elem_struct **sorted_molecules,
+		   char *molecules_text,
 		   int n) {
   /*
     Sort the uppercase istring names.
@@ -72,7 +73,9 @@ int sort_molecules(struct istring_elem_struct **unsorted_molecules,
 	if (l2 > step) l2 = step;
 	merge_molecules((struct istring_elem_struct *)&u_molecules[j],
 			(struct istring_elem_struct *)&u_molecules[j+step],
-			(struct istring_elem_struct *)&s_molecules[j],l1,l2);
+			(struct istring_elem_struct *)&s_molecules[j],
+			molecules_text,
+			l1,l2);
       }
       /* Now if the last group is <= step they just need to be copied
 	 in to the sorted list.
