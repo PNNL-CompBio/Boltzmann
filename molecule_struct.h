@@ -22,10 +22,11 @@ specific language governing permissions and limitations under the License.
 #define __MOLECULE_STRUCT__
 struct molecule_struct {
   /*
-    An molecule_struct has 8 fields. The first three are initially set by 
+    An molecule_struct has 7 fields. The first three are initially set by 
     the parse_side_line routine called by the parse_reactions_file routine.
     
-        conc_multiplier - double, used in computing concentrations.
+        volume  - volume of the compartment, must be > 0
+	recip_volume 1/volume
     
         string  - character offest into the molecules_text array 
 	          to a null terminated string that contains the molecule 
@@ -62,10 +63,19 @@ struct molecule_struct {
 		  
 	solvent: a 1 if this is a solvent molecule, 0 otherwise.
 
-     For compartments only the string, c_index and g_index fields are used.
 
   */
-  double conc_multiple;
+  /*
+    The following 7 fields are really compartment only fields.
+  */
+  double volume;
+  double recip_volume;
+  double ntotal_exp;
+  double ntotal_opt;
+  double min_conc;
+  double conc_to_count;
+  double count_to_conc;
+
   int64_t string;
   int  m_index;
   int  c_index;
