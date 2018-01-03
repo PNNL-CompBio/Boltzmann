@@ -36,9 +36,9 @@ int unique_compartments(struct state_struct *state) {
   struct rxn_struct *reactions;
   struct rxn_matrix_struct *rxns_matrix;
   int64_t *compartment_indices;
-  struct istring_elem_struct *sorted_cmpts;
-  struct istring_elem_struct *cur_cmpt;
-  struct istring_elem_struct *ucmpts_next;
+  struct molecule_struct *sorted_cmpts;
+  struct molecule_struct *cur_cmpt;
+  struct molecule_struct *ucmpts_next;
   char *compartment_text;
   char *sstring;
   char *cstring;
