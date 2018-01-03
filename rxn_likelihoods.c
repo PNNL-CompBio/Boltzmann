@@ -149,10 +149,12 @@ int rxn_likelihoods(double *free_energy,
     rxn_ratio[i] = eq_k * (top / bot);
     */
     if ((left_concs < 1.0) && (right_concs > 1.0)) {
-      left_concs = small_nonzero;
+      /*left_concs = small_nonzero;*/
+      left_concs = 1.0;
     } else {
       if (right_concs < 1.0) {
-	right_concs = small_nonzero;
+	/*right_concs = small_nonzero;*/
+	right_concs = 1.0;
       }
     }
     rxn_likelihood[i] = eq_k * (left_concs/ right_concs);
