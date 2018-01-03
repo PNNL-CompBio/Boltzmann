@@ -174,6 +174,7 @@ struct state_struct {
   int64_t molecule_text_length;
   int64_t regulation_text_length;
   int64_t run_workspace_bytes;
+  int64_t use_bulk_water;
   /*
     offsets used to self-describe this state vector.
     only needed for parallel version multiple instantiations
