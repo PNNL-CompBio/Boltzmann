@@ -29,7 +29,7 @@ int alloc6(struct formation_energy_struct *formation_energies,
     Allocate space for the formation_energies struct fields needed
     after parsing the pseudoisomers file is complete. This space 
     depends on fields from state structure.
-    Called by: formation_energy_rxn_dg0fs
+    Called by: compute_standard_energies
     Calls:     calloc
   */
   int64_t ask_for;
