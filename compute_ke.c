@@ -44,7 +44,8 @@ int compute_ke(struct state_struct *state) {
   double rt;
   double m_r_rt;
   double m_rt;
-  double joules_per_cal_gm;
+  double joules_per_cal;
+  double cals_per_joule;
   double ideal_gas_r;
   double temp_kelvin;
 
@@ -52,42 +53,31 @@ int compute_ke(struct state_struct *state) {
   int nrxns;
   int i;
   int padi;
-  success = 1;
-  ideal_gas_r = state->ideal_gas_r;
-  temp_kelvin = state->temp_kelvin;
-  rt          = ideal_gas_r * temp_kelvin;
-  state->rt   = rt;
-  if (rt > 0.0) {
-    m_r_rt = -1.0/rt;
-    m_rt   = 0.0 - rt;
-    state->m_r_rt = m_r_rt;
-    state->m_rt   = m_rt;
-  } else {
-    success = 0;
-    fprintf (stderr,
-	     "compute_ke: Error at temp_kelvin = 0 Ke  = 0, nothing happens.");
-    fflush(stderr);
-  }
-  if (success) {
-    nrxns     = (int)state->number_reactions;
-    reactions = state->reactions;
-    dg0s      = state->dg0s;
-    ke        = state->ke;
-    joules_per_cal_gm = 1.0/(state->cal_gm_per_joule);
-    reaction = reactions;
-    for (i=0;i<nrxns;i++) {
-      if (reaction->unit_i == 0) {
-	dg0 = reaction->delta_g0;
-      } else {
-	/*
-	  Delta_g0 units was in KJoules, convert to Kcals.
-	*/
-	dg0 = reaction->delta_g0 * joules_per_cal_gm;
-      }
-      dg0s[i] = dg0;
-      ke[i] = exp(dg0 * m_r_rt);
-      reaction += 1; /* Caution address arithmetic */
+  success   = 1;
+  nrxns     = (int)state->number_reactions;
+  reactions = state->reactions;
+  dg0s      = state->dg0s;
+  ke        = state->ke;
+  /*
+    m_r_rt = -1/(RT)
+  */
+  cals_per_joule    = state->cals_per_joule;
+  m_r_rt = state->m_r_rt;
+  reaction = reactions;
+  for (i=0;i<nrxns;i++) {
+    if (reaction->unit_i == 0) {
+      dg0 = reaction->delta_g0;
+    } else {
+      /*
+	Delta_g0 units was in KJoules, convert to Kcals.
+	Dougs question is here doe we want * or divide, I think
+	we want * as written.
+      */
+      dg0 = reaction->delta_g0 * cals_per_joule;
     }
+    dg0s[i] = dg0;
+    ke[i] = exp(dg0 * m_r_rt);
+    reaction += 1; /* Caution address arithmetic */
   }
   return (success);
 }
