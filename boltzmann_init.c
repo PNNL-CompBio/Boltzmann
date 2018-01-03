@@ -117,7 +117,9 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
   }
   if (success) {
     /*
-      Initialize the random number generator.
+      Initialize the random number generators,
+      setting the vgrng_state and vgrng2_state fields of
+      the state structure.
     */
     vgrng_state = state->vgrng_state;
     vgrng_start_steps = 1001;
@@ -226,7 +228,8 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
     success = unique_molecules(state);
   }
   /*
-    Print the molecules dictionary.
+    Print the molecules dictionary and the header lines for 
+    the concentrations output file.
   */
   if (success) {
     success = print_molecules_dictionary(state);
@@ -249,6 +252,7 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
   }
   /*
     Read initial concentrations.
+    And print them to the concentrations outpu file.
   */
   if (success) {
     success = read_initial_concentrations(state);
