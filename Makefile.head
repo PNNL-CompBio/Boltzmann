@@ -16,4 +16,4 @@ TFLAGS  =
 LFLAGS = -g -lm
 default: $(EXECS)
 all:  $(EXECS)
-include Makefile.timing
+include Makefile.notiming
