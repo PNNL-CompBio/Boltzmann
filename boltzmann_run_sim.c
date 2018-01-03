@@ -68,6 +68,7 @@ int boltzmann_run_sim(struct state_struct *state) {
   double r_sum_likelihood;
   double entropy;
   double scaled_likelihood;
+  double fe;
   double *cconcs;
   double *fconcs;
   double *rxn_likelihood_ps;
@@ -75,6 +76,7 @@ int boltzmann_run_sim(struct state_struct *state) {
   double *c_loglr;
   double *forward_rxn_likelihood;
   double *reverse_rxn_likelihood;
+  double cal_gm_per_joule;
   /*
   double *lthermo;
   */
@@ -113,6 +115,7 @@ int boltzmann_run_sim(struct state_struct *state) {
   cconcs         = state->current_concentrations;
   fconcs         = state->future_concentrations;
   m_rt           = state->m_rt;
+  cal_gm_per_joule = state->cal_gm_per_joule;
   /*
   lthermo        = state->l_thermo;
   */
@@ -255,9 +258,7 @@ int boltzmann_run_sim(struct state_struct *state) {
       dg_forward = 0.0;
       sum_likelihood = 0.0;
       for (j=0;j<num_rxns;j++) {
-	/*
-	  free_energy[j] =  m_rt * c_loglr[j];
-	*/
+	free_energy[j] =  m_rt * c_loglr[j];
 	dg_forward     += c_loglr[j];
 	sum_likelihood += forward_rxn_likelihood[j];
       }
@@ -299,6 +300,29 @@ int boltzmann_run_sim(struct state_struct *state) {
 	fprintf(state->rxn_lklhd_fp," %le",forward_rxn_likelihood[j]);
       }
       fprintf(state->rxn_lklhd_fp,"\n");
+      /*
+	If user has requested print out free energies as well.
+      */
+      if (state->free_energy_format > 0) {
+	fprintf(state->free_energy_fp,"%d ",i);
+	if (state->free_energy_format == 1) {
+	  for (j=0;j<num_rxns;j++) {
+	    fprintf(state->free_energy_fp," %le",
+		    -c_loglr[j]);
+	  }
+	}
+	if (state->free_energy_format == 2) {
+	  for (j=0;j<num_rxns;j++) {
+	    fe = free_energy[j]*cal_gm_per_joule;
+	    fprintf(state->free_energy_fp," %le",fe);
+	  }
+	}
+	if (state->free_energy_format == 3) {
+	  for (j=0;j<num_rxns;j++) {
+	    fprintf(state->free_energy_fp," %le",free_energy[j]);
+	  }
+	}
+      }
     } /* end for(i...) */
   }
   return(success);
