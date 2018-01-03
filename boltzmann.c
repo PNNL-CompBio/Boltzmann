@@ -50,13 +50,13 @@ struct timing_struct timing_data;
 */
 #define BOLTZMANN_DBG 1
 #include "boltzmann_init.h"
-#include "boltzmann_run_sim.h"
+#include "boltzmann_run.h"
 int main(int argc, char **argv)
 {
   /*
     Calls:
       boltzmann_init
-      boltzmann_run_sim
+      boltzmann_run
   */
   struct state_struct *state;
   char *param_file_name;
@@ -80,7 +80,7 @@ int main(int argc, char **argv)
   success = boltzmann_init(param_file_name,&state);
   TIMING_STOP(INITIALIZE);
   if (success) {
-    success = boltzmann_run_sim(state);
+    success = boltzmann_run(state);
   }
   TIMING_STOP(TOTAL_TIME);
   TIMING_PRINT(stdout);
