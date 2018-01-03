@@ -24,6 +24,8 @@ specific language governing permissions and limitations under the License.
 /*
 #define DBG_BOLTZMANN_RUN 1
 */
+#include "blas.h"
+#include "vec_set_constant.h"
 #include "update_rxn_log_likelihoods.h"
 #include "choose_rxn.h"
 #include "deq_run.h"
@@ -50,6 +52,8 @@ int boltzmann_run(struct state_struct *state) {
     Calls:     update_rxn_log_likelihoods,
 	       choose_rxn,
                deq_run,
+	       vec_set_concstant,
+	       dcopy_,
 	       compute_delta_g_forward_entropy_free_energy
 	       print_rxh_choice,
 	       print_counts,
@@ -108,7 +112,7 @@ int boltzmann_run(struct state_struct *state) {
   int unique_molecules;
 
   int print_output;
-  int noop_rxn;
+  int incx;
 
   int j;
   int i0;
@@ -145,16 +149,20 @@ int boltzmann_run(struct state_struct *state) {
   lklhd_view_step 	 = one_l;
   choice_view_step       = one_l;
   lfp                    = state->lfp;
-  noop_rxn               = number_reactions + number_reactions;
+  incx = 1;
   /*
     Initialize the free_energy to be the delta_g0.
   */
   if (success) {
     dg0s = state->dg0s;
     free_energy  = state->free_energy;
+    
+    /*
     for (i=0;i<state->number_reactions;i++) {
       free_energy[i] = dg0s[i];
     }
+    */
+    dcopy_(&number_reactions,dg0s,&incx,free_energy,&incx);
   }
   if ((print_output > 1) && lfp) {
     fprintf(lfp,
@@ -192,9 +200,12 @@ int boltzmann_run(struct state_struct *state) {
 	Copy the future counts, resulting from the reaction firing
 	to the current counts.
       */
+      /*
       for (j=0;j<unique_molecules;j++) {
 	current_counts[j] = future_counts[j];
       }
+      */
+      dcopy_(&unique_molecules,future_counts,&incx,current_counts,&incx);
       /*
 	Doug thinks we can remove these calls.
 	success = update_rxn_log_likelihoods(state);
@@ -239,16 +250,22 @@ int boltzmann_run(struct state_struct *state) {
 	    "\nRecord_step rxn_choice forward_likelihood "
 	    "reverse_likelihood\n");
       }
+      vec_set_constant(number_reactions_t2,rxn_fire,zero_l);
+      /*
       for (i=0;i<number_reactions_t2;i++) {
 	rxn_fire[i] = (int64_t)0;
       }
+      */
     }
     /*
       Initialize the boundary fluxes to 0.
     */
+    vec_set_constant(unique_molecules,bndry_flux_counts,zero_l);
+    /*
     for (i=0;i<unique_molecules;i++) {
       bndry_flux_counts[i] = 0.0;
     }
+    */
     /*
       Cause step 0 to print if we are printing.
     */
@@ -291,9 +308,12 @@ int boltzmann_run(struct state_struct *state) {
 	Copy the future counts, the result of the reaction firing
 	to the current counts.
       */
+      /*
       for (j=0;j<unique_molecules;j++) {
 	current_counts[j] = future_counts[j];
       }
+      */
+      dcopy_(&unique_molecules,future_counts,&incx,current_counts,&incx);
       /*
 	Compute the reaction likelihoods and their logarithms
 	in the forward_rxn_likelihood, reverse_rxn_likelihood 
