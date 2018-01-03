@@ -43,6 +43,7 @@ int alloc0(struct state_struct **state) {
   int64_t max_param_line_len;
   int64_t ask_for;
   int64_t one_l;
+  int64_t usage;
   int success;
   int num_state_files;
   ask_for           = (int64_t)sizeof(bltzs);
@@ -51,6 +52,7 @@ int alloc0(struct state_struct **state) {
   max_param_line_len = (int64_t)4096;
   success           = 1;
   num_state_files   = 8;
+  usage             = ask_for;
   statep            = (struct state_struct *)calloc(one_l,ask_for);
   *state            = statep;
   if (statep == NULL) {
@@ -63,6 +65,7 @@ int alloc0(struct state_struct **state) {
   if (success) {
     statep->max_filename_len = max_file_name_len;
     ask_for = ((int64_t)num_state_files) * max_file_name_len;
+    usage   += ask_for;
     statep->params_file = (char *)calloc(one_l,ask_for);
     if (statep->params_file == NULL) {
       success = 0;
@@ -85,6 +88,7 @@ int alloc0(struct state_struct **state) {
     statep->max_param_line_len = max_param_line_len;
     statep->max_filename_len   = max_file_name_len;
     ask_for                    = max_param_line_len << 1;
+    usage                      += ask_for;
     statep->param_buffer       = (char *)calloc(one_l,ask_for);
     if (statep->param_buffer == NULL) {
       success = 0;
@@ -96,6 +100,7 @@ int alloc0(struct state_struct **state) {
       statep->param_key = statep->param_buffer + max_param_line_len;
       statep->param_value = statep->param_key + (max_param_line_len>>1);
     }
+    statep->usage = usage;
   }
   return(success);
 }
