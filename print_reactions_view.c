@@ -181,7 +181,7 @@ int print_reactions_view(struct state_struct *state) {
       for (j=rxn_ptrs[rxns];j<rxn_ptrs[rxns+1];j++) {
 	coeff = coefficients[j];
 	if (coeff < 0) {
-	  if (nr > 1) {
+	  if (nr > 0) {
 	    fprintf(rxn_view_fp," + ");
 	  }
 	  if (coeff < -1) {
