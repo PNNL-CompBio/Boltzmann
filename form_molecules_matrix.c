@@ -53,9 +53,10 @@ int form_molecules_matrix(struct state_struct *state) {
   int k;
 
   int m;
-  int padi;
+  int number_reactions;
   success  = 1;
   nu_molecules     = state->nunique_molecules;
+  number_reactions = state->number_reactions;
   nzr              = state->number_molecules;
   rxn_matrix       = state->reactions_matrix;
   molecules_matrix = state->molecules_matrix;
@@ -88,7 +89,7 @@ int form_molecules_matrix(struct state_struct *state) {
   for (i=0;i<nu_molecules;i++) {
     transpose_rp[i] = molecules_ptrs[i];
   }
-  for (i=0;i<nu_molecules;i++) {
+  for (i=0;i<number_reactions;i++) {
     for (j=rxn_ptrs[i];j<rxn_ptrs[i+1];j++) {
       k = molecules_indices[j];
       m = transpose_rp[k];
