@@ -77,7 +77,7 @@ int sort_compartments(struct istring_elem_struct **unsorted_compartments,
 			   compartment_text,l1,l2);
       }
       /* Now if the last group is <= step they just need to be copied
-	 in to the sorted list.
+	 into the sorted list.
       */ 
       ln = n & (step + step - 1);
       if (ln <= step) {
