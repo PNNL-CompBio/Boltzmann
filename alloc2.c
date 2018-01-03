@@ -20,13 +20,6 @@ under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <strings.h>
-#include <float.h>
-#include <signal.h>
-
 #include "boltzmann_structs.h"
 
 #include "alloc2.h"
@@ -80,18 +73,18 @@ int alloc2(struct state_struct *state) {
   num_molecules = (int)state->number_molecules;
   num_cmpts   = (int)state->number_compartments;
   rxn_title_space =  state->rxn_title_space + ((int64_t)num_rxns) * align_len;
-  rxn_title_space += align_len - (rxn_title_space & align_mask);
+  rxn_title_space += (align_len - (rxn_title_space & align_mask));
   pathway_space   =  state->pathway_space + ((int64_t)num_rxns) * align_len;
-  pathway_space   += align_len - (pathway_space & align_mask);
+  pathway_space   += (align_len - (pathway_space & align_mask));
   if (state->number_compartments > 0) {
     compartment_space = state->compartment_space +
                         ((int64_t)num_rxns) * align_len;
-    compartment_space += align_len - (compartment_space & align_mask);
+    compartment_space += (align_len - (compartment_space & align_mask));
   } else {
     compartment_space = 0;
   }
   molecules_space  = state->molecules_space + ((int64_t)num_molecules) * align_len;
-  molecules_space  += align_len - (molecules_space & align_mask);
+  molecules_space  += (align_len - (molecules_space & align_mask));
   ask_for = rxn_title_space + pathway_space + compartment_space +
     molecules_space + molecules_space;
   usage += ask_for;
