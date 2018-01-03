@@ -32,9 +32,9 @@ int print_restart_file(struct state_struct *state) {
   */
   struct rxn_struct *reactions;
   struct rxn_matrix_struct *rxns_matrix;
-  struct istring_elem_struct *cur_molecules;
-  struct istring_elem_struct *cur_cmpts;
-  struct istring_elem_struct *cur_cmpt;
+  struct molecule_struct *cur_molecules;
+  struct molecule_struct *cur_cmpts;
+  struct molecule_struct *cur_cmpt;
   double *cconcs;
   char   *restart_file;
   int64_t *column_indices;
@@ -84,7 +84,7 @@ int print_restart_file(struct state_struct *state) {
       if (ci != oi) {
 	oi = ci;
 	if (ci > 0) {
-	  cur_cmpt = (struct istring_elem_struct *)&(cur_cmpts[ci]);
+	  cur_cmpt = (struct molecule_struct *)&(cur_cmpts[ci]);
 	  cmpt_string = (char*)&compartment_text[cur_cmpt->string];
 	}
       }
@@ -96,10 +96,10 @@ int print_restart_file(struct state_struct *state) {
       molecule = (char*)&molecules_text[cur_molecules->string];
       if (ci > 0) {
 	fprintf(restart_fp," %s:%s\t%le\t%c\n",
-		molecule,cmpt_string,cconcs[i],vbsp);
+		molecule,cmpt_string,cconcs[i],vbsp[0]);
       } else {
 	fprintf(restart_fp," %s\t%le\t%c\n",
-		molecule,cconcs[i],vbsp);
+		molecule,cconcs[i],vbsp[0]);
       }
       cur_molecules += 1; /* Caution address arithmetic. */
     }
