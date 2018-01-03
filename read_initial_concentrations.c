@@ -304,7 +304,7 @@ int read_initial_concentrations(struct state_struct *state) {
 	recip_volume = compartment->recip_volume;
 	min_conc     = compartment->count_to_conc;
 	multiplier   = compartment->conc_to_count;
-	if (e_val == 0.0) {
+	if (e_val <= 0.0) {
 	  /*
 	    Here if we are in a particular compartment
 	    we may want to use that compartment volume instead
@@ -312,7 +312,7 @@ int read_initial_concentrations(struct state_struct *state) {
 	  */
 	  e_val = min_conc;
 	}
-	if (u_val == 0.0) {
+	if (u_val <= 0.0) {
 	  u_val = min_conc;
 	}
 	if (nscan >= 2) {
