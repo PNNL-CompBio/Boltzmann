@@ -38,6 +38,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
   double cals_per_joule;
   double ideal_gas_r;
   double temp_kelvin;
+  double epsilon;
   int64_t max_param_line_len;
   char *param_buffer;
   char *key;
@@ -96,6 +97,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
     state->ph               = 7.5;
     state->ionic_strength   = 0.15;
     state->joules_per_cal   = 4.184;
+    state->epsilon          = 0.0000001;
     state->cals_per_joule   = 1.0/state->joules_per_cal;
     state->warmup_steps     = (int64_t)1000;
     state->record_steps     = (int64_t)1000;
@@ -165,6 +167,8 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	  state->align_len = 16;
 	}
 	state->align_mask = state->align_len - 1;
+      } else if (strncmp(key,"EPSILON",7) == 0) {
+	sscan_ok = sscanf(value,"%le",&state->epsilon);
       } else if (strncmp(key,"IDEAL_GAS_R",11) == 0) {
 	sscan_ok = sscanf(value,"%le",&(state->ideal_gas_r));
       } else if (strncmp(key,"TEMP_KELVIN",11) == 0) {
