@@ -41,7 +41,7 @@ int compute_delta_g_forward_entropy_free_energy(struct state_struct *state,
     the system entropy, and the free_energy field of state 
     (1 value per reaction).
 
-    Called by: boltzmann_run_sim
+    Called by: boltzmann_run
 
     Arguments         TMF          Description
     state             G*B          Pointer to the global state structure.
@@ -116,7 +116,7 @@ int compute_delta_g_forward_entropy_free_energy(struct state_struct *state,
     }
     dg_forward *= m_rt;
     if (sum_likelihood <= 0.0) {
-      fprintf(stderr,"boltzmann_run_sim: Error, nonpositivity sum_likelihood = %le in recording loop iteration %d\n",sum_likelihood,step);
+      fprintf(stderr,"boltzmann_run: Error, nonpositivity sum_likelihood = %le in recording loop iteration %d\n",sum_likelihood,step);
       success = 0;
     }
     r_sum_likelihood = 0.0;
