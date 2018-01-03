@@ -1061,7 +1061,7 @@ zero_solvent_coefficients.o: $(SERIAL_INCS) zero_solvent_coefficients.c zero_sol
 compute_kss.o: $(SERIAL_INCS) compute_kss.c compute_kss.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c compute_kss.c
 
-echo_inputs.o: $(SERIAL_INCS) echo_inputs.c echo_inputs.h echo_params.h echo_reactions_file.h print_molecules_dictionary.h print_dg0_ke.h print_reactions_matrix.h
+echo_inputs.o: $(SERIAL_INCS) echo_inputs.c echo_inputs.h echo_params.h echo_reactions_file.h print_molecules_dictionary.h print_dg0_ke.h print_reactions_matrix.h print_counts.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c echo_inputs.c
 
 echo_params.o: $(SERIAL_INCS) echo_params.c echo_params.h
