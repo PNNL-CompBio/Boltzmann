@@ -76,6 +76,7 @@ void dgemv_(char *trans, int *m_p, int *n_p, double *alpha_p, double *a,
   n   = *n_p;
   incx = 1;
   incy = 1;
+  lda  = *lda_p;
   /*
     if beta were not 1, we would want:
     for (i=0;i<m;i++) {
