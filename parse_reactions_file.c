@@ -40,8 +40,8 @@ specific language governing permissions and limitations under the License.
 int parse_reactions_file(struct state_struct *state) {
   /*
     Determine the number of reactions,
-    Total length of species names, and
-    max possiblie number of species, and
+    Total length of molecules names, and
+    max possiblie number of molecules, and
     total length of the file, total length
     of compartment names, total length of pathway_names,
     total_length reaction titles.
@@ -54,15 +54,15 @@ int parse_reactions_file(struct state_struct *state) {
   struct rxn_struct *reactions;
   struct rxn_struct *reaction;
   struct rxn_matrix_struct *rxns_matrix;
-  struct istring_elem_struct *unsorted_species;
+  struct istring_elem_struct *unsorted_molecules;
   struct istring_elem_struct *unsorted_cmpts;
   int64_t *keyword_lens;
   int64_t *rxn_ptrs;
-  int64_t *species_indices;
+  int64_t *molecules_indices;
   int64_t *coefficients;
   int64_t rxn_buff_len;
   int64_t total_length;
-  int64_t species_len;
+  int64_t molecules_len;
   int64_t rxn_title_len;
   int64_t pathway_len;
   int64_t compartment_len;
@@ -71,7 +71,7 @@ int parse_reactions_file(struct state_struct *state) {
   int64_t rxn_title_pos;
   int64_t pathway_pos;
   int64_t compartment_pos;
-  int64_t species_pos;
+  int64_t molecules_pos;
   int64_t align_len; 
   int64_t align_mask; 
   int64_t len;
@@ -85,13 +85,13 @@ int parse_reactions_file(struct state_struct *state) {
   char *rxn_title_text;
   char *pathway_text;
   char *compartment_text;
-  char *species_text;
-  char *raw_species_text;
+  char *molecules_text;
+  char *raw_molecules_text;
 
   int success;
   int rxns;
 
-  int species;
+  int molecules;
   int ws_chars;
 
   int line_type;
@@ -130,7 +130,7 @@ int parse_reactions_file(struct state_struct *state) {
     keywords   = state->rxn_file_keywords;
     keyword_lens = state->rxn_file_keyword_lengths;
     rxns    = 0;
-    species = 0;
+    molecules = 0;
     cmpts   = 0;
     /*
       Should get a reaction line, a pathway line, a left line, a right line,
@@ -144,18 +144,18 @@ int parse_reactions_file(struct state_struct *state) {
     rxn_title_pos          = (int64_t)0;
     pathway_pos            = (int64_t)0;
     compartment_pos        = (int64_t)0;
-    species_pos            = (int64_t)0;
-    unsorted_species            = state->unsorted_species;
+    molecules_pos            = (int64_t)0;
+    unsorted_molecules            = state->unsorted_molecules;
     unsorted_cmpts              = state->unsorted_cmpts;
     rxn_title_text              = state->rxn_title_text;
     pathway_text                = state->pathway_text;
     compartment_text            = state->compartment_text;
-    species_text                = state->species_text;
-    raw_species_text            = state->raw_species_text;
+    molecules_text                = state->molecules_text;
+    raw_molecules_text            = state->raw_molecules_text;
     reactions                   = state->reactions;
     rxns_matrix                 = state->reactions_matrix;
     rxn_ptrs                    = rxns_matrix->rxn_ptrs;
-    species_indices              = rxns_matrix->species_indices;
+    molecules_indices              = rxns_matrix->molecules_indices;
     coefficients                = rxns_matrix->coefficients;
     matrix_text                 = rxns_matrix->text;
     reaction                    = reactions;
@@ -166,10 +166,10 @@ int parse_reactions_file(struct state_struct *state) {
     reaction->right_compartment = -1;
     reaction->num_reactants     = 0;
     reaction->num_products      = 0;
-    rxn_ptrs[rxns]              = species;
+    rxn_ptrs[rxns]              = molecules;
     fgp = fgets(rxn_buffer,rxn_buff_len,rxn_fp);
-    state->max_species_len = 0;
-    state->min_species_len = rxn_buff_len;
+    state->max_molecule_len = 0;
+    state->min_molecule_len = rxn_buff_len;
     while ((fgp && success) && (! feof(rxn_fp))) {
       line_len = strlen(rxn_buffer);
       /*
@@ -292,7 +292,7 @@ int parse_reactions_file(struct state_struct *state) {
 	  break;
 	case 5:
 	  /*
-	    A left line, count and record reactant species and coefficients.
+	    A left line, count and record reactant molecules and coefficients.
 	  */
 	  rctnts = (char *)&rxn_buffer[kl+ ws_chars];
 	  pos = 0;
@@ -300,10 +300,10 @@ int parse_reactions_file(struct state_struct *state) {
 	  while (pos < len) {
 	    sl = (int64_t)count_nws(rctnts);
 	    if (sl > 0) {
-	      species_indices[species] = species;
+	      molecules_indices[molecules] = molecules;
 	      if (is_a_coef(sl,rctnts)) {
 		rctnts[sl] = '\0';
-		coefficients[species] = - atoi(rctnts);
+		coefficients[molecules] = - atoi(rctnts);
 		rctnts[sl] = ' ';
 
 		pos += sl;
@@ -316,33 +316,33 @@ int parse_reactions_file(struct state_struct *state) {
 
 		sl = count_nws(rctnts);
 	      } else {
-		coefficients[species] = -1;
+		coefficients[molecules] = -1;
 	      }
-	      if (sl > state->max_species_len) {
-		state->max_species_len = sl;
+	      if (sl > state->max_molecule_len) {
+		state->max_molecule_len = sl;
 	      } else {
-		if (sl < state->min_species_len) {
-		  state->min_species_len = sl;
+		if (sl < state->min_molecule_len) {
+		  state->min_molecule_len = sl;
 		}
 	      }
-	      matrix_text[species] = (char*)&raw_species_text[species_pos];
+	      matrix_text[molecules] = (char*)&raw_molecules_text[molecules_pos];
 	      rctnts[sl] = '\0';
 	      sll = (int64_t)sl + (int64_t)1;
 	      padding = (align_len - (sll & align_mask)) & align_mask;
-	      strcpy((char *)&raw_species_text[species_pos],rctnts);
-	      upcase(sl,(char *)&raw_species_text[species_pos],
-		     (char *)&species_text[species_pos]);
-	      unsorted_species->string = (char *)&species_text[species_pos];
-	      unsorted_species->index  = species;
-	      unsorted_species += 1; /* Caution address arithmetic. */
+	      strcpy((char *)&raw_molecules_text[molecules_pos],rctnts);
+	      upcase(sl,(char *)&raw_molecules_text[molecules_pos],
+		     (char *)&molecules_text[molecules_pos]);
+	      unsorted_molecules->string = (char *)&molecules_text[molecules_pos];
+	      unsorted_molecules->index  = molecules;
+	      unsorted_molecules += 1; /* Caution address arithmetic. */
 
-	      species_pos += (int64_t)(sll + padding);
+	      molecules_pos += (int64_t)(sll + padding);
 	      rctnts[sl] = ' ';
 
 	      pos += sl; /* Caution address arithmetic. */
 	      rctnts += sl;
 
-	      species += 1;
+	      molecules += 1;
 	      reaction->num_reactants += 1;
 	      skip = count_ws(rctnts);
 
@@ -372,7 +372,7 @@ int parse_reactions_file(struct state_struct *state) {
 	  break;
 	case 6:
 	  /*
-	    A right line, count product species.
+	    A right line, count product molecules.
 	  */
 	  prdcts = (char *)&rxn_buffer[kl + ws_chars];
 	  pos = 0;
@@ -380,10 +380,10 @@ int parse_reactions_file(struct state_struct *state) {
 	  while (pos < len) {
 	    sl = (int64_t)count_nws(prdcts);
 	    if (sl > 0) {
-	      species_indices[species] = species;
+	      molecules_indices[molecules] = molecules;
 	      if (is_a_coef(sl,prdcts)) {
 		prdcts[sl] = '\0';
-		coefficients[species] = atoi(prdcts);
+		coefficients[molecules] = atoi(prdcts);
 		prdcts[sl] = ' ';
 
 		pos += sl;
@@ -396,32 +396,32 @@ int parse_reactions_file(struct state_struct *state) {
 
 		sl = count_nws(prdcts);
 	      } else {
-		coefficients[species] = 1;
+		coefficients[molecules] = 1;
 	      }
-	      if (sl > state->max_species_len) {
-		state->max_species_len = sl;
+	      if (sl > state->max_molecule_len) {
+		state->max_molecule_len = sl;
 	      } else {
-		if (sl < state->min_species_len) {
-		  state->min_species_len = sl;
+		if (sl < state->min_molecule_len) {
+		  state->min_molecule_len = sl;
 		}
 	      }
-	      matrix_text[species] = (char*)&raw_species_text[species_pos];
+	      matrix_text[molecules] = (char*)&raw_molecules_text[molecules_pos];
 	      prdcts[sl] = '\0';
 	      sll = (int64_t)sl + (int64_t)1;
 	      padding = (align_len - (sll & align_mask)) & align_mask;
-	      strcpy((char *)&raw_species_text[species_pos],prdcts);
-	      upcase(sl,(char *)&raw_species_text[species_pos],
-		     (char *)&species_text[species_pos]);
-	      unsorted_species->string = (char *)&species_text[species_pos];
-	      unsorted_species->index  = species;
-	      unsorted_species += 1; /* Caution address arithmetic. */
-	      species_pos += (int64_t)(sll + padding);
+	      strcpy((char *)&raw_molecules_text[molecules_pos],prdcts);
+	      upcase(sl,(char *)&raw_molecules_text[molecules_pos],
+		     (char *)&molecules_text[molecules_pos]);
+	      unsorted_molecules->string = (char *)&molecules_text[molecules_pos];
+	      unsorted_molecules->index  = molecules;
+	      unsorted_molecules += 1; /* Caution address arithmetic. */
+	      molecules_pos += (int64_t)(sll + padding);
 	      prdcts[sl] = ' ';
 
 	      pos += sl;
 	      prdcts += sl; /* Caution address arithmetic. */
 
-	      species += 1;
+	      molecules += 1;
 	      reaction->num_products += 1;
 	      skip = count_ws(prdcts);
 
@@ -490,7 +490,7 @@ int parse_reactions_file(struct state_struct *state) {
 	  reaction->right_compartment = -1;
 	  reaction->num_reactants     = 0;
 	  reaction->num_products      = 0;
-	  rxn_ptrs[rxns]              = species;
+	  rxn_ptrs[rxns]              = molecules;
 	  break;
         default:
 	break;
@@ -501,9 +501,9 @@ int parse_reactions_file(struct state_struct *state) {
   } /* end if (success) */
   state->reaction_file_length = total_length;
   state->number_reactions = rxns;
-  state->number_species   = species;
+  state->number_molecules   = molecules;
   state->number_compartments = cmpts;
-  state->species_len = species_len;
+  state->molecules_len = molecules_len;
   state->pathway_len = pathway_len;
   state->compartment_len = compartment_len;
   state->rxn_title_len = rxn_title_len;
