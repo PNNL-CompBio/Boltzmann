@@ -52,6 +52,8 @@ int alloc3(struct state_struct *state) {
 
   int success;
   int nrxns;
+  int lthf;
+  int lthl;
 
   int nzr;
   int max_compartment_len;
@@ -65,6 +67,7 @@ int alloc3(struct state_struct *state) {
   nrxns      = state->number_reactions;
   max_molecule_len = state->max_molecule_len + 1;
   max_compartment_len     = state->max_compartment_len + 1;
+  lthf                    = state->lthf;
   /*
     Allocate space for molecules name when reading initial 
     concentrations file.
@@ -315,6 +318,39 @@ int alloc3(struct state_struct *state) {
       fflush(stderr);
       success = 0;
     } 
+  }
+  if (success) {
+    if (lthf > 0) {
+      lthl = 1 + (int)((state->record_steps + lthf - 1) /lthf);
+      ask_for = (((int64_t)nrxns) * ((int64_t)sizeof(double)))*((int64_t)lthl);
+      usage += ask_for;
+      state->rxn_view_likelihoods = (double *)calloc(one_l,ask_for);
+      if (state->rxn_view_likelihoods == NULL) {
+	fprintf(stderr,"alloc3: Error unable to allocate %ld bytes for "
+		"state->rxn_view_likelihoods field.\n",ask_for);
+	fflush(stderr);
+	success = 0;
+      }
+      state->lthl = lthl;
+    } else {
+      state->rxn_view_likelihoods = NULL;
+    }
+  }
+  if (success) {
+    if (lthf > 0) {
+      lthl = state->lthl;
+      ask_for = (((int64_t)nrxns) * ((int64_t)sizeof(double)))*((int64_t)lthl);
+      usage += ask_for;
+      state->rev_rxn_view_likelihoods = (double *)calloc(one_l,ask_for);
+      if (state->rev_rxn_view_likelihoods == NULL) {
+	fprintf(stderr,"alloc3: Error unable to allocate %ld bytes for "
+		"state->rev_rxn_view_likelihoods field.\n",ask_for);
+	fflush(stderr);
+	success = 0;
+      }
+    } else {
+      state->rev_rxn_view_likelihoods = NULL;
+    }
   }
   state->usage = usage;
   return(success);
