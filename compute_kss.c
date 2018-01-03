@@ -47,15 +47,21 @@ int compute_kss(struct state_struct *state) {
 
   struct rxn_struct *reactions;
   struct rxn_struct *reaction;
+
   struct rxn_matrix_struct *rxns_matrix;
+  struct molecule_struct *compartments;
+  struct molecule_struct *compartment;
   int64_t *rxn_ptrs;
   int64_t *molecules_indices;
+  int64_t *compartment_indices;
   int64_t *coefficients;
   int64_t *matrix_text;
 
   double  rxn_kss;
   double  kss_r_mod;
   double  kss_p_mod;
+  double  ntotal_exp;
+  double  ntotal_opt;
   int64_t print_output;
   int64_t mto;
 
@@ -72,7 +78,7 @@ int compute_kss(struct state_struct *state) {
   int coeff;
 
   int i;
-  int padi;
+  int ci;
 
   FILE* lfp;
 
@@ -85,6 +91,7 @@ int compute_kss(struct state_struct *state) {
   print_output             = state->print_output;
   rxn_ptrs       	   = rxns_matrix->rxn_ptrs;
   molecules_indices        = rxns_matrix->molecules_indices;
+  compartment_indices      = rxns_matrix->compartment_indices;
   coefficients   	   = rxns_matrix->coefficients;
   matrix_text    	   = rxns_matrix->text;
   nrxns                    = (int)state->number_reactions;
@@ -93,7 +100,7 @@ int compute_kss(struct state_struct *state) {
   kssr                     = state->kssr;
   kss_e_val                = state->kss_e_val;
   kss_u_val                = state->kss_u_val;
-  
+  compartments             = state->sorted_cmpts;
   lfp                  = state->lfp;
   print_output         = print_output && lfp;
   if (print_output) {
@@ -115,11 +122,15 @@ int compute_kss(struct state_struct *state) {
       rxn_kss = 1.0;
       for (j=rxn_ptrs[rxns];j<rxn_ptrs[rxns+1];j++) {
         k = molecules_indices[j];
+	ci = compartment_indices[j];
+	compartment = (struct molecule_struct *)&compartments[ci];
+	ntotal_exp               = compartment->ntotal_exp;
+	ntotal_opt               = compartment->ntotal_opt;
         coeff = coefficients[j];
         if (coeff < 0) {
 	  coeff = -coeff;
 	  if (kss_u_val[k] > 0.0) {
-	    kss_r_mod = kss_e_val[k]/kss_u_val[k];
+	    kss_r_mod = (kss_e_val[k]/kss_u_val[k]) * (ntotal_opt/ntotal_exp);
 	    for (i=0;i<coeff;i++) {
 	      rxn_kss = rxn_kss * kss_r_mod;
 	    }
@@ -132,7 +143,7 @@ int compute_kss(struct state_struct *state) {
         } else {
 	  if (coeff > 0) {
 	    if (kss_e_val[k] > 0.0) {
-	      kss_p_mod = kss_u_val[k]/kss_e_val[k];
+	      kss_p_mod = (kss_u_val[k]/kss_e_val[k]) * (ntotal_exp/ntotal_exp);
 	      for (i=0;i<coeff;i++) {
 		rxn_kss = rxn_kss * kss_p_mod;
 	      }
