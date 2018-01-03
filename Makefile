@@ -67,7 +67,7 @@ AUTOMAKE = ${SHELL} /home/dbaxter/boltzmann/trunk/missing --run automake-1.11
 AWK = gawk
 CC = gcc
 CCDEPMODE = depmode=none
-CFLAGS = ${DBG_FLAGS}
+CFLAGS = ${OPT_FLAGS}
 CPP = gcc -E
 CPPFLAGS = 
 CYGPATH_W = echo
@@ -151,6 +151,7 @@ top_srcdir = .
 CLINKER = gcc
 AR = ar
 ARFLAGS = -crv
+OPT_FLAGS = -g -O2
 EXECS = boltzmann boltzmann_boot_test
 DBG_FLAGS = -O0 -g
 NO_OPT_FLAGS = -O0 -g
