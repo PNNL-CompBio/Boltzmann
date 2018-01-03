@@ -20,15 +20,6 @@ under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <strings.h>
-#include <float.h>
-#include <signal.h>
-#include <unistd.h>
-
-#include "djb_timing_b.h"
 #include "boltzmann_structs.h"
 /*
 #define DBG_FREE_BOOT_STATE 1
@@ -86,11 +77,23 @@ int free_boot_state(struct state_struct **statep) {
       }
       free(state->reactions_matrix);    
     }
+    /*
+      Need to be carefule with unsorted_molecules and unsorted_cmpts as
+      they may have exchanged values with their sorted analogs.
+    */
     if (state->unsorted_molecules) {
-      free(state->unsorted_molecules);
+      if (state->sorted_molecules < state->unsorted_molecules) {
+	free(state->sorted_molecules);
+      } else {
+	free(state->unsorted_molecules);
+      }
     }
     if (state->unsorted_cmpts) {
-      free(state->unsorted_cmpts);
+      if (state->sorted_cmpts < state->unsorted_cmpts) {
+        free(state->sorted_cmpts);
+      } else {
+	free(state->unsorted_cmpts);
+      }
     }
     if (state->activities) {
       free(state->activities);
