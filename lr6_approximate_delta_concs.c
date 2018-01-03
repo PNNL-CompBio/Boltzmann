@@ -1,4 +1,6 @@
 #include "boltzmann_structs.h"
+#include "boltzmann_cvodes_headers.h"
+#include "cvodes_params_struct.h"
 
 /*
 #include "compute_flux_scaling.h"
@@ -53,6 +55,7 @@ int lr6_approximate_delta_concs(struct state_struct *state,
     choice                      IOI   Not used by this routine.
 
   */
+  struct  cvodes_params_struct *cvodes_params;
   struct  molecule_struct *molecules;
   struct  molecule_struct *molecule;
   struct  molecules_matrix_struct *molecules_matrix;
@@ -94,8 +97,6 @@ int lr6_approximate_delta_concs(struct state_struct *state,
   int64_t *rcoefficients;
   int num_species;
   int num_rxns;
-  int rxn;
-  int padi;
   /*
   int base_rxn;
   */
@@ -104,6 +105,12 @@ int lr6_approximate_delta_concs(struct state_struct *state,
 
   int mi;
   int success;
+
+  int compute_sensitivities;
+  int ode_solver_choice;
+
+  int rxn;
+  int padi;
 
   FILE *lfp;
   FILE *efp;
@@ -142,6 +149,16 @@ int lr6_approximate_delta_concs(struct state_struct *state,
   log_kf_rel       = state->log_kf_rel;
   log_kr_rel       = state->log_kr_rel;
   max_log_g0_sum   = state->max_log_g0_sum;
+  ode_solver_choice = state->ode_solver_choice;
+  compute_sensitivities = state->compute_sensitivities;
+  if ((ode_solver_choice == 1) && compute_sensitivities) {
+    cvodes_params = state->cvodes_params;
+    ke = cvodes_params->p;
+    rke = cvodes_params->rp;
+    for (i=0;i<num_rxns;i++) {
+      rke[i] = 1.0/ke[i];
+    }
+  }
   /*
   forward_rxn_likelihoods = state->ode_forward_lklhds;
   reverse_rxn_likelihoods = state->ode_reverse_lklhds;
