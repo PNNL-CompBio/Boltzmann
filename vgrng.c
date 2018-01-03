@@ -54,8 +54,6 @@ int64_t vgrng(struct vgrng_state_struct *vgrng_state) {
   /*
     Hardwiring in the multiplier 69069 for now to
     remove the integer multiply though 
-    I do not understand why chip manufacturers can't build a
-    fast integer multiply using Napier's Bones
   */
   f = c << 16;
   threec = (c << 1) + c;
