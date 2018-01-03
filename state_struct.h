@@ -299,6 +299,7 @@ struct state_struct {
   double  *reg_exponent; /* len = number_reactions * max_regs_per_rxn */
   double  *reg_drctn;    /* len = number_reactions * max_regs_per_rxn */
   int64_t *reg_species;  /* len = number_reactions * max_regs_per_rxn */
+  int     *coeff_sum;    /* len = number_reactions + (number_reactions & 1) */
   /* 
      sizeof(reaction_struct) * number of reactions. 
      Allocated in alloc2 
