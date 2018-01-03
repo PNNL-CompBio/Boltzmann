@@ -1169,6 +1169,9 @@ lr12_approximate_delta_concs.o: lr12_approximate_delta_concs.c lr12_approximate_
 lr13_approximate_delta_concs.o: lr13_approximate_delta_concs.c lr13_approximate_delta_concs.h get_counts.h update_regulations.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c lr13_approximate_delta_concs.c 
 
+lr14_approximate_delta_concs.o: lr14_approximate_delta_concs.c lr14_approximate_delta_concs.h get_counts.h update_regulations.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c lr14_approximate_delta_concs.c 
+
 ode_num_jac.o: ode_num_jac.c ode_num_jac.h $(SERIAL_INCS) num_jac_col.h blas.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c ode_num_jac.c 
 
