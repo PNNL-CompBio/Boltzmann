@@ -37,7 +37,7 @@ int compute_molecular_partition_probability(struct formation_energy_struct *fes)
   /*
     Compute the partition_funcs and probabilities arrays (length unique_molecules)
     Called by: boltzmann_init
-    Calls:     exp,fopen,fprintf,fclose,fflush
+    Calls:     exp,fopen,fprintf,fflush
   */
 
   struct molecule_struct *cur_molecules;
@@ -88,14 +88,18 @@ int compute_molecular_partition_probability(struct formation_energy_struct *fes)
   print_output             = fes->print_output;
   lfp                      = fes->log_fp;
 
+  q       		   = 0.0;
+  scaling 		   = min_molecule_dg0tf * m_r_rt;
+
   if (print_output){
     if (lfp) {
       fprintf(lfp, 
-	      "Output from compute_molecular_partition_probability.c: \n");
+	      "Output from compute_molecular_partition_probability.c: \n\n");
+      fprintf(lfp,"m_r_rt = %le, min_molecule_dg0tf = %le, scaling = %le\n",
+	      m_r_rt,min_molecule_dg0tf,scaling);
+      
     }
   }
-  q = 0;
-  scaling = min_molecule_dg0tf * m_r_rt;
   for (i=0;i<nu_molecules;i++) {
     if (print_output) {
       if (lfp) {
@@ -146,7 +150,6 @@ int compute_molecular_partition_probability(struct formation_energy_struct *fes)
       cur_molecules += 1; /* Caution address arithmetic. */
     }
     fprintf(lfp,"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n");
-    fclose(lfp);
   }
   return (success);
 }
