@@ -30,8 +30,8 @@ int unique_compartments(struct state_struct *state) {
     Remove duplicates from the sorted_compartments list
     and set the compartment_indices fields in the
     reactions_matrix appropriately.
-    Called by: boltzmann_init
-    Calls:     strcmp (intrinsic)
+    Called by: rxns_init
+    Calls:     unique_compartments_core
   */
   struct rxn_struct *reactions;
   struct rxn_matrix_struct *rxns_matrix;
