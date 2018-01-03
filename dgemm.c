@@ -1,5 +1,6 @@
 #include "system_includes.h"
 #include "lsame.h"
+#include "blas.h"
 #include "dgemm.h"
 void dgemm_(char *transa_p, char *transb_p, int *m_p, int *n_p, int *k_p,
 	   double *alpha_p, double *a, int *lda_p, double *b, 
@@ -14,6 +15,7 @@ void dgemm_(char *transa_p, char *transb_p, int *m_p, int *n_p, int *k_p,
        op (b) is k by n
        c is m by n
        alpha and beta are scalars.
+    Calls: lsame, dscal, daxpy, ddot
   */
   double alpha;
   double beta;
