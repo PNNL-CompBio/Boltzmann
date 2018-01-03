@@ -37,7 +37,7 @@ void ode_print_dconcs(struct state_struct *state, double time, double *dconcs) {
 
     state         G*I      state structure :
                            input fields are unique_molecules,
-					    solvent_pos,
+			                    sorted_molecules
 					    ode_dconcs_fp
                            no fields of state are modified.
     dconcs 	  D*I      vector of delta concentrations to be printed.
@@ -46,21 +46,21 @@ void ode_print_dconcs(struct state_struct *state, double time, double *dconcs) {
                   
     
   */
+  struct molecule_struct *cur_molecule;
   int unique_molecules;
   int j;
-  int solvent_pos;
-  int padi;
 
   FILE *ode_dconcs_fp;
-  ode_dconcs_fp           = state->ode_dconcs_fp;
+  ode_dconcs_fp          = state->ode_dconcs_fp;
   unique_molecules       = state->nunique_molecules;
-  solvent_pos            = (int)state->solvent_pos;
+  cur_molecule           = state->sorted_molecules;
   if (ode_dconcs_fp) {
     fprintf(ode_dconcs_fp,"%le",time);
     for (j=0;j<unique_molecules;j++) {
-      if (j != solvent_pos) {
+      if ((cur_molecule->solvent == 0) || (cur_molecule->variable == 1)) {
 	fprintf(ode_dconcs_fp,"\t%le",dconcs[j]);
       }
+      cur_molecule += 1; /* caution address arithmetic.*/
     }
     fprintf(ode_dconcs_fp,"\n");
     fflush(ode_dconcs_fp);
