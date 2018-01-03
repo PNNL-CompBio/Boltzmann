@@ -84,7 +84,7 @@ int catenate_compartments_and_molecules(struct boot_state_struct *boot_state) {
 	read in the compartment text 
       */
       compartment_text_length = local_state->compartment_text_length;
-      lseek_pos = offset + local_state->compartments_text_offset_in_bytes;
+      lseek_pos = offset + local_state->compartment_text_offset;
       /*
       lseek(boot_work_fd,lseek_pos,whence);
       */
@@ -107,7 +107,7 @@ int catenate_compartments_and_molecules(struct boot_state_struct *boot_state) {
 	read in molecules text.
       */
       molecule_text_length    = local_state->molecule_text_length;
-      lseek_pos = offset + local_state->molecules_text_offset_in_bytes;
+      lseek_pos = offset + local_state->molecules_text_offset;
       /*
       lseek(boot_work_fd,lseek_pos,whence);
       */
@@ -131,7 +131,7 @@ int catenate_compartments_and_molecules(struct boot_state_struct *boot_state) {
       */
       nunique_compartments = local_state->nunique_compartments;
       compartment_meta_length = nunique_compartments * sizeof(compartment_instance);
-      lseek_pos = offset + local_state->sorted_compartments_offset_in_bytes;
+      lseek_pos = offset + local_state->sorted_compartments_offset;
       /*
 	lseek(boot_work_fd,lseek_pos,whence);
       */
@@ -168,7 +168,7 @@ int catenate_compartments_and_molecules(struct boot_state_struct *boot_state) {
       */
       nunique_molecules = local_state->nunique_molecules;
       molecule_meta_length = nunique_molecules * sizeof(molecule_instance);
-      lseek_pos = offset + local_state->sorted_molecules_offset_in_bytes;
+      lseek_pos = offset + local_state->sorted_molecules_offset;
       /*
 	lseek(boot_work_fd,lseek_pos,whence);
       */
