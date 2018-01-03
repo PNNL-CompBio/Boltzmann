@@ -59,9 +59,9 @@ int lr8_approximate_delta_concs(struct state_struct *state,
   double  rt;
   double  tr;
   double  tp;
+  /*
   double  conc_mi;
   double  thermo_adj;
-  /*
   double  recip_volume;
   double  recip_avogadro;
   */
