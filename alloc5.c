@@ -54,7 +54,9 @@ int alloc5(int64_t num_cpds,
   char *pseudoisomer_strings;
   int64_t ask_for;
   int64_t one_l;
+  /*
   int64_t enum_cpds;
+  */
   int64_t align_mask;
   int success;
   int padi;
