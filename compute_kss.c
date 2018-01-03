@@ -49,8 +49,8 @@ int compute_kss(struct state_struct *state) {
   struct rxn_struct *reaction;
 
   struct rxn_matrix_struct *rxns_matrix;
-  struct molecule_struct *compartments;
-  struct molecule_struct *compartment;
+  struct compartment_struct *compartments;
+  struct compartment_struct *compartment;
   int64_t *rxn_ptrs;
   int64_t *molecules_indices;
   int64_t *compartment_indices;
@@ -123,7 +123,7 @@ int compute_kss(struct state_struct *state) {
       for (j=rxn_ptrs[rxns];j<rxn_ptrs[rxns+1];j++) {
         k = molecules_indices[j];
 	ci = compartment_indices[j];
-	compartment = (struct molecule_struct *)&compartments[ci];
+	compartment = (struct compartment_struct *)&compartments[ci];
 	ntotal_exp               = compartment->ntotal_exp;
 	ntotal_opt               = compartment->ntotal_opt;
         coeff = coefficients[j];
