@@ -3,8 +3,6 @@ LUNWIND_DEPS = luwtb.h luwtb1.h luwtb2.h
 #EXECS        = boltzmann boltzmann_boot_test deq lapack_test sbml2bo kegg_ms_ids ms2js_ids kegg_ids bwarmup boltzmann_test_save_load
 EXECS        = boltzmann deq lapack_test sbml2bo kegg_ms_ids ms2js_ids kegg_ids bwarmup boltzmann_test_save_load
      
-LIBS = libboltzmann.a
-
 SERIAL_INCS = boltzmann_structs.h boot_state_struct.h super_state_struct.h super_state_pointers_struct.h state_struct.h reaction_struct.h reactions_matrix_struct.h molecules_matrix_struct.h molecule_struct.h compartment_struct.h vgrng_state_struct.h pseudoisomer_struct.h stack_level_elem_struct.h sbml2bo_struct.h t2js_struct.h $(TIMING_DEPS) $(LUNWIND_DEPS)
 
 SERIAL_OBJS1 = boltzmann_init.o alloc0.o alloc0_a.o boltzmann_set_filename_ptrs.o read_params.o boltzmann_init_core.o io_size_init.o create_output_filenames.o open_output_files.o size_rxns_file.o init_rxn_file_keywords.o parse_rxn_file_keyword.o count_ws.o count_nws.o count_molecules.o is_a_coef.o alloc2.o alloc2_a.o rxns_init.o parse_reactions_file.o upcase.o parse_side_line.o find_colon.o sort_compartments.o merge_compartments.o unique_compartments.o unique_compartments_core.o translate_compartments.o sort_molecules.o merge_molecules.o unique_molecules.o unique_molecules_core.o alloc3.o species_init.o set_compartment_ptrs.o set_count_trans.o translate_regulation_metabolites.o molecules_lookup.o read_compartment_sizes.o read_initial_concentrations.o compartment_lookup.o check_initial_concentrations.o
