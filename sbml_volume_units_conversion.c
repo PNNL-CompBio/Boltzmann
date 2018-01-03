@@ -25,7 +25,7 @@ specific language governing permissions and limitations under the License.
 #include "sbml_volume_units_conversion.h"
 double sbml_volume_units_conversion(char *units, FILE *error_fp) {
   /*
-    Compute the converion factor for units into liters.
+    Compute the conversion factor for units into liters.
     Called by: sbml_process_list_of_compartments
     Calls:     strcmp, fprintf,fflushf
   */
