@@ -78,7 +78,7 @@ void ode_print_concs(struct state_struct *state, double time, double *concs) {
   if (print_concs_or_counts & 1) {
     if (ode_counts_fp) {
       do_counts = 1;
-      for (j=0;j<unique_moleules;j++) {
+      for (j=0;j<unique_molecules;j++) {
 	counts[j] = concs[j] * concs_to_counts[j];
       }
     }
