@@ -31,7 +31,11 @@ specific language governing permissions and limitations under the License.
 #include <signal.h>
 #include <unistd.h>
 #include <errno.h>
+#include <math.h>
 #include <sys/mman.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 /*
   Maybe only for linux systems.
 */
