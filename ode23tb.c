@@ -16,6 +16,8 @@
 #include "ode23tb_max_abs_ratio.h"
 #include "ode23tb_nonneg_err.h"
 #include "ode23tb_enforce_nonneg.h"
+#include "update_rxn_likelihoods.h"
+#include "get_counts.h"
 /*
 #include "ode_print_lklhds.h"
 #include "ode_print_bflux.h"
@@ -83,12 +85,13 @@ int ode23tb (struct state_struct *state, double *concs,
   double *fdiff; /* length unique_molecules */
   double *dfdy_tmp; /* length unique_molecules */
 
-  /*double *forward_rxn_likelihoods;*/ /* length nrxns */
-  /*double *reverse_rxn_likelihoods;*/ /* length nrxns */
+  double *forward_rxn_likelihoods; /* length nrxns */
+  double *reverse_rxn_likelihoods; /* length nrxns */
   /*double *net_likelihoods;        */ /* length nrxns */
 
   double *count_to_conc; /* length unique_molecules */
   double *conc_to_count; /* length unique_molecules */
+  double *counts;
   double *dbl_ptr;
   double t0;
   double t;
@@ -217,6 +220,9 @@ int ode23tb (struct state_struct *state, double *concs,
   int nysq;
   int info;
 
+  int ierr;
+  int padi;
+
   int delta_concs_choice;
   int nnreset_znew;
 
@@ -305,10 +311,11 @@ int ode23tb (struct state_struct *state, double *concs,
     fdel                  = &net_lklhd_bndry_flux[ny];
     fdiff                 = &fdel[ny];
     dfdy_tmp              = &fdiff[ny];
-    /*
-    net_likelihoods         = &dfdy_tmp[ny];
     forward_rxn_likelihoods = state->ode_forward_lklhds;
     reverse_rxn_likelihoods = state->ode_reverse_lklhds;
+    counts                  = state->ode_counts;
+    /*
+    net_likelihoods         = &dfdy_tmp[ny];
     */
     /*
       We need to move from stochastic counts to contiuous counts
@@ -930,10 +937,11 @@ int ode23tb (struct state_struct *state, double *concs,
 	  ode_rxn_view_step -= one_l;
 	  if (ode_rxn_view_step == zero_l) {
 	    ode_print_concs(state,t,y);
-	    /*
-	      ode_print_lklhds(state,t,forward_rxn_likelihoods,
-			   reverse_rxn_likelihoods);
-	    */
+	    get_counts(ny,y,conc_to_count,counts);
+	    ierr = update_rxn_likelihoods(state,counts,forward_rxn_likelihoods,
+					  reverse_rxn_likelihoods);
+	    ode_print_lklhds(state,t,forward_rxn_likelihoods,
+			     reverse_rxn_likelihoods);
 	    approximate_delta_concs(state,y,f0,delta_concs_choice);
 	    ode_print_dconcs(state,t,f0);
 	    ode_rxn_view_step = ode_rxn_view_freq;
