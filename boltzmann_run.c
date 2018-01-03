@@ -28,6 +28,7 @@ specific language governing permissions and limitations under the License.
 #include "vec_set_constant.h"
 #include "update_rxn_log_likelihoods.h"
 #include "choose_rxn.h"
+#include "boltzmann_load_agent_data.h"
 #include "deq_run.h"
 #include "compute_delta_g_forward_entropy_free_energy.h"
 #include "print_rxn_choice.h"
@@ -41,12 +42,14 @@ specific language governing permissions and limitations under the License.
 #include "print_boundary_flux.h"
 #include "print_restart_file.h"
 #include "print_reactions_view.h"
+#include "boltzmann_save_agent_data.h"
 
 #include "boltzmann_run.h"
-int boltzmann_run(struct state_struct *state) {
+int boltzmann_run(struct state_struct *state, void *agent_data) {
   /*
     Run the boltzmann simulations, to be called after
-    boltzmann_init has been called to allocate and initialize state structure.
+    boltzmann_init has been called to allocate and initialize state structure,
+    and boltmzann_set_agent_data_ptrs has been called.
 
     Called by: boltzmann/client
     Calls:     update_rxn_log_likelihoods,
@@ -114,8 +117,8 @@ int boltzmann_run(struct state_struct *state) {
   int print_output;
   int incx;
 
-  int j;
   int i0;
+  int padi;
 
   FILE *lfp;
   success = 1;
@@ -150,6 +153,12 @@ int boltzmann_run(struct state_struct *state) {
   choice_view_step       = one_l;
   lfp                    = state->lfp;
   incx = 1;
+  /*
+    load the random number generators' state from the agent data.
+    vgrng_state starts at agent_data[0], and vgrng2_state starts
+    at agent_data[32];
+  */
+  success = boltzmann_load_agent_data(state,agent_data);
   /*
     Initialize the free_energy to be the delta_g0.
   */
@@ -370,6 +379,9 @@ int boltzmann_run(struct state_struct *state) {
     } /* end if (print_output) */
     state->entropy = entropy;
     state->dg_forward = dg_forward;
+  }
+  if (success) {
+    success = boltzmann_save_agent_data(state,agent_data);
   }
   return(success);
 }
