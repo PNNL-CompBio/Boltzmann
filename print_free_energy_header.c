@@ -39,10 +39,13 @@ void print_free_energy_header(struct state_struct *state) {
     Calls    : fprintf,fflush.
   */
   struct rxn_struct *reactions;
+  char *rxn_title_text;
+  char *title;
   int i;
   int free_energy_format;
 
   free_energy_format = (int)state->free_energy_format;
+  rxn_title_text     = state->rxn_title_text;
   /*
     Print header lines for the free energy file.
   */
@@ -57,7 +60,8 @@ void print_free_energy_header(struct state_struct *state) {
     fprintf(state->free_energy_fp,"iter");
     reactions = state->reactions;
     for (i=0;i<(int)state->number_reactions;i++) {
-      fprintf(state->free_energy_fp,"\t%s",reactions->title);
+      title = (char *)&rxn_title_text[reactions->title];
+      fprintf(state->free_energy_fp,"\t%s",title);
       reactions += 1; /* Caution address arithmetic */
     }
     fprintf(state->free_energy_fp,"\n");
