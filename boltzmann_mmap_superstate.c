@@ -70,7 +70,7 @@ int boltzmann_mmap_superstate(char *global_state_filename,
     if ((int64_t)(super_statev) < zero_l) {
       success = 0;
       fprintf(stderr,"boltzmann_mmap_superstate: Error unable to mmap "
-	      "global state file, length = %ld, errno = %d:%s\n",
+	      "global state file, length = %lld, errno = %d:%s\n",
 		mmap_file_len,mmap_err,strerror(mmap_err));
       fflush(stderr);
     } else {
