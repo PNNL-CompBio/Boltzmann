@@ -191,7 +191,7 @@ int main(int argc, char **argv)
   for (i=0;i<m;i++) {
     y[i] = zero;
   }
-  dgemv_(&n_char,&m,&m,&one,a,&m,xsol,&inc1,&one,y,&inc1);
+  dgemv_(&n_char,&m,&m,&one,a,&m,xsol,&inc1,&one,y,&inc1,1);
   fprintf(stdout,"dgemv_ test:\n answer\tresult\n");
   for (i=0;i<m;i++) {
     result = ((double)i) + one;
@@ -209,7 +209,7 @@ int main(int argc, char **argv)
   c[1] = 0;
   c[2] = 0;
   c[3] = 0;
-  dgemm_(&n_char,&n_char,&itwo,&itwo,&itwo,&one,a,&m,b,&m,&one,c,&ldc);
+  dgemm_(&n_char,&n_char,&itwo,&itwo,&itwo,&one,a,&m,b,&m,&one,c,&ldc,1,1);
   answer = (two * (dm * dm)) - dm + one;
   answer2 = -3.0 * dm + two;
   
@@ -240,7 +240,7 @@ int main(int argc, char **argv)
     y[i] = y[i-1] + two;
   }
   dcopy_(&m,y,&inc1,xtest,&inc1);
-  dtrsm_(&l_char,&u_char,&n_char,&n_char,&m,&inc1,&one,a,&m,xtest,&m);
+  dtrsm_(&l_char,&u_char,&n_char,&n_char,&m,&inc1,&one,a,&m,xtest,&m,1,1,1,1);
   daxpy_(&m,&neg_one,xsol,&inc1,xtest,&inc1);
   answer = dnrm2_(&m,xtest,&inc1);
   fprintf(stdout,"dtrsm test for nonunit uppper triangular solve\n");
@@ -259,7 +259,7 @@ int main(int argc, char **argv)
     y[i] = y[i-1] + one;
   }
   dcopy_(&m,y,&inc1,xtest,&inc1);
-  dtrsm_(&l_char,&u_char,&n_char,&u_char,&m,&inc1,&one,a,&m,xtest,&m);
+  dtrsm_(&l_char,&u_char,&n_char,&u_char,&m,&inc1,&one,a,&m,xtest,&m,1,1,1,1);
   daxpy_(&m,&neg_one,xsol,&inc1,xtest,&inc1);
   answer = dnrm2_(&m,xtest,&inc1);
   fprintf(stdout,"dtrsm test for unit uppper triangular solve\n");
@@ -277,7 +277,7 @@ int main(int argc, char **argv)
     y[i] = dm;
   }
   dcopy_(&m,y,&inc1,xtest,&inc1);
-  dtrsm_(&l_char,&l_char,&n_char,&n_char,&m,&inc1,&one,a,&m,xtest,&m);
+  dtrsm_(&l_char,&l_char,&n_char,&n_char,&m,&inc1,&one,a,&m,xtest,&m,1,1,1,1);
   daxpy_(&m,&neg_one,xsol,&inc1,xtest,&inc1);
   answer = dnrm2_(&m,xtest,&inc1);
   fprintf(stdout,"dtrsm test for nonunit lower triangular solve\n");
@@ -296,7 +296,7 @@ int main(int argc, char **argv)
     y[i] = y[i-1] - one;
   }
   dcopy_(&m,y,&inc1,xtest,&inc1);
-  dtrsm_(&l_char,&l_char,&n_char,&u_char,&m,&inc1,&one,a,&m,xtest,&m);
+  dtrsm_(&l_char,&l_char,&n_char,&u_char,&m,&inc1,&one,a,&m,xtest,&m,1,1,1,1);
   daxpy_(&m,&neg_one,xsol,&inc1,xtest,&inc1);
   answer = dnrm2_(&m,xtest,&inc1);
   fprintf(stdout,"dtrsm test for nonunit lower triangular solve\n");
@@ -312,7 +312,7 @@ int main(int argc, char **argv)
   for (i=0;i<m;i++) {
     y[i] = zero;
   }
-  dgemv_(&n_char,&m,&m,&one,a,&m,xsol,&inc1,&one,y,&inc1);
+  dgemv_(&n_char,&m,&m,&one,a,&m,xsol,&inc1,&one,y,&inc1,1);
   /*
     Factor. a.
   */
@@ -326,7 +326,7 @@ int main(int argc, char **argv)
     Now solve for xtest (should be = xsol).
   */
   dcopy_(&m,y,&inc1,xtest,&inc1);
-  dgetrs_(&n_char,&m,&inc1,a,&m,ipiv,xtest,&m,&info);
+  dgetrs_(&n_char,&m,&inc1,a,&m,ipiv,xtest,&m,&info,1);
   /*
     Check info code.
   */
@@ -351,7 +351,7 @@ int main(int argc, char **argv)
   for (i=0;i<m;i++) {
     y[i] = zero;
   }
-  dgemv_(&n_char,&m,&m,&one,b,&m,xsol,&inc1,&one,y,&inc1);
+  dgemv_(&n_char,&m,&m,&one,b,&m,xsol,&inc1,&one,y,&inc1,1);
   /*
     Factor. b.
   */
@@ -365,7 +365,7 @@ int main(int argc, char **argv)
     Now solve for xtest (should be = xsol).
   */
   dcopy_(&m,y,&inc1,xtest,&inc1);
-  dgetrs_(&n_char,&m,&inc1,b,&m,ipiv,xtest,&m,&info);
+  dgetrs_(&n_char,&m,&inc1,b,&m,ipiv,xtest,&m,&info,1);
   /*
     Check info code.
   */
@@ -447,7 +447,7 @@ int main(int argc, char **argv)
     y[i] = zero;
     xsol[i] = (double)i + one;
   }
-  dgemv_(&n_char,&m,&m,&one,a,&m,xsol,&inc1,&one,y,&inc1);
+  dgemv_(&n_char,&m,&m,&one,a,&m,xsol,&inc1,&one,y,&inc1,1);
   dcopy_(&m,y,&inc1,xtest,&inc1);
   dgetrf_(&m,&m,a,&m,ipiv,&info);
   /*
@@ -458,7 +458,7 @@ int main(int argc, char **argv)
   /*
     Now solve for xtest (should be = xsol).
   */
-  dgetrs_(&n_char,&m,&inc1,a,&m,ipiv,xtest,&m,&info);
+  dgetrs_(&n_char,&m,&inc1,a,&m,ipiv,xtest,&m,&info,1);
   /*
     Check info code.
   */
@@ -516,7 +516,7 @@ int main(int argc, char **argv)
     y[i] = zero;
     xsol[i] = 1.0;
   }
-  dgemv_(&n_char,&m,&m,&one,a,&m,xsol,&inc1,&one,y,&inc1);
+  dgemv_(&n_char,&m,&m,&one,a,&m,xsol,&inc1,&one,y,&inc1,1);
   /*
     Factor. a.
   */
@@ -530,7 +530,7 @@ int main(int argc, char **argv)
     Now solve for xtest (should be = xsol).
   */
   dcopy_(&m,y,&inc1,xtest,&inc1);
-  dgetrs_(&n_char,&m,&inc1,a,&m,ipiv,xtest,&m,&info);
+  dgetrs_(&n_char,&m,&inc1,a,&m,ipiv,xtest,&m,&info,1);
   /*
     Check info code.
   */
