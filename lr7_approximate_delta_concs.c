@@ -65,6 +65,9 @@ int lr7_approximate_delta_concs(struct state_struct *state,
   int64_t *rxn_ptrs;
   int64_t *molecule_indices;
   int64_t *rcoefficients;
+
+  int *coeff_sum;
+
   int num_species;
   int num_rxns;
 
@@ -97,6 +100,7 @@ int lr7_approximate_delta_concs(struct state_struct *state,
   molecules   = state->sorted_molecules;
   compartments = state->sorted_compartments;
   molecules_matrix = state->molecules_matrix;
+  coeff_sum        = state->coeff_sum;
   molecules_ptrs   = molecules_matrix->molecules_ptrs;
   rxn_indices      = molecules_matrix->reaction_indices;
   coefficients     = molecules_matrix->coefficients;
@@ -138,7 +142,6 @@ int lr7_approximate_delta_concs(struct state_struct *state,
     rt = 1.0;
     tr = 1.0;
     tp = 1.0;
-    sum_coeff = 0;
     for (j=rxn_ptrs[i];j<rxn_ptrs[i+1];j++) {
       mi = molecule_indices[j];
       molecule = (struct molecule_struct *)&molecules[mi];
@@ -147,7 +150,6 @@ int lr7_approximate_delta_concs(struct state_struct *state,
       recip_volume = compartment->recip_volume;
       volume       = compartment->volume;
       klim = rcoefficients[j];
-      sum_coeff += klim;
       thermo_adj = abs(klim) * recip_volume * recip_avogadro;
       conc_mi = concs[mi];
       if (klim < 0) {
@@ -167,6 +169,7 @@ int lr7_approximate_delta_concs(struct state_struct *state,
     keq_adj = 1.0;
     rkeq_adj = 1.0;
     multiplier = 1.0;
+    sum_coeff = coeff_sum[i];
     if (sum_coeff > 0) {
       multiplier = recip_volume;
     } else {
