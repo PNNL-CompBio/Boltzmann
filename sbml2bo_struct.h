@@ -33,6 +33,7 @@ struct sbml2bo_struct {
   char *cmpts_dat_file;
   char *ms2js_file;
   char *log_file;
+  char *id_name_file;
   char *compartment_text;
   double avogadro;
   double recip_avogadro;
@@ -53,6 +54,7 @@ struct sbml2bo_struct {
   FILE *concs_fp;
   FILE *rxns_fp;
   FILE *cmpts_fp;
+  FILE *id_name_fp;
   FILE *log_fp;
 }
 ;
