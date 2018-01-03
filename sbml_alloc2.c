@@ -41,9 +41,7 @@ int sbml_alloc2(struct sbml2bo_struct *state,
   int64_t ask_for;
   int64_t one_l;
   char **ms_ids;
-  char **mjs_ids;
   char **kegg_ids;
-  char **kjs_ids;
   char **json_ids;
   char *ms2js_strings;
   char *kg2js_strings;
