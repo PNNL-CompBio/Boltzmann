@@ -201,6 +201,7 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
   }
   /*
     Then we extract the unique compartments.
+    and fill the compartment_indices vector of the rxns_matrix structure.
   */
   if (success) {
     success = unique_compartments(state);
@@ -208,13 +209,13 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
   /*
     Now we need to assign the proper compartment numbers to the 
     unsorted molecules, using the compartment_indices field
-    of the rxns_matrix.
+    of the rxns_matrix structure.
   */
   if (success) {
     success = translate_compartments(state);
   }
   /*
-    Now we need to sort the molecules.
+    Now we need to sort the molecules, by compartment and name.
   */
   if (success) {
     success = sort_molecules(&state->unsorted_molecules,
@@ -222,7 +223,8 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
 			    state->number_molecules);
   }
   /*
-    Then we extract the unique molecules.
+    Then we extract the unique molecules and set the
+    molecules_indices field of the rxn_matrix struct.
   */
   if (success) {
     success = unique_molecules(state);
@@ -245,14 +247,20 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
   /*
     Now in order to enable molecule/compartment lookup for
     read_initial_concentrations we need to set the compartment 
-    pointers.
+    pointers, these are pointers into the list of sorted molecules
+    All the molecules within a compartment are adjacent in the
+    sorted molecules list. This call just sets pointers to the
+    first molecule in each compartment, and one past the last
+    molecule so that molecules in compartment i in the sorted molecules list
+    are in positions compartment_ptrs[i]:compartment_ptrs[i+1]-1 
+    inclusive.
   */
   if (success) {
     success = set_compartment_ptrs(state);
   }
   /*
     Read initial concentrations.
-    And print them to the concentrations outpu file.
+    And print them to the concentrations output file.
   */
   if (success) {
     success = read_initial_concentrations(state);
