@@ -288,16 +288,6 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
     }
   }
   /*
-    Initialize the free_energy to be the delta_g0.
-  */
-  if (success) {
-    dg0s = state->dg0s;
-    free_energy  = state->free_energy;
-    for (i=0;i<state->number_reactions;i++) {
-      free_energy[i] = dg0s[i];
-    }
-  }
-  /*
     If use_activities has not been turned on, set all activities to
     1.0 so that all reactions are fully active.
   */
@@ -327,7 +317,13 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
     *statep = boot_state;
     */
     *statep = NULL;
+    boot_state->workspace_base = NULL;
     success = flatten_state(boot_state,statep);
+    /*
+    if (success) {
+      success = free_boot_state(&boot_state);
+    }
+    */
   }
   return(success);
 }
