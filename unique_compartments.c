@@ -33,25 +33,17 @@ int unique_compartments(struct state_struct *state) {
     Called by: rxns_init
     Calls:     unique_compartments_core
   */
-  struct rxn_struct *reactions;
   struct rxn_matrix_struct *rxns_matrix;
   int64_t *compartment_indices;
   struct compartment_struct *sorted_cmpts;
-  struct compartment_struct *cur_cmpt;
-  struct compartment_struct *ucmpts_next;
   char *compartment_text;
-  char *sstring;
-  char *cstring;
   int64_t sum_compartment_len;
   int64_t nunique_compartments;
   int64_t align_len;
   int64_t align_mask;
 
   int nzr;
-  int i;
-
   int success;
-  int nu_cmpts;
 
   success = 1;
   align_len     = state->align_len;
