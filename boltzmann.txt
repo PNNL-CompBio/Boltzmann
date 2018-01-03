@@ -1,0 +1,191 @@
+Overview
+
+Boltzmann is a library of c procedures and a few executables designed to
+allow the statistical thermodynamics simulation of a set of chemical reactions
+in a collection of compartments. Each of the executable takes only one 
+argument, the input parameter file, traditionally we use a .in file extension
+on these files, see for example "coupledenzyme.in"
+
+
+
+
+The main executable is "boltzmann".
+The parameter file specifies the locations of the other input files.
+read_params.c is the c routine that reads the .in file
+It reads a reaction file, and some dictionary files to assist in parsing
+the reaction file, and a set of initial concentrations, and simulates the
+reactions via statistical thermodynamics for a specified number of steps.
+Per se there is no notion of time, just the number of reaction fires.
+
+Parameters in the *.in file are keyword value pairs, keywords are uppercase
+only.
+
+The following comes from `fgrep fopen *.c > fopen.lis`
+
+
+
+
+Data files needed:                      opened in                mode
+
+modelseed_compounds_db.txt              keg_from_modelseed.c     "r"
+unsorted_modelseed_ids_with_spaces.txt  keg_from_modelseed.c     "w"
+unsorted_modelseed_ids.txt              keg_from_modelseed.c     "w"
+modelseed_multiple_multiple_kegg_id.txt keg_from_modelseed.c     "w"
+
+pseudoisomer_dg0f.txt                   keg_from_pseudoisomer.c  "r"
+unsorted_json_ids_with_spaces.txt       keg_from_pseudoisomer.c  "w"
+unsorted_ids.txt			keg_from_pseudoisomer.c  "w"
+
+unique_modelseed_ids_sorted_by_keg.txt  modelseed_2_json.c       "r"
+unique_json_ids_sorted_by_keg.txt       modelseed_2_json.c       "r"
+modelseed_2_json.dat                    modelseed_2_json.c       "w"
+modelseed_json_mismatches               modelseed_2_json.c       "w"
+
+<ode_concs_file>                        ode_print_concs_header.c "w+"
+
+<log_file>                              open_output_files.c      "w"
+<counts_out_file>                       open_output_files.c      "w"
+<rxn_likelihood_file>                   open_output_files.c      "w"
+<bndry_flux_file>                       open_output_files.c      "w"
+
+
+<pseudoisomer_file>                     parse_pseudoisomer_dg0f_file.c "r"
+<reaction_file>                         parse_reactions_file.c   "r"
+
+<sbml_file>                             parse_sbml_file.c        "r"
+<concs_in_file>				parse_sbml_file.c        "w"
+<cmpts_dat_file>                        parse_sbml_file.c        "w"
+<rxns_dat_file>                         parse_sbml_file.c        "w"
+<id_name_file>                          parse_sbml_file.c        "w"
+
+<dg0_ke_file>                           print_dg0_ke.c           "w"
+
+<dictionary_file>                       print_molecules_dictionary.c "w+"
+
+<rxn_mat_file>                          print_reactions_matrix.c "w+"
+
+<rxn_view_file>                         print_reactions_vew.c   "w+"
+
+<restart_file>                          print_restart_file.c "w+"
+
+<compartment_file>                      read_compartment_sizes.c "r"
+
+<init_conc_file>                        read_initial_concentrations.c "r"
+
+<kg2js_file>                            read_kg2js.c "r"
+
+<ms2js_file>                            read_ms2js.c "r"
+
+<params_file>                           read_params.c "r"
+
+<log_file>                              rxn_map_init.c "w"
+rxns.echo                               rxn_map_init.c "w"
+<init_conc_file>                        rxn_map_init.c "r"
+
+<log_file>                              sbml2bo.c "w"
+<sbml_file>				sbml_count_comps.c "r"
+                                        sbml_count_species.c "r"
+
+_kg2js_wc_output_                       size_kg2js_file.c  "r"
+_ms2js_wc_output_                       size_ms2js_file.c  "r"
+_dg0f_wc_output_                        size_pseudoisomer_file.c "r"
+
+<reactions_file> 			size_rxns_file.c "r"
+<rxn_list_file>                         size_rxns_lixt.c "r"
+					
+
+
+Data structures 
+(ls *struct.h)
+state_struct defined in state_struct.h
+
+
+
+
+
+rxn_struct   defined in rxn_struct.h
+   Contains information about a reaction
+struct rxn_struct {
+  int64_t title; /* reaction title offset */
+  int64_t pathway;  /* Pathway name offset .e.g TCA cycle */
+  int64_t lcompartment;  /* left compartment name offset */
+  int64_t rcompartment;  /* right compartment name offset */
+
+  double  delta_g0;      /* Gibbs free energy */
+  /*
+    unit_v is the delta_g0 units, 1.0 for calories 4.184 for Joules.
+  */
+  double  unit_v;
+  double  k_epsilon;     /* Equilibrium coefficient
+  /*
+    activity is to be used as a likelihood multiplier in determining
+    which reaction fires. It is in [0,1], 0 means the reaction does not 
+    fire, one means its fully activated, things in between represent 
+    partial activations, this is for later use.
+  */
+  double  activity;
+  /*
+    Lines added by DGT on April 17, 2013
+    ph is the pH
+    temp_kelvin is the temperature in degrees Kelvin
+    ionic_strength is the ionic string in molar (M) units.
+  */
+  double ph;
+  double temp_kelvin;
+  double ionic_strength;
+
+  int  num_reactants;
+  int  num_products;
+
+  int  self_id; /* reacation number.
+  /*
+    unit_i: 0 for Kcalories, 1 for KJoules.
+  */
+  int  unit_i;
+  /*
+    Left compartment, and right compartment indicator, -1 = not set.
+    (order in sorted list of compartment names.
+  */
+  int  left_compartment;
+  int  right_compartment;
+
+  /*
+    Added by DGT on 4/22/2013
+    deltag0_computed = 1 if deltag0 of the reaction was successfully computed.
+    Otherwise it is set to 0.
+  */
+  int deltag0_computed;
+  int num_regulators;
+  
+}
+;
+
+
+AUXILLIARY EXECUTABLES
+the auxilliary executables are (from grep CLINKER Makefile.body)
+ms2js_ids
+keg_ms_ids
+keg_ids
+boltzmann_boot_test
+deq
+sbml2bo
+
+
+
+
+
+General Characteristics
+This is all serial code.
+1 c routine per .c file
+Each .c file has a corresponding .h file that contains its header.
+All routines are lower case alphanumeric with underscores (no camel case) .
+Similarly with variable names, all variable names are in lower case.
+Macros are UPPERCASE only.
+Every header file has a #ifndef/#define macro which is the routine name 
+preceded with underscore, and postfixed with _H_ so as to avoid name space 
+collisions with variables, and other macros.
+Calloc is used as the allocation routine
+No allocations in loops, allocate once free never that is an OS function
+(see exception for biocellion interface) 
+All struct types end in _struct and struct x is defined in x_struct.h
+
