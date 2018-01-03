@@ -30,8 +30,6 @@ void ode_print_lklhd_header(struct state_struct *state) {
     Calls    : fprintf,fflush.
   */
   struct rxn_struct *reactions;
-  double *kss;
-  double *kssr;
   char *rxn_title_text;
   char *title;
   int i;
