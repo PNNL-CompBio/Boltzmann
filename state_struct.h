@@ -49,7 +49,7 @@ specific language governing permissions and limitations under the License.
      activities,
      sorted_compartments
 
-     Each of following 4 arrays of length max_regs_per_rxn * num_rxns
+     Each of following 4 arrays of length max_regs_per_rxn * num_reactions
      reg_species,   (int64_t)
      reg_drctn,     (int64_t)
      reg_constant,  (double)
@@ -214,10 +214,12 @@ struct state_struct {
   double  *entropy_p;    /* scalar */        /* 8 */             
   double  *current_counts; /* len = unique_molecules */
   double  *bndry_flux_counts;       /* len = unique_molecules */
+  double  *net_lklhd_bndry_flux;    /* len = unique_molecules */
+  double  *net_likelihood;          /* len = number_reactions */
   struct  vgrng_state_struct *vgrng_state; /* len = 13 */
   struct  vgrng_state_struct *vgrng2_state;/* len = 13 */ 
   /* 
-    2*sizeof(double) + unique_molecules * 2 * sizeof(double) 
+    (2 + (3*unique_molecules)+ number_reactions) * sizeof(double) 
     + 2 * sizeof(vgrng_state_struct)
   */
   /*
@@ -281,6 +283,8 @@ struct state_struct {
   char *output_dir;        /* max_filename_len */
   char *counts_out_file;   /* max_filename_len */
   char *ode_concs_file;    /* max_filename_len */
+  char *net_lklhd_file;    /* max_filename_len */
+  char *nl_bndry_flx_file; /* max_filename_len */
   char *rxn_lklhd_file;    /* max_filename_len */
   char *free_energy_file;  /* max_filename_len */
   char *restart_file;      /* max_filename_len */
@@ -354,6 +358,9 @@ struct state_struct {
 
   FILE *counts_out_fp;
   FILE *ode_concs_fp;
+
+  FILE *net_lklhd_fp;
+  FILE *nl_bndry_flx_fp;
   
   FILE *rxn_lklhd_fp;
   FILE *free_energy_fp;
