@@ -37,20 +37,37 @@ specific language governing permissions and limitations under the License.
 #include "rxn_likelihood_postselection.h"
 
 #include "choose_rxn.h"
-int choose_rxn(struct state_struct *state) {
+int choose_rxn(struct state_struct *state,
+	       double *r_sum_likelihoodp) {
   /*
     Choose a reaction using Metropolis Monte Carlo Methods.
+
     Called by: boltzmann_run_sim
     Calls:     vgrng,
                candidate_rxn,
-	       rxn_likelihood
-    
+	       rxn_likelihood_postselection.
+	       bndry_flux_update
+
+    Arguments: 
+    Name        TMF   Description
+    state       G*B   Pointer to the state structure.
+                      Modifies forward_rxn_likelihood and
+		               reverse_rxn_likelihood fields,
+			       future_concs
+			       bndry_flux_concs 
+			          (via the bndry_flux_update call)
+		      Uses number_reactions, activities,
+		           vgrng2_state
+
+    r_sum_likelihoodp
+                D*O   Address of a double which is set to the reciprocal of 
+		      (1+sum of the forward and reverse reaction likelihoods),
+		      the likelihood of no reaction being selected.
   */
   struct vgrng_state_struct *vgrng2_state;
   double *forward_rxn_likelihood;
   double *reverse_rxn_likelihood;
   double *activities;
-  double *activities_save;
   double *future_concs;
   double *ke;
   double dchoice;
@@ -58,10 +75,10 @@ int choose_rxn(struct state_struct *state) {
   double likelihood;
   int64_t choice;
 
-  int num_rxns;
-  int num_rxns_t2;
+  int number_reactions;
+  int number_reactions_t2;
 
-  int num_rxns_p1;
+  int number_reactions_p1;
   int success;
 
   int accept;
@@ -73,47 +90,40 @@ int choose_rxn(struct state_struct *state) {
   int j;
   int k;
   
-  int not_saved;
-  int padi;
-
-  success = 1;
-  num_rxns               = state->number_reactions;
+  success                = 1;
+  number_reactions       = state->number_reactions;
   forward_rxn_likelihood = state->forward_rxn_likelihood;
   reverse_rxn_likelihood = state->reverse_rxn_likelihood;
   activities             = state->activities;
-  activities_save        = state->activities_save;
-  future_concs                  = state->future_concentrations;
-  vgrng2_state            = state->vgrng2_state;
-  num_rxns_t2            = num_rxns << 1;
-  /*
-    Save a copy of the activities to reset to.
-  */
+  future_concs           = state->future_concentrations;
+  vgrng2_state           = state->vgrng2_state;
+  number_reactions_t2    = number_reactions << 1;
   accept = 0;
-  not_saved  = 1;
-  for (j=0;((j<num_rxns)&&(accept == 0));j++) {
+  for (j=0;((j<number_reactions)&&(accept == 0));j++) {
     /*
-      Get a trial choice. This sets the future concentrations.
+      Get a trial choice. This sets the future_concentrations field of 
+      the state structure.
     */
-    rxn_choice             = candidate_rxn(state,&scaling);
+    rxn_choice = candidate_rxn(state,&scaling,r_sum_likelihoodp);
     /*
       Compute the likelihood for this reaction.
       -1 for reverse, 1 for forward;
     */
     rxn_direction = 1;
     i = rxn_choice;
-    if (rxn_choice >= num_rxns) {
+    if (rxn_choice >= number_reactions) {
       rxn_direction = -1;
-      i = i - num_rxns;
+      i = i - number_reactions;
     }
     /*
       Testing with no rejection.
     return(rxn_choice);
     */
-    if (rxn_choice < num_rxns_t2) {
+    if (rxn_choice < number_reactions_t2) {
       /*
 	The Metropolis method follows.
 	If reaction was forward or reverse 
-	( No-op is rxn_choice >= num_rxns_t2).
+	( No-op is rxn_choice >= number_reactions_t2).
       */
       /*
 	Compute the reaction likelihood for this reaction.
