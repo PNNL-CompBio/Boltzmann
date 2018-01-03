@@ -29,9 +29,13 @@ int echo_params (FILE *lfp, struct state_struct *state) {
     
     Called by: echo_inputs
     Calls:     fprintf (intrinsic)
- */
+  */
+  struct cvodes_params_struct *cvodes_params;
+  struct ode23tb_params_struct *ode23tb_params;
   int success;
   int pad1;
+  cvodes_params = state->cvodes_params;
+  ode23tb_params = state->ode23tb_params;
   success = 1;
   if (lfp) {
     fprintf(lfp,"state->params_file    	       = %s\n",state->params_file);
@@ -78,8 +82,11 @@ int echo_params (FILE *lfp, struct state_struct *state) {
     fprintf(lfp,"state->lklhd_view_freq        = %ld\n",state->lklhd_view_freq);
     fprintf(lfp,"state->fe_view_freq           = %ld\n",state->fe_view_freq);
     fprintf(lfp,"state->ode_rxn_view_freq      = %ld\n",state->ode_rxn_view_freq);
+    fprintf(lfp,"state->print_ode_concs        = %ld\n",state->print_ode_concs);
     fprintf(lfp,"state->adjust_steady_state    = %ld\n",state->adjust_steady_state);
     fprintf(lfp,"state->print_output           = %ld\n",state->print_output);
+    fprintf(lfp,"state->print_concs_or_counts  = %ld\n",state->print_concs_or_counts);
+    fprintf(lfp,"state->use_bulk_water         = %ld\n",state->use_bulk_water);
     fprintf(lfp,"state->use_activities         = %ld\n",state->use_activities);
     fprintf(lfp,"state->use_deq                = %ld\n",state->use_deq);
     fprintf(lfp,"state->use_pseudoisomers      = %ld\n",state->use_pseudoisomers);
@@ -89,6 +96,61 @@ int echo_params (FILE *lfp, struct state_struct *state) {
     fprintf(lfp,"state->base_reaction          = %ld\n",state->base_reaction);
     fprintf(lfp,"state->ode_solver_choice      = %ld\n",state->ode_solver_choice);
     fprintf(lfp,"state->delta_concs_choice     = %ld\n",state->delta_concs_choice);
+    fprintf(lfp,"state->ode_jacobian_choice    = %ld\n",state->ode_jacobian_choice);
+    fprintf(lfp,"state->ode_stop_norm          = %ld\n",state->ode_stop_norm);
+    fprintf(lfp,"state->ode_stop_rel           = %ld\n",state->ode_stop_rel);
+    fprintf(lfp,"state->ode_stop_style         = %ld\n",state->ode_stop_style);
+    fprintf(lfp,"state->cvodes_rhs_choice      = %ld\n",state->cvodes_rhs_choice);
+    fprintf(lfp,"state->cvodes_jtimes_choice   = %ld\n",state->cvodes_jtimes_choice);
+    fprintf(lfp,"state->cvodes_prec_choice     = %ld\n",state->cvodes_prec_choice);
+    fprintf(lfp,"state->cvodes_prec_fill       = %ld\n",state->cvodes_prec_fill);
+    fprintf(lfp,"cvodes_params->linear_multistep_method = %d\n",
+	    cvodes_params->linear_multistep_method);
+    fprintf(lfp,"cvodes_params->linear_solver_method    = %d\n",
+	    cvodes_params->linear_solver_method);
+    fprintf(lfp,"cvodes_params->iterative_method        = %d\n",
+	    cvodes_params->iterative_method);
+    fprintf(lfp,"cvodes_params->adams_q_max             = %d\n",
+	    cvodes_params->adams_q_max);
+    fprintf(lfp,"cvodes_params->bdf_q_max               = %d\n",
+	    cvodes_params->bdf_q_max);
+    fprintf(lfp,"cvodes_params->max_ord                 = %d\n",
+	    cvodes_params->max_ord);
+    fprintf(lfp,"cvodes_params->mxsteps                 = %d\n",
+	    cvodes_params->mxsteps);
+    fprintf(lfp,"cvodes_params->mxhnil                  = %d\n",
+	    cvodes_params->mxhnil);
+    fprintf(lfp,"cvodes_params->use_stab_lim_det        = %d\n",
+	    cvodes_params->use_stab_lim_det);
+    fprintf(lfp,"cvodes_params->maxnef                  = %d\n",
+	    cvodes_params->maxnef);
+    fprintf(lfp,"cvodes_params->maxcor                  = %d\n",
+	    cvodes_params->maxcor);
+    fprintf(lfp,"cvodes_params->maxncf                  = %d\n",
+	    cvodes_params->maxncf);
+    fprintf(lfp,"cvodes_params->maxl                    = %d\n",
+	    cvodes_params->maxl);
+    fprintf(lfp,"cvodes_params->pretype                 = %d\n",
+	    cvodes_params->pretype);
+    fprintf(lfp,"cvodes_params->gstype                  = %d\n",
+	    cvodes_params->gstype);
+    fprintf(lfp,"cvodes_params->num_cvode_steps         = %d\n",
+	    cvodes_params->num_cvode_steps);
+    fprintf(lfp,"cvodes_params->reltol                  = %le\n",
+	    cvodes_params->reltol);
+    fprintf(lfp,"cvodes_params->abstol                  = %le\n",
+	    cvodes_params->abstol);
+    fprintf(lfp,"cvodes_params->hin                     = %le\n",
+	    cvodes_params->hin);
+    fprintf(lfp,"cvodes_params->hmin                    = %le\n",
+	    cvodes_params->hmin);
+    fprintf(lfp,"cvodes_params->hmax                    = %le\n",
+	    cvodes_params->hmax);
+    fprintf(lfp,"cvodes_params->nlscoef                 = %le\n",
+	    cvodes_params->nlscoef);
+    fprintf(lfp,"cvodes_params->eplifac                 = %le\n",
+	    cvodes_params->eplifac);
+
     fprintf(lfp,"state->ideal_gas_r            = %le\n",state->ideal_gas_r);
     fprintf(lfp,"state->temp_kelvin            = %le\n",state->temp_kelvin);
     fprintf(lfp,"state->ph                     = %le\n",state->ph);
