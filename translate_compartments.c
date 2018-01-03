@@ -34,7 +34,7 @@ int translate_compartments(struct state_struct *state) {
   struct rxn_struct *reactions;
   struct rxn_matrix_struct *rxns_matrix;
   int64_t *compartment_indices;
-  struct istring_elem_struct *molecule;
+  struct molecule_struct *molecule;
   int nzr;
   int i;
   int success;
