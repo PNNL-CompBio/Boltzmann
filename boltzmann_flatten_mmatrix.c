@@ -18,6 +18,7 @@ int boltzmann_flatten_mmatrix(struct state_struct *state,
   void *molecules_ptrs;
   void *reaction_indices;
   void *coefficients;
+  void *recip_coeffs;
 
   int success;
   int word_pos;
@@ -34,7 +35,7 @@ int boltzmann_flatten_mmatrix(struct state_struct *state,
 
   lfstate = (int64_t *)fstate;
 
-  mmatrix_len = (int64_t)3 + nunique_molecules + (2*nz);
+  mmatrix_len = (int64_t)3 + nunique_molecules + (3*nz);
 
   word_pos += 1;
   if (direction == 0) {
@@ -76,6 +77,13 @@ int boltzmann_flatten_mmatrix(struct state_struct *state,
       memcpy(coefficients,mmatrix->coefficients,nz_len);
     } else {
       memcpy(mmatrix->coefficients,coefficients,nz_len);
+    }
+    word_pos += nz;
+    recip_coeffs = (void*)&lfstate[word_pos];
+    if (direction == 0) {
+      memcpy(recip_coeffs,mmatrix->recip_coeffs,nz_len);
+    } else {
+      memcpy(mmatrix->recip_coeffs,recip_coeffs,nz_len);
     }
     /*
       NB we need to leave word_pos pointing at the last word set.
