@@ -44,7 +44,9 @@ void boltzmann_set_filename_ptrs(struct state_struct *statep) {
   statep->output_dir         = statep->log_file + max_file_name_len;
   statep->counts_out_file    = statep->output_dir + max_file_name_len;
   statep->ode_concs_file     = statep->counts_out_file + max_file_name_len;
-  statep->rxn_lklhd_file     = statep->ode_concs_file + max_file_name_len;
+  statep->net_lklhd_file     = statep->ode_concs_file + max_file_name_len;
+  statep->nl_bndry_flx_file  = statep->net_lklhd_file + max_file_name_len;
+  statep->rxn_lklhd_file     = statep->nl_bndry_flx_file + max_file_name_len;
   statep->free_energy_file   = statep->rxn_lklhd_file + max_file_name_len;
   statep->restart_file       = statep->free_energy_file + max_file_name_len;
   statep->rxn_view_file      = statep->restart_file + max_file_name_len;
