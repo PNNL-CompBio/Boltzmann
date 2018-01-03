@@ -78,6 +78,9 @@ double rxn_likelihood(double *counts,
 
   */
   struct rxn_matrix_struct *rxns_matrix;
+  struct molecule_struct  *molecules;
+  struct molecule_struct  *molecule;
+  
   double likelihood;
   double *ke;
   double *kss;
@@ -85,9 +88,16 @@ double rxn_likelihood(double *counts,
   double *kssr;
   */
   double  count;
+  /*
   double  left_counts;
   double  right_counts;
+  */
+  double  left_concs;
+  double  right_concs;
   double  eq_k;
+  double  *count_to_conc;
+  double  volume_recip;
+  int64_t m_index;
   int64_t coeff;
   int64_t *rcoef;
   int64_t *rxn_ptrs;
@@ -98,21 +108,23 @@ double rxn_likelihood(double *counts,
   int j;
   int k;
 
-  left_counts = 1.0;
-  right_counts = 1.0;
   success           = 1;
   nrxns             = (int)state->number_reactions;
   rxns_matrix       = state->reactions_matrix;
   rxn_ptrs          = rxns_matrix->rxn_ptrs;
   rcoef             = rxns_matrix->coefficients;
   molecules_indices = rxns_matrix->molecules_indices;
+  molecules         = state->sorted_molecules;
+  count_to_conc     = state->count_to_conc;
   ke                = state->ke;
   kss               = state->kss;
   /*
   kssr              = state->kssr;
-  */
   left_counts        = 1.0;
   right_counts       = 1.0;
+  */
+  left_concs = 1.0;
+  right_concs = 1.0;
   eq_k = ke[rxn] * kss[rxn];
   /*
     This may change if kssr[rxn] != 1/kss[rxn]
@@ -120,20 +132,33 @@ double rxn_likelihood(double *counts,
   if (rxn_direction < 0) {
     eq_k = 1.0/eq_k;
   }
+  /*
+    Mod here we need to account for concentrations not counts, so we
+    need an left sum of coefficients and a right sum of coeffiecients.
+  */
   for (j=rxn_ptrs[rxn];j<rxn_ptrs[rxn+1];j++) {
     coeff = rcoef[j];
-    count  = counts[molecules_indices[j]];
+    m_index = molecules_indices[j];
+    molecule = &molecules[m_index];
+    volume_recip = count_to_conc[m_index];
+    count = counts[m_index];
     if (rxn_direction < 0) {
       coeff = -coeff;
     }
     if (coeff < 0) {
       for (k=0;k<(0-coeff);k++) {
-	left_counts = left_counts * (count-k);	
+	/*
+	left_counts = left_counts * (count-k);
+	*/
+	left_concs = left_concs * ((count-k) * volume_recip);
       } 
     } else {
       if (coeff > 0) {
 	for (k=1;k<=coeff;k++) {
-	  right_counts = right_counts * (count+k);
+	  /*
+	  right_counts = right_counts * (count+k)
+	  */
+	  right_concs = right_concs * (count+k) * volume_recip;
 	} 
       }
       /*
@@ -142,6 +167,15 @@ double rxn_likelihood(double *counts,
       */
     }
   }
-  likelihood = eq_k * (left_counts/ right_counts);
+  /*
+    if left_concs < 0 then not enought reatants were available to run the reaction. So set left_concs to be 0.
+  */
+  if (left_concs < 0.0) {
+    left_concs = 0.0;
+  }
+  /*
+  likelihood = eq_k * (left_counts/right_counts);
+  */
+  likelihood = eq_k * (left_concs/right_concs);
   return(likelihood);
 }
