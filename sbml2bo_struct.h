@@ -24,10 +24,14 @@ specific language governing permissions and limitations under the License.
 struct sbml2bo_struct {
   struct compartment_struct *sorted_compartments;
   struct compartment_struct *unsorted_compartments;
+  struct ms2js_struct       *ms2js_data;
+  int64_t num_modelseed_ids;
+  int64_t length_ms2js_strings;
   char *sbml_file;
   char *concs_in_file;
   char *rxns_dat_file;
   char *cmpts_dat_file;
+  char *ms2js_file;
   char *log_file;
   char *compartment_text;
   double avogadro;
