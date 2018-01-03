@@ -20,7 +20,7 @@ int boot_alloc0(struct boot_state_struct **boot_state_p) {
   boot_state = (struct boot_state_struct *)calloc(one_l,ask_for);
   if (boot_state == NULL) {
     success = 0;
-    fprintf(stderr,"boot_alloc0: Error unable to allocate %ld bytes for boot_state\n",ask_for);
+    fprintf(stderr,"boot_alloc0: Error unable to allocate %lld bytes for boot_state\n",ask_for);
     fflush(stderr);
   }
   *boot_state_p = boot_state;
