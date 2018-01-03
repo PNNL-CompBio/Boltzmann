@@ -26,7 +26,7 @@ specific language governing permissions and limitations under the License.
 int unalloc6(struct formation_energy_struct *formation_energies) {
   /*
     free space allocated by alloc6 routine.
-    Called by: formation_energy_rxn_dg0fs
+    Called by: compute_standard_energies
     Calls:     free
   */
   int64_t ask_for;
