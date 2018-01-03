@@ -54,6 +54,7 @@ int lr7_approximate_delta_concs(struct state_struct *state,
   double  conc_mi;
   double  thermo_adj;
   double  recip_volume;
+  double  recip_avogadro;
   double  fluxi;
   int64_t *molecules_ptrs;
   int64_t *rxn_indices;
@@ -100,7 +101,7 @@ int lr7_approximate_delta_concs(struct state_struct *state,
   ke               = state->ke;
   rke              = state->rke;
   rfc              = state->product_term;
-  
+  recip_avogadro   = state->recip_avogadro;
   /*
   flux_scaling     = compute_flux_scaling(state,concs);
   */
@@ -138,7 +139,7 @@ int lr7_approximate_delta_concs(struct state_struct *state,
       compartment = (struct compartment_struct *)&compartments[ci];
       recip_volume = compartment->recip_volume;
       klim = rcoefficients[j];
-      thermo_adj = abs(klim) * recip_volume;
+      thermo_adj = abs(klim) * recip_volume * recip_avogadro;
       conc_mi = concs[mi];
       if (klim < 0) {
 	for (k=0;k<(-klim);k++) {
