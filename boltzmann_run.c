@@ -42,7 +42,7 @@ specific language governing permissions and limitations under the License.
 int boltzmann_run(struct state_struct *state) {
   /*
     Run the boltzmann simulations, to be called after
-    boltzmann_init has been called.
+    boltzmann_init has been called to allocate and initialize state structure.
 
     Called by: boltzmann/client
     Calls:     flatten_state,
@@ -187,7 +187,7 @@ int boltzmann_run(struct state_struct *state) {
 	likelihood ratio. A second step called the metropolis method is 
 	employed to allow reactions that use the last reactant molecules or
 	produce the first product molecules to fire.
-	This call call also updates the future_counts vector.
+	This call also updates the future_counts vector.
       */
       rxn_choice = choose_rxn(state,&r_sum_likelihood);
       if (rxn_choice < 0) break;
