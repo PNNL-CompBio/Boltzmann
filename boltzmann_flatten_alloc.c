@@ -65,7 +65,7 @@ int boltzmann_flatten_alloc (struct state_struct **state_p,
     }
   } else {
     /*
-      Loading a state from flatten_state.
+      Loading a state from flattened_state.
       Allocate state.
       Loading fields from flattened_state into state.
     */
