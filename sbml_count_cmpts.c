@@ -22,7 +22,7 @@ specific language governing permissions and limitations under the License.
 ******************************************************************************/
 
 #include "boltzmann_structs.h"
-
+#include "sbml_find_section.h"
 #include "sbml_count_cmpts.h"
 int sbml_count_cmpts(struct sbml2bo_struct *sbml_state) {
   /*
@@ -53,7 +53,7 @@ int sbml_count_cmpts(struct sbml2bo_struct *sbml_state) {
   if (sbml_fp == NULL) {
     success = 0;
     fprintf(error_fp,
-	    "sbml_count_cmpts: Error unable to open sbml_file, %x\n",
+	    "sbml_count_cmpts: Error unable to open sbml_file, %s\n",
 	    sbml_state->sbml_file);
     fflush(error_fp);
   }
