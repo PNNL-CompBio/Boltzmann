@@ -30,7 +30,7 @@ int candidate_rxn(struct state_struct *state, double *scalingp,
 		  double *r_sum_likelihoodp) {
   /*
     Generate a candidate reaction, to be tested by
-    choose_rxn, and update concentrations as though
+    choose_rxn, and update counts as though
     that reaction had been selected.
     Called by : choose_rxn
     Calls     : vgrng, 
