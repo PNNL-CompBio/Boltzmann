@@ -20,14 +20,6 @@ under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <strings.h>
-#include <float.h>
-#include <signal.h>
-#include <unistd.h>
-
 #include "boltzmann_structs.h"
 
 #include "read_params.h"
@@ -107,7 +99,13 @@ int read_params (char *param_file_name, struct state_struct *state) {
     while ((!feof(in_fp)) && (sscan_ok == 2)) {
       if (strncmp(key,"RXN_FILE",8) == 0) {
 	sscan_ok = sscanf(value,"%s",state->reaction_file);
+      } else if (strncmp(key,"RXN_LIST_FILE",13) == 0) {
+	sscan_ok = sscanf(value,"%s",state->reaction_file);
       } else if (strncmp(key,"INIT_FILE",9) == 0) {
+	sscan_ok = sscanf(value,"%s",state->init_conc_file);
+      } else if (strncmp(key,"CONC_FILE",9) == 0) {
+	sscan_ok = sscanf(value,"%s",state->init_conc_file);
+      } else if (strncmp(key,"START_STOP_FILE",15) == 0) {
 	sscan_ok = sscanf(value,"%s",state->init_conc_file);
       } else if (strncmp(key,"IN_DIR",6) == 0) {
 	sscan_ok = sscanf(value,"%s",state->input_dir);
