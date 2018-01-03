@@ -27,19 +27,25 @@ specific language governing permissions and limitations under the License.
 
 int alloc7(struct state_struct *state) {
   /*
+    Allocace space needed by the deq routines.
     Allocate space for a flux vector ( lenth = num_species)
     The Jacobian of the flux vector (length = num_species * num_species);
     the reactant_term vector (length = num_rxns), 
-    product_term_vector (length = num_rxns),  r_over_p, p_over_r both of 
-    length num_rxns, and concs of length num_species.
+         product_term_vector (length = num_rxns),  
+	 recip_rxn_q, p_over_r both of 
+	 length num_rxns, 
+    and concs of length num_species.
     Also an integer vector, rxn_has_flux of length num_rxns.
+
     Called by: deq_run
     Calls:     calloc, fprintf, fflush,
   */
   double *reactant_term;
   double *product_term;
-  double *p_over_r;
-  double *r_over_p;
+  double *rxn_q;
+  double *recip_rxn_q;
+  double *kf_rel;
+  double *kr_rel;
   double *ode_forward_lklhds;
   double *ode_reverse_lklhds;
   double *ode_counts;
@@ -121,35 +127,67 @@ int alloc7(struct state_struct *state) {
     }
   }
   /*
-    Allocate space for the p_over_r
+    Allocate space for the rxn_q (reaction quotient)
   */
   if (success) {
     ask_for = num_rxns * sizeof(double);
     usage += ask_for;
-    p_over_r = (double *)calloc(one_l,ask_for);
-    if (p_over_r == NULL) {
+    rxn_q = (double *)calloc(one_l,ask_for);
+    if (rxn_q == NULL) {
       fprintf(stderr,"alloc7: Error unable to allocate %lld bytes for "
-	      "p_over_r\n",ask_for);
+	      "rxn_q\n",ask_for);
       fflush(stderr);
       success = 0;
     } else {
-      state->p_over_r = p_over_r;
+      state->rxn_q = rxn_q;
     }
   }
   /*
-    Allocate space for the r_over_p vector
+    Allocate space for the recip_rxn_q vector
   */
   if (success) {
     ask_for = num_rxns * sizeof(double);
     usage += ask_for;
-    r_over_p = (double *)calloc(one_l,ask_for);
-    if (r_over_p == NULL) {
+    recip_rxn_q = (double *)calloc(one_l,ask_for);
+    if (recip_rxn_q == NULL) {
       fprintf(stderr,"alloc7: Error unable to allocate %lld bytes for "
-	      "r_over_p\n",ask_for);
+	      "recip_rxn_q\n",ask_for);
       fflush(stderr);
       success = 0;
     } else {
-      state->r_over_p = r_over_p;
+      state->recip_rxn_q = recip_rxn_q;
+    }
+  }
+  /*
+    Allocate space for the kf_rel vector
+  */
+  if (success) {
+    ask_for = num_rxns * sizeof(double);
+    usage += ask_for;
+    kf_rel = (double *)calloc(one_l,ask_for);
+    if (kf_rel == NULL) {
+      fprintf(stderr,"alloc7: Error unable to allocate %lld bytes for "
+	      "kf_rel\n",ask_for);
+      fflush(stderr);
+      success = 0;
+    } else {
+      state->kf_rel = kf_rel;
+    }
+  }
+  /*
+    Allocate space for the kr_rel vector
+  */
+  if (success) {
+    ask_for = num_rxns * sizeof(double);
+    usage += ask_for;
+    kr_rel = (double *)calloc(one_l,ask_for);
+    if (kr_rel == NULL) {
+      fprintf(stderr,"alloc7: Error unable to allocate %lld bytes for "
+	      "kr_rel\n",ask_for);
+      fflush(stderr);
+      success = 0;
+    } else {
+      state->kr_rel = kr_rel;
     }
   }
   if (success) {
