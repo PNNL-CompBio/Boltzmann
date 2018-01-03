@@ -18,6 +18,8 @@
 #include "ode23tb_enforce_nonneg.h"
 #include "boltzmann_monitor_ode.h"
 #include "boltzmann_size_jacobian.h"
+#include "approximate_jacobian.h"
+#include "print_dense_jacobian.h"
 /*
 #include "update_rxn_likelihoods.h"
 #include "get_counts.h"
@@ -501,23 +503,36 @@ int ode23tb (struct state_struct *state, double *concs) {
     }
     nfevals = (int64_t)1;
     /*
-      Fill the Jacobian. jac is a ny x ny array.
+      Fill the Jacobian. dfdy is a ny x ny array.
     */
     t0 = 0;
     nf = 0;
     ode23tb_params->num_jac_first_time = 1;
     ode23tb_params->nf                 = nf;
     first_time = 1;
+
+    /*
     ode_num_jac(state,first_time,
 		dfdy,t0,y,f0,fac,thresh,
 		fdel,
 		fdiff,
 		dfdy_tmp,
 		&nf);
+    */
+    approximate_jacobian(state,y,f0,t0,ode_jacobian_choice);
     first_time = 0;
     ode23tb_params->nf                 = nf;
     ode23tb_params->num_jac_first_time = 0;
     nfevals += nf;
+/*#define DBG_JACOBIAN 1*/
+#ifdef DBG_JACOBIAN
+    if (lfp) {
+      fprintf (lfp,"First time Jacobian\n");
+      print_dense_jacobian(ny,dfdy,lfp);
+      fprintf (lfp,"\n\n");
+      fflush(lfp);
+    }
+#endif
     jcurrent = 1;
     mcurrent = 1;
     need_new_m = 0;
@@ -754,11 +769,16 @@ int ode23tb (struct state_struct *state, double *concs) {
 	  ode_num_jac(state,first_time,dfdy,t,y,f0,fac,thresh,
 		      ode_num_jac_scratch, &nf); dfdy is set here.
 	  */
+	  /*
 	  ode_num_jac(state,first_time,dfdy,t,y,f0,fac,thresh,
 		      fdel,
 		      fdiff,
 		      dfdy_tmp,
 		      &nf);
+	  */
+          approximate_jacobian(state,y,f0,t0,ode_jacobian_choice);
+	  nf = ode23tb_params->nf;
+
 	  nfevals += (nf + 1);
 	  npds += 1;
 	  jcurrent = 1;
