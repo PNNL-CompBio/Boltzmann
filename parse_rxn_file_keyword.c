@@ -56,7 +56,7 @@ int parse_rxn_file_keyword(char *rxn_buffer,struct state_struct *state){
     Check for comment lines (starting with a #)
   */
   if (keyword[0] == '#')  {
-    line_type = num_rxn_file_keywords;
+    line_type = -1;
   } else {
     for (i=0;i<num_rxn_file_keywords;i++) {
       ki = keyword_len[i];
@@ -75,7 +75,8 @@ int parse_rxn_file_keyword(char *rxn_buffer,struct state_struct *state){
 	if (rxn_buffer[0] != '#') {
 	  fprintf(lfp,"parse_rxn_file_keyword: Unrecognized keyword\n%s\n",
 	      rxn_buffer);
-	}
+	  fflush(lfp);
+	} 
       }
     }
   }
