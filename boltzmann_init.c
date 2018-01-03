@@ -34,7 +34,6 @@ specific language governing permissions and limitations under the License.
 #include "read_params.h"
 #include "open_output_files.h"
 #include "vgrng_init.h"
-#include "alloc1.h"
 #include "echo_params.h"
 #include "size_rxns_file.h"
 #include "alloc2.h"
@@ -103,6 +102,7 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
   FILE *lfp;
   /*
     allocate space for the state struct.
+    Allocate space for the reactions line buffer, and the rxn_file keywords.
   */
   success = alloc0(statep);
   if (success) {
@@ -125,12 +125,6 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
     if (print_output) {
       success = echo_params(state->lfp,state);
     }
-  }
-  /*
-    Allocate space for the reactions line buffer, and the rxn_file keywords.
-  */
-  if (success) {
-    success = alloc1(state);
   }
   if (success) {
     success = size_rxns_file(state);
@@ -236,7 +230,6 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
   }
   /*
     Now we need to allocate space for the concentrations,
-    transpose the reactions matrix to the molecules matrix,
     and read in the intial concentrations.
   */
   if (success) {
@@ -294,7 +287,7 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
     }
   }
   /*
-    Intialize the free_energys to be the delta g_0's.
+    Initialize the free_energy to be the delta_g0.
   */
   if (success) {
     dg0s = state->dg0s;
