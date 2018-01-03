@@ -72,6 +72,15 @@ int main(int argc, char **argv)
   if (success) {
     success = boltzmann_run(state);
   }
+  if (state->print_output == 0) {
+    if (state->num_fixed_concs > (int64_t)0) {
+      state->bndry_flux_fp = fopen(state->bndry_flux_file,"w");
+      print_boundary_flux(state);
+    } /* end if (state->num_fixed_concs ...) */
+    if (success) {
+      success = print_restart_file(state);
+    }
+  }
   TIMING_STOP(TOTAL_TIME);
   TIMING_PRINT(stdout);
   fflush(stdout);
