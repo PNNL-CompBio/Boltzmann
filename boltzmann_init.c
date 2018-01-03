@@ -80,6 +80,7 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
   struct state_struct bltzs;
   struct state_struct *state;
   struct vgrng_state_struct *vgrng_state;
+  struct rxn_struct *reactions;
   double *dg0s;
   double *free_energy;
   int64_t align_len;
@@ -279,16 +280,32 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
   }
   if (success) {
     fprintf(state->rxn_lklhd_fp,"iter entropy dg_forward forward_rxn_likelihoods\n");
+    fprintf(state->rxn_lklhd_fp,"iter entropy dg_forward");
+    reactions                   = state->reactions;
+    for (i=0;i<state->number_reactions;i++) {
+      fprintf(state->rxn_lklhd_fp," %s",reactions->title);
+      reactions += 1; /* Caution address arithmetic */
+    }
+    fprintf(state->rxn_lklhd_fp,"\n");
+    fflush(state->rxn_lklhd_fp);
   }
   if (success) {
     if (state->free_energy_format > 0) {
       if (state->free_energy_format == 1) {
-	fprintf(state->free_energy_fp,"iter negative_log_likelihoods\n");
+	fprintf(state->free_energy_fp,"negative_log_likelihoods\n");
       } else if (state->free_energy_format == 2) {
-	fprintf(state->free_energy_fp,"iter free energy (KJ/mol)\n");
+	fprintf(state->free_energy_fp,"free energy (KJ/mol)\n");
       } else if (state->free_energy_format == 3) {
-	fprintf(state->free_energy_fp,"iter free energy (Kcal/mol)\n");
+	fprintf(state->free_energy_fp,"free energy (Kcal/mol)\n");
       }
+      fprintf(state->free_energy_fp,"iter");
+      reactions                   = state->reactions;
+      for (i=0;i<state->number_reactions;i++) {
+	fprintf(state->free_energy_fp," %s",reactions->title);
+	reactions += 1; /* Caution address arithmetic */
+      }
+      fprintf(state->free_energy_fp,"\n");
+      fflush(state->free_energy_fp);
     }
   }
   if (success) {
