@@ -37,12 +37,12 @@ int boltzmann_flatten_reactions(struct state_struct *state,
 
   word_pos += 1;
   if (direction == 0) {
-    lfstate[word_pos] = reactions_len;
+    lfstate[word_pos] = (int64_t)reactions_len;
   } else {
-    if (lfstate[word_pos] != reactions_len) {
+    if (lfstate[word_pos] != (int64_t)reactions_len) {
       success = 0;
       if (lfp) {
-	fprintf(lfp,"boltzmann_flatten_reactions: Error reactions struct lengths do not match, input value was %ld, expected value was %ld\n",
+	fprintf(lfp,"boltzmann_flatten_reactions: Error reactions struct lengths do not match, input value was %ld, expected value was %d\n",
 		lfstate[word_pos],reactions_len);
       }
     }
