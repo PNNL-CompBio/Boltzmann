@@ -1,12 +1,15 @@
 #include "boltzmann_structs.h"
+#include "boltzmann_cvodes_headers.h"
+#include "cvodes_params_struct.h"
 
 #include "approximate_delta_concs.h"
 #include "ode_num_jac.h"
 #include "ode_it_solve.h"
 #include "ode_print_concs.h"
 #include "ode_print_dconcs.h"
-#include "blas.h"
-#include "lapack.h"
+#include "non_cvode_blas.h"
+/*#include  "blas.h"*/
+/*#include "lapack.h"*/
 #include "ode23tb_normyp_o_wt.h"
 #include "ode23tb_limit_h.h"
 #include "ode23tb_init_wt.h"
@@ -662,7 +665,7 @@ int ode23tb (struct state_struct *state, double *concs) {
 	delfdelt = dfdt + dfdy * yp
       */
       scalar = 1.0;
-      dgemv_(trans,&ny,&ny,&scalar,dfdy,&ny,yp,&inc1,&dzero,delfdelt,&inc1);
+      dgemv_(trans,&ny,&ny,&scalar,dfdy,&ny,yp,&inc1,&dzero,delfdelt,&inc1,1);
 
       norm_delfdelt = dnrm2_(&ny,delfdelt,&inc1);
   
@@ -899,10 +902,10 @@ int ode23tb (struct state_struct *state, double *concs) {
 	  scalar = 1.0;
 	  //vec_set_constant(ny,znew,dzero);
 	  dgemv_(trans,&ny,&ifour,&scalar,y,&ny,znew_coeff,&inc1,
-		 &dzero,znew,&inc1);
+		 &dzero,znew,&inc1,1);
 	  //vec_set_constant(ny,ynew,dzero);
 	  dgemv_(trans,&ny,&ifive,&scalar,y,&ny,ynew_coeff,&inc1,
-		 &dzero,ynew,&inc1);
+		 &dzero,ynew,&inc1,1);
 	  
 	  iter_count = 0;
 	  /*
@@ -995,7 +998,7 @@ int ode23tb (struct state_struct *state, double *concs) {
 	  */
 	  //vec_set_constant(ny,est,dzero);
 	  dgemv_(trans,&ny,&ifour,&scalar,z,&ny,est_coeff,&inc1,
-		 &dzero,est,&inc1);
+		 &dzero,est,&inc1,1);
 
 	  err1 = ode23tb_max_abs_ratio(ny,est,wt);
 	  /*
@@ -1006,7 +1009,7 @@ int ode23tb (struct state_struct *state, double *concs) {
 	  /*
 	  dcopy_(&ny,est1,&inc1,est2,&inc1);
 	  */
-	  dgetrs_(trans,&ny,&nrhs,miter,&ny,ipivot,est,&ny,&info);
+	  dgetrs_(trans,&ny,&nrhs,miter,&ny,ipivot,est,&ny,&info,1);
 	  if (info != 0) {
 	    if (lfp) {
 	      fprintf(lfp,"ode23tb: dgetrs_ call to compute est, failed with info = %d\n",
