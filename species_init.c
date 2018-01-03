@@ -47,7 +47,7 @@ int species_init(struct state_struct *state) {
   if (success) {
     if (state->compartment_file[0] != '\0') {
       success = read_compartment_sizes(state);
-    }
+    } 
   }
   /*
     Read initial concentrations, convert them to counts,
@@ -58,6 +58,13 @@ int species_init(struct state_struct *state) {
   }
   if (success) {
     success = check_initial_concentrations(state);
+  }
+  if (success) {
+    /*
+      Set the count_to_conc and conc_to_count vectors, one entry per unique
+      molecule based on its compartment size.
+    */
+    success = set_count_trans(state);
   }
   return(success);
 }
