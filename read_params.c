@@ -39,6 +39,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
   double avogadro;
   double temp_kelvin;
   double epsilon;
+  double default_volume_candidate;
   int64_t max_param_line_len;
   char *param_buffer;
   char *key;
@@ -109,6 +110,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
     */
     state->ideal_gas_r      = 0.008314;
     state->temp_kelvin      = 298.15;
+    state->kf_base_reaction = 1.0;
     /*
       Following 2 lines added by DGT on 4/15/2013
     */
@@ -119,6 +121,8 @@ int read_params (char *param_file_name, struct state_struct *state) {
     state->avogadro            = 6.022214179e23;
     state->recip_avogadro      = 1.0/state->avogadro;
     state->cals_per_joule      = 1.0/state->joules_per_cal;
+    state->default_volume      = 1.0e-15;
+    state->recip_default_volume = 1.0e15;
     state->warmup_steps        = (int64_t)1000;
     state->record_steps        = (int64_t)1000;
     state->free_energy_format  = (int64_t)0;
@@ -133,6 +137,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
     state->use_metropolis      = (int64_t)1;
     state->use_regulation      = (int64_t)1;
     state->max_regs_per_rxn    = (int64_t)4;
+    state->base_reaction       = (int64_t)0;
 
     state->default_initial_count = (int64_t)0;
     param_buffer       = state->param_buffer;
@@ -215,6 +220,12 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	sscan_ok = sscanf(value,"%le",&(state->ideal_gas_r));
       } else if (strncmp(key,"TEMP_KELVIN",11) == 0) {
 	sscan_ok = sscanf(value,"%le",&(state->temp_kelvin));
+      } else if (strncmp(key,"KF_BASE_REACTION",16) == 0) {
+    /*
+        Note that flux_scaling is K_f(base_rxn_reaction)*(product of reactant 
+        concentrations in base reaction).
+    */
+	sscan_ok = sscanf(value,"%le",&(state->kf_base_reaction));
 	/*
 	  Bill says we don't let users modify Avogadro's number
       } else if (strncmp(key,"AVOGADRO",8) == 0) {
@@ -227,7 +238,12 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	sscan_ok = sscanf(value,"%le",&(state->ph));
       } else if (strncmp(key,"IONIC_STRENGTH",14) == 0) {
 	sscan_ok = sscanf(value,"%le",&(state->ionic_strength));
-
+      } else if (strncmp(key,"DEFAULT_VOLUME",14) == 0) {
+	sscan_ok = sscanf(value,"%le",&default_volume_candidate);
+	if (default_volume_candidate > 0.0) {
+	  state->default_volume = default_volume_candidate;
+	  state->recip_default_volume = 1.0/default_volume_candidate;
+	} 
       } else if (strncmp(key,"WARMUP_STEPS",12) == 0) {
 	sscan_ok = sscanf(value,"%ld",&(state->warmup_steps));
       } else if (strncmp(key,"RXN_VIEW_FREQ",13) == 0) {
@@ -272,6 +288,8 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	if (state->adjust_steady_state) {
 	  state->use_metropolis = 1;
 	}
+      } else if (strncmp(key,"BASE_REACTION",13) == 0) {
+	sscan_ok = sscanf(value,"%ld",&(state->base_reaction));
       } else if (strncmp(key,"PRINT_OUTPUT",12) == 0) {
 	sscan_ok = sscanf(value,"%ld",&(state->print_output));
       } else if (strncmp(key,"RECORD_STEPS",12) == 0) {
