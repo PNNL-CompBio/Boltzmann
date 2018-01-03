@@ -3,14 +3,14 @@ CLINKER = @CC@
 MPICC   = @CC@
 MPICCLINKER = @CC@
 AS = @AS@
-AR = @AR@
-ARFLAGS = @ARFLAGS@
+AR = ar
+ARFLAGS = -crv
 #
 
 ### End User configurable options ###
 include Makefile.@MMAP_CONFIG@mmap
 
-LIBS = @LIBS@ -lm
+LIBS = @LIBS@ libboltzmann.a -lm 
 FLIBS = @FLIBS@
 EXECS = @MPI_EXECS@ @SERIAL_EXECS@
 FFLAGS = @FFLAGS@
