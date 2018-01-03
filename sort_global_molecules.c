@@ -25,8 +25,8 @@ specific language governing permissions and limitations under the License.
 #include "merge_molecules.h"
 
 #include "sort_global_molecules.h"
-int sort_global_molecules(struct istring_elem_struct **unsorted_molecules,
-			     struct istring_elem_struct **sorted_molecules,
+int sort_global_molecules(struct molecule_struct **unsorted_molecules,
+			     struct molecule_struct **sorted_molecules,
 			     int64_t *molecule_map_indices,
 			     char *molecule_text,
 			     int n) {
@@ -50,9 +50,9 @@ int sort_global_molecules(struct istring_elem_struct **unsorted_molecules,
     
   
   */
-  struct istring_elem_struct *u_molecules;
-  struct istring_elem_struct *s_molecules;
-  struct istring_elem_struct *temp;
+  struct molecule_struct *u_molecules;
+  struct molecule_struct *s_molecules;
+  struct molecule_struct *temp;
   int global_molecules;
   int success;
   int step;
@@ -85,9 +85,9 @@ int sort_global_molecules(struct istring_elem_struct **unsorted_molecules,
 	if ((j + step + step) < n) {
 	  l2 = molecule_map_indices[j+step+step] - list2_first;
 	}
-	merge_molecules((struct istring_elem_struct *)&u_molecules[list1_first],
-		       (struct istring_elem_struct *)&u_molecules[list2_first],
-			   (struct istring_elem_struct *)&s_molecules[list1_first],
+	merge_molecules((struct molecule_struct *)&u_molecules[list1_first],
+		       (struct molecule_struct *)&u_molecules[list2_first],
+			   (struct molecule_struct *)&s_molecules[list1_first],
 			   molecule_text,l1,l2);
       }
       /* Now if the last group is <= step they just need to be copied
