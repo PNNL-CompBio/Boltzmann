@@ -49,37 +49,45 @@ int size_ms2js_file(struct state_struct *state,
   int64_t wc;
   int64_t cc;
   int success;
-  int command_len;
   int name_len;
+
   int buff_len;
   int ns;
-  int np;
+
   FILE *ms2js_size_fp;
+  FILE *lfp;
   success = 1;
   command = (char*)&buffer[0];
   ms2js_file = state->ms2js_file;
+  lfp        = state->lfp;
   name_len = (int)strlen(ms2js_file);
   buff_len = 1047;
   if (name_len + 23 > 1048) { 
-    fprintf(stderr,"size_ms2js_file: Error ms2js_file name is too long.\n");
-    fflush(stderr);
+    if (lfp) {
+      fprintf(lfp,"size_ms2js_file: Error ms2js_file name is too long.\n");
+      fflush(lfp);
+    }
     success = 0;
   } else {
     sprintf(command,"wc %s > _ms2js_wc_output_",ms2js_file);
     system(command);
     ms2js_size_fp = fopen("_ms2js_wc_output_","r");
     if (ms2js_size_fp == NULL) {
-      fprintf(stderr,"size_ms2js_file: Error, unable to open _ms2js_wc_output_ "
+      if (lfp) {
+	fprintf(lfp,"size_ms2js_file: Error, unable to open _ms2js_wc_output_ "
 	      "for sizing ms2js_file\n");
-      fflush(stderr);
+	fflush(lfp);
+      }
       success = 0;
     } else {
       fgets(command,buff_len,ms2js_size_fp);
       ns = sscanf(command,"%lld %lld %lld",&lc,&wc,&cc);
       if (ns !=3) {
-	fprintf(stderr,
-		"size_ms2js_file: Error, reading output of wc command\n");
-	fflush(stderr);
+	if (lfp) {
+	  fprintf(lfp,
+		  "size_ms2js_file: Error, reading output of wc command\n");
+	  fflush(lfp);
+	}
 	success = 0;
       } else {
 	*num_modelseed_ids = lc;
