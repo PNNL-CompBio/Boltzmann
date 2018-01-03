@@ -40,7 +40,7 @@ int compute_molecular_partition_probability(struct formation_energy_struct *fes)
     Calls:     exp,fopen,fprintf,fclose,fflush
   */
 
-  struct istring_elem_struct *cur_molecules;
+  struct molecule_struct *cur_molecules;
   char *molecules_text;
   char *molecule;
 
