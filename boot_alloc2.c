@@ -10,7 +10,6 @@ int boot_alloc2(struct boot_state_struct *boot_state) {
     Calls:     fprintf, fflush, sizeof
   */
   struct super_state_struct sss;
-  struct super_state_struct *super_state;
   int64_t ask_for;
   int64_t one_l;
   int64_t super_state_struct_size;
