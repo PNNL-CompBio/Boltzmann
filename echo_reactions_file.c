@@ -149,7 +149,11 @@ int echo_reactions_file(struct state_struct *state,
 	  }
 	}
       }
-      fprintf(rxn_echo_fp,"DGZERO\t%le\n",reaction->delta_g0);
+      if (reaction->deltag0_computed) {
+	fprintf(rxn_echo_fp,"DGZERO\t%le, computed\n",reaction->delta_g0);
+      } else {
+	fprintf(rxn_echo_fp,"DGZERO\t%le, input\n",reaction->delta_g0);
+      }
       if (reaction->unit_i == 0) {
 	fprintf(rxn_echo_fp,"DGZERO-UNITS\tkCal/mol\n");
       } else {
