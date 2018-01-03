@@ -4,14 +4,14 @@ int boltzmann_flatten_aux_name(struct state_struct *state,
 			       void *flattened, int direction, int *word_pos_p, 
 			       FILE *lfp) {
   /* 
-    Transfer auxiliary file name, to or from flattened
+    Transfer auxiliary file name, to or from flattened state.
 
     While there are only 7 external constants right now, we 
     allocate space for 10 for ease of expansion.
     Word_pos is assumed to point to the last set/read word position 
     in flattened.
 
-    Called by: boltzmann_flatten
+    Called by: boltzmann_flatten_state
     Calls:     strcpy
   */
   int64_t *lflattened;
