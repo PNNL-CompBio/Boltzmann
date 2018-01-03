@@ -83,6 +83,7 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
 	       print_rxn_likelihoods_header
 	       print_free_energy_header
   */
+  struct state_struct *boot_state;
   struct state_struct *state;
   struct vgrng_state_struct *vgrng_state;
   struct vgrng_state_struct *vgrng2_state;
@@ -104,12 +105,12 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
     allocate space for the state struct.
     Allocate space for the reactions line buffer, and the rxn_file keywords.
   */
-  success = alloc0(statep);
+  success = alloc0(&boot_state);
   if (success) {
     /*
       Read the input parameters file.
     */
-    state = *statep;
+    state = boot_state;
     success = read_params(param_file_name,state);
   }
   if (success) {
@@ -320,6 +321,13 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
     vgrng2_state = state->vgrng2_state;
     vgrng_start_steps = 1042;
     vgrng_start= vgrng_init(vgrng2_state,vgrng_start_steps);
+  }
+  if (success) {
+    /*
+    *statep = boot_state;
+    */
+    *statep = NULL;
+    success = flatten_state(boot_state,statep);
   }
   return(success);
 }
