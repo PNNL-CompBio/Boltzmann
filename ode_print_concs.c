@@ -29,7 +29,7 @@ void ode_print_concs(struct state_struct *state, double time, double *concs) {
     Prints out the current concentrations field of the state structure
     in a tab delimited row terminated by a newline.
 
-    Called by boltzmann_run, deq
+    Called by: ode23tb
 
     Arguments:
     
@@ -62,7 +62,6 @@ void ode_print_concs(struct state_struct *state, double time, double *concs) {
       }
     }
     fprintf(ode_concs_fp,"\n");
+    fflush(ode_concs_fp);
   }
-  fflush(ode_concs_fp);
-  return;
 }
