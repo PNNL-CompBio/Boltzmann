@@ -34,6 +34,7 @@ specific language governing permissions and limitations under the License.
 int merge_compartments(struct istring_elem_struct *list1,
 		       struct istring_elem_struct *list2,
 		       struct istring_elem_struct *mlist,
+		       char *compartment_text,
 		       int l1,
 		       int l2) {
   /*
@@ -44,6 +45,8 @@ int merge_compartments(struct istring_elem_struct *list1,
   struct istring_elem_struct *p1;
   struct istring_elem_struct *p2;
   struct istring_elem_struct *p3;
+  char *string1;
+  char *string2;
   int success;
   int n;
 
@@ -63,13 +66,21 @@ int merge_compartments(struct istring_elem_struct *list1,
   p1  = list1;
   p2  = list2;
   p3  = mlist;
+  string1 = NULL;
+  string2 = NULL;
+  if (p1->string >= 0) {
+    string1 = (char*)&compartment_text[p1->string];
+  }
+  if (p2->string >= 0) {
+    string2 = (char*)&compartment_text[p2->string];
+  }
   for (j3 = 0;j3 < n; j3++) {
     /*
       Compare first element in list1 to first element in list2.
     */
-    if (p1->string) {
-      if (p2 -> string) {
-	c = strcmp(p1->string,p2->string);
+    if (string1) {
+      if (string2) {
+	c = strcmp(string1,string2);
       } else {
 	c = 1;
       }
@@ -104,6 +115,12 @@ int merge_compartments(struct istring_elem_struct *list1,
 	  p3 += 1; /* Caution Address arithmetic here. */
 	}
 	break;
+      } else {
+	if (p1->string >= 0) {
+	  string1 = (char*)&compartment_text[p1->string];
+	} else {
+	  string1 = NULL;
+	}
       }
     } else {
       /*
@@ -127,6 +144,12 @@ int merge_compartments(struct istring_elem_struct *list1,
 	  p3 += 1; /* Caution Address arithmetic here. */
 	}
 	break;
+      } else {
+	if (p2->string >= 0) {
+	  string2 = (char*)&compartment_text[p2->string];
+	} else {
+	  string2 = NULL;
+	}
       }
     }
   }
