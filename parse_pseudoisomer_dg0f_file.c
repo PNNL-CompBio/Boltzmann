@@ -134,7 +134,7 @@ int parse_pseudoisomer_dg0f_file(struct pseudoisomer_struct *pseudoisomers,
 	bptr[tok_len] = '\0';
 	tok_len += 1;
 	strcpy(next_string,bptr);
-	upcase(tok_len,next_string,next_string);
+	upcase(tok_len,next_string);
 	blank_to_dash(tok_len,next_string,next_string);
 	padded_len = ((align_len - (tok_len & align_mask)) & align_mask) + 
   	             tok_len;
