@@ -49,7 +49,7 @@ struct vgrng_state_struct {
   double  uni_multiplier;
   int fib_cur_ptr;
   int padi;
-  int64_t padl;
+  int64_t padl[3];
 }
 ;
 #endif
