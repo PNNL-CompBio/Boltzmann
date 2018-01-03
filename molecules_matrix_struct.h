@@ -28,7 +28,7 @@ struct molecules_matrix_struct {
     rxn_indices indicate which reactions the molecules are present in 
     as reactants or and products.
   */
-  int64_t *rxn_indices;
+  int64_t *reaction_indices;
   /*
     coefficients are negative for reactants, positive for products.
   */
