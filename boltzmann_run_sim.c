@@ -292,15 +292,16 @@ int boltzmann_run_sim(struct state_struct *state) {
       */
       fprintf(state->concs_out_fp,"%d",i);
       for (j=0;j<nu;j++) {
-	fprintf(state->concs_out_fp," %le",cconcs[j]);
+	fprintf(state->concs_out_fp,"\t%le",cconcs[j]);
       }
       fprintf(state->concs_out_fp,"\n");
       /* 
 	 print the entropy, dg_forward and the reaction likelihoods, 
       */
-      fprintf(state->rxn_lklhd_fp,"%d %le %le",i,entropy,dg_forward);
+      fprintf(state->rxn_lklhd_fp,"%d\t%le\t%le",i,entropy,dg_forward);
       for (j=0;j<num_rxns;j++) {
-	fprintf(state->rxn_lklhd_fp," %le",forward_rxn_likelihood[j]);
+	fprintf(state->rxn_lklhd_fp,"\t%le",forward_rxn_likelihood[j]);
+	fprintf(state->rxn_lklhd_fp,"\t%le",reverse_rxn_likelihood[j]);
       }
       fprintf(state->rxn_lklhd_fp,"\n");
       /*
