@@ -87,6 +87,7 @@ int boltzmann_run_sim(struct state_struct *state) {
   double *rrxn_view_p;
   double *bndry_flux_concs;
   double cal_gm_per_joule;
+  double delta;
   /*
   double *lthermo;
   */
@@ -234,6 +235,12 @@ int boltzmann_run_sim(struct state_struct *state) {
   } /* end for(i...) */
   
   if (success) {
+    /*
+      Reinitialize the boundary fluxes to the current concentrations.
+    */
+    for (i=0;i<nu;i++) {
+      bndry_flux_concs[i] = cconcs[i];
+    }
     for (i=0;i<n_record_steps;i++) {
       /*
 	Comput the reaction likelihoods - forward_rxn_likelihood, 
@@ -328,19 +335,6 @@ int boltzmann_run_sim(struct state_struct *state) {
 	}
 	fprintf(state->concs_out_fp,"\n");
       }
-      if (state->num_fixed_concs > 0) {
-	if (bndry_flux_fp) {
-	  fprintf(bndry_flux_fp,"%d",i);
-	  molecule = sorted_molecules;
-	  for (j=0;j<nu;j++) {
-	    if (molecule->variable == 0) {
-	      fprintf(state->bndry_flux_fp,"\t%le",bndry_flux_concs[j]);
-	    }
-	    molecule += 1; /* Caution address arithmetic.*/
-	  }
-	}
-	fprintf(state->bndry_flux_fp,"\n");
-      }
       /* 
 	 print the entropy, dg_forward and the reaction likelihoods, 
       */
@@ -395,6 +389,29 @@ int boltzmann_run_sim(struct state_struct *state) {
 	}
       }
     } /* end for(i...) */
+    if (state->num_fixed_concs > 0) {
+      if (bndry_flux_fp) {
+	fprintf(bndry_flux_fp,"  final flux  ");
+	molecule = sorted_molecules;
+	for (j=0;j<nu;j++) {
+	  if (molecule->variable == 0) {
+	    fprintf(state->bndry_flux_fp,"\t%le",bndry_flux_concs[j]);
+	  }
+	  molecule += 1; /* Caution address arithmetic.*/
+	}
+	fprintf(state->bndry_flux_fp,"\n");
+	fprintf(bndry_flux_fp," flux - fixed ");
+	molecule = sorted_molecules;
+	for (j=0;j<nu;j++) {
+	  if (molecule->variable == 0) {
+	    delta = bndry_flux_concs[j]-cconcs[j];
+	    fprintf(state->bndry_flux_fp,"\t%le",delta);
+	  }
+	  molecule += 1; /* Caution address arithmetic.*/
+	}
+	fprintf(state->bndry_flux_fp,"\n");
+      }
+    }
     if (success) {
       success = print_restart_file(state);
     }
