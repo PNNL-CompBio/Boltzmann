@@ -20,15 +20,6 @@ under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <strings.h>
-#include <float.h>
-#include <signal.h>
-#include <unistd.h>
-
-#include "djb_timing_b.h"
 #include "boltzmann_structs.h"
 
 
@@ -45,15 +36,20 @@ struct timing_struct timing_data;
 #include "rxn_map_run.h"
 int rxn_map_run(struct state_struct *state,
 		struct molecules_matrix_struct *molecules_matrix,
-		int i, int j) {
+		int mi, int mj) {
   struct rxn_matrix_struct *rxn_matrix;
-  struct istring_elem_struct *sorted_molecules;
-  struct istring_elem_struct *sorted_compartments;
-  struct istring_elem_struct *molecule_i;
-  struct istring_elem_struct *molecule_j;
-  struct istring_elem_struct *molecule_t;
-  struct istring_elem_struct *compartment_i;
-  struct istring_elem_struct *compartment_j;
+  struct molecule_struct *sorted_molecules;
+  struct molecule_struct *sorted_compartments;
+  struct molecule_struct *molecule_i;
+  struct molecule_struct *molecule_j;
+  struct molecule_struct *molecule_t;
+  struct molecule_struct *compartment_i;
+  struct molecule_struct *compartment_j;
+  struct stack_level_elem_struct sles;
+  struct stack_level_elem_struct *levels;
+  struct stack_level_elem_struct *cur_level;
+  struct stack_level_elem_struct *next_level;
+  struct stack_level_elem_struct *level_i;
   char   *molecules_text;
   char   *compartment_text;
 
@@ -70,26 +66,32 @@ int rxn_map_run(struct state_struct *state,
   int64_t *m_unmarked;
   int64_t *r_unmarked;
   int64_t *stack;
-  int64_t *path_ptrs;
-  int64_t *path_list;
+  int64_t *terminal_reaction;
+  int64_t *terminal_direction;
   int64_t stack_pos_lim;
-  int64_t path_count_lim;
   int64_t raw_path_count;
-  int64_t path_pos;
   int64_t stack_pos;
+  int64_t stack_entry_size;
+  int64_t rxn_l;
+  int64_t rxn_i;
+  int64_t mol_j;
+  int64_t rxn_k;
+  int64_t rxn_j;
+  int64_t dxn_i;
+  int64_t rxn_cand;
   
   int64_t num_reactions;
   int64_t nunique_molecules;
   int64_t k;
-  int64_t mi;
-  int64_t mj;
+  int64_t i;
+  int64_t j;
   int64_t mt;
   int64_t ci;
   int64_t cj;
   int64_t ask_for;
   int64_t one_l;
+  int64_t zero_l;
   int64_t nzr;
-  int64_t path_pos_lim;
   int64_t c_molecule;
   int64_t next_reaction_pos;
   int64_t potential_reaction;
@@ -97,7 +99,7 @@ int rxn_map_run(struct state_struct *state,
   int64_t potential_molecule;
   int64_t next_molecule_pos;
   int success;
-  int padi;
+  int level;
   /*
     Calls:
   */
@@ -132,56 +134,95 @@ int rxn_map_run(struct state_struct *state,
   r_indices           = molecules_matrix->rxn_indices;
   m_coefs             = molecules_matrix->coefficients;
 
-  /*
-    Comment here then ws needs to be of size 
-    (nunique_molecules + num_reactions + stack_pos_lim + path_count_lim
-    + path_pos_lim.
-  */
-  one_l = (int64_t)1;
-  stack_pos_lim       = (num_reactions << 3) + 4;
-  path_count_lim      = nzr*nzr*nzr;
-  path_pos_lim        = path_count_lim * num_reactions;
-  ask_for = (nunique_molecules + num_reactions + stack_pos_lim + path_count_lim
-	     + path_count_lim + path_pos_lim);
-  ask_for = ask_for*sizeof(int64_t);
-  ws = (int64_t*)calloc(one_l,ask_for);
-  if (ws == NULL) {
-    fprintf(stderr,"rxn_map_run: Could not allocate %ld bytes for ws\n",
+  zero_l = (int64_t)0;
+  one_l  = (int64_t)1;
+  stack_pos_lim       = (num_reactions * num_reactions) + num_reactions;
+  ask_for = stack_pos_lim * ((int64_t)sizeof(int64_t));
+
+  stack = (int64_t*)calloc(one_l,ask_for);
+  if (stack == NULL) {
+    fprintf(stderr,"rxn_map_run: Could not allocate %ld bytes for stack\n",
 	    ask_for);
     fflush(stderr);
     success = 0;
   }
-  m_unmarked          = &ws[0];
-  r_unmarked          = &ws[nunique_molecules];
-  stack               = &r_unmarked[num_reactions];
-  raw_path_count      = 0;
-  path_pos            = 0;
-  path_ptrs           = &stack[stack_pos_lim];
-  path_list           = &path_ptrs[path_count_lim];
+  if (success) {
+    ask_for = num_reactions * ((int64_t)sizeof(sles));
+    levels = (struct stack_level_elem_struct *)calloc(one_l,ask_for);
+    if (levels == NULL) {
+      fprintf(stderr,"rxn_map_run: Could not allocate %ld bytes for levels\n",
+	      ask_for);
+      fflush(stderr);
+      success = 0;
+    }
+  }
+  if (success) {
+    ask_for = num_reactions * ((int64_t)sizeof(int64_t));
+    r_unmarked = (int64_t*)calloc(one_l,ask_for);
+    if (r_unmarked == NULL) {
+      fprintf(stderr,
+	      "rxn_map_run: Could not allocate %ld bytes for r_unmarked\n",
+	      ask_for);
+      fflush(stderr);
+      success = 0;
+    }
+  }
+  if (success) {
+    ask_for = num_reactions * ((int64_t)sizeof(int64_t));
+    terminal_reaction = (int64_t*)calloc(one_l,ask_for);
+    if (terminal_reaction == NULL) {
+      fprintf(stderr,
+      "rxn_map_run: Could not allocate %ld bytes for terminal_reaction\n",
+	      ask_for);
+      fflush(stderr);
+      success = 0;
+    }
+  }
+  if (success) {
+    ask_for = num_reactions * ((int64_t)sizeof(int64_t));
+    terminal_direction = (int64_t*)calloc(one_l,ask_for);
+    if (terminal_direction == NULL) {
+      fprintf(stderr,
+      "rxn_map_run: Could not allocate %ld bytes for terminal_direction\n",
+	      ask_for);
+      fflush(stderr);
+      success = 0;
+    }
+  }
   /*
   direction_list      = &path_list[]
   */
   
   if (success) {
-    /*
-      So we need a loop over the sorted molecules.
-    */
-    path_ptrs[0] = 0;
-    molecule_i = (struct istring_elem_struct *)&sorted_molecules[i];
-    mi = molecule_i->m_index;
+    molecule_i = (struct molecule_struct *)&sorted_molecules[mi];
     ci = molecule_i->c_index;
-    compartment_i = (struct istring_elem_struct *)&sorted_compartments[ci];
-    molecule_j = (struct istring_elem_struct *)&sorted_molecules[j];
-    mj = molecule_j->m_index;
+    compartment_i = (struct molecule_struct *)&sorted_compartments[ci];
+    molecule_j = (struct molecule_struct *)&sorted_molecules[mj];
     cj = molecule_j->c_index;
-    compartment_j = (struct istring_elem_struct *)&sorted_compartments[cj];
+    compartment_j = (struct molecule_struct *)&sorted_compartments[cj];
     /* 
       Now we want to build chains of reactions, that
-      start with mi and end with mj where mj > mi and mj is fixed.
+      start with mi and end with mj.
       Total length of the chains must be less than
-      nunique_molecules^2.
+      num_reactions.
+      Notion of a current level, unprocessed reactions at this level,
+      Each level has a current reaction index, a last reaction index
+      into the stack (int array).
+      current reaction being processed at this level,
+      look at his "product molecules" walk through their reaction lists,
+      adding reactions not yet in this chain and not yet marked for this level.
+
+      Random thoughts, one might look at reaction pairs,
+      reactions that have a common molecule on opposite sides of their
+      equation, then use a dynamic programming approach to stitch
+      these together matching ends that are the same, looking at all
+      2 length reactions, then all 3 length reactions, (merging two length
+      reactions with a matching right/left end), then 4 length reactions,
+      merging a 3 with a 2 or a 2 with a 3, building successively longer
+      chains
+      
     */
-    fprintf (stdout,"mi = %ld, mj = %ld\n",mi);
+    fprintf (stdout,"mi = %d, mj = %d\n",mi,mj);
     if (ci > 0) {
       fprintf(stdout,"%s:%s to ",
 	      (char*)&molecules_text[molecule_i->string],
@@ -199,143 +240,179 @@ int rxn_map_run(struct state_struct *state,
 	      (char*)&molecules_text[molecule_j->string]);
     }
     fflush(stdout);
-    stack_pos  = 0;
-    stack[0] = mi;
-    stack[1] = 0;
-    stack[2] = mol_ptrs[mi];
-    stack[3] = mol_ptrs[mi+1];
-    /* Top level start molecule. Unmark all other molecules 
-       and all reactions.
+    /*
+      We will stack reactions to be examined on layers, (distance
+      from initial reaction. Each layer (max num layers = num_reactions)
+      will have a current index ptr, and a last_ptr, when we have exhausted
+      the last reaction on a level that level is "popped" and we advance
+      to the next reaction in the layer below. It will be useful to
+      have a indicator array for possible terminal reactions so we 
+      no when to record a complete path. Also each reaction needs to
+      have a direction associated with it, because we start at rxn 0
+      we need to keep a separate direction indicator (we could start
+      at one though but that has complications, we'll think about that).
+      So the stack size will need to be num_reactions*num_reactions + 
+      num_reactions long as 
+      each level can have at most num_reactions-level additional paths
+      to investigate, hence num_reactions * (num_reactions+1)/2 entries
+      with each entry having a reaction number and a direction to store.
+    */
+    /*
+      Mark the terminal reactions.
+    */
+    for (i=0;i<num_reactions;i++) {
+      terminal_reaction[i] = zero_l;
+    }
+    for (j=mol_ptrs[mj];j<mol_ptrs[mj+1];j++) {
+      rxn_j = r_indices[j];
+      terminal_reaction[rxn_j] = one_l;
+      terminal_direction[rxn_j] = one_l;
+      if (m_coefs[j] < 0) {
+	terminal_direction[rxn_j] = -one_l;
+      }
+    }
+    stack_pos  = zero_l;
+    /*
+      Unmark all the reactions.
+    */
+    for (k=0;k<num_reactions;k++) {
+      r_unmarked[k] = one_l;
+    }
+    /*
+      Add the initial reactions to the stack.
+    */
+    stack_entry_size = one_l + one_l;
+    for (i=mol_ptrs[mi];i<mol_ptrs[mi+1];i++) {
+      rxn_cand = r_indices[i];
+      if (r_unmarked[rxn_cand]) {
+	r_unmarked[rxn_cand] = 0;
+	stack[stack_pos] = (int)rxn_cand;
+	stack[stack_pos+1] = one_l;
+	if (m_coefs[i] < (int64_t)0) {
+	  stack[stack_pos+1] = - one_l;
+	}
+	stack_pos += stack_entry_size;
+      }
+    }
+    /*
+      Unmark all the reactions.
     */
     for (k=0;k<num_reactions;k++) {
       r_unmarked[k] = 1;
     }
-    for (k=0;k<nunique_molecules;k++) {
-      m_unmarked[k] = 1;
-    }
-    m_unmarked[mi] = 0;
-    while (stack_pos >= 0) { 
-      if ((stack_pos & 7) == 0) {
+    level = 0;
+    cur_level = (struct stack_level_elem_struct*)&levels[level];
+    cur_level->first_stack_pos  = 0;
+    cur_level->last_stack_pos   = (mol_ptrs[mi+1] - mol_ptrs[mi] - 1) << 1;
+    cur_level->cur_stack_pos    = cur_level->first_stack_pos;    
+    next_level = (struct stack_level_elem_struct*)&levels[level+1];
+    next_level->first_stack_pos = cur_level->last_stack_pos + stack_entry_size;
+    stack_pos = cur_level->first_stack_pos;
+    raw_path_count      = 0;
+    while (level >= 0) {
+      cur_level = (struct stack_level_elem_struct*)&levels[level];
+      /*
+	Check to see if we are finished with this
+	level.
+      */
+      if ((cur_level->cur_stack_pos) > (cur_level->last_stack_pos)) {
 	/*
-	  A molecule is on top of the stack.
-	  First check to see if it is a desired end molecule mj.
+	  decrement level 
+	  advance level_cur for previous level.
 	*/
-	mt = stack[stack_pos];
-	molecule_t = (struct istring_elem_struct *)&sorted_molecules[mt];
-	
-	if (mt == mj) {
-	  for (k=4;k<stack_pos;k+=8) {
-	    if (path_pos >= path_pos_lim) {
-	      fprintf(stderr,
-		      "rxn_map_run: path_pos_lim of %ld reached\n",
-		      path_pos_lim);
-	      success = 0;
-	      stack_pos = -4;
-	      break;
-	    } else {
-	      path_list[path_pos] = stack[k];
-	      /*
-	      direction_list[path_pos] = stack[k+1];
-	      */
-	      if (stack[k+1] < 0) {
-		fprintf(stdout,"-%ld\n",path_list[path_pos]);
-	      } else {
-		fprintf(stdout,"%ld\n",path_list[path_pos]);
-	      }
-	      path_pos += 1;
-	    }
-	  } /* end for(k...) */
-	  fprintf(stdout,"-----------------\n");
-	  fflush(stdout);
-	  raw_path_count += 1;
-	  if (raw_path_count >= path_count_lim) {
-	    fprintf(stderr,"rxn_map_run: raw_path_count exceeded %ld\n",
-		    path_count_lim);
-	    fflush(stderr);
-	    success = 0;
-	  }
-	  path_ptrs[raw_path_count] = path_pos;
+	level -= 1;
+	if (level >= 0) {
+	  cur_level = (struct stack_level_elem_struct*)&levels[level];
+	  stack_pos = cur_level->cur_stack_pos;
+	  rxn_l = stack[stack_pos];
+	  r_unmarked[rxn_l] = 1;
+	  cur_level->cur_stack_pos += stack_entry_size;
 	}
-	if (success == 0) {
-	  break;
-	}
-	next_reaction_pos = stack[stack_pos+2];
-	if (next_reaction_pos >= stack[stack_pos+3]) {
-	  /* 
-	    No more reactions to process for this molecule,
-	    pop the molecule, and unmark it.
-	  */
-	  if (stack_pos == 0) {
-	    break;
-	  }
-	  m_unmarked[stack[stack_pos]] = 1;
-	  stack_pos -= 4;
-	} else {
-	  stack[stack_pos+2] += 1;
-	  potential_reaction = r_indices[next_reaction_pos];
-	  if (r_unmarked[potential_reaction]) {
-	    r_unmarked[potential_reaction] = 0;
-	    if (m_coefs[next_reaction_pos] < 0) {
-	      direction = (int64_t)1;
-	    } else {
-	      direction = (int64_t)(-1);
-	    }
-	    stack_pos += 4;
-	    if (stack_pos > stack_pos_lim) {
-	      fprintf(stderr,"stack_pos exceeded %ld\n",
-		      stack_pos_lim);
-	      fflush(stderr);
-	      stack_pos = -4;
-	      success = 0;
-	      break;
-	    } else {
-	      stack[stack_pos]   = potential_reaction;
-	      stack[stack_pos+1] = direction;
-	      stack[stack_pos+2] = rxn_ptrs[potential_reaction];
-	      stack[stack_pos+3] = rxn_ptrs[potential_reaction+1];
-	    }
-	  } /* end if unmarked reaction */
-	} /* end else pushed a reaction. */
       } else {
+	stack_pos = cur_level->cur_stack_pos;
+	rxn_l     = stack[stack_pos];
+	direction = stack[stack_pos+1];
+	next_level = (struct stack_level_elem_struct*)&levels[level+1];
+	next_level->first_stack_pos = cur_level->last_stack_pos + 
+	                              stack_entry_size;
+	r_unmarked[rxn_l] = 0;
 	/*
-	  stack_pos is not a multiple of eight, therefore it
-	  points to a reaction node.
-	  Look for an unmarked molecule on the 
-	  production side of the reaction to add to the chain.
+	  Check to see if this reaction is a terminal reaction,
+	  If so print out the reaction chain.
 	*/
-	next_molecule_pos = stack[stack_pos+2];
-	if (next_molecule_pos >= stack[stack_pos+3]) {
-	  r_unmarked[stack[stack_pos]] = 1;
-	  stack_pos -= 4;
-	} else {
-	  stack[stack_pos+2] += 1;
-	  direction = stack[stack_pos+1];
-	  potential_molecule = m_indices[next_molecule_pos];
-	  /* 
-	    Check for an unmarked molecule.
-	  */
-	  if (m_unmarked[potential_molecule]) {
-	    if (r_coefs[next_molecule_pos] * direction > 0) {
-	      m_unmarked[potential_molecule] = 0;
-	      stack_pos += 4;
-	      if (stack_pos > stack_pos_lim) {
-		fprintf(stderr,"stack_pos exceeded %ld\n",
-			stack_pos_lim);
-		fflush(stderr);
-		stack_pos = -4;
-		success = 0;
-		break;
-	      } else {
-		stack[stack_pos]   = potential_molecule;
-		stack[stack_pos+1] = 0;
-		stack[stack_pos+2] = mol_ptrs[potential_molecule];
-		stack[stack_pos+3] = mol_ptrs[potential_molecule+1];
+	if ((terminal_reaction[rxn_l]) && 
+	    (terminal_direction[rxn_l] == direction)) {
+	  raw_path_count += 1;
+	  for (i=0;i<level;i++) {
+	    level_i = (struct stack_level_elem_struct*)&levels[i]; 
+	    stack_pos = level_i->cur_stack_pos;
+	    rxn_i = stack[stack_pos];
+	    dxn_i = stack[stack_pos+1];
+	    if (dxn_i < 0) {
+	      fprintf(stdout,"-%ld\t",rxn_i);
+	    } else {
+	      fprintf(stdout,"%ld\t",rxn_i);
+	    }
+	  }
+	  if (direction < 0) {
+	    fprintf(stdout,"-%ld\n",rxn_l);
+	  } else {
+	    fprintf(stdout,"%ld\n",rxn_l);
+	  }
+	}
+	/*
+	  Mark the reactions from levels in the chain.
+	  This might not be necesarry.
+	for (i=0;i<level;i++) {
+	  stack_pos = level_cur[level];
+	  rxn_i     = stack[stack_pos];
+	  r_unmarked[rxn_i] = 0;
+	}
+	*/
+	/*
+	  Walk through molecules on the production side of rxn_l.
+	*/
+	if (level < num_reactions - 1) {
+	  for (j=rxn_ptrs[rxn_l];j<rxn_ptrs[rxn_l+1];j++) {
+	    mol_j = m_indices[j];
+	    if ((r_coefs[j] * direction) > 0) {
+	      /*
+	        Molecule is produced by this reaction in that direction.
+	        so walk through its list of reactions adding those that 
+	        are unmarked to the stack.
+	      */
+	      level +=1;
+	      stack_pos = next_level->first_stack_pos;
+	      for (k=mol_ptrs[mol_j];k<mol_ptrs[mol_j+1];k++) {
+	        rxn_k = r_indices[k];
+	        if (r_unmarked[rxn_k]) {
+		  r_unmarked[rxn_k] = 0;
+		  stack[stack_pos] = rxn_k;
+		  stack[stack_pos+1] = 1;
+		  if (m_coefs[k] > 0) {
+		    stack[stack_pos+1] = -1;
+		  }
+		  stack_pos += stack_entry_size;
+	        }
 	      }
-	    }/* end unmarked molecule on product side */
-	  } /* end unmarked_molecule */
-	} /* end not the end of the molecule list. */
-      } /* end else a reaction node */
-    } /* end while stack_pos >= 0 */
+	      next_level->last_stack_pos = stack_pos - stack_entry_size;
+	      next_level->cur_stack_pos  = next_level->first_stack_pos;
+	      /*
+	        Now want to unmark the reactions just added to the stack.
+	      */
+	      for (k=next_level->first_stack_pos;
+		   k<=next_level->last_stack_pos;
+		   k+=stack_entry_size) {
+	        r_unmarked[stack[k]] = 1;
+	      }
+	    } /* end if (molecule was a product) */
+	  } /* end for (j...) loop over molecules */
+	} else {
+	  /* last level */
+	  cur_level->cur_stack_pos += stack_entry_size;
+	}
+      } /* end else not the end of a level */
+    } /* end while level */
   } /* end if allocate ws succeeded */
   fprintf(stdout,"raw_path_count  = %ld\n",raw_path_count);
   fflush(stdout);
