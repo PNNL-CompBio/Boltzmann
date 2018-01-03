@@ -32,7 +32,7 @@ int sort_global_molecules(struct molecule_struct **unsorted_molecules,
 			     int n) {
   /*
     Sort presorted molecule lists from different reactions files.
-    Called by: boltzman_boot
+    Called by: global_merge_molecules
     Calls    : merge_molecules
 
     n is the number reaction files or sorted molecule lists to be merged.
