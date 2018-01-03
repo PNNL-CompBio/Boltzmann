@@ -69,11 +69,14 @@ int unique_compartments(struct state_struct *state) {
   compartment_text = state->compartment_text;
   compartment_indices = rxns_matrix->compartment_indices;
   
-  success = unique_compartments_core(nzr,sorted_cmpts,compartment_text,
+  success = unique_compartments_core(nzr,
+				     sorted_cmpts,
+				     compartment_text,
 				     compartment_indices,
 				     &nunique_compartments,
 				     &sum_compartment_len,
-				     align_len,align_mask);
+				     align_len,
+				     align_mask);
   /*				     
   sum_compartment_len = (int64_t)0;
   //* loop over sorted compartments. 
