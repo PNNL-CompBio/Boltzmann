@@ -34,6 +34,7 @@ specific language governing permissions and limitations under the License.
 int merge_molecules(struct istring_elem_struct *list1,
 		    struct istring_elem_struct *list2,
 		    struct istring_elem_struct *mlist,
+		    char *molecules_text,
 		    int l1,
 		    int l2) {
   /*
@@ -44,6 +45,10 @@ int merge_molecules(struct istring_elem_struct *list1,
   struct istring_elem_struct *p1;
   struct istring_elem_struct *p2;
   struct istring_elem_struct *p3;
+  
+  char *string1;
+  char *string2;
+
   int success;
   int n;
 
@@ -63,6 +68,15 @@ int merge_molecules(struct istring_elem_struct *list1,
   p1  = list1;
   p2  = list2;
   p3  = mlist;
+  string1 = NULL;
+  string2 = NULL;
+  if (p1->string >= 0) {
+    string1 = (char *)&molecules_text[p1->string];
+  }
+  if (p2->string >= 0) {
+    string2 = (char *)&molecules_text[p2->string];
+  }
+
   for (j3 = 0;j3 < n; j3++) {
     /*
       Compare first element in list1 to first element in list2.
@@ -73,7 +87,7 @@ int merge_molecules(struct istring_elem_struct *list1,
       if (p1->c_index > p2->c_index) {
 	c = 1;
       } else {
-	c = strcmp(p1->string,p2->string);
+	c = strcmp(string1,string2);
 	if (c == 0) {
 	  c = -1;
 	}
@@ -101,6 +115,12 @@ int merge_molecules(struct istring_elem_struct *list1,
 	  p3 += 1; /* Caution Address arithmetic here. */
 	}
 	break;
+      } else {
+	if (p1->string >= 0) {
+	  string1 = (char *)&molecules_text[p1->string];
+	} else {
+	  string1 = NULL;
+	}
       }
     } else {
       /*
@@ -124,6 +144,12 @@ int merge_molecules(struct istring_elem_struct *list1,
 	  p3 += 1; /* Caution Address arithmetic here. */
 	}
 	break;
+      } else {
+	if (p2->string >= 0) {
+	  string2 = (char *)&molecules_text[p2->string];
+	} else {
+	  string2 = NULL;
+	}
       }
     }
   }
