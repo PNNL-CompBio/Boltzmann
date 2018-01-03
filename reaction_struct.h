@@ -42,6 +42,8 @@ struct reaction_struct {
   */
   double  activity;
   double  enzyme_level;
+  double  forward_rc;
+  double  reverse_rc;
   /*
     Lines added by DGT on April 17, 2013
     ph is the pH
