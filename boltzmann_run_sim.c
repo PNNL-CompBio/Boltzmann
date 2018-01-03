@@ -192,7 +192,10 @@ int boltzmann_run_sim(struct state_struct *state) {
       Doug wonders here whether or not we ought to update free_energy based
       on the new concentrations, Absolutely we should.
     */
-    success = rxn_log_likelihoods(free_energy,cconcs,c_loglr,c_loglr,state,
+    success = rxn_log_likelihoods(cconcs,
+				  c_loglr,
+				  c_loglr,
+				  state,
 				  forward);
     dg_forward = 0.0;
     sum_likelihood = 0.0;
@@ -254,8 +257,10 @@ int boltzmann_run_sim(struct state_struct *state) {
 	Doug wonders here whether or not we ought to update free_energy based
 	on the new concentrations. Absolutely we should.
       */
-      success = rxn_log_likelihoods(free_energy,cconcs,
-				    forward_rxn_likelihood,c_loglr,state,
+      success = rxn_log_likelihoods(cconcs,
+				    forward_rxn_likelihood,
+				    c_loglr,
+				    state,
 				    forward);
       dg_forward = 0.0;
       sum_likelihood = 0.0;
