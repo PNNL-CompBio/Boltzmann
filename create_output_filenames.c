@@ -14,8 +14,9 @@ int create_output_filenames(struct state_struct *state) {
   char *log_filename;
   char *output_filename;
   char *counts_out_filename;
+  char *concs_out_filename;
   char *ode_concs_filename;
-  char *ode_flux_filename;
+  char *ode_dconcs_filename;
   char *ode_lklhd_filename;
   char *ode_bflux_filename;
   char *net_lklhd_filename;
@@ -41,6 +42,7 @@ int create_output_filenames(struct state_struct *state) {
   log_filename         = state->log_file;
   output_filename      = state->output_file;
   counts_out_filename  = state->counts_out_file;
+  concs_out_filename   = state->concs_out_file;
   ode_concs_filename   = state->ode_concs_file;
   net_lklhd_filename   = state->net_lklhd_file;
   nl_bndry_flx_filename = state->nl_bndry_flx_file;
@@ -52,7 +54,7 @@ int create_output_filenames(struct state_struct *state) {
   rxn_echo_filename    = state->rxn_echo_file;
   rxn_mat_filename     = state->rxn_mat_file;
   dg0ke_filename       = state->dg0ke_file;
-  ode_flux_filename    = state->ode_flux_file;
+  ode_dconcs_filename  = state->ode_dconcs_file;
   ode_lklhd_filename   = state->ode_lklhd_file;
   ode_bflux_filename   = state->ode_bflux_file;
 
@@ -111,12 +113,16 @@ int create_output_filenames(struct state_struct *state) {
       strncpy(counts_out_filename,rxn_filename,rxn_filename_base_length);
       strcpy((char*)&counts_out_filename[rxn_filename_base_length],".count");
     }
+    if (concs_out_filename[0] == '\0') {
+      strncpy(concs_out_filename,rxn_filename,rxn_filename_base_length);
+      strcpy((char*)&concs_out_filename[rxn_filename_base_length],".concs");
+    }
     if (ode_concs_filename[0] == '\0') {
       strncpy(ode_concs_filename,rxn_filename,rxn_filename_base_length);      
       strcpy((char*)&ode_concs_filename[rxn_filename_base_length],".ode_concs");
     }
-    strncpy(ode_flux_filename,rxn_filename,rxn_filename_base_length);
-    strcpy((char*)&ode_flux_filename[rxn_filename_base_length],".ode_flux");
+    strncpy(ode_dconcs_filename,rxn_filename,rxn_filename_base_length);
+    strcpy((char*)&ode_dconcs_filename[rxn_filename_base_length],".ode_dconcs");
     strncpy(ode_lklhd_filename,rxn_filename,rxn_filename_base_length);
     strcpy((char*)&ode_lklhd_filename[rxn_filename_base_length],".ode_lklhd");
     strncpy(ode_bflux_filename,rxn_filename,rxn_filename_base_length);
