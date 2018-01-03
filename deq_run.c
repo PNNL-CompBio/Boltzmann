@@ -54,7 +54,7 @@ int deq_run(struct state_struct *state) {
 	       init_base_reactants,
 	       init_relative_rates,
 	       ode_solver
-  */ 
+  */
   struct molecule_struct *molecules;
   struct molecule_struct *molecule;
   struct compartment_struct *compartments;
@@ -160,6 +160,7 @@ int deq_run(struct state_struct *state) {
   noop_rxn               = number_reactions + number_reactions;
   normcontrol            = 0;
   print_ode_concs        = print_ode_concs && print_output;
+  state->print_ode_concs = print_ode_concs;
   /*
     We need to allocate space needed by the derivative approximation routine
     ode_counts (length = num_species)
@@ -229,7 +230,7 @@ int deq_run(struct state_struct *state) {
   }
   */
   htry = 0.0;
-  nonnegative = 1.0;
+  nonnegative = 1;
   if (success) {
     if (print_output) {
       if (ode_rxn_view_freq > 0) {
@@ -241,8 +242,7 @@ int deq_run(struct state_struct *state) {
 	print_net_lklhd_bndry_flux_header(state);
       }
     }
-    success = ode_solver(state,concs,htry,nonnegative,normcontrol,
-			 print_ode_concs,solver_choice);
+    success = ode_solver(state,concs,solver_choice);
   }
   /*
   j = 1;
