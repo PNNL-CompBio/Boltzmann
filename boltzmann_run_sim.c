@@ -86,6 +86,7 @@ int boltzmann_run_sim(struct state_struct *state) {
   double *rrxn_view_data;
   double *rrxn_view_p;
   double *bndry_flux_concs;
+  double *activities;
   double cal_gm_per_joule;
   double delta;
   /*
@@ -127,23 +128,23 @@ int boltzmann_run_sim(struct state_struct *state) {
   success = 1;
   forward = 1;
   
-  n_warmup_steps = state->warmup_steps;
-  n_record_steps = state->record_steps;
-  vgrng_state    = state->vgrng_state;
-  rxn_likelihood_ps         = state->rxn_likelihood_ps;
-  free_energy            = state->free_energy;
-  c_loglr          = state->current_rxn_log_likelihood_ratio;
-  num_rxns       = state->number_reactions;
-  nu             = state->unique_molecules;
-  cconcs         = state->current_concentrations;
-  fconcs         = state->future_concentrations;
+  n_warmup_steps    = state->warmup_steps;
+  n_record_steps    = state->record_steps;
+  vgrng_state       = state->vgrng_state;
+  rxn_likelihood_ps = state->rxn_likelihood_ps;
+  free_energy       = state->free_energy;
+  c_loglr           = state->current_rxn_log_likelihood_ratio;
+  num_rxns          = state->number_reactions;
+  nu                = state->unique_molecules;
+  cconcs            = state->current_concentrations;
+  fconcs            = state->future_concentrations;
   bndry_flux_concs  = state->bndry_flux_concs;
-
-  m_rt           = state->m_rt;
-  rxn_view_data  = state->rxn_view_likelihoods;
-  rrxn_view_data  = state->rev_rxn_view_likelihoods;
-  cal_gm_per_joule = state->cal_gm_per_joule;
-  rxn_fire         = state->rxn_fire;
+  activities        = state->activities;
+  m_rt              = state->m_rt;
+  rxn_view_data     = state->rxn_view_likelihoods;
+  rrxn_view_data    = state->rev_rxn_view_likelihoods;
+  cal_gm_per_joule  = state->cal_gm_per_joule;
+  rxn_fire          = state->rxn_fire;
   /*
   lthermo        = state->l_thermo;
   */
@@ -169,12 +170,14 @@ int boltzmann_run_sim(struct state_struct *state) {
     /*
       Compute the partial sums of the reaction likelihoods.
     */
-    rxn_likelihood_ps[0] = forward_rxn_likelihood[0];
+    rxn_likelihood_ps[0] = forward_rxn_likelihood[0]*activities[0];
     for (j=1;j<num_rxns;j++) {
-      rxn_likelihood_ps[j] = rxn_likelihood_ps[j-1] + forward_rxn_likelihood[j];
+      rxn_likelihood_ps[j] = rxn_likelihood_ps[j-1] + 
+	(forward_rxn_likelihood[j] * activities[j]);
     }
     for(j=0;j<num_rxns;j++) {
-      rxn_likelihood_ps[num_rxns+j] = rxn_likelihood_ps[num_rxns-1+j] + reverse_rxn_likelihood[j];
+      rxn_likelihood_ps[num_rxns+j] = rxn_likelihood_ps[num_rxns-1+j] + 
+	(reverse_rxn_likelihood[j] * activities[j]);
     }
     /*
       1.0 is add to the likelihoods to account for the 
@@ -236,7 +239,7 @@ int boltzmann_run_sim(struct state_struct *state) {
     }
   } /* end for(i...) */
   /* 
-    Data collection phase (recorcing.
+    Data collection phase (recording).
   */
   if (success) {
     /*
@@ -260,13 +263,14 @@ int boltzmann_run_sim(struct state_struct *state) {
       /*
 	Compute the partial sums of the reaction likelihoods.
       */
-      rxn_likelihood_ps[0] = forward_rxn_likelihood[0];
+      rxn_likelihood_ps[0] = forward_rxn_likelihood[0]*activities[0];
       for (j=1;j<num_rxns;j++) {
-	rxn_likelihood_ps[j] = rxn_likelihood_ps[j-1] + forward_rxn_likelihood[j];
+	rxn_likelihood_ps[j] = rxn_likelihood_ps[j-1] + 
+	  (forward_rxn_likelihood[j] * activities[j]);
       }
       for(j=0;j<num_rxns;j++) {
 	rxn_likelihood_ps[num_rxns+j] = rxn_likelihood_ps[num_rxns-1+j] + 
-	  reverse_rxn_likelihood[j];
+	  (reverse_rxn_likelihood[j] * activities[j]);
       }
       /*
 	1.0 is add to the likelihoods to account for the 
