@@ -108,14 +108,17 @@ int boltzmann_run_sim(struct state_struct *state) {
   int j;
   int forward;
 
-  int view_step;
-  int view_pos;
+  int rxn_view_step;
+  int rxn_view_pos;
 
-  int view_freq;
-  int lthf;
+  int rxn_view_freq;
+  int rxn_view_hist_lngth;
 
-  int lthl;
-  int padi;
+  int lklhd_view_step;
+  int lklhd_view_freq;
+
+  int conc_view_step;
+  int conc_view_freq;
 
   FILE *lfp;
   FILE *concs_out_fp;
@@ -146,16 +149,20 @@ int boltzmann_run_sim(struct state_struct *state) {
   */
   forward_rxn_likelihood = state->forward_rxn_likelihood;
   reverse_rxn_likelihood = state->reverse_rxn_likelihood;
-  num_rxns_t2    = num_rxns << 1;
-  num_rxns_t2_p1 = num_rxns_t2 + 1;
-  concs_out_fp   = state->concs_out_fp;
-  rxn_lklhd_fp   = state->rxn_lklhd_fp;
-  bndry_flux_fp  = state->bndry_flux_fp;
-  sorted_molecules = (struct istring_elem_struct *)state->sorted_molecules;
-  lthf           = state->lthf;
-  lthl           = state->lthl;
-  view_pos       = 0;
-  view_step      = 1;
+  num_rxns_t2          	 = num_rxns << 1;
+  num_rxns_t2_p1       	 = num_rxns_t2 + 1;
+  concs_out_fp         	 = state->concs_out_fp;
+  rxn_lklhd_fp         	 = state->rxn_lklhd_fp;
+  bndry_flux_fp        	 = state->bndry_flux_fp;
+  sorted_molecules     	 = (struct istring_elem_struct *)state->sorted_molecules;
+  rxn_view_freq        	 = state->rxn_view_freq;
+  rxn_view_hist_lngth  	 = state->rxn_view_hist_lngth;
+  lklhd_view_freq        = state->lklhd_view_freq;
+  conc_view_freq         = state->conc_view_freq;
+  rxn_view_pos         	 = 0;
+  rxn_view_step        	 = 1;
+  conc_view_step         = 1;
+  lklhd_view_step 	 = 1;
   for (i=0;i<n_warmup_steps;i++) {
     /*
       Compute the reaction likelihoods - forward_rxn_likelihood, 
@@ -182,7 +189,7 @@ int boltzmann_run_sim(struct state_struct *state) {
     sum_likelihood = 0.0;
     for (j=0;j<num_rxns;j++) {
       dg_forward += c_loglr[j];
-      sum_likelihood += forward_rxn_likelihood[j];
+      sum_likelihood += activities[j]*forward_rxn_likelihood[j];
     }
     dg_forward *= m_rt;
     entropy = 0.0;
@@ -195,7 +202,7 @@ int boltzmann_run_sim(struct state_struct *state) {
     if (success) {
       r_sum_likelihood = 1.0/sum_likelihood;
       for (j=0;j<num_rxns;j++) {
-	scaled_likelihood = forward_rxn_likelihood[j] * r_sum_likelihood;
+	scaled_likelihood = activities[j]*forward_rxn_likelihood[j] * r_sum_likelihood;
 	if (scaled_likelihood>0) {
 	  entropy -= (scaled_likelihood * log(scaled_likelihood));
 	}
@@ -246,7 +253,7 @@ int boltzmann_run_sim(struct state_struct *state) {
       for (j=0;j<num_rxns;j++) {
 	free_energy[j] =  m_rt * c_loglr[j];
 	dg_forward     += c_loglr[j];
-	sum_likelihood += forward_rxn_likelihood[j];
+	sum_likelihood += activities[j]*forward_rxn_likelihood[j];
       }
       dg_forward *= m_rt;
       entropy = 0.0;
@@ -260,8 +267,10 @@ int boltzmann_run_sim(struct state_struct *state) {
       if (success) {
 	r_sum_likelihood = 1.0/sum_likelihood;
 	for (j=0;j<num_rxns;j++) {
-	  scaled_likelihood = forward_rxn_likelihood[j] * r_sum_likelihood;
-	  entropy -= scaled_likelihood * log(scaled_likelihood);
+	  scaled_likelihood = activities[j]*forward_rxn_likelihood[j] * r_sum_likelihood;
+	  if (scaled_likelihood > 0) {
+	    entropy -= scaled_likelihood * log(scaled_likelihood);
+	  }
 	}
       }
       /*
@@ -274,37 +283,55 @@ int boltzmann_run_sim(struct state_struct *state) {
 	 print the concentrations. 
       */
       if (concs_out_fp) {
-	fprintf(concs_out_fp,"%d",i);
-	for (j=0;j<nu;j++) {
-	  fprintf(state->concs_out_fp,"\t%le",cconcs[j]);
+	conc_view_step = conc_view_step - 1;
+	if ((conc_view_step <= 0) || (i == (n_record_steps-1))) {
+	  fprintf(concs_out_fp,"%d",i);
+	  for (j=0;j<nu;j++) {
+	    fprintf(state->concs_out_fp,"\t%le",cconcs[j]);
+	  }
+	  fprintf(state->concs_out_fp,"\n");
+	  conc_view_step = conc_view_freq;
 	}
-	fprintf(state->concs_out_fp,"\n");
       }
       /* 
 	 print the entropy, dg_forward and the reaction likelihoods, 
       */
-      fprintf(state->rxn_lklhd_fp,"%d\t%le\t%le",i,entropy,dg_forward);
-      for (j=0;j<num_rxns;j++) {
-	fprintf(state->rxn_lklhd_fp,"\t%le",forward_rxn_likelihood[j]);
-	fprintf(state->rxn_lklhd_fp,"\t%le",reverse_rxn_likelihood[j]);
+      if (state->rxn_lklhd_fp) {
+	lklhd_view_step = lklhd_view_step - 1;
+	if ((lklhd_view_step <= 0) || (i == (n_record_steps-1))) {
+	  fprintf(state->rxn_lklhd_fp,"%d\t%le\t%le",i,entropy,dg_forward);
+	  for (j=0;j<num_rxns;j++) {
+	    /*
+	    fprintf(state->rxn_lklhd_fp,"\t%le",forward_rxn_likelihood[j]);
+	    fprintf(state->rxn_lklhd_fp,"\t%le",reverse_rxn_likelihood[j]);
+	    */
+	    fprintf(state->rxn_lklhd_fp,"\t%le",forward_rxn_likelihood[j]*activities[j]);
+	    fprintf(state->rxn_lklhd_fp,"\t%le",reverse_rxn_likelihood[j]*activities[j]);
+	  }
+	  fprintf(state->rxn_lklhd_fp,"\n");
+	  lklhd_view_step = lklhd_view_freq;
+	}
       }
-      fprintf(state->rxn_lklhd_fp,"\n");
-      if (lthf > 0) {
-	view_step = view_step - 1;
+      if (rxn_view_freq > 0) {
+	rxn_view_step = rxn_view_step - 1;
 	/*
 	  Save the likelihoods on a per reaction basis.
 	*/
-	if ((view_step <= 0) || (i == n_record_steps-1)) {
-	  rxn_view_p = (double *)&rxn_view_data[view_pos];
-	  rrxn_view_p = (double *)&rrxn_view_data[view_pos];
+	if ((rxn_view_step <= 0) || (i == (n_record_steps-1))) {
+	  rxn_view_p = (double *)&rxn_view_data[rxn_view_pos];
+	  rrxn_view_p = (double *)&rrxn_view_data[rxn_view_pos];
 	  for (j = 0; j < num_rxns;j++) {
+	    /*
 	    *rxn_view_p = forward_rxn_likelihood[j];
 	    *rrxn_view_p = reverse_rxn_likelihood[j];
-	    rxn_view_p += lthl; /* Caution address arithmetic here. */
-	    rrxn_view_p += lthl; /* Caution address arithmetic here. */
+	    */
+	    *rxn_view_p  = forward_rxn_likelihood[j]*activities[j];
+	    *rrxn_view_p = reverse_rxn_likelihood[j]*activities[j];
+	    rxn_view_p   += rxn_view_hist_lngth; /* Caution address arithmetic here. */
+	    rrxn_view_p  += rxn_view_hist_lngth; /* Caution address arithmetic here. */
 	  }
-	  view_step = lthf;
-	  view_pos += 1;
+	  rxn_view_step = rxn_view_freq;
+	  rxn_view_pos  += 1;
 	}
       }
       /*
@@ -363,7 +390,7 @@ int boltzmann_run_sim(struct state_struct *state) {
       success = print_restart_file(state);
     }
     if (success) {
-      if (lthf > 0) {
+      if (rxn_view_freq > 0) {
 	success = print_reactions_view(state);
       }
     }
