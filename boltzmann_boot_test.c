@@ -41,7 +41,7 @@ specific language governing permissions and limitations under the License.
 
 int main(int argc, char **argv)
 {
-  int64_t *super_statep;
+  struct super_state_struct *super_statep;
   char    *param_file_name;
   int     success;
   int     retval;
