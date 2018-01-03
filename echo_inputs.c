@@ -53,7 +53,7 @@ int echo_inputs(struct state_struct *state) {
     success = print_dg0_ke(state);
   }
   if (success) {
-    step = -1;
+    step = -3;
     print_counts(state,step);
     /*
       Create the rxns.mat file. print_reactions_matrix needs
