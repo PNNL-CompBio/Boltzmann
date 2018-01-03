@@ -27,6 +27,7 @@ specific language governing permissions and limitations under the License.
 #include "vgrng_init.h"
 #include "echo_params.h"
 #include "size_rxns_list.h"
+#include "sbml_to_boltzmann.h"
 #include "size_rxns_file.h"
 #include "alloc2.h"
 #include "parse_reactions_file.h"
@@ -232,6 +233,7 @@ int boltzmann_boot(char *param_file_name,
   int64_t rxn_list_line_len;
   int64_t rxn_file_name_len;
   int64_t concs_file_name_len;
+  int64_t cmpts_file_name_len;
   int64_t one_l;
   int64_t nunique_molecules;
   int64_t nunique_compartments;
@@ -262,6 +264,7 @@ int boltzmann_boot(char *param_file_name,
   char *local_state_buffer;
   char *rxn_file_name;
   char *concs_file_name;
+  char *cmpts_file_name;
   char rxn_list_buffer[1024];
   char *rxn_list_buffp;
   char *solvent_string;
@@ -287,10 +290,13 @@ int boltzmann_boot(char *param_file_name,
 
   int ierr;
   int solvent_pos;
-  int padi;
 
   int skip1;
   int skip2;
+
+  int skip3;
+  int padi;
+	  
 
   FILE *tmp_state_fp;
   FILE *global_state_fp;
@@ -458,6 +464,9 @@ int boltzmann_boot(char *param_file_name,
       } else {
 	/* 
 	   The rest of this loop
+	   N.B.
+	   Sbml stuff would come in here, also cmpts.dat file should get handled
+	   here, think about this for later.
 	*/
 	skip1 = count_ws(rxn_list_buffp);
 	rxn_file_name = &rxn_list_buffp[skip1];
@@ -469,6 +478,25 @@ int boltzmann_boot(char *param_file_name,
 	if (concs_file_name_len > 0) {
 	  concs_file_name[concs_file_name_len] = '\0';
 	  strcpy(state->init_conc_file,concs_file_name);
+	  skip3 = count_ws(&concs_file_name[concs_file_name_len]);
+	  cmpts_file_name = &concs_file_name[concs_file_name_len+ skip3];
+	  cmpts_file_name_len = count_nws(cmpts_file_name);
+	  if (cmpts_file_name_len > 0) {
+	    cmpts_file_name[cmpts_file_name_len] = '\0';
+	    strcpy(state->compartment_file,cmpts_file_name);
+	  }
+	} else {
+	  /*
+	    Only one file name was given we will assume it was an
+	    SBML file 
+	  */
+	  strcpy(state->sbml_file,rxn_file_name);
+	  success = sbml_to_boltzmann(state);
+	  if (success) {
+	    strcpy(rxn_file_name,state->reaction_file);
+	  }
+	}
+	if (success) {
 	  success = size_rxns_file(state,rxn_file_name);
 	}
 	/*
