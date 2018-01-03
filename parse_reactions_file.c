@@ -38,7 +38,8 @@ specific language governing permissions and limitations under the License.
 #include "parse_side_line.h"
 
 #include "parse_reactions_file.h"
-int parse_reactions_file(struct state_struct *state) {
+int parse_reactions_file(struct state_struct *state,
+			 char *reaction_file) {
   /*
 
     This routine fills the unsorted_molecules and unsorted_cmpts
@@ -153,7 +154,7 @@ int parse_reactions_file(struct state_struct *state) {
   seek_offset = (int64_t)0;
   rxn_buff_len = state->max_param_line_len<<1;
   lfp          = state->lfp;
-  rxn_fp       = state->rxn_fp;
+  rxn_fp       = fopen(reaction_file,"r");
   align_len    = state->align_len;
   align_mask   = state->align_mask;
   if (rxn_fp == NULL) {
@@ -165,8 +166,8 @@ int parse_reactions_file(struct state_struct *state) {
   if (success) {
     /*
       Seek to beginning of file.
-    */
     fseek(rxn_fp,seek_offset,SEEK_SET);
+    */
     rxn_buffer = state->param_buffer;
     keywords   = state->rxn_file_keywords;
     keyword_lens = state->rxn_file_keyword_lengths;
@@ -530,16 +531,17 @@ int parse_reactions_file(struct state_struct *state) {
 	fgp = fgets(rxn_buffer,rxn_buff_len,rxn_fp);
       }/* end if (success) */
     } /* end while(fgp...) */
+    rxn_ptrs[rxns] = molecules;
+    /*
+      Check that last line was a //.
+    */
+    if (line_type != (int)(state->num_rxn_file_keywords) - 1) {
+      fprintf(stderr,
+	      "parse_reactions_file: Error reactions file did not end in //\n");
+      fflush(stderr);
+      success = 0;
+    }
+    fclose(rxn_fp);
   } /* end if (success) */
-  rxn_ptrs[rxns] = molecules;
-  /*
-    Check that last line was a //.
-  */
-  if (line_type != (int)(state->num_rxn_file_keywords) - 1) {
-    fprintf(stderr,
-	    "parse_reactions_file: Error reactions file did not end in //\n");
-    fflush(stderr);
-    success = 0;
-  }
   return(success);
 }
