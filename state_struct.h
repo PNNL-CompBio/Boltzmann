@@ -158,6 +158,9 @@ struct state_struct {
 
   double  ideal_gas_r;
   double  temp_kelvin;
+  double  avogadro;
+  double  conc_to_count;
+  double  count_to_conc;
   double  ph;
   double  ionic_strength;
   double  rt;
