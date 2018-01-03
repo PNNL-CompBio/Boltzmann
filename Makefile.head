@@ -7,12 +7,11 @@ OPT_FLAGS = -O2 -fPIC
 #
 ### End User configurable options ###
 LIBS = libboltzmann.a -lm 
-EXECS = boltzmann boltzmann_test_save_load sbml2bo
+EXECS        = boltzmann deq lapack_test sbml2bo kegg_ms_ids ms2js_ids kegg_ids bwarmup boltzmann_test_save_load
 DBG_FLAGS = -O0 -g -Wall
 NO_OPT_FLAGS = -O0 -g -Wall
 CFLAGS = ${OPT_FLAGS}
 DCFLAGS = ${CFLAGS}
-TFLAGS  =
 LFLAGS = -g -lm
 default: $(EXECS)
 all:  $(EXECS)
