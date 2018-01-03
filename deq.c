@@ -53,7 +53,8 @@ int main(int argc, char **argv)
   char *param_file_name;
   int success;
   int j;
-
+  int print_concs;
+  int padi;
   /*
 #ifdef LIBUNWIND
 #include "luwtb1.h"
@@ -73,6 +74,7 @@ int main(int argc, char **argv)
   success = boltzmann_init(param_file_name,&state);
   TIMING_STOP(INITIALIZE);
   if (success) {
+    state->print_ode_concs = 1;
     success = deq_run(state);
     j = 1;
     print_counts(state,j);
