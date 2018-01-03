@@ -481,8 +481,8 @@ int parse_reactions_file(struct state_struct *state) {
 		coefficients[molecules] = 1;
 	      }
 	      ci = -1;
-	      rctnts[sl] = '\0';
-	      colon_loc = find_colon(rctnts);
+	      prdcts[sl] = '\0';
+	      colon_loc = find_colon(prdcts);
 	      if (colon_loc >= 0) {
 		/* 
 		  We had a local :compartment attached.
