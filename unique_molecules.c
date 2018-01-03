@@ -66,12 +66,15 @@ int unique_molecules(struct state_struct *state) {
   molecules_indices[sorted_molecules->m_index] = nu_molecules;
   sorted_molecules->m_index = 0;
   cur_molecule = sorted_molecules;
+  /*
+    This translation has already been done in translate_compartments.
   cur_molecule->c_index = compartment_indices[cur_molecule->c_index];
-  cni          = compartment_indices[sorted_molecules->c_index];
+  */
+  cni = sorted_molecules->c_index;
   sorted_molecules += 1; /* Caution address arithmetic. */
   umolecules_next  = sorted_molecules;
   for (i=1;i<nzr;i++) {
-    ni = compartment_indices[sorted_molecules->c_index];
+    ni = sorted_molecules->c_index;
     if ((ni != cni)  ||
 	(strcmp(sorted_molecules->string,cur_molecule->string) != 0)) {
       nu_molecules += 1;
