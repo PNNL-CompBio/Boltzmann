@@ -164,7 +164,7 @@ int boltzmann_run(struct state_struct *state) {
     */
     dcopy_(&number_reactions,dg0s,&incx,free_energy,&incx);
   }
-  if ((print_output > 1) && lfp) {
+  if ((print_output >= 1) && lfp) {
     fprintf(lfp,
 	    "\nWarmup_step rxn_choice forward_likelihood "
 	    "reverse_likelihood\n");
@@ -187,7 +187,7 @@ int boltzmann_run(struct state_struct *state) {
       */
       rxn_choice = choose_rxn(state,&r_sum_likelihood);
       if (rxn_choice < 0) break;
-      if ((print_output > 1) && lfp) {
+      if ((print_output >= 1) && lfp) {
 	if (choice_view_freq > zero_l) {
 	  choice_view_step = choice_view_step - one_l;
 	  if ((choice_view_step <= zero_l) || (i == (n_warmup_steps-one_l))) {
@@ -244,7 +244,7 @@ int boltzmann_run(struct state_struct *state) {
     /*
       Set the rxn_fire counts to 0.
     */
-    if (print_output > 1) {
+    if (print_output >= 1) {
       if (lfp) {
 	fprintf(lfp,
 	    "\nRecord_step rxn_choice forward_likelihood "
@@ -254,7 +254,7 @@ int boltzmann_run(struct state_struct *state) {
       vec_set_constant(number_reactions_t2,rxn_fire,zero_l);
       */
       for (i=0;i<number_reactions_t2;i++) {
-	rxn_fire[i] = (int64_t)0;
+	rxn_fire[i] = zero_l;
       }
     }
     /*
