@@ -40,16 +40,24 @@ int print_molecules_dictionary(struct state_struct *state) {
   struct rxn_struct *reactions;
   struct rxn_matrix_struct *rxns_matrix;
   int64_t *column_indices;
-  struct istring_elem_struct *sorted_molecules;
   struct istring_elem_struct *cur_molecules;
+  struct istring_elem_struct *cur_cmpts;
+  struct istring_elem_struct *cur_cmpt;
+  char *cmpt_string;
   int nzr;
   int i;
+
+  int oi;
+  int ci;
+
   int success;
   int nu_molecules;
+
   FILE *dict_fp;
   success = 1;
   nu_molecules     = state->unique_molecules;
   cur_molecules = state->sorted_molecules;
+  cur_cmpts     = state->sorted_cmpts;
   dict_fp = fopen("molecules.dict","w+");
   if (dict_fp == NULL) {
     fprintf(stderr,
@@ -58,9 +66,21 @@ int print_molecules_dictionary(struct state_struct *state) {
     fflush(stderr);
     success = 0;
   }
+  cmpt_string = NULL;
+  oi          = -1;
   if (success) {
     for (i=0;i<nu_molecules;i++) {
-      fprintf(dict_fp,"%d %s\n",i,cur_molecules->string);
+      ci = cur_molecules->c_index;
+      if (ci != oi) {
+	oi = ci;
+	cur_cmpt = (struct istring_elem_struct *)&(cur_cmpts[ci]);
+	cmpt_string = cur_cmpt->string;
+      }
+      if (ci != -1) {
+	fprintf(dict_fp,"%d %s %s\n",i,cur_molecules->string,cmpt_string);
+      } else {
+	fprintf(dict_fp,"%d %s\n",i,cur_molecules->string);
+      }
       cur_molecules += 1; /* Caution address arithmetic. */
     }
     fclose(dict_fp);
