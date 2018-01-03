@@ -260,7 +260,7 @@ int deq_run(struct state_struct *state) {
       ode_print_concs_header(state);
     }
     success = ode_solver(state,counts,htry,nonnegative,normcontrol,
-			 print_ode_concs,choice);
+			 print_ode_concs,solver_choice);
   }
   /*
   j = 1;
