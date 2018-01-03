@@ -29,7 +29,7 @@ int ode_num_jac(struct state_struct *state,
 		double *dfdy_tmp, /* ny x 1 */
 		int64_t *nfcalls /* scalar returned */) {
   /*
-    Called by: ode23tb
+    Called by: ode23tb, approximate_jacobian
     Calls:     num_jac_col, sqrt, pow, fabs, dcopy
     thresh[i] = 1.e-6;
     Looks like we need 10 temporary vectors.
