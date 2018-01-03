@@ -40,7 +40,7 @@ specific language governing permissions and limitations under the License.
 #include "alloc3.h"
 #include "set_compartment_ptrs.h"
 #include "read_initial_concentrations.h"
-#include "formation_energy_rxn_dg0fs.h"
+#include "compute_standard_energies.h"
 #include "compute_ke.h"
 #include "print_rxn_likelihoods_header.h"
 #include "print_free_energy_header.h"
@@ -71,7 +71,7 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
 	       print_molecules_dictionary,
 	       alloc3,
 	       read_initial_concentrations,
-	       formation_energy_rxn_dg0fs,
+	       compute_standard_energies,
 	       compute_ke,
 	       print_rxn_likelihoods_header,
 	       print_free_energy_header
@@ -274,7 +274,7 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
   if (success) {
     if (state->use_pseudoisomers) {
       formation_energies = NULL;
-      success = formation_energy_rxn_dg0fs(state,&formation_energies);
+      success = compute_standard_energies(state,&formation_energies);
     }
   }
   /*
