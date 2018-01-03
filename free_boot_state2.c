@@ -121,6 +121,12 @@ int free_boot_state2(struct state_struct *state) {
     if (state->bndry_flux_counts) {
       free(state->bndry_flux_counts);
     }
+    if (state->net_lklhd_bndry_flux) {
+      free(state->net_lklhd_bndry_flux);
+    }
+    if (state->net_likelihood) {
+      free(state->net_likelihood);
+    }
     if (state->count_to_conc) {
       free(state->count_to_conc);
     }
