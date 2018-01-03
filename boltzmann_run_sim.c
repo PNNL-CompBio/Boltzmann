@@ -25,6 +25,7 @@ specific language governing permissions and limitations under the License.
 #include <string.h>
 #include <strings.h>
 #include <float.h>
+#include <math.h>
 #include <signal.h>
 #include <unistd.h>
 
@@ -39,7 +40,7 @@ specific language governing permissions and limitations under the License.
 #include "binary_search_l_u_b.h"
 #include "forward_rxn_conc_update.h"
 #include "reverse_rxn_conc_update.h"
-#include "log_rxn_ratios.h"
+#include "rxn_log_likelihoods.h"
 
 #include "boltzmann_run_sim.h"
 int boltzmann_run_sim(struct state_struct *state) {
@@ -53,7 +54,7 @@ int boltzmann_run_sim(struct state_struct *state) {
 	       binary_search_l_u_b,
 	       forward_rxn_conc_update,
 	       reverse_rxn_conc_update,
-	       log_rxn_ratios,
+	       rxn_log_likelihoods,
   */
   struct vgrng_state_struct *vgrng_state;
   int64_t choice;
@@ -63,14 +64,20 @@ int boltzmann_run_sim(struct state_struct *state) {
   double rvall;
   double scaling;
   double dg_forward;
+  double sum_likelihood;
+  double r_sum_likelihood;
+  double entropy;
+  double scaled_likelihood;
   double *cconcs;
   double *fconcs;
   double *rxn_likelihood_ps;
   double *free_energy;
-  double *c_lrr;
+  double *c_loglr;
   double *forward_rxn_likelihood;
   double *reverse_rxn_likelihood;
+  /*
   double *lthermo;
+  */
   double m_rt;
   int success;
   int num_state_files;
@@ -100,13 +107,15 @@ int boltzmann_run_sim(struct state_struct *state) {
   vgrng_state    = state->vgrng_state;
   rxn_likelihood_ps         = state->rxn_likelihood_ps;
   free_energy            = state->free_energy;
-  c_lrr          = state->current_log_rxn_ratio;
+  c_loglr          = state->current_rxn_log_likelihood_ratio;
   num_rxns       = state->number_reactions;
   nu             = state->unique_molecules;
   cconcs         = state->current_concentrations;
   fconcs         = state->future_concentrations;
   m_rt           = state->m_rt;
+  /*
   lthermo        = state->l_thermo;
+  */
   forward_rxn_likelihood = state->forward_rxn_likelihood;
   reverse_rxn_likelihood = state->reverse_rxn_likelihood;
   num_rxns_t2    = num_rxns << 1;
@@ -116,7 +125,7 @@ int boltzmann_run_sim(struct state_struct *state) {
   rxn_lklhd_fp   = state->rxn_lklhd_fp;
   for (i=0;i<n_warmup_steps;i++) {
     /*
-      Comput the reaction likelihoods - forward_rxn_likelihood, 
+      Compute the reaction likelihoods - forward_rxn_likelihood, 
       and reverse_rxn_likelihood.
     */
     success = free_energy_changes(state);
@@ -131,7 +140,8 @@ int boltzmann_run_sim(struct state_struct *state) {
       rxn_likelihood_ps[num_rxns+j] = rxn_likelihood_ps[num_rxns-1+j] + reverse_rxn_likelihood[j];
     }
     /*
-      Doug wonders why 1.0 + here?
+      1.0 is add to the likelihoods to account for the 
+      likeilhood that the state does not change.
     */
     vall = 1.0 + rxn_likelihood_ps[num_rxns+num_rxns-1];
     rxn_likelihood_ps[num_rxns+num_rxns] = vall;
@@ -160,93 +170,136 @@ int boltzmann_run_sim(struct state_struct *state) {
     }
     /*
       Doug wonders here whether or not we ought to update free_energy based
-      on the new concentrations, Absolutelyh we should.
+      on the new concentrations, Absolutely we should.
     */
-    success = log_rxn_ratios(free_energy,cconcs,c_lrr,c_lrr,state);
-    for (j=0;j<num_rxns;j++) {
-      free_energy[j] = m_rt * c_lrr[j];
-    }
-  } /* end for(i...) */
-  
-  for (i=0;i<n_record_steps;i++) {
-    /*
-      Comput the reaction likelihoods - forward_rxn_likelihood, and reverse_free_energy.
-    */
-    success = free_energy_changes(state);
-    /*
-      Compute the partial sums of the reaction likelihoods.
-    */
-    rxn_likelihood_ps[0] = forward_rxn_likelihood[0];
-    for (j=1;j<num_rxns;j++) {
-      rxn_likelihood_ps[j] = rxn_likelihood_ps[j-1] + forward_rxn_likelihood[j];
-    }
-    for(j=0;j<num_rxns;j++) {
-      rxn_likelihood_ps[num_rxns+j] = rxn_likelihood_ps[num_rxns-1+j] + reverse_rxn_likelihood[j];
-    }
-    /*
-      Doug wonders why 1.0 + here?
-    */
-    vall = 1.0 + rxn_likelihood_ps[num_rxns+num_rxns-1];
-    rxn_likelihood_ps[num_rxns+num_rxns] = vall;
-    /*
-      Unimultiplier is 1.0/2^31-1
-    */
-    scaling = vall*uni_multiplier;
-    /*
-      choice is a pseudo-random integer in [0,2^31-1] (inclusive).
-     */
-    choice  = vgrng(vgrng_state);
-    dchoice = ((double)choice)*scaling;
-    /*
-      Find index of smallest rxn_likelihood_ps entry that is >= choice.
-    */
-    rxn_choice = binary_search_l_u_b(rxn_likelihood_ps,dchoice,num_rxns_t2_p1);
-    if (rxn_choice < num_rxns) {
-      success = forward_rxn_conc_update(rxn_choice,state);
-    } else {
-      if (rxn_choice < num_rxns_t2) {
-	success = reverse_rxn_conc_update(rxn_choice-num_rxns,state);
-      } /* else do nothing, no change */
-    }
-    for (j=0;j<nu;j++) {
-      cconcs[j] = fconcs[j];
-    }
-    /*
-      Doug wonders here whether or not we ought to update free_energy based
-      on the new concentrations. Absolutely we should.
-    */
-    success = log_rxn_ratios(free_energy,cconcs,lthermo,c_lrr,state);
+    success = rxn_log_likelihoods(free_energy,cconcs,c_loglr,c_loglr,state);
     dg_forward = 0.0;
+    sum_likelihood = 0.0;
     for (j=0;j<num_rxns;j++) {
-      free_energy[j] =  m_rt * c_lrr[j];
-      dg_forward     += c_lrr[j];
+      dg_forward += c_loglr[j];
+      sum_likelihood += forward_rxn_likelihood[j];
     }
     dg_forward *= m_rt;
-    /*
-      Now we need to generate the relevant output.
-      We want one file for the reaction Likelihoods,
-      one file for the reaction concentrations.
-      We will include the 
-    */
-    /* 
-      print the concentrations. 
-    */
-    fprintf(state->concs_out_fp,"%d",i);
-    for (j=0;j<num_rxns;j++) {
-      fprintf(state->concs_out_fp," %le",cconcs[j]);
+    entropy = 0.0;
+    if (sum_likelihood <= 0.0) {
+      fprintf(stderr,"boltzmann_run_sim: Error, nonpositivy sum_likelihood\n");
+      fflush(stderr);
+      success = 0;
+      break;
     }
-    fprintf(state->concs_out_fp,"%\n");
-    
-    /* 
-      print the dg_forward and the reaction likelihoods, in lthermo.
-    */
-    fprintf(state->rxn_lklhd_fp,"%d %le",i,dg_forward);
-    for (j=0;j<num_rxns;j++) {
-      fprintf(state->rxn_lklhd_fp," %le",lthermo[j]);
+    if (success) {
+      r_sum_likelihood = 1.0/sum_likelihood;
+      for (j=0;j<num_rxns;j++) {
+	scaled_likelihood = forward_rxn_likelihood[j] * r_sum_likelihood;
+	entropy -= (scaled_likelihood * log(scaled_likelihood));
+      }
     }
-    fprintf(state->rxn_lklhd_fp,"%\n");
-
 
   } /* end for(i...) */
+  
+  if (success) {
+    for (i=0;i<n_record_steps;i++) {
+      /*
+	Comput the reaction likelihoods - forward_rxn_likelihood, 
+	and reverse_free_energy.
+      */
+      success = free_energy_changes(state);
+      /*
+	Compute the partial sums of the reaction likelihoods.
+      */
+      rxn_likelihood_ps[0] = forward_rxn_likelihood[0];
+      for (j=1;j<num_rxns;j++) {
+	rxn_likelihood_ps[j] = rxn_likelihood_ps[j-1] + forward_rxn_likelihood[j];
+      }
+      for(j=0;j<num_rxns;j++) {
+	rxn_likelihood_ps[num_rxns+j] = rxn_likelihood_ps[num_rxns-1+j] + 
+	  reverse_rxn_likelihood[j];
+      }
+      /*
+	1.0 is add to the likelihoods to account for the 
+	likeilhood that the state does not change.
+      */
+      vall = 1.0 + rxn_likelihood_ps[num_rxns+num_rxns-1];
+      rxn_likelihood_ps[num_rxns+num_rxns] = vall;
+      /*
+	Unimultiplier is 1.0/2^31-1
+      */
+      scaling = vall*uni_multiplier;
+      /*
+	choice is a pseudo-random integer in [0,2^31-1] (inclusive).
+      */
+      choice  = vgrng(vgrng_state);
+      dchoice = ((double)choice)*scaling;
+      /*
+	Find index of smallest rxn_likelihood_ps entry that is >= choice.
+      */
+      rxn_choice = binary_search_l_u_b(rxn_likelihood_ps,dchoice,
+				       num_rxns_t2_p1);
+      if (rxn_choice < num_rxns) {
+	success = forward_rxn_conc_update(rxn_choice,state);
+      } else {
+	if (rxn_choice < num_rxns_t2) {
+	  success = reverse_rxn_conc_update(rxn_choice-num_rxns,state);
+	} /* else do nothing, no change */
+      }
+      for (j=0;j<nu;j++) {
+	cconcs[j] = fconcs[j];
+      }
+      /*
+	Doug wonders here whether or not we ought to update free_energy based
+	on the new concentrations. Absolutely we should.
+	success = rxn_log_likelihoods(free_energy,cconcs,lthermo,c_loglr,state);      
+      */
+      success = rxn_log_likelihoods(free_energy,cconcs,
+				    forward_rxn_likelihood,c_loglr,state);
+      dg_forward = 0.0;
+      sum_likelihood = 0.0;
+      for (j=0;j<num_rxns;j++) {
+	/*
+	  free_energy[j] =  m_rt * c_loglr[j];
+	*/
+	dg_forward     += c_loglr[j];
+	sum_likelihood += forward_rxn_likelihood[j];
+      }
+      dg_forward *= m_rt;
+      entropy = 0.0;
+      if (sum_likelihood <= 0.0) {
+	fprintf(stderr,
+		"boltzmann_run_sim: Error, nonpositivy sum_likelihood\n");
+	fflush(stderr);
+	success = 0;
+	break;
+      }
+      if (success) {
+	r_sum_likelihood = 1.0/sum_likelihood;
+	for (j=0;j<num_rxns;j++) {
+	  scaled_likelihood = forward_rxn_likelihood[j] * r_sum_likelihood;
+	  entropy -= scaled_likelihood * log(scaled_likelihood);
+	}
+      }
+      /*
+	Now we need to generate the relevant output.
+	We want one file for the reaction Likelihoods,
+	one file for the reaction concentrations.
+	We will include the 
+      */
+      /* 
+	 print the concentrations. 
+      */
+      fprintf(state->concs_out_fp,"%d",i);
+      for (j=0;j<nu;j++) {
+	fprintf(state->concs_out_fp," %le",cconcs[j]);
+      }
+      fprintf(state->concs_out_fp,"\n");
+      /* 
+	 print the entropy, dg_forward and the reaction likelihoods, 
+      */
+      fprintf(state->rxn_lklhd_fp,"%d %le %le",i,entropy,dg_forward);
+      for (j=0;j<num_rxns;j++) {
+	fprintf(state->rxn_lklhd_fp," %le",forward_rxn_likelihood[j]);
+      }
+      fprintf(state->rxn_lklhd_fp,"\n");
+    } /* end for(i...) */
+  }
   return(success);
 }
