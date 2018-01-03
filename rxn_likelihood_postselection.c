@@ -22,6 +22,8 @@ specific language governing permissions and limitations under the License.
 ******************************************************************************/
 
 #include "boltzmann_structs.h"
+#include "boltzmann_cvodes_headers.h"
+#include "cvodes_params_struct.h"
 
 #include "rxn_likelihood_postselection.h"
 
@@ -49,6 +51,7 @@ double rxn_likelihood_postselection(double *counts,
     Called by: metropolis
     Calls      fprintf, fflush, log (intrinsic)
   */
+  struct cvodes_params_struct *cvodes_params;
   struct reactions_matrix_struct *rxns_matrix;
   /*
   struct species_matrix_struct species_matrix;
@@ -74,7 +77,11 @@ double rxn_likelihood_postselection(double *counts,
   int j;
 
   int k;
-  int padi;
+  int use_deq;
+
+  int compute_sensitivities;
+  int ode_solver_choice;
+
   left_counts = 1.0;
   right_counts = 1.0;
 
@@ -86,6 +93,13 @@ double rxn_likelihood_postselection(double *counts,
   molecules_indices = rxns_matrix->molecules_indices;
   ke                = state->ke;
   kss               = state->kss;
+  use_deq           = state->use_deq;
+  ode_solver_choice = state->ode_solver_choice;
+  compute_sensitivities = state->compute_sensitivities;
+  if (use_deq && compute_sensitivities && (ode_solver_choice == 1)) {
+    cvodes_params = state->cvodes_params;
+    ke            = cvodes_params->p;
+  }
   /*
   kssr              = state->kssr;
   */
