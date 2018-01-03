@@ -76,6 +76,8 @@ int read_params (char *param_file_name, struct state_struct *state) {
     strcpy(state->restart_file,"./restart.concs");
     strcpy(state->rxn_view_file,"./rxns.view");
     strcpy(state->bndry_flux_file,"./boundary_flux.txt");
+    state->compartment_file[0] = '\0';
+    state->sbml_file[0]        = '\0';
     /*
       Following line Added by DGT on 4/18/2013
      */
@@ -145,7 +147,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	sscan_ok = sscanf(value,"%s",state->output_dir);
       } else if (strncmp(key,"OUT_FILE",8) == 0) {
 	sscan_ok = sscanf(value,"%s",state->output_file);
-      } else if (strncmp(key,"COUNTS_OUT_FILE",14) == 0) {
+      } else if (strncmp(key,"COUNTS_OUT_FILE",15) == 0) {
 	sscan_ok = sscanf(value,"%s",state->counts_out_file);
       } else if (strncmp(key,"RXN_LKLHD_FILE",14) == 0) {
 	sscan_ok = sscanf(value,"%s",state->rxn_lklhd_file);
@@ -162,6 +164,10 @@ int read_params (char *param_file_name, struct state_struct *state) {
       */	
       } else if (strncmp(key,"PSEUDOISOMER_FILE",17) == 0) {
 	sscan_ok = sscanf(value,"%s",state->pseudoisomer_file);
+      } else if (strncmp(key,"COMPARTMENT_FILE",16) == 0) {
+	sscan_ok = sscanf(value,"%s",state->compartment_file);
+      } else if (strncmp(key,"SBML_FILE",9) == 0) {
+	sscan_ok = sscanf(value,"%s",state->sbml_file);
       } else if (strncmp(key,"USE_PSEUDOISOMERS",17) == 0) {
 	sscan_ok = sscanf(value,"%ld",&state->use_pseudoisomers);
       } else if (strncmp(key,"USE_METROPOLIS",14) == 0) {
