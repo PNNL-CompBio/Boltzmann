@@ -44,8 +44,7 @@ specific language governing permissions and limitations under the License.
 #define DBG_RXN_MAP_INIT 1
 */
 #include "boltzmann_init.h"
-int rxn_map_init(char *param_file_name, struct state_struct **statep,
-		 struct molecules_matrix_struct **molecules_matrix_p) {
+int rxn_map_init(char *param_file_name, struct state_struct **statep) {
   /*
     Initialize the reactions and data structures for rxn_map.
     Called by: rxn_map
@@ -70,11 +69,10 @@ int rxn_map_init(char *param_file_name, struct state_struct **statep,
 	       print_free_energy_header
   */
   struct state_struct *state;
-  struct molecules_matrix_struct *molecules_matrix;
-  int64_t *transpose_work;
+
   int success;
   int print_output;
-  int one;
+  int setup;
   int padi;
 
   FILE *start_stop_fp;
@@ -87,8 +85,8 @@ int rxn_map_init(char *param_file_name, struct state_struct **statep,
     allocate space for the state struct.
     Allocate space for the reactions line buffer, and the rxn_file keywords.
   */
-  one = 1;
-  success = alloc0(statep,one);
+  setup = 1;
+  success = alloc0(statep,setup);
   if (success) {
     /*
       Read the input parameters file.
@@ -158,7 +156,7 @@ int rxn_map_init(char *param_file_name, struct state_struct **statep,
     sorting.
   */
   if (success) {
-    success = alloc2(state,one);
+    success = alloc2(state,setup);
   }
   if (success) {
     /*
@@ -238,10 +236,10 @@ int rxn_map_init(char *param_file_name, struct state_struct **statep,
     and read in the intial concentrations.
   */
   if (success) {
-    success = alloc3(state);
+    success = alloc3(state,setup);
   }
   if (success) {
-    success = alloc4(state,&molecules_matrix,&transpose_work);
+    success = alloc4(state,setup);
   }
   /*
     Now in order to enable molecule/compartment lookup for
@@ -277,8 +275,7 @@ int rxn_map_init(char *param_file_name, struct state_struct **statep,
     Compute the molecules matrix.
   */
   if (success) {
-    success = form_molecules_matrix(state,molecules_matrix,transpose_work);
-    *molecules_matrix_p = molecules_matrix;
+    success = form_molecules_matrix(state);
   }
   return(success);
 }
