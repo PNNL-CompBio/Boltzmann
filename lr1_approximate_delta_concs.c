@@ -51,16 +51,11 @@ int lr1_approximate_delta_concs(struct state_struct *state, double *counts,
   struct molecules_matrix_struct *molecules_matrix;
   struct rxn_matrix_struct *rxn_matrix;
   double frb;
-  double lrb;
   double recip_frb;
   double forward;
   double backward;
   double frl;
   double rrl;
-  double *product_term;
-  double *reactant_term;
-  double  pt;
-  double  rt;
   int64_t *molecules_ptrs;
   int64_t *rxn_indices;
   int64_t *coefficients;
@@ -69,12 +64,11 @@ int lr1_approximate_delta_concs(struct state_struct *state, double *counts,
   int64_t *rcoefficients;
   int num_species;
   int num_rxns;
+
   int rxn;
-
   int i;
-  int j;
 
-  int mi;
+  int j;
   int success;
 
   FILE *lfp;
