@@ -39,7 +39,8 @@ int molecules_lookup(char *molecule_name, int compartment_index,
     Called by: read_initial_concentrations.
   */
   struct istring_elem_struct *sorted_molecules;
-  char *molecules;
+  char *molecules_text;
+  char *molecule;
   int64_t *compartment_ptrs;
   int index;
   int n;
@@ -55,16 +56,19 @@ int molecules_lookup(char *molecule_name, int compartment_index,
   index = -1;
   sorted_molecules = state->sorted_molecules;
   compartment_ptrs = state->compartment_ptrs;
+  molecules_text   = state->molecules_text;
   left_end  = compartment_ptrs[compartment_index+1];
   right_end = compartment_ptrs[compartment_index+2];
   if (right_end > left_end) {
-    crslt = strcmp(molecule_name,sorted_molecules[left_end].string);
+    molecule = (char*)&molecules_text[sorted_molecules[left_end].string];
+    crslt = strcmp(molecule_name,molecule);
     if (crslt >= 0) {
       if (crslt == 0) {
 	index = left_end;
       } else {
 	left = left_end;
-	crslt = strcmp(molecule_name,sorted_molecules[right_end-1].string);
+	molecule = (char*)&molecules_text[sorted_molecules[right_end-1].string];
+	crslt = strcmp(molecule_name,molecule);
 	if (crslt <= 0) {
 	  if (crslt == 0) {
 	    index = right_end-1;
@@ -72,7 +76,8 @@ int molecules_lookup(char *molecule_name, int compartment_index,
 	    right = right_end-1;
 	    mid = (left + right) >> 1;
 	    while (mid != left) {
-	      crslt = strcmp(molecule_name,sorted_molecules[mid].string);
+	      molecule = (char*)&molecules_text[sorted_molecules[mid].string];
+	      crslt = strcmp(molecule_name,molecule);
 	      if (crslt == 0) {
 		index = mid;
 		break;
