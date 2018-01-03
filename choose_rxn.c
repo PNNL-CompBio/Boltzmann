@@ -95,6 +95,14 @@ int choose_rxn(struct state_struct *state,
       the state structure.
     */
     rxn_choice = candidate_rxn(state,&scaling,r_sum_likelihoodp);
+    if ((1.0 - *r_sum_likelihoodp) < state->epsilon) {
+    	/*
+    	  If no reaction other than the no-op is very likely 
+    	  return a -1 for reaction choice.
+    	*/
+      accept = 0;
+      break;
+    }
     /*
       Compute the likelihood for this reaction.
       -1 for reverse, 1 for forward;
@@ -109,69 +117,24 @@ int choose_rxn(struct state_struct *state,
       Testing with no rejection.
     return(rxn_choice);
     */
+    accept = 1;
     if (rxn_choice < number_reactions_t2) {
       /*
-	The Metropolis method follows.
-	If reaction was forward or reverse 
-	( No-op is rxn_choice >= number_reactions_t2).
+    	The Metropolis method follows.
+    	If reaction was forward or reverse 
+    	( No-op is rxn_choice >= number_reactions_t2).
       */
       /*
-	Compute the reaction likelihood for this reaction.
+    	Compute the reaction likelihood for this reaction.
       */
       likelihood = rxn_likelihood_postselection(future_concs,
-						state,rxn_direction,i);
-      if (likelihood < 1.0) {
-	/*
-	  An unlikely reaction but we do give a small but nonzero
-	  opportunity to fire, so we grab a new random number and 
-	  scale it in 0:vall where vall is the global sum of the 
-	  likelihoods + 1 and 
-	  we accept the reaction if this new scaled choice is 
-	  less than the likelihood of the reaction. 
-	  Should that be likelihood * activity[rxn_choice]?;
-	  Doug worries that this may need a separate random number
-	  generator to decouple the the re-accpetance from position
-	  in the reaction list.
-	*/
-	choice  = vgrng(vgrng2_state);
-	/*
-	dchoice = ((double)choice)*scaling;
-	*/
-	dchoice = 0;
-	if (dchoice < likelihood*activities[i]) {
-	  
-	  accept = 1;
-	  /*
-	    Update the boundary fluxes.
-	  */
-	  success = bndry_flux_update(i,rxn_direction,state);
-	} else {
-	  /*
-	    Prevent this reaction from happening again.
-	  */
-	  if (rxn_direction < 0) {
-	    reverse_rxn_likelihood[i] = 0.0;
-	  } else {
-	    forward_rxn_likelihood[i] = 0.0;
-	  }
-	}
-      } else {
-	/* 
-	  new likelihood was > 1 so accept. 
-	*/
-	accept = 1;
-	/*
-	  Update the boundary fluxes.
-	*/
-	success = bndry_flux_update(i,rxn_direction,state);
-      }
-    } else {
+    						state,rxn_direction,i);
+    	  
       /*
-	Reaction selected was a No-op
-	Boundary fluxes did not change.
+    	Update the boundary fluxes.
       */
-      accept = 1;
-    }
+      success = bndry_flux_update(i,rxn_direction,state);
+    } 
   } /* end for (j...) */
   if (accept == 0) {
     /*
@@ -180,7 +143,7 @@ int choose_rxn(struct state_struct *state,
     fprintf(stderr,"choose_rxn: Error no likely reactions.\n");
     fflush(stderr);
     rxn_choice = -1;
-  }
+  } 
   return(rxn_choice);
 }
 
