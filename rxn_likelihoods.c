@@ -68,8 +68,10 @@ int rxn_likelihoods(double *free_energy,
   double  left_concs;
   double  right_concs;
   double  t_concs;
+  /*
   double  top;
   double  bot;
+  */
   double  eq_k;
   int64_t coeff;
   int64_t *rcoef;
