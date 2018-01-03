@@ -1,3 +1,5 @@
+#ifndef _ECHO_REACTIONS_FILE_H_
+#define _ECHO_REACTIONS_FILE_H_ 1
 /* echo_reactions_file.h
 *******************************************************************************
 boltzmann
@@ -20,5 +22,5 @@ under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
-extern int echo_reactions_file(struct state_struct *state,
-			       FILE* rxn_echo_fp);
+extern int echo_reactions_file(struct state_struct *state);
+#endif
