@@ -199,7 +199,7 @@ int ode_it_solve(struct state_struct *state,
     dgetrs_(trans,&ny,&nrhs,miter,&ny,ipivot,del,&ny,&info);
     if (info != 0) {
       if (lfp) {
-	fprintf (lfp,"ode_it_solve: Error nonzero return code from dgetrs was %s\n",info);
+	fprintf (lfp,"ode_it_solve: Error nonzero return code from dgetrs was %d\n",info);
 	fflush(lfp);
       }
       itfail = 1;
