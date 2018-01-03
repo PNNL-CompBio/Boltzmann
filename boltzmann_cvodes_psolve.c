@@ -21,10 +21,12 @@ int boltzmann_cvodes_psolve(double t,
   struct state_struct *state;
   double *r_data;
   double *z_data;
+  int64_t vec_len;
   int ret_code;
   int success;
   int prec_choice;
-  int padi;
+  int ny;
+
   state       = (struct state_struct *)user_data;
   prec_choice = state->cvodes_prec_choice;
   r_data  = NV_DATA_S(r);
@@ -32,16 +34,23 @@ int boltzmann_cvodes_psolve(double t,
   switch (prec_choice) {
   case 0:
     /*
+      No preconditioning.
+    */
+    vec_len = ((int64_t)ny) * sizeof(double);
+    memmove(z_data,r_data,vec_len);
+    break;
+  case 1:
+    /*
       This would be the diagonal preconditioner.
     */
     break;
-  case 1:
+  case 2:
     /*
       This could be the traditional ilu solver, but it
       would have an L and a U similar to case 2, so let
       it drop through.
     */
-  case 2:
+  case 3:
     if (lr == 2) {
       /*
 	P = LU, backward solve z  = U^(-1)r
