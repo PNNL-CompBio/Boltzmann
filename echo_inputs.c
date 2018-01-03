@@ -3,6 +3,7 @@
 #include "echo_reactions_file.h"
 #include "print_molecules_dictionary.h"
 #include "print_dg0_ke.h"
+#include "print_counts.h"
 /*
 #include "print_reactions_matrix.h"
 */
@@ -22,7 +23,7 @@ int echo_inputs(struct state_struct *state) {
 
   */
   int success;
-  int padi;
+  int step;
 
   FILE *lfp;
   FILE *efp;
@@ -41,6 +42,7 @@ int echo_inputs(struct state_struct *state) {
   if (success) {
     /*
       create the rxns.dict file.
+      and prints the molecule name header in the .counts file.
     */
     success = print_molecules_dictionary(state);
   }
@@ -51,6 +53,8 @@ int echo_inputs(struct state_struct *state) {
     success = print_dg0_ke(state);
   }
   if (success) {
+    step = -1;
+    print_counts(state,step);
     /*
       Create the rxns.mat file. print_reactions_matrix needs
       rxn_mat_row which is only set by flatten_state.
@@ -59,3 +63,4 @@ int echo_inputs(struct state_struct *state) {
   }
   return(success);
 }
+
