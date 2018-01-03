@@ -138,6 +138,8 @@ int deq_run(struct state_struct *state) {
   int nonnegative;
   int cindex;
 
+  int normcontrol;
+  int padi;
 
   FILE *lfp;
   success = 1;
@@ -178,6 +180,7 @@ int deq_run(struct state_struct *state) {
   choice_view_step       = one_l;
   lfp                    = state->lfp;
   noop_rxn               = number_reactions + number_reactions;
+  normcontrol            = 0;
   /*
     Allocate space for forming the molecules matrix.
   */
@@ -233,15 +236,17 @@ int deq_run(struct state_struct *state) {
   /*
     Convert counts to continuous setting if 0 to avoid 0 concentrations.
   */
+  /*
   for (i=0;i<unique_molecules;i++) {
     if (counts[i] <= 0.0) {
       counts[i] = min_conc * conc_to_count[i];
     }
   }
+  */
   htry = 0.0;
   nonnegative = 1.0;
   if (success) {
-    success = ode23tb(state,counts,htry,nonnegative);
+    success = ode23tb(state,counts,htry,nonnegative,normcontrol);
   }
   /*
   j = 1;
