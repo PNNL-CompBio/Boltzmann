@@ -33,10 +33,8 @@ int alloc3(struct state_struct *state) {
     Called by: boltzmann_init
     Calls:     calloc, fprintf, fflush (intrinsic)
   */
-  /*
   struct molecules_matrix_struct sms;
   struct molecules_matrix_struct *molecules_matrix;
-  */
   int64_t ask_for;
   int64_t one_l;
   int64_t usage;
@@ -104,6 +102,35 @@ int alloc3(struct state_struct *state) {
       success = 0;
     }
   }
+  if (success) {
+    /*
+      Allocate space for the count_to_conc vector.
+    */
+    ask_for = ((int64_t)nu_molecules) * ((int64_t)sizeof(double));
+    usage += ask_for;
+    state->count_to_conc = (double *)calloc(one_l,ask_for);
+    if (state->count_to_conc == NULL) {
+      fprintf(stderr,"alloc3: Error unable to allocate %ld bytes for "
+	      "count_to_conc field\n",ask_for);
+      fflush(stderr);
+      success = 0;
+    }
+  }    
+  if (success) {
+    /*
+      Allocate space for the conc_to_count vector.
+    */
+    ask_for = ((int64_t)nu_molecules) * ((int64_t)sizeof(double));
+    usage += ask_for;
+    state->conc_to_count = (double *)calloc(one_l,ask_for);
+    if (state->conc_to_count == NULL) {
+      fprintf(stderr,"alloc3: Error unable to allocate %ld bytes for "
+	      "conc_to_count field\n",ask_for);
+      fflush(stderr);
+      success = 0;
+    }
+  }    
+
   /*
     Allocate space for the change in Gibb's free energy.
   */
