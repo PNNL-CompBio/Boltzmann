@@ -84,7 +84,7 @@ int compute_delta_g_forward_entropy_free_energy(struct state_struct *state,
     Input fields.
   */
   m_rt                       = state->m_rt;
-  number_reactions           = state->number_reactions;
+  number_reactions           = (int)state->number_reactions;
   current_concentrations     = state->current_concentrations;
   activities        	     = state->activities;
   forward_rxn_log_likelihood = state->forward_rxn_log_likelihood_ratio;
