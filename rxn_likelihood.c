@@ -22,6 +22,8 @@ specific language governing permissions and limitations under the License.
 ******************************************************************************/
 
 #include "boltzmann_structs.h"
+#include "boltzmann_cvodes_headers.h"
+#include "cvodes_params_struct.h"
 
 #include "rxn_likelihood.h"
 double rxn_likelihood(double *counts, 
@@ -77,6 +79,7 @@ double rxn_likelihood(double *counts,
 				 counts in the counts vector.
 
   */
+  struct cvodes_params_struct *cvodes_params;
   struct reactions_matrix_struct *rxns_matrix;
   struct molecule_struct  *molecules;
   struct molecule_struct  *molecule;
@@ -106,6 +109,12 @@ double rxn_likelihood(double *counts,
   int j;
   int k;
 
+  int compute_sensitivities;
+  int ode_solver_choice;
+
+  int use_deq;
+  int padi;
+
   success           = 1;
   nrxns             = (int)state->number_reactions;
   rxns_matrix       = state->reactions_matrix;
@@ -116,6 +125,13 @@ double rxn_likelihood(double *counts,
   count_to_conc     = state->count_to_conc;
   ke                = state->ke;
   kss               = state->kss;
+  use_deq           = state->use_deq;
+  ode_solver_choice = state->ode_solver_choice;
+  compute_sensitivities = state->compute_sensitivities;
+  if (use_deq && compute_sensitivities && (ode_solver_choice == 1)) {
+    cvodes_params = state->cvodes_params;
+    ke            = cvodes_params->p;
+  }
   /*
   kssr              = state->kssr;
   */
