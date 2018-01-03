@@ -34,7 +34,7 @@ int binary_search_l_u_b (double *d, double v, int n) {
     find smallest j such that d[j] >= v;
     assumes d[n-1] > v, for (0<=j<n);
 
-    Called by : boltzmann_run_sim
+    Called by : boltzmann_run
     Calls"
   */
   int low;
