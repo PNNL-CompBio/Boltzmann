@@ -49,7 +49,7 @@ double rxn_likelihood_postselection(double *counts,
     Called by: metropolis
     Calls      fprintf, fflush, log (intrinsic)
   */
-  struct rxn_matrix_struct *rxns_matrix;
+  struct reactions_matrix_struct *rxns_matrix;
   /*
   struct species_matrix_struct species_matrix;
   */
