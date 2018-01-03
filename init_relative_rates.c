@@ -11,7 +11,7 @@ int init_relative_rates(struct state_struct *state) {
     Called by: deq_run.
     Calls:
   */
-  struct rxn_matrix_struct *reactions_matrix; 
+  struct reactions_matrix_struct *reactions_matrix; 
   int64_t *molecules_indices;
   int64_t *coefficients;
   int64_t *rxn_ptrs;
