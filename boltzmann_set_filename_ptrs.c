@@ -51,4 +51,5 @@ void boltzmann_set_filename_ptrs(struct state_struct *statep) {
   statep->pseudoisomer_file  = statep->bndry_flux_file + max_file_name_len;
   statep->compartment_file   = statep->pseudoisomer_file + max_file_name_len;
   statep->sbml_file          = statep->compartment_file + max_file_name_len;
+  statep->ms2js_file         = statep->sbml_file + max_file_name_len;
 }
