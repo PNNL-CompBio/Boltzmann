@@ -59,7 +59,7 @@ void compute_net_lklhd_bndry_flux(struct state_struct *state,
   unique_molecules  = state->nunique_molecules;
   molecules_matrix  = state->molecules_matrix;
   molecules_ptrs    = molecules_matrix->molecules_ptrs;
-  rxn_indices       = molecules_matrix->rxn_indices;
+  rxn_indices       = molecules_matrix->reaction_indices;
   coefficients      = molecules_matrix->coefficients;
 
   molecule    = sorted_molecules;
