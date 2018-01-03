@@ -101,7 +101,7 @@ int boltzmann_run(struct state_struct *state) {
   int conc_view_freq;
 
   int print_output;
-  int padi;
+  int noop_rxn;
 
   FILE *lfp;
   success = 1;
@@ -132,6 +132,7 @@ int boltzmann_run(struct state_struct *state) {
   conc_view_step         = 1;
   lklhd_view_step 	 = 1;
   lfp                    = state->lfp;
+  noop_rxn               = number_reactions + number_reactions;
   /*
     Initialize the free_energy to be the delta_g0.
   */
@@ -165,9 +166,13 @@ int boltzmann_run(struct state_struct *state) {
     rxn_choice = choose_rxn(state,&r_sum_likelihood);
     if (rxn_choice < 0) break;
     if (print_output && lfp) {
-      fprintf(lfp,"%d\t%d\t%le\t%le\n",i,rxn_choice,forward_rxn_likelihood[rxn_choice],
-	      reverse_rxn_likelihood[rxn_choice]);
-      fflush(lfp);
+      if (rxn_choice == noop_rxn) {
+	fprintf(lfp,"%d\tnone\n",i);
+      } else {
+	fprintf(lfp,"%d\t%d\t%le\t%le\n",i,rxn_choice,forward_rxn_likelihood[rxn_choice],
+		reverse_rxn_likelihood[rxn_choice]);
+	fflush(lfp);
+      }
     }
     /*
       Copy the future concentrations, resulting from the reaction firing
@@ -220,9 +225,13 @@ int boltzmann_run(struct state_struct *state) {
       if (rxn_choice < 0) break;
       if (print_output) {
 	if (lfp) {
-	  fprintf(lfp,"%d\t%d\t%le\t%le\n",i,rxn_choice,forward_rxn_likelihood[rxn_choice],
-		  reverse_rxn_likelihood[rxn_choice]);
-	  fflush(lfp);
+	  if (rxn_choice == noop_rxn) {
+	    fprintf(lfp,"%d\tnone\n",i);
+	  } else {
+	    fprintf(lfp,"%d\t%d\t%le\t%le\n",i,rxn_choice,forward_rxn_likelihood[rxn_choice],
+		    reverse_rxn_likelihood[rxn_choice]);
+	    fflush(lfp);
+	  }
 	}
 	if (rxn_choice <= number_reactions_t2) {
 	  rxn_fire[rxn_choice] += 1;
