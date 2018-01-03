@@ -20,15 +20,10 @@ under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <strings.h>
-#include <float.h>
-#include <signal.h>
 
 #include "boltzmann_structs.h"
 
+#include "boltzmann_set_filename_ptrs.h"
 #include "flatten_state.h"
 
 int flatten_state(struct state_struct *boot_state, 
@@ -202,7 +197,7 @@ int flatten_state(struct state_struct *boot_state,
   number_compartments  = boot_state->number_compartments;
   unique_compartments  = boot_state->nunique_compartments;
   max_filename_len     = boot_state->max_filename_len;
-  num_files            = (int64_t)13;
+  num_files            = boot_state->num_files;
   dg0s_offset          = incoming_data_offset;
   dg0s_size            = number_reactions + (number_reactions & 1);
   ke_offset            = dg0s_offset + dg0s_size;
@@ -391,18 +386,22 @@ int flatten_state(struct state_struct *boot_state,
     new_state->sorted_molecules = (struct istring_elem_struct*)&new_state_l[sorted_molecules_offset];
     new_state->sorted_cmpts = (struct istring_elem_struct*)&new_state_l[sorted_cmpts_offset];
     new_state->params_file  = (char*)&new_state_l[file_names_offset];
+    new_state->max_filename_len = max_filename_len;
+    boltzmann_set_filename_ptrs(new_state);
+    /*
     new_state->reaction_file = new_state->params_file + max_filename_len;
     new_state->init_conc_file = new_state->reaction_file + max_filename_len;   
     new_state->input_dir = new_state->init_conc_file + max_filename_len;
     new_state->output_file = new_state->input_dir + max_filename_len;
     new_state->log_file = new_state->output_file + max_filename_len;
-    new_state->concs_out_file = new_state->log_file + max_filename_len;
+    new_state->output_dir = new_state->log_file + max_filename_len;
+    new_state->concs_out_file = new_state->output_dir + max_filename_len;
     new_state->rxn_lklhd_file = new_state->concs_out_file + max_filename_len;
     new_state->free_energy_file = new_state->rxn_lklhd_file + max_filename_len;
     new_state->restart_file = new_state->free_energy_file + max_filename_len;
     new_state->rxn_view_file = new_state->restart_file + max_filename_len;
     new_state->bndry_flux_file = new_state->rxn_view_file + max_filename_len;
-    new_state->output_dir = new_state->bndry_flux_file + max_filename_len;
+    */
     new_state->rxn_title_text = (char *)&new_state_l[rxn_title_offset];
     new_state->pathway_text   = (char *)&new_state_l[pathway_offset];
     new_state->compartment_text   = (char *)&new_state_l[compartment_offset];
