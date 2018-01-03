@@ -163,6 +163,7 @@ struct state_struct {
   double  ideal_gas_r;
   double  temp_kelvin;
   double  avogadro;
+  double  recip_avogadro;
   double  conc_to_count;
   double  count_to_conc;
   double  ph;
@@ -177,7 +178,10 @@ struct state_struct {
   double  entropy;
   double  current_concentrations_sum;
   double  volume;
+  double  recip_volume;
   double  conc_units;
+  double  ntotal_opt;
+  double  ntotal_exp;
   int64_t *workspace_base;
 
   /* two way data (modified) */
