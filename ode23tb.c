@@ -174,9 +174,9 @@ int ode23tb (struct state_struct *state, double *counts,
   int64_t ode_rxn_view_step;
 
 
-  int *base_reactant_indicator; /* length nunique_molecules */
-  int *base_reactants;          /* length nunique_molecules */
   int *ipivot;                  /* overlaid on pivot space */
+
+  char  *trans;
 
   int ny;
   int first_time;
@@ -197,38 +197,36 @@ int ode23tb (struct state_struct *state, double *counts,
   int mcurrent;
 
 
-  int one;
   int nrhs;
-
   int nrxns;
+
   int nofailed;
-
   int itfail1;
+
   int itfail2;
-
   int unsuccessful_step;
+
   int tolerance_met;
-
   int iter_count;
-  int nnrejectstep;
 
-  int number_base_reaction_reactants;
+  int nnrejectstep;
   int nnreset_znew;
 
-  int origin;
   int done;
-
   int nysq;
-  int info;
 
-  int ode_solver_choice;
+  int info;
   int delta_concs_choice;
 
   int nl_success;
+
+#ifdef DBG
+  int origin;
+#lse 
   int padi;
+#endif
 
   char  trans_chars[8];
-  char  *trans;
 
   FILE *lfp;
   FILE *efp;
