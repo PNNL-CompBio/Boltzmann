@@ -30,6 +30,9 @@ specific language governing permissions and limitations under the License.
 
 #include "boltzmann_structs.h"
 
+#include "count_ws.h"
+#include "count_nws.h"
+
 #include "parse_rxn_file_keyword.h"
 
 int parse_rxn_file_keyword(char *rxn_buffer,struct state_struct *state){
@@ -37,6 +40,7 @@ int parse_rxn_file_keyword(char *rxn_buffer,struct state_struct *state){
     Parse the reaction file keyword theoretically at the start of 
     rxn_buffer.
     Called by: size_rxns_file
+    Calls:     count_ws, count_nws
   */
   char **keywords;
   char *keyword;
