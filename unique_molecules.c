@@ -36,7 +36,7 @@ int unique_molecules(struct state_struct *state) {
     Remove duplicates from the sorted_molecules list
     and set the column_indices fields in the
     reactions_matrix appropriately.
-    Called by: boltzmann
+    Called by: boltzmann_init
     Calls:     strcmp (intrinsic)
   */
   struct rxn_struct *reactions;
