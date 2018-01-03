@@ -69,6 +69,7 @@ int alloc0(struct state_struct **statep, int setup) {
        	ode_lklhd_file,
        	ode_bflux_file,
        	concs_out_file,
+	ode_counts_file,
 
         solvent_string
 
@@ -120,11 +121,6 @@ int alloc0(struct state_struct **statep, int setup) {
   }
   if (success) {
     state->usage = usage;
-    success = alloc0_a(state);
-    usage = state->usage;
-  }
-  if (success && setup) {
-    state->version_no = 4835; // Checkin revision of state_struct.h
     /*
       Allocate space for filename strings and solvent string
       These are considered auxilliary strings, needed only for setup
@@ -132,6 +128,11 @@ int alloc0(struct state_struct **statep, int setup) {
       This sets state->max_filename_len, the num_files parameter
       and allocates space for the filenames and the solvent string.
     */
+    success = alloc0_a(state);
+    usage = state->usage;
+  }
+  if (success && setup) {
+    state->version_no = 4863; // Checkin revision of state_struct.h
     /*
       Allocate_space for reading the parameter file.
     */
