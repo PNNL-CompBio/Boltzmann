@@ -32,24 +32,20 @@ specific language governing permissions and limitations under the License.
 #include "compute_molecule_dg0tf.h"
 
 #include "compute_molecule_dg0tfs.h"
-int compute_molecule_dg0tfs(struct formation_energy_struct *fes){
+int compute_molecule_dg0tfs(struct state_struct *state,
+			    struct pseudoisomer_struct *pseudoisomers,
+			    char *pseudoisomer_strings,
+			    int  num_cpds) {
 /*
   Compute the dg0tf for all of the molecules in the reactions file.
+  num_cpds is the number of entries in the pseudoismers array.
   Called by: compute_standard_energies
   Calls:     compute_molecule_dg0tf, fopen, fprintf, fclose, fflush
 */
-  struct pseudoisomer_struct *pseudoisomers;
-  int num_cpds;
 
   struct molecule_struct *cur_molecules;
-  char *pseudoisomer_strings;
   char *molecules_text;
   char *molecule;
-
-  int success;
-  int i;
-  int nu_molecules;
-  int print_output;
 
   double ph;
   double temp_kelvin;
@@ -59,26 +55,30 @@ int compute_molecule_dg0tfs(struct formation_energy_struct *fes){
   double min_molecule_dg0tf;
   double *molecule_dg0tfs;
 
+  int success;
+  int print_output;
+
+  int i;
+  int nu_molecules;
 
   FILE *lfp;
+  FILE *efp;
+
   success = 1;
-  lfp = fes->log_fp;
-  pseudoisomers            = fes->pseudoisomers;
-  pseudoisomer_strings     = fes->pseudoisomer_strings;
-  num_cpds                 = (int)fes->num_pseudoisomers;
+  lfp = state->lfp;
   
-  nu_molecules             = (int)fes->nunique_molecules;
-  cur_molecules            = fes->sorted_molecules;
-  molecules_text           = fes->molecules_text;
+  nu_molecules             = (int)state->nunique_molecules;
+  cur_molecules            = state->sorted_molecules;
+  molecules_text           = state->molecules_text;
 
-  molecule_dg0tfs          = fes->molecule_dg0tfs;
+  molecule_dg0tfs          = state->molecule_dg0tfs;
 
-  ph                       = fes->ph;
-  temp_kelvin              = fes->temp_kelvin;
-  ionic_strength           = fes->ionic_strength;
-  m_rt                     = fes->m_rt;
-  m_r_rt                   = fes->m_r_rt;
-  print_output             = (int)fes->print_output;
+  ph                       = state->ph;
+  temp_kelvin              = state->temp_kelvin;
+  ionic_strength           = state->ionic_strength;
+  m_rt                     = state->m_rt;
+  m_r_rt                   = state->m_r_rt;
+  print_output             = (int)state->print_output;
   if (print_output) {
     if (lfp) {
       fprintf(lfp,"\nOutput from compute_molecule_dg0tfs.c:\n\n");
@@ -110,7 +110,7 @@ int compute_molecule_dg0tfs(struct formation_energy_struct *fes){
     }
     cur_molecules += 1; /* Caution address arithmetic. */
   }
-  fes->min_molecule_dg0tf = min_molecule_dg0tf;
+  state->min_molecule_dg0tf = min_molecule_dg0tf;
   if (print_output) {
     if (lfp) {
       fprintf(lfp,"\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n\n");
