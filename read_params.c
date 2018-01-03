@@ -85,7 +85,6 @@ int read_params (char *param_file_name, struct state_struct *state) {
     state->temp_kelvin      = 298.15;
     state->cal_gm_per_joule = 4.184;
     state->rxn_buff_len     = (int64_t)4194304;
-    state->small_nonzero    = 1.e-31;
     state->warmup_steps     = (int64_t)1000;
     state->record_steps     = (int64_t)1000;
     state->free_energy_format = (int64_t)0;
