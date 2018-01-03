@@ -40,6 +40,7 @@ specific language governing permissions and limitations under the License.
 #include "alloc3.h"
 #include "set_compartment_ptrs.h"
 #include "read_initial_concentrations.h"
+#include "check_initial_concentrations.h"
 #include "compute_standard_energies.h"
 #include "compute_ke.h"
 #include "compute_kss.h"
@@ -75,6 +76,7 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
 	       print_molecules_dictionary,
 	       alloc3,
 	       read_initial_concentrations,
+	       check_initial_concentrations,
 	       compute_standard_energies,
 	       compute_ke,
 	       compute_kss,
@@ -249,6 +251,9 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
   */
   if (success) {
     success = read_initial_concentrations(state);
+  }
+  if (success) {
+    success = check_initial_concentrations(state);
   }
   /*
     Compute the molecules matrix.
