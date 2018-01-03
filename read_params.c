@@ -164,6 +164,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
     state->flux_scaling        = 0.0;
     state->deriv_thresh        = 1.0e-8;
     state->ode_stop_thresh     = 1.0e-8;
+    state->nj_thresh           = 1.0e-6;
     /*
     state->min_conc            = 1.0e-52;
     */
@@ -194,11 +195,12 @@ int read_params (char *param_file_name, struct state_struct *state) {
     state->cvodes_rhs_choice   = (int64_t)0;
     state->cvodes_jtimes_choice = (int64_t)2;
     state->cvodes_prec_choice  = (int64_t)2;
-    state->ode_jacobian_choice = (int64_t)8;
+    state->ode_jacobian_choice = (int64_t)0;
     state->cvodes_prec_fill    = (int64_t)0;
     state->ode_stop_norm       = (int64_t)0; /* max norm */
     state->ode_stop_rel        = (int64_t)0; /* absolute size */
     state->ode_stop_style      = (int64_t)0; /* none: integrate till t_final */
+    state->print_ode_concs     = (int64_t)0;
 
     state->default_initial_count = (int64_t)0;
 
@@ -312,7 +314,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
       } else if (strncmp(value,"CVODES_PREC_FILL",16) == 0) {
 	sscan_ok = sscanf(value,"%ld",&state->cvodes_prec_fill);
 	cvodes_params->prec_fill = (int)state->cvodes_prec_fill;
-      } else if (strncmp(value,"ODE_JACOBIAN_CHOICE",19) == 0) {
+      } else if (strncmp(key,"ODE_JACOBIAN_CHOICE",19) == 0) {
 	sscan_ok = sscanf(value,"%ld",&state->ode_jacobian_choice);
       } else if (strncmp(key,"LOG_FILE",8) == 0) {
 	sscan_ok = sscanf(value,"%s",state->log_file);
@@ -377,6 +379,8 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	sscan_ok = sscanf(value,"%le",&state->deriv_thresh);
       } else if (strncmp(key,"ODE_STOP_THRESH",15) == 0) {
 	sscan_ok = sscanf(value,"%le",&state->ode_stop_thresh);
+      } else if (strncmp(key,"NJ_THRESH",15) == 0) {
+	sscan_ok = sscanf(value,"%le",&state->nj_thresh);
       } else if (strncmp(key,"IDEAL_GAS_R",11) == 0) {
 	sscan_ok = sscanf(value,"%le",&(state->ideal_gas_r));
       } else if (strncmp(key,"TEMP_KELVIN",11) == 0) {
