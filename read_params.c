@@ -30,6 +30,8 @@ int read_params (char *param_file_name, struct state_struct *state) {
     Called by: boltzmann_init
     Calls:     fopen, fprintf, fgets, feof, sscanf, strncmp (intrinsic)
   */
+  struct vgrng_state_struct *vgrng_state;
+  struct vgrng_state_struct *vgrng2_state;
   double rt;
   double m_r_rt;
   double m_rt;
@@ -46,6 +48,8 @@ int read_params (char *param_file_name, struct state_struct *state) {
   int sscan_ok;
   FILE *in_fp;
   success = 1;
+  vgrng_state  = state->vgrng_state;
+  vgrng2_state = state->vgrng2_state;
   if (param_file_name == NULL) {
     fprintf(stdout,"read_params: Warning no param_file_name given, looking for ./boltzmann.in input file.\n");
     fflush(stdout);
@@ -63,6 +67,20 @@ int read_params (char *param_file_name, struct state_struct *state) {
     /*
       Set defaults.
     */
+    vgrng_state->fib_seed[0] = (int64_t)6765109461;
+    vgrng_state->fib_seed[1] = (int64_t)1771128657;
+    vgrng_state->lcg_seed    = (int64_t)4636875025;
+
+    vgrng2_state->fib_seed[0] = (int64_t)1649015676;
+    vgrng2_state->fib_seed[1] = (int64_t)7568311771;
+    vgrng2_state->lcg_seed    = (int64_t)5205784363;
+    /*
+      We used to use the same seeds for both generators.
+    vgrng2_state->fib_seed[0] = (int64_t)6765109461;
+    vgrng2_state->fib_seed[1] = (int64_t)1771128657;
+    vgrng2_state->lcg_seed    = (int64_t)4636875025;
+    */
+
     strcpy(state->reaction_file,"./rxns.dat");
     strcpy(state->ms2js_file,"./modelseed_2_json.srt");
     strcpy(state->pseudoisomer_file,"./pseudoisomer_dg0f.txt");
@@ -280,6 +298,18 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	if (min_conc >= 0.0) {
 	  state->min_conc = min_conc;
 	}
+      } else if (strncmp(key,"RSEED0",6) == 0) {
+	sscan_ok = sscanf(value,"%ld",&(vgrng_state->fib_seed[0]));
+      } else if (strncmp(key,"RSEED1",6) == 0) {
+	sscan_ok = sscanf(value,"%ld",&(vgrng_state->fib_seed[1]));
+      } else if (strncmp(key,"RSEED2",6) == 0) {
+	sscan_ok = sscanf(value,"%ld",&(vgrng_state->lcg_seed));
+      } else if (strncmp(key,"RSEED3",6) == 0) {
+	sscan_ok = sscanf(value,"%ld",&(vgrng2_state->fib_seed[0]));
+      } else if (strncmp(key,"RSEED4",6) == 0) {
+	sscan_ok = sscanf(value,"%ld",&(vgrng2_state->fib_seed[1]));
+      } else if (strncmp(key,"RSEED5",6) == 0) {
+	sscan_ok = sscanf(value,"%ld",&(vgrng2_state->lcg_seed));
       } else if (strncmp(key,"WARMUP_STEPS",12) == 0) {
 	sscan_ok = sscanf(value,"%ld",&(state->warmup_steps));
       } else if (strncmp(key,"RXN_VIEW_FREQ",13) == 0) {
