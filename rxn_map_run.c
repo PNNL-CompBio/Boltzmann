@@ -129,7 +129,8 @@ int rxn_map_run(struct state_struct *state,
   one_l  = (int64_t)1;
   stack_pos_lim       = (num_reactions * num_reactions) + num_reactions;
   ask_for = stack_pos_lim * ((int64_t)sizeof(int64_t));
-
+  success = 1;
+  raw_path_count = 0;
   stack = (int64_t*)calloc(one_l,ask_for);
   if (stack == NULL) {
     fprintf(stderr,"rxn_map_run: Could not allocate %lld bytes for stack\n",
