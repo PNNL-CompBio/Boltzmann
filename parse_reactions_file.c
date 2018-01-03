@@ -183,9 +183,11 @@ int parse_reactions_file(struct state_struct *state,
   rxn_fp           = fopen(reaction_file,"r");
   if (rxn_fp == NULL) {
     success = 0;
-    fprintf(stderr,"parse_reactions_file: reaction file not open, %s\n",
-	    state->reaction_file);
-    fflush(stderr);
+    if (lfp) {
+      fprintf(lfp,"parse_reactions_file: reaction file not open, %s\n",
+	      state->reaction_file);
+      fflush(lfp);
+    }
   }
   if (success) {
     /*
@@ -274,10 +276,12 @@ int parse_reactions_file(struct state_struct *state,
 	rxn_buffer[line_len-1] = '\0';
 	line_len -= 1;
       } else {
-	fprintf(stderr,"parse_reactions_file: Error input line longer than"
-		" %ld characters\n",rxn_buff_len);
-	fflush(stderr);
 	success = 0;
+	if (lfp) {
+	  fprintf(lfp,"parse_reactions_file: Error input line longer than"
+		" %ld characters\n",rxn_buff_len);
+	  fflush(lfp);
+	}
 	break;
       }
       if (success) {
@@ -368,8 +372,10 @@ int parse_reactions_file(struct state_struct *state,
 		 lcompartment);
 	  if ((strcmp(lcompartment,"V") == 0) ||
 	      (strcmp(lcompartment,"C") == 0)) {
-	    fprintf(stderr,"parse_reactions_file: Error compartments may not have single character names V or C\n");
-	    fflush(stderr);
+	    if (lfp) {
+	      fprintf(lfp,"parse_reactions_file: Error compartments may not have single character names V or C\n");
+	      fflush(lfp);
+	    }
 	    success = 0;
 	    break;
 	  }
@@ -489,11 +495,13 @@ int parse_reactions_file(struct state_struct *state,
 		       &reaction->delta_g0);
 	  if (ns < 1) {
 	    title  = (char *)&rxn_title_text[reaction->title];
-	    fprintf(stderr,
-		    "parse_reactions_file: Error: malformed DGZERO line"
-		    " for reaction %s was\n%s\n",
-		    title,rxn_buffer);
-	    fflush(stderr);
+	    if (lfp) {
+	      fprintf(lfp,
+		      "parse_reactions_file: Error: malformed DGZERO line"
+		      " for reaction %s was\n%s\n",
+		      title,rxn_buffer);
+	      fflush(lfp);
+	    }
 	    success = 0;
 	    break;
 	  }
@@ -505,11 +513,13 @@ int parse_reactions_file(struct state_struct *state,
 	  sl = word1_len;
 	  if (sl < 1) {
 	    title  = (char *)&rxn_title_text[reaction->title];
-	    fprintf(stderr,
+	    if (lfp) {
+	      fprintf(lfp,
 		    "parse_reactions_file: Error: malformed DGZERO-UNITS line,"
 		    " for reaction %s, was %s, using KJ/MOL\n",
 		    title,rxn_buffer);
-	    fflush(stderr);
+	      fflush(lfp);
+	    }
 	    reaction->unit_i = 1;
 	  } else {
 	    upcase(sl,(char*)&rxn_buffer[word1],(char*)&rxn_buffer[word1]);
@@ -527,10 +537,12 @@ int parse_reactions_file(struct state_struct *state,
 	  ns = sscanf ((char*)&rxn_buffer[word1],"%le",
 		       &reaction->activity);
 	  if (ns < 1) {
-	    fprintf(stderr,
+	    if (lfp) {
+	      fprintf(lfp,
 		    "parse_reactions_file: malformed ACTIVITY line was\n%s\n",
 		    rxn_buffer);
-	    fflush(stderr);
+	      fflush(lfp);
+	    }
 	    success = 0;
 	    break;
 	  }
@@ -689,13 +701,24 @@ int parse_reactions_file(struct state_struct *state,
     /*
       Check that last line was a //.
     */
-    if (line_type != (int)(state->num_rxn_file_keywords) - 1) {
-      fprintf(stderr,
-	      "parse_reactions_file: Error reactions file did not end in //\n");
-      fflush(stderr);
-      success = 0;
+    if (success) {
+      if (line_type != (int)(state->num_rxn_file_keywords) - 1) {
+	if (lfp) {
+	  fprintf(lfp,
+		  "parse_reactions_file: Error reactions file did not end in //\n");
+	  fflush(lfp);
+	}
+	success = 0;
+      }
+    } else {
+      if (lfp) {
+	fprintf(lfp,"parse_reactions_file: Error occured reading reactions file %s, see above.\n",);
+	fflush(lfp);
+      }
     }
-    fclose(rxn_fp);
+    if (rxn_fp != NULL) {
+      fclose(rxn_fp);
+    }
   } /* end if (success) */
   return(success);
 }
