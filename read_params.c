@@ -37,6 +37,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
     concentrations of a set of reactions via Monte Carlo methods.
 
     Called by: boltzmann_init
+    Calls:     fopen, fprintf, fgets, feof, sscanf, strncmp (intrinsic)
   */
   int64_t max_param_line_len;
   char *param_buffer;
