@@ -70,6 +70,9 @@ int lr4_approximate_delta_concs(struct state_struct *state,
   int mi;
   int success;
 
+  int klim;
+  int k;
+
   FILE *lfp;
   FILE *efp;
   /*
@@ -126,11 +129,16 @@ int lr4_approximate_delta_concs(struct state_struct *state,
     rt = 1.0;
     for (j=rxn_ptrs[i];j<rxn_ptrs[i+1];j++) {
       mi = molecule_indices[j];
-      if (rcoefficients[j] < 0) {
-	rt = rt * counts[mi];
+      klim = rcoefficients[j];
+      if (klim < 0) {
+	for (k=0;k<(-klim);k++) {
+	  rt = rt * counts[mi];
+	}
       } else {
-	if (rcoefficients[j] > 0) {
-	  pt = pt * counts[mi];
+	if (klim > 0) {
+	  for (k=0;k<klim;k++) {
+	    pt = pt * counts[mi];
+	  }
 	}
       }
     }
