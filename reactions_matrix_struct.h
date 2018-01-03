@@ -60,6 +60,7 @@ struct reactions_matrix_struct {
     coefficients are negative for reactants, positive for products.
   */
   int64_t *coefficients;
+  double  *recip_coeffs;
   /*
     Offsets into the molecules_text for the molecules name,
     used to fill in the molecules indices after molecules have been sorted.
