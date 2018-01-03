@@ -45,7 +45,7 @@ specific language governing permissions and limitations under the License.
 /*
 #include "form_molecules_matrix.h"
 */
-#include "formation_energy_rxn_dg0fs.h"
+#include "compute_standard_energies.h"
 #include "compute_ke.h"
 #include "print_rxn_likelihoods_header.h"
 #include "print_free_energy_header.h"
@@ -138,8 +138,9 @@ int boltzmann_boot(char *param_file_name,
 	       print_molecules_dictionary,
 	       alloc3,
 	       read_initial_concentrations,
-	       compute_ke
-	       print_rxn_likelihoods_header
+	       compute_standard_energies,
+	       compute_ke,
+	       print_rxn_likelihoods_header,
 	       print_free_energy_header
   */
   struct super_state_struct sss;
@@ -609,7 +610,7 @@ int boltzmann_boot(char *param_file_name,
 	*/
 	if (success) {
 	  if (state->use_pseudoisomers) {
-	    success = formation_energy_rxn_dg0fs(state,&formation_energies);
+	    success = compute_standard_energies(state,&formation_energies);
 	  }
 	}
 	/*
