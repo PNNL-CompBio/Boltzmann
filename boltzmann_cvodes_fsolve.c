@@ -2,7 +2,8 @@
 #include "boltzmann_cvodes_fsolve.h"
 int boltzmann_cvodes_fsolve(struct state_struct *state, double *r, double *z) {
   /*
-    Perform the forward solve of Lz = r
+    Perform the forward solve of Lz = r where L is unit lower triangular,
+    and the diagonal elements are implied not stored.
     Called by: boltzman_cvodes_psolve
   */
   struct cvodes_params_struct *cvodes_params;
