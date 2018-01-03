@@ -259,6 +259,7 @@ int boltzmann_boot(char *param_file_name,
   char *concs_file_name;
   char rxn_list_buffer[1024];
   char *rxn_list_buffp;
+  char *solvent_string;
   char global_state_filename_buffer[1024];
 
   int success;
@@ -280,6 +281,7 @@ int boltzmann_boot(char *param_file_name,
   int log2_page_size;
 
   int ierr;
+  int solvent_pos;
   int padi;
 
   int skip1;
@@ -560,6 +562,16 @@ int boltzmann_boot(char *param_file_name,
 	*/
 	if (success) {
 	  success = unique_molecules(state);
+	}
+	/*
+	  At this juncture we have echoed the reactions file if requested and
+	  need to zero out the coefficients in the reaction matrix that
+	  correspond to the solvent molecule (by default H2O) so as not to
+	  have it influence the computation of likelihoods, nor change
+	  concentration (see rxn_likelihood.c and comment in rxn_conc_update.c)
+	*/
+	if (success) {
+	  success = zero_solvent_coefficients(state);
 	}
 	/*
 	  Print the molecules dictionary and the header lines for 
@@ -1030,12 +1042,15 @@ int boltzmann_boot(char *param_file_name,
     align_len     = state->align_len;
     align_mask     = state->align_mask;
     nzr            = global_number_of_molecules;
+    solvent_string = state->solvent_string;
     success = unique_molecules_core(nzr,
 				    sorted_molecules,
 				    molecule_text_ws,
+				    solvent_string,
 				    molecule_map,
 				    &unique_global_molecules,
 				    &molecule_text_length,
+				    &solvent_pos,
 				    align_len,align_mask);
   }
   /*
