@@ -64,6 +64,8 @@ int compute_kss(struct state_struct *state) {
   double  kss_p_mod;
   double  ntotal_exp;
   double  ntotal_opt;
+  double  conc_to_count;
+  double  count_to_conc;
   int64_t print_output;
   int64_t mto;
 
@@ -104,8 +106,8 @@ int compute_kss(struct state_struct *state) {
   kss_u_val                = state->kss_u_val;
   ke                       = state->ke;
   compartments             = state->sorted_cmpts;
-  lfp                  = state->lfp;
-  print_output         = print_output && lfp;
+  lfp                      = state->lfp;
+  print_output             = print_output && lfp;
   if (print_output) {
     fprintf(lfp, "Output from compute_kss.c: \n");
     fprintf(lfp,"compute_kss: number of reactions = %i\n",nrxns);
@@ -130,23 +132,19 @@ int compute_kss(struct state_struct *state) {
 	ntotal_exp               = compartment->ntotal_exp;
 	ntotal_opt               = compartment->ntotal_opt;
         coeff = coefficients[j];
+	conc_to_count = compartment->conc_to_count;
+	count_to_conc = compartment->count_to_conc;
         if (coeff < 0) {
 	  coeff = -coeff;
-	  if (kss_u_val[k] > 0.0) {
-	    kss_r_mod = kss_e_val[k];
-	    for (i=0;i<coeff;i++) {
-	      rrxn_kss = rrxn_kss * kss_r_mod;
-	    }
-	  } else {
-	    /*
-	      Question here is should we set rxn_kss to 1, or 0,
-	      or just not modify it at all?
-	    */
+	  kss_r_mod = kss_e_val[k] * conc_to_count;
+	  
+	  for (i=0;i<coeff;i++) {
+	    rrxn_kss = rrxn_kss * kss_r_mod;
 	  }
         } else {
 	  if (coeff > 0) {
 	    if (kss_e_val[k] > 0.0) {
-	      kss_p_mod = 1.0/kss_e_val[k];
+	      kss_p_mod = count_to_conc/kss_e_val[k];
 	      for (i=0;i<coeff;i++) {
 		rrxn_kss = rrxn_kss * kss_p_mod;
 	      }
@@ -170,6 +168,7 @@ int compute_kss(struct state_struct *state) {
       if (print_output) {
         fprintf(lfp,"Computed kss = %le\n",kss[rxns]);
       }
+      reaction += 1; /* Caution address arithmetic */
     } 
   } else {
     for (rxns=0;rxns < nrxns;rxns++) {
