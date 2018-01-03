@@ -63,7 +63,7 @@ int read_compartment_sizes(struct state_struct *state) {
   cmpts_buff_len   = (int)state->max_param_line_len;
   cmpts_buffer     = state->param_buffer;
   lfp              = state->lfp;
-  compartments     = state->sorted_cmpts;
+  compartments     = state->sorted_compartments;
   units_avo        = state->conc_units * state->avogadro;
   if (lfp) {
     error_fp = lfp;
