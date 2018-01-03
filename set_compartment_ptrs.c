@@ -43,7 +43,7 @@ int set_compartment_ptrs(struct state_struct *state) {
   struct istring_elem_struct *sorted_molecules;
   struct istring_elem_struct *cur_molecule;
   int nzc;
-  int i;
+  int nzm;
 
   int success;
   int j;
@@ -51,7 +51,7 @@ int set_compartment_ptrs(struct state_struct *state) {
   int fni;
   int cni;
 
-  int nzm;
+  int i;
   int padi;
 
   success = 1;
@@ -61,23 +61,19 @@ int set_compartment_ptrs(struct state_struct *state) {
   sorted_molecules = state->sorted_molecules;
   cur_molecule     = sorted_molecules;
   cmpt_ptrs[0] = 0;
-  i = 1;
-  cni = cur_molecule->c_index;
-  if (cni != -1) {
-    cmpt_ptrs[1] = 0;
-    i = 2;
-  }
+  cni = 0;
   if (nzc < 2) {
-    cmpt_ptrs[i] = nzm;
+    cmpt_ptrs[1] = nzm;
   } else {
-    for (j = 1; j < nzm; j++) {
-      cur_molecule += 1; /* Caution address arithmetic */
+    i = 1;
+    for (j = 0; j < nzm; j++) {
       fni  = cur_molecule->c_index;
       if (fni != cni) {
 	cmpt_ptrs[i] = j;
 	i += 1;
 	cni = fni;
       }
+      cur_molecule += 1; /* Caution address arithmetic */
     }
     cmpt_ptrs[i] = nzm;
   }
