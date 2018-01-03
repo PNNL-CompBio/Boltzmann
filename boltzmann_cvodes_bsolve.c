@@ -1,4 +1,6 @@
 #include "boltzmann_structs.h"
+#include "boltzmann_cvodes_headers.h"
+#include "cvodes_params_struct.h"
 #include "boltzmann_cvodes_bsolve.h"
 int boltzmann_cvodes_bsolve(struct state_struct *state, double *r, double *z) {
   /*
