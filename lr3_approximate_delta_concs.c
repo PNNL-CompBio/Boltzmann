@@ -7,7 +7,7 @@
 int lr3_approximate_delta_concs(struct state_struct *state, double *counts,
 			       double *forward_rxn_likelihoods,
 			       double *reverse_rxn_likelihoods, 
-			       double *flux, double multiplier,
+			       double *flux, double flux_scaling,
 			       int base_rxn, int choice) {
   /*
     Compute approximations to concentration changes wrt time, 
@@ -34,7 +34,7 @@ int lr3_approximate_delta_concs(struct state_struct *state, double *counts,
                                       of concentration change per unit time.
 				      Set by this routine.
 
-    multiplier                  D0I   forward rate constant for base
+    flux_scaling                D0I   forward rate constant for base
                                       reaction multplied by base reaction
 				      reactant concentration prodeuct.
 				      
@@ -42,7 +42,7 @@ int lr3_approximate_delta_concs(struct state_struct *state, double *counts,
          
     choice                      IOI   Not used by this routine.
 
-    Note that multiplier is K_f(base_rxn_reaction)*(product of reactant 
+    Note that flux_scaling is K_f(base_rxn_reaction)*(product of reactant 
     concentrations in base reaction).
 	    molecule = (struct molecule_struct *)&sorted_molecules[si];
   */
@@ -172,7 +172,7 @@ int lr3_approximate_delta_concs(struct state_struct *state, double *counts,
 	    }
 	  }
 	} /* end for(j...) */
-	flux[i] = multiplier * ((forward * recip_frb) + (backward * lrb));
+	flux[i] = flux_scaling * ((forward * recip_frb) + (backward * lrb));
       } else {
 	flux[i] = 0.0;
       }
