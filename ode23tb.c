@@ -79,9 +79,11 @@ int ode23tb (struct state_struct *state, double *counts,
   double *ynew_counts; /* length nunique_molecules */
   double *wti; /* length nunique_molecules */
   double *pivot; /* length nunique_molecules */
+  double *net_lklhd_bndry_flux;    /* length unique_molecules.*/
   double *ode_num_jac_scratch; /* length 10*unique_molecules */
   double *forward_rxn_likelihoods; /* length nrxns */
   double *reverse_rxn_likelihoods; /* length nrxns */
+  double *net_likelihoods;          /* length nrxns */
 
   double *count_to_conc;
   double *conc_to_count;
@@ -256,10 +258,10 @@ int ode23tb (struct state_struct *state, double *counts,
   trans = &trans_chars[0];
   /*
     Allocate double space needed for scratch vectors and matrices.
-    actually 31*ny but we'll throw in an extra 9ny for future needs.
+    actually 31*ny but we'll throw in an extra 9 ny for future needs.
   */
   if (success) {
-    ask_for = ((ny * 40) + (2*ny*ny) + (2*nrxns)) * sizeof(double);
+    ask_for = ((ny * 40) + (2*ny*ny) + (3*nrxns)) * sizeof(double);
     dfdy = (double*)calloc(ask_for,one_l);
     if (dfdy == NULL) {
       success = 0;
@@ -301,9 +303,11 @@ int ode23tb (struct state_struct *state, double *counts,
     wti         = &ynew_counts[ny];
     pivot       = &wti[ny];
     ipivot      = (int*)pivot;
-    ode_num_jac_scratch  = &pivot[ny];
+    net_lklhd_bndry_flux = &pivot[ny];
+    ode_num_jac_scratch  = &net_lklhd_bndry_flux[ny];
     forward_rxn_likelihoods = &ode_num_jac_scratch[5*ny];
     reverse_rxn_likelihoods = &forward_rxn_likelihoods[nrxns];
+    net_likelihoods         = &reverse_rxn_likelihoods[nrxns];
     /*
       We need to move from stochastic counts to contiuous counts
       so as not to have zero concentrations.
@@ -1070,11 +1074,14 @@ int ode23tb (struct state_struct *state, double *counts,
       if (ode_rxn_view_freq > 0) {
 	ode_rxn_view_step -= one_l;
 	if (ode_rxn_view_step == zero_l) {
-          nl_success = compute_net_likelihoods(state);
+          nl_success = compute_net_likelihoods(state,forward_rxn_likelihoods,
+					       reverse_rxn_likelihoods,
+					       net_likelihoods);
 	  if (nl_success) {
-	    print_net_likelihoods(state,t);
-	    compute_net_lklhd_bndry_flux(state);
-	    print_net_lklhd_bndry_flux(state,t);
+	    print_net_likelihoods(state,net_likelihoods,t);
+	    compute_net_lklhd_bndry_flux(state,net_likelihoods,
+					 net_lklhd_bndry_flux);
+	    print_net_lklhd_bndry_flux(state,net_lklhd_bndry_flux,t);
 	  }
 	  if (print_concs) {
 	    ode_print_concs(state,t,y);
