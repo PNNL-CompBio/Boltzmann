@@ -26,7 +26,7 @@ specific language governing permissions and limitations under the License.
 void print_counts(struct state_struct *state, int64_t step) {
   /* 
     print the molecule counts and or concentrations.
-    if concs_or_counts is 1 or 3, the current counts are printed.
+    if print_concs_or_counts is 1 or 3, the current counts are printed.
     if it is 2 or 3 the concentrations are printed - each to their own file.
 
     Called by boltzmann_run, deq
@@ -40,7 +40,7 @@ void print_counts(struct state_struct *state, int64_t step) {
 					    current_concentrations,
 					    counts_out_fp,
 					    concs_out_fp,
-					    concs_or_counts;
+					    print_concs_or_counts;
 					    sorted_molecules;
                            no fields of state are modified.
 
@@ -55,7 +55,7 @@ void print_counts(struct state_struct *state, int64_t step) {
   
   int unique_molecules;
   int j;
-  int concs_or_counts;
+  int print_concs_or_counts;
   int padi;
 
   FILE *counts_out_fp;
@@ -64,9 +64,9 @@ void print_counts(struct state_struct *state, int64_t step) {
   concs_out_fp           = state->concs_out_fp;
   unique_molecules       = state->nunique_molecules;
   current_counts         = state->current_counts;
-  concs_or_counts        = (int)state->concs_or_counts;
+  print_concs_or_counts  = (int)state->print_concs_or_counts;
   count_to_conc          = state->count_to_conc;
-  if (concs_or_counts & 1) {
+  if (print_concs_or_counts & 1) {
     if (counts_out_fp) {
       switch(step) {
       case -3:
@@ -91,7 +91,7 @@ void print_counts(struct state_struct *state, int64_t step) {
       fprintf(state->counts_out_fp,"\n");
     }
   }
-  if (concs_or_counts & 2) {
+  if (print_concs_or_counts & 2) {
     if (concs_out_fp) {
       switch(step) {
       case -3:
