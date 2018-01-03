@@ -34,8 +34,8 @@ int bndry_flux_update(int rxn_no, int direction,
     Called by choose_rxn.
     Calls:
   */
-  struct istring_elem_struct *sorted_molecules;
-  struct istring_elem_struct *molecule;
+  struct molecule_struct *sorted_molecules;
+  struct molecule_struct *molecule;
   struct rxn_matrix_struct   *rxns_matrix;
   double *bndry_flux_concs;
   int64_t *rxn_ptrs;
@@ -62,7 +62,7 @@ int bndry_flux_update(int rxn_no, int direction,
   if (direction > 0) {
     for (j=rxn_ptrs[rxn_no];j<rxn_ptrs[rxn_no+1];j++) {
       k = molecules_indices[j];
-      molecule = (struct istring_elem_struct *) &sorted_molecules[k];
+      molecule = (struct molecule_struct *) &sorted_molecules[k];
       if (molecule->variable == 0) {
         bndry_flux_concs[k] += (double)coefficients[j];
       }
@@ -70,7 +70,7 @@ int bndry_flux_update(int rxn_no, int direction,
   } else {
     for (j=rxn_ptrs[rxn_no];j<rxn_ptrs[rxn_no+1];j++) {
       k = molecules_indices[j];
-      molecule = (struct istring_elem_struct *) &sorted_molecules[k];
+      molecule = (struct molecule_struct *) &sorted_molecules[k];
       if (molecule->variable == 0) {
         bndry_flux_concs[k] -= (double)coefficients[j];
       }
