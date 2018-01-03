@@ -57,7 +57,7 @@ int bndry_flux_update(int rxn_no, int direction,
 			 
   success           = 1;
   bndry_flux_concs  = state->bndry_flux_concs;
-  nu_molecules      = state->unique_molecules;
+  nu_molecules      = state->nunique_molecules;
   sorted_molecules  = state->sorted_molecules;
   rxns_matrix       = state->reactions_matrix;
   rxn_ptrs          = rxns_matrix->rxn_ptrs;
