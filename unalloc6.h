@@ -20,4 +20,7 @@ under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
-extern int unalloc6(struct formation_energy_struct *formation_energies);
+#ifndef _UNALLOC6_H_
+#define _UNALLOC6_H_ 1
+extern int unalloc6(int n, void**pointers);
+#endif
