@@ -20,17 +20,22 @@ int precondition_newton_matrix(struct state_struct *state) {
   switch (choice) {
   case 0:
     /*
+      nopreconditioning.
+    */
+    break;
+  case 1:
+    /*
       This ought to correspond to a diagonal preconditioner.
     */
     success = 0;
     break;
-  case 1:
+  case 2:
     /*
       This might be the traditional ILU preconditioner.
     */
     success = 0;
     break;
-  case 2:
+  case 3:
     /*
       This will be an ILU preconditioenr with value based fill.
       Number of elements allowed per factor per fill row beyond
