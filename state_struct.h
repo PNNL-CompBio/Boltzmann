@@ -134,6 +134,7 @@ struct state_struct {
   int64_t rxn_view_hist_length;    
   int64_t lklhd_view_freq;        
   int64_t conc_view_freq;         
+  int64_t fe_view_freq;
   int64_t reaction_file_length;   
   int64_t rxn_title_space;        
   int64_t pathway_space;          
