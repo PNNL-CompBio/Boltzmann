@@ -225,14 +225,17 @@ int deq_run(struct state_struct *state) {
   /*
     Compute the reaction likelihoods: forward_rxn_likelihood, 
     and reverse_rxn_likelihood fields of state..
-  */
   success = update_rxn_log_likelihoods(state);
+  */
+  /*
   base_reaction = 0;
   fill_jacobi = 1;
   if (success) {
     success = fill_flux_pieces(state,molecules_matrix,base_reaction,
 			       fill_jacobi);
   }
+  */
+
   htry = 0.1;
   nonnegative = 1.0;
   if (success) {
