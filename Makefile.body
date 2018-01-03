@@ -117,20 +117,20 @@ boltzmann_boot_check.o: boltzmann_boot_check.c boltzmann_boot_check.h flatten_su
 boltzmann_rep_state_i.o: boltzmann_rep_state_i.c boltzmann_rep_state_i.h flatten_state.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_rep_state_i.c
 
-rxn_map: $(MMAP_OBJS) $(TIMING_LIB) rxn_map.o libboltzmann.a
-	$(CLINKER) $(LFLAGS) -o rxn_map rxn_map.o $(SERIAL_OBJS1) $(SERIAL_OBJS3) $(MMAP_OBJS) $(TIMING_LIB) $(LIBS)
+#rxn_map: $(MMAP_OBJS) $(TIMING_LIB) rxn_map.o libboltzmann.a
+#	$(CLINKER) $(LFLAGS) -o rxn_map rxn_map.o $(SERIAL_OBJS1) $(SERIAL_OBJS3) $(MMAP_OBJS) $(TIMING_LIB) $(LIBS)
 
-rxn_map.o: rxn_map.c rxn_map_init.h rxn_map_run.h $(SERIAL_INCS)
-	$(CC) $(DCFLAGS) $(TFLAGS) -c rxn_map.c
+#rxn_map.o: rxn_map.c rxn_map_init.h rxn_map_run.h $(SERIAL_INCS)
+#	$(CC) $(DCFLAGS) $(TFLAGS) -c rxn_map.c
 
-rxn_map_init.o: rxn_map_init.c rxn_map_init.h $(SERIAL_INCS) alloc0.h read_params.h open_output_files.h vgrng_init.h vgrng.h echo_params.h size_rxns_file.h alloc2.h parse_reactions_file.h echo_reactions_file.h sort_compartments.h unique_compartments.h translate_compartments.h sort_molecules.h unique_molecules.h print_molecules_dictionary.h alloc3.h set_compartment_ptrs.h read_initial_concentrations.h vgrng_init.h vgrng.h compute_ke.h print_rxn_likelihoods_header.h print_free_energy_header.h alloc4.h form_molecules_matrix.h
-	$(CC) $(DCFLAGS) $(TFLAGS) -c rxn_map_init.c
+#rxn_map_init.o: rxn_map_init.c rxn_map_init.h $(SERIAL_INCS) alloc0.h read_params.h open_output_files.h vgrng_init.h vgrng.h echo_params.h size_rxns_file.h alloc2.h parse_reactions_file.h echo_reactions_file.h sort_compartments.h unique_compartments.h translate_compartments.h sort_molecules.h unique_molecules.h print_molecules_dictionary.h alloc3.h set_compartment_ptrs.h read_initial_concentrations.h vgrng_init.h vgrng.h compute_ke.h print_rxn_likelihoods_header.h print_free_energy_header.h alloc4.h form_molecules_matrix.h
+#	$(CC) $(DCFLAGS) $(TFLAGS) -c rxn_map_init.c
 
-rxn_map_run.o: rxn_map_run.c rxn_map_run.h $(SERIAL_INCS)
-	$(CC) $(DCFLAGS) $(TFLAGS) -c rxn_map_run.c
+#rxn_map_run.o: rxn_map_run.c rxn_map_run.h $(SERIAL_INCS)
+#	$(CC) $(DCFLAGS) $(TFLAGS) -c rxn_map_run.c
 	
-alloc4.o: alloc4.c alloc4.h $(SERIAL_INCS)
-	$(CC) $(DCFLAGS) $(TFLAGS) -c alloc4.c
+#alloc4.o: alloc4.c alloc4.h $(SERIAL_INCS)
+#	$(CC) $(DCFLAGS) $(TFLAGS) -c alloc4.c
 
 boltzmann: $(MMAP_OBJS) $(TIMING_LIB) boltzmann.o libboltzmann.a
 	$(CLINKER) $(LFLAGS) -o boltzmann boltzmann.o $(SERIAL_OBJS1) $(SERIAL_OBJS2) $(MMAP_OBJS) $(TIMING_LIB) $(LIBS)
