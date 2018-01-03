@@ -2,7 +2,8 @@
 #include "vgrng_init.h"
 #include "print_rxn_likelihoods_header.h"
 #include "print_free_energy_header.h"
-#include "flatten_state.h"
+#include "alloc8.h"
+#include "alloc9.h"
 #include "print_reactions_matrix.h"
 /*
 #include "zero_solvent_coefficients.h"
@@ -10,7 +11,7 @@
 #include "free_boot_state2.h"
 
 #include "run_init.h"
-int run_init(struct state_struct *state, struct state_struct **flattened_state) {
+int run_init(struct state_struct *state) {
 /*
     Initialize the activities and the random number generator,
     pack the state into a new state variable, flattened_state,
@@ -20,12 +21,11 @@ int run_init(struct state_struct *state, struct state_struct **flattened_state) 
     Calls:     vgrng_init,
                print_rxn_likelihoods_header,
 	       print_free_energy_header,
-               flatten_state,
+	       alloc8,
+               alloc9,
 	       print_reactions_matrix
-	       free_boot_state2
 
   */
-  struct state_struct *stateq;
   struct vgrng_state_struct *vgrng_state;
   struct vgrng_state_struct *vgrng2_state;
   double *activities;
@@ -75,22 +75,29 @@ int run_init(struct state_struct *state, struct state_struct **flattened_state) 
       print_free_energy_header(state);
     }
   }
-  stateq  = NULL;
-  state->workspace_base = NULL;
-  success = flatten_state(state,&stateq);
+  /*
+    Allocate work space vectors, this used to happen automagically in
+    flatten state.
+  */
   if (success) {
-    if (stateq->print_output) {
-      success = print_reactions_matrix(stateq);
+    success = alloc8(state);
+  }
+  if (success) {
+    if (state->print_output) {
+      success = alloc9(state);
+      if (success) {
+	success = print_reactions_matrix(state);
+      }
     }
   }
   /*
-  if (success) {
-    success = zero_solvent_coefficients(stateq);
-  }
-  */
+  stateq  = NULL;
+  state->workspace_base = NULL;
+  success = flatten_state(state,&stateq);
   *flattened_state = stateq;
   if (success) {
     success = free_boot_state2(state);
   }
+  */
   return(success);
 }
