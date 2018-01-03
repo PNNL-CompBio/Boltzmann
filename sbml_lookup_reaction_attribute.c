@@ -34,7 +34,7 @@ int sbml_lookup_reaction_attribute(char *key) {
     3 reversible
   Returns -1 if key is not in list.
 
-  Called by: sbml_process_list_of_reactions
+  Called by: sbml_process_reaction_tag
   Calls:     strcmp
 */
   int cmp0;
@@ -47,7 +47,7 @@ int sbml_lookup_reaction_attribute(char *key) {
   int cmp5;
 
   int tag;
-  int padi;
+  int cmp6;
 
   cmp0 = strcmp(key,"compartment");
   tag = -1;
@@ -73,6 +73,11 @@ int sbml_lookup_reaction_attribute(char *key) {
 	    cmp5 = strcmp(key,"reversible");
 	    if (cmp5 == 0) {
 	      tag = 5;
+	    } else {
+	      cmp6 = strcmp(key,"name");
+	      if (cmp6 == 0) {
+		tag = 6;
+	      }
 	    }
 	  }
 	}
