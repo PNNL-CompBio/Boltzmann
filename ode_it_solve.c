@@ -43,27 +43,25 @@ int ode_it_solve(struct state_struct *state,
   double eps;
   double flux_scaling;
   double minnrm;
-  double cand_nrm;
   double *conc_to_count;
-  double recip_wt;
   double newnrm;
   double oldnrm;
   double kappa_rtol;
   double tenth_kappa_rtol;
   double cap;
+  /*
+  double cand_nrm;
   double del_scale;
-  double cand_rate;
-  double p9_old_rate;
-  double rate;
-  double *dbl_ptr;
   double yi;
   double zi;
+  */
+  double rate;
+  double *dbl_ptr;
   double hundred_eps;
   double local_h;
   double local_d;
   double minus_one;
   double one;
-  double rate_ratio;
 
   int64_t eps_hex;
   int itfail;
@@ -78,8 +76,10 @@ int ode_it_solve(struct state_struct *state,
   int nrhs;
   int info;
   
+#ifdef DBG
   int nsteps;
   int origin;
+#endif
 
   int iter_count;
   int inc1;
