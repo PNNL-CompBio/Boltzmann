@@ -39,8 +39,8 @@ int echo_reactions_file(struct state_struct *state) {
   struct rxn_struct *reactions;
   struct rxn_struct *reaction;
   struct rxn_matrix_struct *rxns_matrix;
-  int64_t *row_ptrs;
-  int64_t *column_indices;
+  int64_t *rxn_ptrs;
+  int64_t *molecules_indices;
   int64_t *coefficients;
   char **matrix_text;
 
@@ -74,8 +74,8 @@ int echo_reactions_file(struct state_struct *state) {
   if (success) {
     reaction       = state->reactions;
     rxns_matrix    = state->reactions_matrix;
-    row_ptrs       = rxns_matrix->row_ptrs;
-    column_indices = rxns_matrix->column_indices;
+    rxn_ptrs       = rxns_matrix->rxn_ptrs;
+    molecules_indices = rxns_matrix->molecules_indices;
     coefficients   = rxns_matrix->coefficients;
     matrix_text    = rxns_matrix->text;
     for (rxns=0;rxns < state->number_reactions;rxns++) {
@@ -96,7 +96,7 @@ int echo_reactions_file(struct state_struct *state) {
       }
       fprintf(rxn_echo_fp,"LEFT\t");
       nr = 0;
-      for (j=row_ptrs[rxns];j<row_ptrs[rxns+1];j++) {
+      for (j=rxn_ptrs[rxns];j<rxn_ptrs[rxns+1];j++) {
 	coeff = coefficients[j];
 	if (coeff < 0) {
 	  if (coeff < -1) {
@@ -115,7 +115,7 @@ int echo_reactions_file(struct state_struct *state) {
       }
       fprintf(rxn_echo_fp,"RIGHT\t");
       np = 0;
-      for (j=row_ptrs[rxns];j<row_ptrs[rxns+1];j++) {
+      for (j=rxn_ptrs[rxns];j<rxn_ptrs[rxns+1];j++) {
 	coeff = coefficients[j];
 	if (coeff > 0) {
 	  if (coeff > 1) {
