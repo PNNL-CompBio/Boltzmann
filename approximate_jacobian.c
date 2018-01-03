@@ -1,4 +1,6 @@
 #include "boltzmann_structs.h"
+#include "boltzmann_cvodes_headers.h"
+#include "cvodes_params_struct.h"
 #include "ode_num_jac.h"
 #include "lr8_approximate_jacobian.h"
 #include "boltzmann_dense_to_sparse.h"
