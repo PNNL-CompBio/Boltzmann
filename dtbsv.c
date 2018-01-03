@@ -319,12 +319,12 @@ void dtbsv_(char *uplop, char *transp, char *diagp, int *np, int *kp,
       END IF
   */
   info = 0;
-  if ((lsame_(&uplo,&uchar) || lsame_(&uplo,&lchar)) == 0) {
+  if ((lsame_(&uplo,&uchar,1,1) || lsame_(&uplo,&lchar,1,1)) == 0) {
     info = 1;
-  } else if ((lsame_(&trans,&nchar) || lsame_(&trans,&tchar) || 
-	      lsame_(&trans,&cchar)) == 0) {
+  } else if ((lsame_(&trans,&nchar,1,1) || lsame_(&trans,&tchar,1,1) || 
+	      lsame_(&trans,&cchar,1,1)) == 0) {
     info = 2;
-  } else if ((lsame_(&diag,&uchar) || lsame_(&diag,&nchar)) == 0) {
+  } else if ((lsame_(&diag,&uchar,1,1) || lsame_(&diag,&nchar,1,1)) == 0) {
     info = 3;
   } else if (n < 0) {
     info = 4;
@@ -349,7 +349,7 @@ void dtbsv_(char *uplop, char *transp, char *diagp, int *np, int *kp,
       /*
       NOUNIT = LSAME(DIAG,'N')
       */
-      nounit = lsame_(&diag,&nchar);
+      nounit = lsame_(&diag,&nchar,1,1);
       /*
 	Set up the start point in X if the increment is not unity. This
         will be  ( N - 1 )*INCX  too small for descending loops.
@@ -371,14 +371,14 @@ void dtbsv_(char *uplop, char *transp, char *diagp, int *np, int *kp,
 *
       IF (LSAME(TRANS,'N')) THEN
       */
-      if (lsame_(&trans,&nchar)) {
+      if (lsame_(&trans,&nchar,1,1)) {
 	/*
 *
 *        Form  x := inv( A )*x.
 *
           IF (LSAME(UPLO,'U')) THEN
 	*/
-	if (lsame_(&uplo,&uchar)) {
+	if (lsame_(&uplo,&uchar,1,1)) {
 	  /*
               KPLUS1 = K + 1
               IF (INCX.EQ.1) THEN
@@ -560,7 +560,7 @@ void dtbsv_(char *uplop, char *transp, char *diagp, int *np, int *kp,
           IF (LSAME(UPLO,'U')) THEN
               KPLUS1 = K + 1
 	*/
-	if (lsame_(&uplo,&uchar)) {
+	if (lsame_(&uplo,&uchar,1,1)) {
 	  kplus1 = k+1;
 	  /*	    
 	    IF (INCX.EQ.1) THEN
