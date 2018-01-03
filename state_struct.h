@@ -95,25 +95,26 @@ struct state_struct {
   double  cal_gm_per_joule;
   double  joule_per_cal_gm;
   double  default_initial_conc;
+  double  dg_forward;
+  double  entropy;
   /*
   double  small_nonzero;
   */
-  double  *current_concentrations; /* unique_molecules */
-  double  *future_concentrations;  /* unique_molecules */
-  double  *bndry_flux_concs;       /* unique_molecules */
   double  *dg0s;                   /* number_reactions */
+  double  *ke;                     /* number_reactions */
+  double  *activities;             /* number_reactions */
+  double  *current_concentrations; /* unique_molecules */
+  double  *bndry_flux_concs;       /* unique_molecules */
+  double  *future_concentrations;  /* unique_molecules */
   double  *free_energy;            /* number_reactions */
   double  *forward_rxn_likelihood; /* number_reactions */
   double  *reverse_rxn_likelihood; /* number_reactions */
   double  *rxn_likelihood_ps;      /* number_ractions + 1 */
-  double  *ke;                     /* number_reactions */
   double  *forward_rxn_log_likelihood_ratio; /* number_reactions */
   double  *reverse_rxn_log_likelihood_ratio; /* number_reactions */
-  double  *activities;             /* number_reactions */
   double  *rxn_view_likelihoods;    /* rxn_view_hist_length * number_reactions */
   double  *rev_rxn_view_likelihoods; /* rxn_view_hist_length * number_reactions */
   double  *no_op_likelihood;       /* rxn_view_hist_length */
-  int  *cmpts_map;                 /* number_compartments + number_compartments & 1 */
   int  *rxn_fire;                  /* (number_reactions * 2) + 2*/
 
   int64_t  number_reactions;
