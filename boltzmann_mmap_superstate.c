@@ -33,11 +33,12 @@ specific language governing permissions and limitations under the License.
 #include <sys/stat.h>
 #include <fcntl.h>
 
+#include "boltzmann_structs.h"
 #include "boltzmann_mmap_superstate.h"
 
 int boltzmann_mmap_superstate(char *global_state_filename,
 			      int64_t mmap_file_len,
-			      int64_t **super_statep) {
+			      struct super_state_struct **super_statep) {
   /*
     mmap the super state file.
     Called by: boltzmann_boot, and user interface.
@@ -85,7 +86,7 @@ int boltzmann_mmap_superstate(char *global_state_filename,
 		mmap_file_len,mmap_err,strerror(mmap_err));
       fflush(stderr);
     } else {
-      *super_statep = super_statev;
+      *super_statep = (struct super_state_struct *)super_statev;
     }
   }
   return(success);
