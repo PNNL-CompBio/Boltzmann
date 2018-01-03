@@ -25,10 +25,11 @@ specific language governing permissions and limitations under the License.
 #define DBG_FREE_BOOT_STATE 1
 */
 #include "free_boot_state.h"
+#include "free_boot_state2.h"
 int free_boot_state(struct state_struct **statep) {
   /*
     Called by: boltzmann_init
-    Calls:     free.
+    Calls:     free_boot_state2, free.
   */
   struct state_struct *state;
   struct rxn_matrix_struct *reactions_matrix; 
@@ -52,76 +53,7 @@ int free_boot_state(struct state_struct **statep) {
     if (state->rxn_file_keyword_lengths) {
       free(state->rxn_file_keyword_lengths);
     }
-    if (state->rxn_title_text) {
-      free(state->rxn_title_text);
-    }
-    if (state->reactions) {
-      free(state->reactions);
-    }
-    reactions_matrix = state->reactions_matrix;
-    if (reactions_matrix) {
-      if (reactions_matrix->rxn_ptrs) {
-	free(reactions_matrix->rxn_ptrs);
-      }
-      if (reactions_matrix->molecules_indices) {
-	free(reactions_matrix->molecules_indices);
-      }
-      if (reactions_matrix->compartment_indices) {
-	free(reactions_matrix->compartment_indices);
-      }
-      if (reactions_matrix->coefficients) {
-	free(reactions_matrix->coefficients);
-      }
-      if (reactions_matrix->text) {
-	free(reactions_matrix->text);
-      }
-      free(state->reactions_matrix);    
-    }
-    /*
-      Need to be carefule with unsorted_molecules and unsorted_cmpts as
-      they may have exchanged values with their sorted analogs.
-    */
-    if (state->unsorted_molecules) {
-      if (state->sorted_molecules < state->unsorted_molecules) {
-	free(state->sorted_molecules);
-      } else {
-	free(state->unsorted_molecules);
-      }
-    }
-    if (state->unsorted_cmpts) {
-      if (state->sorted_cmpts < state->unsorted_cmpts) {
-        free(state->sorted_cmpts);
-      } else {
-	free(state->unsorted_cmpts);
-      }
-    }
-    if (state->activities) {
-      free(state->activities);
-    }
-    if (state->vgrng_state) {
-      free(state->vgrng_state);
-    }
-    if (state->vgrng2_state) {
-      free(state->vgrng2_state);
-    }
-    if (state->compartment_ptrs) {
-      free(state->compartment_ptrs);
-    }
-    if (state->current_concentrations) {
-      free(state->current_concentrations);
-    }
-    if (state->bndry_flux_concs) {
-      free(state->bndry_flux_concs);
-    }
-    if (state->dg0s) {
-      free(state->dg0s);
-    }
-    if (state->ke) {
-      free(state->ke);
-    }
-    if (state->workspace_base) {
-      free(state->workspace_base);
-    }
+    success = free_boot_state2(statep);
     free(state);
   }
   return(success);
