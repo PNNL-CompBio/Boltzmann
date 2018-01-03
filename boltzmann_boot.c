@@ -69,11 +69,13 @@ specific language governing permissions and limitations under the License.
 #include "count_ws.h"
 #include "count_nws.h"
 #include "boltzmann_mmap_superstate.h"
+#include "flatten_super_state.h"
 /*
 #define DBG_BOLTZMANN_BOOT  
 */
 #include "boltzmann_boot.h"
-int boltzmann_boot(char *param_file_name, int64_t **super_statep) {
+int boltzmann_boot(char *param_file_name, 
+		   struct super_state_struct **super_statep) {
   /*
     Initialize the reactions and data structures for boltzmann.
     This is a variation on boltzmann_init in that it processes
@@ -153,6 +155,8 @@ int boltzmann_boot(char *param_file_name, int64_t **super_statep) {
 	       print_rxn_likelihoods_header
 	       print_free_energy_header
   */
+  struct super_state_struct sss;
+  struct super_state_struct *super_state;
   struct state_struct *boot_state;
   struct state_struct *state;
   struct state_struct *statep;
@@ -260,6 +264,8 @@ int boltzmann_boot(char *param_file_name, int64_t **super_statep) {
   int64_t ask_for;
   int64_t mi_base;
   int64_t ci_base;
+  int64_t minimum_state_size;
+  int64_t maximum_state_size;
   char *local_state_buffer;
   char *rxn_file_name;
   char *concs_file_name;
@@ -300,6 +306,8 @@ int boltzmann_boot(char *param_file_name, int64_t **super_statep) {
   log2_page_size = 12;
   one_l      = (int64_t)1;
   page_mask  = page_size - one_l;
+  maximum_state_size = 0;
+  minimum_state_size = 0;
   open_flags = O_RDWR | O_CREAT;
   whence     = SEEK_SET;
   /*
@@ -400,7 +408,7 @@ int boltzmann_boot(char *param_file_name, int64_t **super_statep) {
   }
   if (success) {
     ask_for = (int64_t)(num_reaction_files+1) * (int64_t)sizeof(int64_t);
-    compartment_list_starts = calloc(one_l,ask_for);
+    compartment_list_starts = (int64_t *)calloc(one_l,ask_for);
     if (compartment_list_starts == NULL) {
       fprintf(stderr,"boltzmann_boot: Error unable to allocate %ld bytes "
 	      "for compartment_list_starts\n",ask_for);
@@ -409,9 +417,14 @@ int boltzmann_boot(char *param_file_name, int64_t **super_statep) {
     }
   }  
   if (success) {
-    state_offsets_sizes_offset = (int64_t)20;
-    meta_data_size = (state_offsets_sizes_offset + (int64_t)1) + 
-                       (int64_t)(num_reaction_files *3);
+    meta_data_size = ((sizeof(sss) + sizeof(int64_t)) - 1) >> log2_int64_t_size;    
+    state_offsets_sizes_offset = meta_data_size;
+    molecule_map_starts_offset    = state_offsets_sizes_offset + 
+                                   (num_reaction_files << 1);
+    molecule_map_offset           = molecule_map_starts_offset + 
+		                     num_reaction_files + one_l;
+    
+    meta_data_size = molecule_map_offset;
     ask_for = sizeof(int64_t) * meta_data_size;
     meta_data = (int64_t *)calloc(one_l,ask_for);
     if (meta_data == NULL) {
@@ -652,6 +665,12 @@ int boltzmann_boot(char *param_file_name, int64_t **super_statep) {
 	molecule_text_length    += statep->molecules_space;
 	compartment_text_length += statep->compartment_space;
 	cur_size = statep->state_length;
+	if (cur_size > maximum_state_size) {
+	  maximum_state_size = cur_size;
+	}
+	if ((minimum_state_size == 0) || (cur_size < minimum_state_size)) {
+	  minimum_state_size = cur_size;
+	}
 	fill_size = (page_size - (cur_size & page_mask)) & page_mask;
 	nw = write(tmp_state_fd,statep,cur_size);
 	if (nw != cur_size) {
@@ -778,7 +797,7 @@ int boltzmann_boot(char *param_file_name, int64_t **super_statep) {
   }
   if (success) {
     ask_for = (int64_t)(sizeof(int64_t)*global_number_of_compartments);
-    compartment_list = calloc(one_l,ask_for);
+    compartment_list = (int64_t*)calloc(one_l,ask_for);
     if (compartment_list == NULL) {
       fprintf(stderr,"boltzmann_boot: Error could not allocate %ld "
 	      "bytes for compartment_list\n",ask_for);
@@ -1106,6 +1125,32 @@ int boltzmann_boot(char *param_file_name, int64_t **super_statep) {
     /*
       Fill the meta data array.
     */
+    total_length = meta_data_size + tmp_offset;
+    super_state = (struct super_state_struct *)&meta_data[0];
+    super_state->number_of_reaction_files = num_reaction_files;
+    super_state->total_length_in_bytes = total_length;
+    super_state->page_size_in_bytes = page_size;
+    super_state->number_of_pages = (total_length >> log2_page_size) +
+      ((page_size - (total_length & page_mask)) * page_mask);
+    super_state->string_align_len = align_len;
+    super_state->string_align_mask = align_len - one_l;
+    super_state->global_number_of_molecules = global_number_of_molecules;
+    super_state->unique_global_molecules;
+    super_state->molecule_text_length_in_bytes = mws_pos;
+    super_state->global_number_of_compartments = global_number_of_compartments;
+    super_state->unique_global_compartments = unique_global_compartments;
+    super_state->compartment_text_length_in_bytes = cws_pos;
+    super_state->state_offsets_sizes_offset_in_words = state_offsets_sizes_offset;
+    super_state->molecule_map_starts_offset_in_words = molecule_map_starts_offset;
+    super_state->molecule_map_offset_in_words      = molecule_map_offset;
+    super_state->molecule_names_offset_in_words    = molecule_names_offset;
+    super_state->compartment_map_offset_in_words   = compartment_map_offset;
+    super_state->compartment_names_offset_in_words = compartment_names_offset;
+    super_state->molecules_text_offset_in_bytes    = molecules_text_offset;
+    super_state->compartments_text_offset_in_bytes = compartments_text_offset;
+    super_state->maximum_state_size_in_bytes       = maximum_state_size;
+    super_state->minimum_state_size_in_bytes       = minimum_state_size;
+    /*
     meta_data[0]  = num_reaction_files;
     meta_data[1]  = meta_data_size + tmp_offset;
     meta_data[2]  = page_size;
@@ -1127,6 +1172,7 @@ int boltzmann_boot(char *param_file_name, int64_t **super_statep) {
     meta_data[17] = compartment_names_offset;
     meta_data[18] = molecules_text_offset; 
     meta_data[19] = compartments_text_offset;
+    */
     /*
       Increment the state_offset_size offsets by meta_data_size;
     */
