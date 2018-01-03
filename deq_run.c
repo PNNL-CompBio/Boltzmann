@@ -24,11 +24,6 @@ specific language governing permissions and limitations under the License.
 /*
 #define DBG_DEQ_RUN 1
 */
-/*
-#include "flatten_state.h"
-#include "alloc4.h"
-#include "form_molecules_matrix.h"
-*/
 #include "alloc7.h"
 #include "init_base_reactants.h"
 #include "init_relative_rates.h"
