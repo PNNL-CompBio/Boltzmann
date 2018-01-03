@@ -76,6 +76,8 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
   struct state_struct bltzs;
   struct state_struct *state;
   struct vgrng_state_struct *vgrng_state;
+  double *dg0s;
+  double *free_energy;
   int64_t align_len;
   int64_t align_mask;
   int64_t rxn_title_len;
@@ -90,7 +92,7 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
   int num_molecules;
 
   int vgrng_start_steps;
-  int padi;
+  int i;
 
   FILE *lfp;
   /*
@@ -109,13 +111,39 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
       state->lfp = fopen(state->log_file,"w");
       lfp = state->lfp;
       if (state->lfp == NULL) {
-	fprintf(stderr,"boltzman unable to open log_file, %s, quitting.\n",
+	fprintf(stderr,
+		"boltzman_init unable to open log_file, %s, quitting.\n",
 		state->log_file);
 	fflush(stderr);
 	success = 0;
       }
     }
   }
+  if (success) {
+    if (state->concs_out_file) {
+      state->concs_out_fp = fopen(state->concs_out_file,"w");
+      if (state->concs_out_fp == NULL) {
+	fprintf(stderr,
+		"boltzman_init unable to open concs_out_file, %s, quitting.\n",
+		state->concs_out_file);
+	fflush(stderr);
+	success = 0;
+      }
+    }
+  }
+  if (success) {
+    if (state->rxn_lklhd_file) {
+      state->rxn_lklhd_fp = fopen(state->rxn_lklhd_file,"w");
+      if (state->rxn_lklhd_fp == NULL) {
+	fprintf(stderr,
+		"boltzman_init unable to open rxn_lklhd_file, %s, quitting.\n",
+		state->rxn_lklhd_file);
+	fflush(stderr);
+	success = 0;
+      }
+    }
+  }
+	
   if (success) {
     vgrng_state = state->vgrng_state;
     vgrng_start_steps = 1001;
@@ -204,6 +232,13 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
   }
   if (success) {
     success = compute_ke(state);
+  }
+  if (success) {
+    dg0s = state->dg0s;
+    free_energy  = state->free_energy;
+    for (i=0;i<state->number_reactions;i++) {
+      free_energy[i] = dg0s[i];
+    }
   }
   return(success);
 }
