@@ -40,8 +40,10 @@ int alloc3(struct state_struct *state) {
     Called by: boltzmann_init
     Calls:     calloc, fprintf, fflush (intrinsic)
   */
+  /*
   struct molecules_matrix_struct sms;
   struct molecules_matrix_struct *molecules_matrix;
+  */
   int64_t ask_for;
   int64_t one_l;
   int64_t usage;
@@ -72,6 +74,7 @@ int alloc3(struct state_struct *state) {
     Allocate space for molecules name when reading initial 
     concentrations file.
   */
+  /*
   ask_for    = max_molecule_len + 
     ((align_len - (max_molecule_len & align_mask)) & align_mask);
   usage += ask_for;
@@ -82,10 +85,12 @@ int alloc3(struct state_struct *state) {
     fflush(stderr);
     success = 0;
   }
+  */
   /*
     Allocate space for compartment name when reading initial concentrations
     file.
   */
+  /*
   if (success) {
     ask_for = max_compartment_len + 
       ((align_len - (max_compartment_len & align_mask)) & align_mask);
@@ -98,6 +103,7 @@ int alloc3(struct state_struct *state) {
       success = 0;
     }
   }
+  */
   /*
     Allocate space for compartment pointers in the sorted molecules list -
     length is unique_compartments + 1;
@@ -160,6 +166,7 @@ int alloc3(struct state_struct *state) {
     /*
       Allocate space for the molecules_matrix;
     */
+    /*
     ask_for = (int64_t)sizeof(sms);
     usage += ask_for;
     molecules_matrix = (struct molecules_matrix_struct *)calloc(one_l,ask_for);
@@ -171,10 +178,12 @@ int alloc3(struct state_struct *state) {
     } else {
       state->molecules_matrix = molecules_matrix;
     }
+    */
   }
   /*
     Allocate space for the fields of the molecules matrix.
   */
+  /*
   if (success) {
     ask_for = ((int64_t)(nu_molecules+1)) * ((int64_t)sizeof(int64_t));
     usage += ask_for;
@@ -219,6 +228,8 @@ int alloc3(struct state_struct *state) {
       success = 0;
     } 
   }
+  */
+  /*
   if (success) {
     ask_for = ((int64_t)(nu_molecules+1)) * ((int64_t)sizeof(int64_t));
     usage += ask_for;
@@ -230,6 +241,7 @@ int alloc3(struct state_struct *state) {
       success = 0;
     } 
   }
+  */
   if (success) {
     ask_for = ((int64_t)nrxns) * ((int64_t)sizeof(double));
     usage += ask_for;
