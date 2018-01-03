@@ -15,13 +15,15 @@ double compute_flux_scaling(struct state_struct *state, double *concs) {
     Concs is an input vector of length nunique_species with the 
     concentrations in them.
   */
-  double kf_base;
   double flux_scaling;
   int *base_reactants;
+
   int nbr;
   int i;
+
   int species;
   int padi;
+
   if (state->flux_scaling == 0) {
     nbr = state->number_base_reaction_reactants;
     flux_scaling = state->kf_base_reaction;
