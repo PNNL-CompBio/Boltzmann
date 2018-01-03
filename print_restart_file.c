@@ -35,7 +35,7 @@ int print_restart_file(struct state_struct *state) {
   struct molecule_struct *cur_molecules;
   struct molecule_struct *cur_cmpts;
   struct molecule_struct *cur_cmpt;
-  double *cconcs;
+  double *ccounts;
   double multiplier;
   double conc;
   char   *restart_file;
@@ -62,7 +62,7 @@ int print_restart_file(struct state_struct *state) {
   nu_molecules  = state->nunique_molecules;
   cur_molecules = state->sorted_molecules;
   cur_cmpts     = state->sorted_cmpts;
-  cconcs        = state->current_concentrations;
+  ccounts       = state->current_counts;
   multiplier    = state->count_to_conc;
   
   molecules_text = state->molecules_text;
@@ -103,7 +103,7 @@ int print_restart_file(struct state_struct *state) {
 	vbsp = vbsc;
       }
       molecule = (char*)&molecules_text[cur_molecules->string];
-      conc = cconcs[i] * multiplier;
+      conc = ccounts[i] * multiplier;
       if (ci > 0) {
 	fprintf(restart_fp," %s:%s\t%le\t%c\n",
 		molecule,cmpt_string,conc,vbsp[0]);
