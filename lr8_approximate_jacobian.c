@@ -79,6 +79,7 @@ int lr8_approximate_jacobian(struct state_struct *state,
   double  *dfdy_a;
   double  *dfdy_at;
   double  *dfdy_row;
+  double  *recip_coeffs;
   double  flux_scaling;
   double  pt;
   double  rt;
@@ -148,13 +149,14 @@ int lr8_approximate_jacobian(struct state_struct *state,
   molecules_ptrs   = molecules_matrix->molecules_ptrs;
   rxn_indices      = molecules_matrix->reaction_indices;
   coefficients     = molecules_matrix->coefficients;
+  recip_coeffs     = molecules_matrix->recip_coeffs;
   rxn_matrix       = state->reactions_matrix;
   rxn_ptrs         = rxn_matrix->rxn_ptrs;
   molecule_indices = rxn_matrix->molecules_indices;
   rcoefficients    = rxn_matrix->coefficients;
   ke               = state->ke;
   rke              = state->rke;
-  rfc              = state->product_term;
+  rfc              = state->rfc;
   counts           = state->ode_counts;
   conc_to_count    = state->conc_to_count;
   use_regulation   = state->use_regulation;
@@ -230,7 +232,7 @@ int lr8_approximate_jacobian(struct state_struct *state,
 	  }
 	}
       }
-    }
+    } /*end for (j...) */
     /*
       NB. tp and tr will always be > 0 as |coef| > 0 and concs_mi >= 0;
       but now the reaction contribution is in counts per time, if we
@@ -294,7 +296,7 @@ int lr8_approximate_jacobian(struct state_struct *state,
   	for (j=molecules_ptrs[i];j<molecules_ptrs[i+1];j++) {
   	  rxn = rxn_indices[j];
   	  if (coefficients[j]  != 0) {
-  	    recip_coefficient = 1.0/coefficients[j];
+  	    recip_coefficient = recip_coeffs[j];
   	    /*
   	      Add rxn row of drfc * recip_coefficient to row i of dfdy
   	    */
