@@ -1,5 +1,6 @@
 #include "boltzmann_structs.h"
 #include "boltzmann_cvodes_headers.h"
+#include "cvodes_params_struct.h"
 #include "compute_flattened_state_size.h"
 int64_t compute_flattened_state_size(struct state_struct *state) {
   /*
