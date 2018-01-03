@@ -280,7 +280,7 @@ int parse_reactions_file(struct state_struct *state,
 	success = 0;
 	if (lfp) {
 	  fprintf(lfp,"parse_reactions_file: Error input line longer than"
-		" %ld characters\n",rxn_buff_len);
+		" %lld characters\n",rxn_buff_len);
 	  fflush(lfp);
 	}
 	break;
