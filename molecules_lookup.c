@@ -57,8 +57,8 @@ int molecules_lookup(char *molecule_name, int compartment_index,
   sorted_molecules = state->sorted_molecules;
   compartment_ptrs = state->compartment_ptrs;
   molecules_text   = state->molecules_text;
-  left_end  = compartment_ptrs[compartment_index+1];
-  right_end = compartment_ptrs[compartment_index+2];
+  left_end  = compartment_ptrs[compartment_index];
+  right_end = compartment_ptrs[compartment_index+1];
   if (right_end > left_end) {
     molecule = (char*)&molecules_text[sorted_molecules[left_end].string];
     crslt = strcmp(molecule_name,molecule);
