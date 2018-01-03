@@ -17,7 +17,8 @@ $(SUNDIALS_LIB_DIR)/libsundials.a: src/sundials/sundials_band.c src/sundials/sun
 	cd src/sundials && $(MAKE)
 
 clean:
-	/bin/rm -f  lib/*
+	/bin/rm -f  lib/*.a 
+	/bin/rm -f  lib/*.so 
 	/bin/rm  -f src/cvodes/*.o
 	/bin/rm  -f src/nvec_ser/*.o
 	/bin/rm  -f src/sundials/*.o
