@@ -56,6 +56,7 @@ int alloc2(struct state_struct *state) {
       unsorted_cmpts,
       sorted_compartments,
       activities,
+      enzyme_level,
       reg_constant,
       reg_exponent,
       reg_drctn,
@@ -302,6 +303,17 @@ int alloc2(struct state_struct *state) {
     if (state->activities == NULL) {
       fprintf(stderr,"alloc2: Error unable to allocate %lld bytes for "
 	      "state->activities field.\n",ask_for);
+      fflush(stderr);
+      success = 0;
+    }
+  }
+  if (success) {
+    ask_for = num_rxns * double_size;
+    usage += ask_for;
+    state->enzyme_level = (double*)calloc(one_l,ask_for);
+    if (state->enzyme_level == NULL) {
+      fprintf(stderr,"alloc2: Error unable to allocate %lld bytes for "
+	      "state->enzyme_level field.\n",ask_for);
       fflush(stderr);
       success = 0;
     }
