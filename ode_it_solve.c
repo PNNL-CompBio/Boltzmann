@@ -163,7 +163,7 @@ int ode_it_solve(struct state_struct *state,
       Solve Miter * del = rhs for del
     */
     nrhs = 1;
-    dgetrs_(trans,&ny,&nrhs,miter,&ny,ipivot,del,&ny,&info);
+    dgetrs_(trans,&ny,&nrhs,miter,&ny,ipivot,del,&ny,&info,1);
     if (info != 0) {
       if (lfp) {
 	fprintf (lfp,"ode_it_solve: Error nonzero return code from dgetrs was %d\n",info);
