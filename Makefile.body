@@ -20,7 +20,7 @@ SERIAL_OBJS6 = boltzmann_global_to_local_counts.o boltzmann_global_to_local_flux
 
 #SERIAL_OBJS7 = deq_run.o alloc7.o fill_flux_pieces.o ode_solver.o ode23tb.o init_base_reactants.o ode_num_jac.o num_jac_col.o blas.o ode_it_solve.o compute_flux_scaling.o approximate_delta_concs.o vec_abs.o vec_div.o vec_max.o vec_mul.o ce_approximate_delta_concs.o update_rxn_likelihoods.o print_concs_fluxes.o ode_print_concs_header.o ode_print_concs.o
 
-SERIAL_OBJS7 = deq_run.o alloc7.o ode_solver.o ode23tb.o init_base_reactants.o ode_num_jac.o num_jac_col.o blas.o ode_it_solve.o compute_flux_scaling.o approximate_delta_concs.o vec_abs.o vec_div.o vec_max.o vec_mul.o lr_approximate_delta_concs.o ce_approximate_delta_concs.o update_rxn_likelihoods.o print_concs_fluxes.o lsame.o dtrsm.o dlaswp.o dgetrf2.o dgetrf.o dgetrs.o dgemm.o ode_print_concs_header.o ode_print_concs.o
+SERIAL_OBJS7 = deq_run.o alloc7.o ode_solver.o ode23tb.o init_base_reactants.o ode_num_jac.o num_jac_col.o blas.o ode_it_solve.o compute_flux_scaling.o approximate_delta_concs.o compute_net_likelihoods.o compute_net_lklhd_bndry_flux.o print_net_likelihood_header.o print_net_likelihoods.o print_net_lklhd_bndry_flux_header.o print_net_lklhd_bndry_flux.o vec_abs.o vec_div.o vec_max.o vec_mul.o lr_approximate_delta_concs.o ce_approximate_delta_concs.o update_rxn_likelihoods.o print_concs_fluxes.o lsame.o dtrsm.o dlaswp.o dgetrf2.o dgetrf.o dgetrs.o dgemm.o ode_print_concs_header.o ode_print_concs.o
 
 SBML_OBJS = sbml_to_boltzmann.o size_ms2js_file.o size_kg2js_file.o sbml_alloc0.o sbml_set_file_names.o sbml_alloc2.o read_ms2js.o read_kg2js.o sort_json_ids.o merge_sorted_strings.o sbml_count_cmpts.o sbml_count_species.o sbml_alloc1.o parse_sbml.o sbml_find_section.o sbml_process_list_of_compartments.o count_ws.o count_nws.o sbml_read_key_value.o sbml_lookup_compartment_attribute.o sbml_volume_units_conversion.o sort_compartments.o merge_compartments.o sbml_process_list_of_species.o sbml_start_species_def.o sbml_parse_species_key_value.o sbml_lookup_species_attribute.o sbml_process_substanceunits.o sbml_generate_init_conc_line.o boltzmannize_string.o sbml_find_string.o sbml_sort_species_trans.o sbml_merge_species_trans.o sbml_process_list_of_reactions.o sbml_look_for_in_reaction_tag.o sbml_process_reaction_tag.o sbml_lookup_reaction_attribute.o sbml_process_list_of_reactants_tag.o  sbml_process_list_of_products_tag.o sbml_process_species_reference_tag.o sbml_lookup_speciesref_attribute.o compartment_lookup.o count_ntb.o
 
@@ -274,6 +274,12 @@ libboltzmann.a: $(SERIAL_OBJS1)  $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SERIAL_OBJS4)
 	$(AR) $(ARFLAGS) libboltzmann.a ode_it_solve.o
 	$(AR) $(ARFLAGS) libboltzmann.a update_rxn_likelihoods.o
 	$(AR) $(ARFLAGS) libboltzmann.a print_concs_fluxes.o
+	$(AR) $(ARFLAGS) libboltzmann.a compute_net_likelihoods.o
+	$(AR) $(ARFLAGS) libboltzmann.a compute_net_lklhd_bndry_flux.o
+	$(AR) $(ARFLAGS) libboltzmann.a print_net_likelihood_header.o
+	$(AR) $(ARFLAGS) libboltzmann.a print_net_lklhd_bndry_flux_header.o
+	$(AR) $(ARFLAGS) libboltzmann.a print_net_likelihoods.o
+	$(AR) $(ARFLAGS) libboltzmann.a print_net_lklhd_bndry_flux.o
 #	$(AR) $(ARFLAGS) libboltzmann.a fill_flux_pieces.o
 
 boltzmann_boot_test: boltzmann_boot_test.o libboltzmann.a
@@ -830,12 +836,29 @@ ode_solver.o: ode_solver.c ode_solver.h ode23tb.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c ode_solver.c
 	      
 
-ode23tb.o: ode23tb.c ode23tb.h $(SERIAL_INCS) init_base_reactants.h compute_flux_scaling.h approximate_delta_concs.h ode_num_jac.h ode_it_solve.h print_concs_fluxes.h blas.h ode_print_concs.h
+ode23tb.o: ode23tb.c ode23tb.h $(SERIAL_INCS) init_base_reactants.h compute_flux_scaling.h approximate_delta_concs.h ode_num_jac.h ode_it_solve.h print_concs_fluxes.h blas.h ode_print_concs.h compute_net_likelihoods.h compute_net_lklhd_bndry_flux.h print_net_likelihood_header.h print_net_lklhd_bndry_flux_header.h print_net_likelihoods.h print_net_lklhd_bndry_flux.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c ode23tb.c 
 
 ode_print_concs.o: ode_print_concs.c ode_print_concs.h $(SERIAL_INCS) 
 	$(CC) $(DCFLAGS) $(TFLAGS) -c ode_print_concs.c
 
+compute_net_likelihoods.o: compute_net_likelihoods.c compute_net_likelihoods.h $(SERIAL_INCS) 
+	$(CC) $(DCFLAGS) $(TFLAGS) -c compute_net_likelihoods.c
+
+compute_net_lklhd_bndry_flux.o: compute_net_lklhd_bndry_flux.c compute_net_lklhd_bndry_flux.h $(SERIAL_INCS) 
+	$(CC) $(DCFLAGS) $(TFLAGS) -c compute_net_lklhd_bndry_flux.c
+
+print_net_likelihood_header.o: print_net_likelihood_header.c print_net_likelihood_header.h $(SERIAL_INCS) 
+	$(CC) $(DCFLAGS) $(TFLAGS) -c print_net_likelihood_header.c 
+
+print_net_lklhd_bndry_flux_header.o: print_net_lklhd_bndry_flux_header.c print_net_lklhd_bndry_flux_header.h $(SERIAL_INCS) 
+	$(CC) $(DCFLAGS) $(TFLAGS) -c print_net_lklhd_bndry_flux_header.c
+
+print_net_likelihoods.o: print_net_likelihoods.c print_net_likelihoods.h $(SERIAL_INCS) 
+	$(CC) $(DCFLAGS) $(TFLAGS) -c print_net_likelihoods.c 
+
+print_net_lklhd_bndry_flux.o: print_net_lklhd_bndry_flux.c print_net_lklhd_bndry_flux.h $(SERIAL_INCS) 
+	$(CC) $(DCFLAGS) $(TFLAGS) -c print_net_lklhd_bndry_flux.c
 
 init_base_reactants.o: init_base_reactants.c init_base_reactants.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c init_base_reactants.c
