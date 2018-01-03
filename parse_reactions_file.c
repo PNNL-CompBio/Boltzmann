@@ -84,6 +84,8 @@ int parse_reactions_file(struct state_struct *state,
   double *reg_constant;
   double *reg_exponent;
   double *reg_drctn;
+  double *forward_rc;
+  double *reverse_rc;
   int64_t *keyword_lens;
   int64_t *rxn_ptrs;
   int64_t *molecules_indices;
@@ -153,6 +155,8 @@ int parse_reactions_file(struct state_struct *state,
   int reg_count;
   int reg_pos;
 
+  int last_line_type;
+  int padi;
 
   FILE *rxn_fp;
   FILE *lfp;
@@ -199,6 +203,8 @@ int parse_reactions_file(struct state_struct *state,
       This is not quite accurate,as some reactions may not
       have a pathway line, and Bill wants to also add an additional
       compartment line.
+      We add optional FORWARD_RATE and REVERSE_RATE lines for use 
+      with DELTA_CONCS_CHOICE 9 in the ode parts.
       
     */
     rxn_title_pos               = (int64_t)0;
@@ -219,10 +225,15 @@ int parse_reactions_file(struct state_struct *state,
     enzyme_level                = state->enzyme_level;
     reactions                   = state->reactions;
     rxns_matrix                 = state->reactions_matrix;
+    forward_rc                  = state->forward_rc;
+    reverse_rc                  = state->reverse_rc;
     rxn_ptrs                    = rxns_matrix->rxn_ptrs;
     molecules_indices           = rxns_matrix->molecules_indices;
     coefficients                = rxns_matrix->coefficients;
     reaction                    = reactions;
+    /*
+      Initialize first reaction.
+    */
     reaction->lcompartment      = 0;
     reaction->rcompartment      = 0;
     reaction->pathway           = -1;
@@ -236,6 +247,10 @@ int parse_reactions_file(struct state_struct *state,
     reaction->deltag0_computed  = 0;
     reaction->ph                = state->ph;
     reaction->ionic_strength    = state->ionic_strength;
+    reaction->forward_rc        = -1.0;
+    reaction->reverse_rc        = -1.0;
+    forward_rc[0]               = -1.0;
+    reverse_rc[0]               = -1.0;
     for (i=0;i<max_regs_per_rxn;i++) {
       reg_constant[reg_base+i] = 1.0;
       reg_exponent[reg_base+i] = 0.0;
@@ -625,6 +640,8 @@ int parse_reactions_file(struct state_struct *state,
 	  reaction->self_id = rxns;
 	  activities[rxns]  = reaction->enzyme_level;
 	  enzyme_level[rxns] = reaction->enzyme_level;
+	  forward_rc[rxns]   = reaction->forward_rc;
+	  reverse_rc[rxns]   = reaction->reverse_rc;
 	  /*
 	    Since a compartment line could have come any where in
 	    the reaction input lines, we need to go back
@@ -670,6 +687,10 @@ int parse_reactions_file(struct state_struct *state,
 	    reaction->num_products      = 0;
 	    reaction->activity          = 1.0;
 	    reaction->enzyme_level      = 1.0;
+	    reaction->forward_rc        = -1.0;
+	    reaction->reverse_rc        = -1.0;
+	    forward_rc[rxns]            = -1.0;
+	    reverse_rc[rxns]            = -1.0;
 	    /*
 	      The following three lines added by DGT on 4/18/2013
 	    */
@@ -687,6 +708,40 @@ int parse_reactions_file(struct state_struct *state,
 	    }
 	  }
 	  break;
+	case 14: /* FORWARD_RATE */
+	  /*
+	    A FOWARD rate line.
+	  */
+	  ns = sscanf ((char*)&rxn_buffer[word1],"%le",
+		       &reaction->forward_rc);
+	  if (ns < 1) {
+	    if (lfp) {
+	      fprintf(lfp,
+		    "parse_reactions_file: malformed FORWARD_RATE line was\n%s\n",
+		    rxn_buffer);
+	      fflush(lfp);
+	    }
+	    success = 0;
+	    break;
+	  }
+	  break;
+	case 15: /* REVERSE_RATE */
+	  /*
+	    A REVERSE rate line.
+	  */
+	  ns = sscanf ((char*)&rxn_buffer[word1],"%le",
+		       &reaction->reverse_rc);
+	  if (ns < 1) {
+	    if (lfp) {
+	      fprintf(lfp,
+		    "parse_reactions_file: malformed REVERSE_RATE line was\n%s\n",
+		    rxn_buffer);
+	      fflush(lfp);
+	    }
+	    success = 0;
+	    break;
+	  }
+	  break;
         default:
 	break;
 	} /* end switch(line_type) */
@@ -697,8 +752,13 @@ int parse_reactions_file(struct state_struct *state,
     /*
       Check that last line was a //.
     */
+    /* 
+       this comes from the postion of //  in the keywords list in 
+       init_rxn_file_keywords.c 
+    */
+    last_line_type = 13; 
     if (success) {
-      if (line_type != (int)(state->num_rxn_file_keywords) - 1) {
+      if (line_type != last_line_type) {
 	if (lfp) {
 	  fprintf(lfp,
 		  "parse_reactions_file: Error reactions file did not end in //\n");
