@@ -202,15 +202,15 @@ struct state_struct {
   */
   struct rxn_matrix_struct *reactions_matrix; /* */
   /* 
-    sizeof(istring_elem_struct) * unique_molecules 
+    sizeof(molecule_struct) * unique_molecules 
     allocated in alloc2 
   */
-  struct istring_elem_struct *sorted_molecules;  
+  struct molecule_struct *sorted_molecules;  
   /* 
-     sizeof(istring_elem_struct) * unique_compartments 
+     sizeof(molecule_struct) * unique_compartments 
      allocated in alloc2 
   */ 
-  struct istring_elem_struct *sorted_cmpts; 
+  struct molecule_struct *sorted_cmpts; 
   /*
     Auxilliary data read in by boltzmann_init, not needed by
     boltzman_run unless printing is enabled.
@@ -237,8 +237,8 @@ struct state_struct {
   /*
     Workspace only.
   */
-  struct istring_elem_struct *unsorted_molecules; /* allocated in alloc2 */
-  struct istring_elem_struct *unsorted_cmpts; /* allocated in alloc2 */
+  struct molecule_struct *unsorted_molecules; /* allocated in alloc2 */
+  struct molecule_struct *unsorted_cmpts; /* allocated in alloc2 */
   int64_t *compartment_ptrs;
   int64_t *rxn_file_keyword_lengths /* allocated in alloc0 */;
   char    **rxn_file_keywords; /* 12, allocated in alloc0 */
