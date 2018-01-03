@@ -92,16 +92,16 @@ int lr9_approximate_delta_concs(struct state_struct *state,
   /*
     Check that base_rxn is in range.
   */
-  success = 1;
-  num_rxns = state->number_reactions;
-  num_species = state->nunique_molecules;
-  molecules   = state->sorted_molecules;
-  compartments = state->sorted_compartments;
+  success          = 1;
+  num_rxns         = state->number_reactions;
+  num_species      = state->nunique_molecules;
+  molecules        = state->sorted_molecules;
+  compartments     = state->sorted_compartments;
+  activities       = state->activities;
   molecules_matrix = state->molecules_matrix;
   molecules_ptrs   = molecules_matrix->molecules_ptrs;
   rxn_indices      = molecules_matrix->reaction_indices;
   coefficients     = molecules_matrix->coefficients;
-  activities       = state->activities;
   rxn_matrix       = state->reactions_matrix;
   rxn_ptrs         = rxn_matrix->rxn_ptrs;
   molecule_indices = rxn_matrix->molecules_indices;
