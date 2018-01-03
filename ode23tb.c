@@ -16,10 +16,12 @@
 #include "ode23tb_max_abs_ratio.h"
 #include "ode23tb_nonneg_err.h"
 #include "ode23tb_enforce_nonneg.h"
+#include "boltzmann_monitor_ode.h"
+#include "boltzmann_size_jacobian.h"
+/*
 #include "update_rxn_likelihoods.h"
 #include "get_counts.h"
 #include "ode_print_lklhds.h"
-/*
 #include "ode_print_bflux.h"
 #include "compute_net_likelihoods.h"
 #include "compute_net_lklhd_bndry_flux.h"
@@ -37,9 +39,7 @@
 #endif
 
 #include "ode23tb.h"
-int ode23tb (struct state_struct *state, double *concs,
-	     double htry, int nonnegative, int normcontrol,
-	     int print_concs, int choice) {
+int ode23tb (struct state_struct *state, double *concs) {
 
   /*
     NB. This is adapted from the ode23tb matlab code .
@@ -55,11 +55,17 @@ int ode23tb (struct state_struct *state, double *concs,
 
     Called by: ode_solver
     Calls:     approximate_delta_concs, ode_num_jac, ode_it_solve,
-               print_concs_dconcs, ode_print_dconcs
+               ode_print_concs, ode_norm_yp_o_wt, ode23tb_limit_h,
+	       ode23tb_init_wt, od23tb_update_wt, vec_set_constant,
+	       ode23tb_build_factor_miter, ode23tb_max_abs_ration,
+	       ode23tb_nonneg_err, ode23tb_enforce_nonneg,
+	       boltzmann_monitor_ode, boltzmann_size_jacobian,
 	       dcopy_, dnrm2_, dgemv_, dscal_, idamax_
 	       sizeof, calloc, sqrt, pow, fabs, dgetrf_, dgetrs_
 
   */
+  struct ode23tb_params_struct *ode23tb_params;
+  struct cvodes_params_struct *cvodes_params;
   double *dfdy; /* length nunique_molecules * nunique_molecules */
   double *miter; /* length nunique_molecules * nunique_molecules */
   double *y;  /* length nunique_molecules */
@@ -85,14 +91,21 @@ int ode23tb (struct state_struct *state, double *concs,
   double *fdiff; /* length unique_molecules */
   double *dfdy_tmp; /* length unique_molecules */
 
+  double *drfc; /* length 2*number_molecules. */
+  double *dfdy_row; /* length ny */
+  double *dfdy_a; /* length nnz */
+  double *dfdy_at; /* length nnz */
+
   double *forward_rxn_likelihoods; /* length nrxns */
   double *reverse_rxn_likelihoods; /* length nrxns */
   /*double *net_likelihoods;        */ /* length nrxns */
+
 
   double *count_to_conc; /* length unique_molecules */
   double *conc_to_count; /* length unique_molecules */
   double *counts;
   double *dbl_ptr;
+
   double t0;
   double t;
   double t2;
@@ -149,6 +162,7 @@ int ode23tb (struct state_struct *state, double *concs,
   double min_conc;
   double norm_delfdelt_o_wt;
   double dzero;
+  double htry;
   double znew_coeff[4];
   double ynew_coeff[5];
   double est_coeff[4];
@@ -168,6 +182,11 @@ int ode23tb (struct state_struct *state, double *concs,
   int64_t ode_rxn_view_freq;
   int64_t ode_rxn_view_step;
 
+  int *dfdy_ia;
+  int *dfdy_iat;
+  int *dfdy_ja;
+  int *dfdy_jat;
+  int *column_mask;
 
   int *ipivot;                  /* overlaid on pivot space */
 
@@ -225,18 +244,40 @@ int ode23tb (struct state_struct *state, double *concs,
   int print_output;
   int ierr;
   
+  int normcontrol;
+  int nonnegative;
+
+  int number_molecules;
+  int nnz;
+
+  int num_ints;
+  int ode_jacobian_choice;
+
+  int num_doubles;
+  int print_concs;
+
+  int drfc_len;
+  int ia_len;
+
   char  trans_chars[8];
   char  *trans;
 
+
+
   FILE *lfp;
   FILE *ode_dconcs_fp;
+
   success = 1;
+  ode23tb_params = state->ode23tb_params;
+  cvodes_params  = state->cvodes_params;
+  ode_jacobian_choice = state->ode_jacobian_choice;
   t0      = 0.0;
   tnew    = t0;
   /*
   tfinal  = 10.0;
   */
-  tfinal  = state->ode_t_final;
+  tfinal      = state->ode_t_final;
+  print_concs = state->print_ode_concs;
   tdir    = 1.0;
   one_l   = (int64_t)1;
   zero_l  = (int64_t)0;
@@ -244,6 +285,19 @@ int ode23tb (struct state_struct *state, double *concs,
   nsteps   = (int64_t)0;
   nfailed  = nsteps;
   npds     = nsteps;
+  nonnegative = 1;
+  normcontrol = 0;
+  htry        = 0.0;
+  ode23tb_params->nonnegative = nonnegative;
+  ode23tb_params->normcontrol = normcontrol;
+  ode23tb_params->htry        = htry;
+  /*
+    If we want to control these parameters externally we could
+    set them in read_params:
+    nonnegative = ode23tb_params->nonnegative;
+    normcontrol = ode23tb_params->normcontrol;
+    htry        = ode23tb_params->htry;
+  */
   ndecomps = 0;
   nsolves  = 0;
   rtol     = 0.001;
@@ -303,6 +357,15 @@ int ode23tb (struct state_struct *state, double *concs,
   forward_rxn_likelihoods = NULL;
   reverse_rxn_likelihoods = NULL;
   counts                  = NULL;
+  drfc                    = NULL;
+  dfdy_row                = NULL;
+  dfdy_a                  = NULL;
+  dfdy_at                 = NULL;
+  dfdy_ia                 = NULL;
+  dfdy_iat                = NULL;
+  dfdy_ja                 = NULL;
+  dfdy_jat                = NULL;
+  column_mask             = NULL;
   /*
     Allocate double space needed for scratch vectors and matrices.
     actually 31*ny but we'll throw in an extra 9 ny for future needs.
@@ -310,11 +373,12 @@ int ode23tb (struct state_struct *state, double *concs,
   if (success) {
     ask_for = ((ny * 40) + (2*ny*ny) + (3*nrxns)) * sizeof(double);
     dfdy = (double*)calloc(ask_for,one_l);
+    ode23tb_params->dfdy = dfdy;
     if (dfdy == NULL) {
       success = 0;
       if (lfp) {
 	fprintf(lfp,"ode23tb: Error could not allocate %ld bytes "
-		"for double scratch space.\n",ask_for);
+		"for scratch space.\n",ask_for);
 	fflush(lfp);
       }
     }
@@ -334,15 +398,20 @@ int ode23tb (struct state_struct *state, double *concs,
     it_solve_scr = &it_solve_del[ny];
     est         = &it_solve_scr[ny];
     fac         = &est[ny];
+    ode23tb_params->fac = fac;
     thresh      = &fac[ny];
+    ode23tb_params->thresh = thresh;
     delfdelt    = &thresh[ny];
     wt          = &delfdelt[ny];
     pivot       = &wt[ny];
     ipivot      = (int*)pivot;
     net_lklhd_bndry_flux = &pivot[ny];
     fdel                  = &net_lklhd_bndry_flux[ny];
+    ode23tb_params->fdel  = fdel;
     fdiff                 = &fdel[ny];
+    ode23tb_params->fdiff = fdiff;
     dfdy_tmp              = &fdiff[ny];
+    ode23tb_params->dfdy_tmp = dfdy_tmp;
     forward_rxn_likelihoods = state->ode_forward_lklhds;
     reverse_rxn_likelihoods = state->ode_reverse_lklhds;
     counts                  = state->ode_counts;
@@ -358,8 +427,9 @@ int ode23tb (struct state_struct *state, double *concs,
       Also fill f0 from fluxes input.
     */
     threshold = 1.0e-3;
-    njthreshold = 1.0e-6;
-    
+    njthreshold = state->nj_thresh; /* 1.0e-6; */
+    ode23tb_params->threshold = threshold;
+    ode23tb_params->njthreshold = njthreshold;
     dcopy_(&ny,concs,&inc1,y,&inc1);
     vec_set_constant(ny,thresh,njthreshold);
     t= t0;
@@ -367,7 +437,63 @@ int ode23tb (struct state_struct *state, double *concs,
       ode_print_concs(state,t,y);
     }
   }
+  if (success) {
+    if (ode_jacobian_choice != 0) {
+      /* 
+	 We need to allocate vectors pointed to by cvodes_params,
+	 for use in approximate_delta_concs.
+      */
+      drfc_len = state->number_molecules*2;
+      /*
+	Set the cvodes_params nnz field.
+      */
+      boltzmann_size_jacobian(state);
+      nnz = cvodes_params->nnz;
+      num_doubles = drfc_len + nnz + nnz + ny;
+      /*
+	Num ints is only 2*nnz + 3*ny + 2, but we have 
+	five entities and we want each of them to have an
+	even number of elements, hence the + 7.
+      */
+      num_ints    = 2*nnz + 3*ny + 7;
+      num_ints    = num_ints + (num_ints & 1);
+      ask_for     = (num_doubles << 3) + (num_ints << 2);
 
+      drfc = (double *)calloc(one_l,ask_for);
+      if (drfc == NULL) {
+	success = 0;
+	if (lfp) {
+	  fprintf(lfp,"ode23tb: Error could not allocate %ld bytes "
+		  "for double scratch space.\n",ask_for);
+	  fflush(lfp);
+	}
+      } else {
+	dfdy_row = (double *)&drfc[drfc_len];
+	dfdy_a   = (double *)&dfdy_row[ny];
+	dfdy_at  = (double *)&dfdy_a[nnz];
+	dfdy_ia  = (int *)&dfdy_at[nnz];
+	if (ny & 1) {
+	  ia_len = ny + 1;
+	} else {
+	  ia_len = ny + 2;
+	}
+	dfdy_iat = (int*)&dfdy_ia[ia_len];
+	nnz      = nnz + (nnz &1);
+	dfdy_ja  = (int*)&dfdy_iat[ia_len];
+	dfdy_jat = (int*)&dfdy_ja[nnz];
+	column_mask = (int*)&dfdy_jat[nnz];
+	cvodes_params->drfc     = drfc;
+	cvodes_params->prec_row = dfdy_row;
+	cvodes_params->dfdy_a   = dfdy_a;
+	cvodes_params->dfdy_at  = dfdy_at;
+	cvodes_params->dfdy_ia  = dfdy_ia;
+	cvodes_params->dfdy_iat = dfdy_iat;
+	cvodes_params->dfdy_ja  = dfdy_ja;
+	cvodes_params->dfdy_jat = dfdy_jat;
+	cvodes_params->column_mask = column_mask;
+      }
+    }
+  } 
   if (success) {
     approximate_delta_concs(state,y,f0,delta_concs_choice);
     if (ode_rxn_view_freq > 0) {
@@ -379,6 +505,8 @@ int ode23tb (struct state_struct *state, double *concs,
     */
     t0 = 0;
     nf = 0;
+    ode23tb_params->num_jac_first_time = 1;
+    ode23tb_params->nf                 = nf;
     first_time = 1;
     ode_num_jac(state,first_time,
 		dfdy,t0,y,f0,fac,thresh,
@@ -387,6 +515,8 @@ int ode23tb (struct state_struct *state, double *concs,
 		dfdy_tmp,
 		&nf);
     first_time = 0;
+    ode23tb_params->nf                 = nf;
+    ode23tb_params->num_jac_first_time = 0;
     nfevals += nf;
     jcurrent = 1;
     mcurrent = 1;
@@ -510,7 +640,7 @@ int ode23tb (struct state_struct *state, double *concs,
 	*/
       /*
 	Because f1 = f0 as approxiomate_delta_concs has nodependency on t,
-	and y has not changed value delfdelt is 0.
+	and y has not changed value dfdt is 0.
       */
       vec_set_constant(ny,delfdelt,dzero);
       /*
@@ -968,6 +1098,8 @@ int ode23tb (struct state_struct *state, double *concs,
 	if (ode_rxn_view_freq > 0) {
 	  ode_rxn_view_step -= one_l;
 	  if (ode_rxn_view_step == zero_l) {
+	    boltzmann_monitor_ode(state,t,y);
+	    /*
 	    ode_print_concs(state,t,y);
 	    get_counts(ny,y,conc_to_count,counts);
 
@@ -978,6 +1110,7 @@ int ode23tb (struct state_struct *state, double *concs,
 			     reverse_rxn_likelihoods);
 	    approximate_delta_concs(state,y,f0,delta_concs_choice);
 	    ode_print_dconcs(state,t,f0);
+	    */
 	    ode_rxn_view_step = ode_rxn_view_freq;
 	  }
 	}
