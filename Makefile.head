@@ -1,35 +1,18 @@
-
-CC      = @CC@
-CLINKER = @CC@
-MPICC   = @CC@
-MPICCLINKER = @CC@
-AS = @AS@
+CC      = gcc
+CLINKER = gcc
 AR = ar
 ARFLAGS = -crv
+OPT_FLAGS = -g -O2
 #
-
 ### End User configurable options ###
-include Makefile.@MMAP_CONFIG@mmap
-
-LIBS = @LIBS@ libboltzmann.a -lm 
-FLIBS = @FLIBS@
-EXECS = @MPI_EXECS@ @SERIAL_EXECS@
-FFLAGS = @FFLAGS@
-ASFLAGS = @ASFLAGS@
-DBG_FLAGS = 
-OPT_FLAGS = @CFLAGS@
-NO_OPT_FLAGS = @CFLAGS@
-BLFLAGS = @LDFLAGS@ 
-BCFLAGS = @CFLAGS@ 
-CFLAGS = ${OPT_FLAGS} ${DBG_FLAGS}
-LFLAGS = ${BLFLAGS} 
-
-NO_OPT_CFLAGS = ${BCFLAGS} ${DBG_FLAGS}
-DCFLAGS = ${NO_OPT_CFLAGS} 
-DLFLAGS = ${BLFLAGS} 
-#CFLAGS = ${DCFLAGS}
-#LFLAGS = ${DLFLAGS}
+LIBS = libboltzmann.a -lm 
+EXECS = boltzmann boltzmann_boot_test
+DBG_FLAGS = -O0 -g
+NO_OPT_FLAGS = -O0 -g
+CFLAGS = ${OPT_FLAGS}
+DCFLAGS = ${CFLAGS}
+TFLAGS  =
+LFLAGS = -g
 default: $(EXECS)
 all:  $(EXECS)
-
-include Makefile.@TIMING_CONFIG@timing
+include Makefile.timing
