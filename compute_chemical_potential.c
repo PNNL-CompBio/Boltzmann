@@ -29,7 +29,7 @@ specific language governing permissions and limitations under the License.
  *  Compute the chemical_potentials from the current concentrations and
  *  the probabilities vector.
  *
- *  Called by: formation_energy_rxn_dg0fs
+ *  Called by: compute_standard_energies
  *  Calls:     log
  
 */
