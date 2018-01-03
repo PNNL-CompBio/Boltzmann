@@ -3,5 +3,6 @@
 extern int ode23tb (struct state_struct *state, double *counts,
 		    double htry, int nonnegative,
 		    int normcontrol,
-		    int print_concs);
+		    int print_concs,
+		    int choice);
 #endif
