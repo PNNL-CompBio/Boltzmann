@@ -73,6 +73,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
     strcpy(state->rxn_lklhd_file,"./rxns.lklhd");
     strcpy(state->free_energy_file,"./rxns.fe");
     strcpy(state->restart_file,"./restart.in");
+    strcpy(state->rxn_view_file,"./rxns.view");
     strcpy(state->input_dir,"./");
     strcpy(state->output_dir,"./");
     state->align_len        = (int64_t)16;
@@ -87,6 +88,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
     state->warmup_steps     = 1000;
     state->record_steps     = 1000;
     state->free_energy_format = 0;
+    state->lthf             = 0;
     param_buffer       = state->param_buffer;
     max_param_line_len = state->max_param_line_len;
     key                = state->param_key;
@@ -118,6 +120,8 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	sscan_ok = sscanf(value,"%s",state->free_energy_file);
       } else if (strncmp(key,"RESTART_FILE",12) == 0) {
 	sscan_ok = sscanf(value,"%s",state->restart_file);
+      } else if (strncmp(key,"RXN_VIEW_FILE",13) == 0) {
+	sscan_ok = sscanf(value,"%s",state->rxn_view_file);
       } else if (strncmp(key,"LOG_FILE",8) == 0) {
 	sscan_ok = sscanf(value,"%s",state->log_file);
       } else if (strncmp(key,"ALIGN_LEN",9) == 0) {
@@ -134,6 +138,11 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	sscan_ok = sscanf(value,"%le",&(state->temp_kelvin));
       } else if (strncmp(key,"WARMUP_STEPS",12) == 0) {
 	sscan_ok = sscanf(value,"%d",&(state->warmup_steps));
+      } else if (strncmp(key,"RXN_VIEW_FREQ",13) == 0) {
+	sscan_ok = sscanf(value,"%d",&(state->lthf));
+	if (state->lthf < 0) {
+	  state->lthf = 0;
+	}
       } else if (strncmp(key,"RECORD_STEPS",12) == 0) {
 	sscan_ok = sscanf(value,"%d",&(state->record_steps));
       } else if (strncmp(key,"FREE_ENERGY_FORMAT",12) == 0) {
