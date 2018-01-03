@@ -5,15 +5,15 @@ LUNWIND_DEPS = luwtb.h luwtb1.h luwtb2.h
 
 SERIAL_INCS = boltzmann_structs.h state_struct.h rxn_struct.h rxn_matrix_struct.h molecules_matrix_struct.h vgrng_state_struct.h $(TIMING_DEPS) $(LUNWIND_DEPS)
 
-SERIAL_OBJS = boltzmann_drv.o boltzmann_init.o alloc0.o read_params.o vgrng_init.o vgrng.o alloc1.o echo_params.o size_rxns_file.o init_rxn_file_keywords.o parse_rxn_file_keyword.o count_molecules.o count_ws.o count_nws.o is_a_coef.o alloc2.o parse_reactions_file.o upcase.o echo_reactions_file.o sort_istrings.o merge_istrings.o unique_molecules.o print_molecules_dictionary.o alloc3.o read_initial_concentrations.o molecules_lookup.o form_molecules_matrix.o compute_ke.o
+SERIAL_OBJS = boltzmann_drv.o boltzmann_init.o alloc0.o read_params.o vgrng_init.o vgrng.o alloc1.o echo_params.o size_rxns_file.o init_rxn_file_keywords.o parse_rxn_file_keyword.o count_molecules.o count_ws.o count_nws.o is_a_coef.o alloc2.o parse_reactions_file.o upcase.o echo_reactions_file.o sort_istrings.o merge_istrings.o unique_molecules.o print_molecules_dictionary.o alloc3.o read_initial_concentrations.o molecules_lookup.o form_molecules_matrix.o compute_ke.o boltzman_run_sim.o free_energry_changes.o log_rxn_ratios.o rxn_ratios.o binary_search_l_u_b.o forward_rxn_conc_update.o reverse_rxn_conc_update.o
 
 boltzmann: $(SERIAL_OBJS) $(MMAP_OBJS) $(TIMING_LIB)
 	$(CLINKER) $(LFLAGS) -o boltzmann $(SERIAL_OBJS) $(MMAP_OBJS) $(TIMING_LIB)
 
-boltzmann_drv.o: $(SERIAL_INCS) boltzmann_drv.c boltzmann_init.h 
+boltzmann_drv.o: $(SERIAL_INCS) boltzmann_drv.c boltzmann_init.h boltzmann_run_sim.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_drv.c
 
-boltzmann_init.o: $(SERIAL_INCS) boltzmann_init.c boltzmann_init.h alloc0.h read_params.h vgrng_init.o vgrng.o echo_params.h size_rxns_file.h alloc1.h alloc2.h parse_reactions_file.h echo_reactions_file.h sort_istrings.h unique_molecules.h print_molecules_dictionary.h alloc3.h read_initial_concentrations.h form_molecules_matrix.h vgrng_init.h vgrng.h compute_ke.h
+boltzmann_init.o: $(SERIAL_INCS) boltzmann_init.c boltzmann_init.h alloc0.h read_params.h vgrng_init.o vgrng.o echo_params.h size_rxns_file.h alloc1.h alloc2.h parse_reactions_file.h echo_reactions_file.h sort_istrings.h unique_molecules.h print_molecules_dictionary.h alloc3.h read_initial_concentrations.h form_molecules_matrix.h vgrng_init.h vgrng.h compute_ke.h 
 	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_init.c
 
 alloc0.o: $(SERIAL_INCS) alloc0.c alloc0.h
@@ -89,6 +89,27 @@ molecules_lookup.o: $(SERIAL_INCS) molecules_lookup.c molecules_lookup.h
 
 form_molecules_matrix.o: $(SERIAL_INCS) form_molecules_matrix.c form_molecules_matrix.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c form_molecules_matrix.c
+
+boltzmann_run_sim.o: $(SERIAL_INCS) boltzmann_run_sim.c boltzmann_run_sim.h free_energy_changes.h vgrng.h binary_search_l_u_b.h forward_rxn_conc_update.h reverse_rxn_conc_update.h log_rxn_ratios.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_run_sim.c
+
+free_energy_changes.o: $(SERIAL_INCS) free_energy_changes.c free_energy_changes.h log_rxn_ratios.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c free_energy_changes.c
+
+log_rxn_ratios.o: $(SERIAL_INCS) log_rxn_ratios.c log_rxn_ratios.h rxn_ratios.h 
+	$(CC) $(DCFLAGS) $(TFLAGS) -c log_rxn_ratios.c
+
+rxn_ratios.o: $(SERIAL_INCS) rxn_ratios.c rxn_ratios.h 
+	$(CC) $(DCFLAGS) $(TFLAGS) -c rxn_ratios.c
+
+binary_search_l_u_b.o: $(SERIAL_INCS) binary_search_l_u_b.c binary_search_l_u_b.h 
+	$(CC) $(DCFLAGS) $(TFLAGS) -c binary_search_l_u_b.c
+
+forward_rxn_conc_update.o: $(SERIAL_INCS) forward_rxn_conc_update.c forward_rxn_conc_update.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c forward_rxn_con_update.c
+
+reverse_rxn_conc_update.o: $(SERIAL_INCS) reverse_rxn_conc_update.c reverse_rxn_conc_update.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c reverse_rxn_con_update.c
 
 clean:
 	-/bin/rm -f *.o *~ $(EXECS)
