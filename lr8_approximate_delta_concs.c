@@ -8,9 +8,9 @@ int lr8_approximate_delta_concs(struct state_struct *state,
 				int choice) {
   /*
     Compute approximations to concentration changes wrt time, 
-    Based on thermodynamics estimation of forward
-    and reverse reaction rates, using counts to compute 
-    tr, tp, pt, rt instead of concs.
+    Based on thermodynamics formulation for concentraion rate
+    changes
+    using counts to compute tr, tp, pt, rt instead of concs.
 
     Get reference from Bill Cannon
     Called by: approximate_delta_concs
