@@ -4,6 +4,8 @@
 #include "rxns_init.h"
 #include "alloc3.h"
 #include "species_init.h"
+#include "alloc4.h"
+#include "form_molecules_matrix.h"
 #include "energy_init.h"
 #include "echo_inputs.h"
 #include "run_init.h"
@@ -92,10 +94,13 @@ int boltzmann_init_core(struct state_struct *boot_state, struct state_struct **f
   }
   /*
     Compute the molecules matrix.
-  if (success) {
-    success = form_molecules_matrix(state);
-  }
   */
+  if (success) {
+    success = alloc4(state,&state->molecules_matrix,&state->transpose_workspace);
+  }
+  if (success) {
+    success = form_molecules_matrix(state,state->molecules_matrix,state->transpose_workspace);
+  }
   /*
     Compute the reaction energies of formation if called for.
   */
