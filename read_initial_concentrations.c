@@ -92,7 +92,7 @@ int read_initial_concentrations(struct state_struct *state) {
   int nu_compartments;
   
   int success;
-  int padi;
+  int step;
 
   char vc[2];
   char cc[2];
@@ -396,22 +396,8 @@ int read_initial_concentrations(struct state_struct *state) {
     state->num_fixed_concs = num_fixed_concs;
     /*
       Print the initial counts to the counts output file.
+      Moved to echo_inputs.
     */
-    if (state->print_output) {
-      counts_out_fp = state->counts_out_fp;
-      if (counts_out_fp) {
-	fprintf(counts_out_fp,"init");
-	for (i=0;i<nu_molecules;i++) {
-	  fprintf(counts_out_fp,"\t%le",counts[i]);
-	}
-	fprintf(counts_out_fp,"\n");
-      } else {
-	fprintf(stderr,
-		"read_initial_concentrations: Error counts_out_fp not open\n");
-	fflush(stderr);
-	success = 0;
-      }
-    }
   }
   return(success);
 }
