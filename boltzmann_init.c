@@ -265,6 +265,9 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
     success = compute_ke(state);
   }
   if (success) {
+    fprintf(state->rxn_lklhd_fp,"iter entropy dg_forward forward_rxn_likelihoods\n");
+  }
+  if (success) {
     dg0s = state->dg0s;
     free_energy  = state->free_energy;
     for (i=0;i<state->number_reactions;i++) {
