@@ -56,7 +56,6 @@ int alloc2_a(struct state_struct *state, int setup) {
   int64_t align_mask;
   int64_t ask_for;
   int64_t one_l;
-  int64_t nze;
   char *rxn_title_text;
   char *pathway_text;
   char *compartment_text;
@@ -68,8 +67,6 @@ int alloc2_a(struct state_struct *state, int setup) {
   int64_t num_cmpts;
   int64_t num_regulations;
   int64_t max_regs_per_rxn;
-  int64_t double_size;
-  int64_t int64_t_size;
   int success;
   int padi;
   success = 1;
@@ -129,6 +126,7 @@ int alloc2_a(struct state_struct *state, int setup) {
     compartment_text          = pathway_text + pathway_text_length;
     regulation_text           = compartment_text + compartment_text_length;
     molecules_text     	      = regulation_text + regulation_text_length;
+
     state->rxn_title_text     = rxn_title_text;
     state->pathway_text       = pathway_text;
     state->compartment_text   = compartment_text;
@@ -139,7 +137,7 @@ int alloc2_a(struct state_struct *state, int setup) {
       state->raw_molecules_text = raw_molecules_text;
     }
   } else {
-    fprintf(stderr,"alloc2_a: Error, unable to allocate %lld bytes of space "
+    fprintf(stderr,"alloc2_a: Error, unable to allocate %ld bytes of space "
 	    "for text strings in core.\n",ask_for);
     fflush(stderr);
     success = 0;
