@@ -115,10 +115,11 @@ int read_initial_concentrations(struct state_struct *state) {
   counts              = state->current_counts;
   kss_e_val           = state->kss_e_val; 
   kss_u_val           = state->kss_u_val; 
+  default_volume      = state->default_volume;
   bndry_flux_counts   = (double *)state->bndry_flux_counts;
   success = 1;
   one_l = (int64_t)1;
-  default_volume = 1.0e-15;
+
   variable_c = (char *)&vc[0];
   compute_c  = (char *)&cc[0];
   ntotal_opt = 0.0;
@@ -137,7 +138,7 @@ int read_initial_concentrations(struct state_struct *state) {
     if (fgp) {
       if (strncmp(molecules_buffer,"VOLUME",6) != 0) {
 	fprintf(stderr,
-		"read_intial_concentrations Error: Concentratiosn input file "
+		"read_intial_concentrations Error: Concentrations input file "
 		"does not start with a VOLUME line.\n");
 	fflush(stderr);
 	success = 0;
@@ -152,9 +153,9 @@ int read_initial_concentrations(struct state_struct *state) {
 	  if (volume <= 0.0) {
 	    volume = default_volume;
 	  }
-	  state->volume = volume;
+	  state->default_volume = volume;
 	  recip_volume = 1.0/volume;
-	  state->recip_volume = recip_volume;
+	  state->recip_default_volume = recip_volume;
 	}
       }
     } else {
@@ -209,8 +210,10 @@ int read_initial_concentrations(struct state_struct *state) {
     for (i=0;i<nu_compartments;i++) {
       if (compartment->volume <= 0.0) {
 	compartment->volume = volume;
+	compartment->recip_volume = recip_volume;
+      } else {
+	compartment->recip_volume = 1.0/compartment->volume;
       }
-      compartment->recip_volume = 1.0/compartment->volume;
       compartment->ntotal_exp   = 0.0;
       compartment->ntotal_opt   = 0.0;
       multiplier                = units_avo * volume;
@@ -231,9 +234,7 @@ int read_initial_concentrations(struct state_struct *state) {
   if (success) {
     compartment = (struct compartment_struct *)&sorted_compartments[0];
     compartment->volume = volume;
-    compartment->recip_volume = 1.0/volume;
-    state->conc_to_count  = compartment->conc_to_count;
-    state->count_to_conc  = compartment->count_to_conc;
+    compartment->recip_volume = recip_volume;
     while (!feof(conc_fp)) {
       fgp = fgets(molecules_buffer,molecules_buff_len,conc_fp);
       if (fgp) {
@@ -300,8 +301,10 @@ int read_initial_concentrations(struct state_struct *state) {
 	  ci = compartment_lookup(compartment_name,state);
 	}
 	compartment = (struct compartment_struct *)&sorted_compartments[ci];
+	/*
 	volume       = compartment->volume;
 	recip_volume = compartment->recip_volume;
+	*/
 	min_conc     = compartment->count_to_conc;
 	multiplier   = compartment->conc_to_count;
 	if (e_val <= 0.0) {
