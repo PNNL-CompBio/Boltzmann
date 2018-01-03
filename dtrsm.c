@@ -2,7 +2,7 @@
 #include "lsame.h"
 
 #include "dtrsm.h"
-void dtrsm(char *side_p, char *uplo_p, char *transa_p, char *diag_p,
+void dtrsm_(char *side_p, char *uplo_p, char *transa_p, char *diag_p,
 	   int *m_p, int *n_p, double *alpha_p, double *a,
 	   int *lda_p, double *b, int *ldb_p) {
   /*
@@ -197,22 +197,22 @@ void dtrsm(char *side_p, char *uplo_p, char *transa_p, char *diag_p,
   /*
     Test the input parameters.
   */
-  lside = lsame(&side,&l_char);
+  lside = lsame_(&side,&l_char);
   if (lside) {
     nrowa = m;
   } else {
     nrowa = n;
   }
-  nounit   = lsame(&diag,&n_char);
-  upper    = lsame(&uplo,&u_char);
-  lower    = lsame(&uplo,&l_char);
-  notrans  = lsame(&transa,&n_char);
-  trans    = lsame(&transa,&t_char);
-  conjt    = lsame(&transa,&c_char);
-  notudiag = lsame(&diag,&n_char);
-  udiag    = lsame(&diag,&u_char);
+  nounit   = lsame_(&diag,&n_char);
+  upper    = lsame_(&uplo,&u_char);
+  lower    = lsame_(&uplo,&l_char);
+  notrans  = lsame_(&transa,&n_char);
+  trans    = lsame_(&transa,&t_char);
+  conjt    = lsame_(&transa,&c_char);
+  notudiag = lsame_(&diag,&n_char);
+  udiag    = lsame_(&diag,&u_char);
   info = 0;
-  rside = lsame(&side,&r_char);
+  rside = lsame_(&side,&r_char);
   if ((lside == 0) && (rside == 0)) {
     info = 1;
   } else {
@@ -280,7 +280,7 @@ void dtrsm(char *side_p, char *uplo_p, char *transa_p, char *diag_p,
 	    for (j=0;j<n;j++) {
 	      bcolj = &b[bcolj_pos];
 	      if (alpha != one) {
-		dscal(&m,&alpha,bcolj,&inc1);
+		dscal_(&m,&alpha,bcolj,&inc1);
 	      }
 	      acolk_pos = mm1_lda;
 	      for (k=m-1;k>=0;k-=1) {
@@ -292,7 +292,7 @@ void dtrsm(char *side_p, char *uplo_p, char *transa_p, char *diag_p,
 		    bcolj[k] = temp;
 		  }
 		  temp = - temp;
-		  daxpy(&k,&temp,acolk,&inc1,bcolj,&inc1);
+		  daxpy_(&k,&temp,acolk,&inc1,bcolj,&inc1);
 		} /* end if (bcolk != zero) */
 		acolk_pos = acolk_pos - lda;
 	      } /* end for (k...) */
@@ -305,7 +305,7 @@ void dtrsm(char *side_p, char *uplo_p, char *transa_p, char *diag_p,
 	    for (j=0;j<n;j++) {
 	      bcolj = &b[bcolj_pos];
 	      if (alpha != one) {
-		dscal(&m,&alpha,bcolj,&inc1);
+		dscal_(&m,&alpha,bcolj,&inc1);
 	      }
 	      acolk_pos = 0;
 	      mmkm1 = m - 1;
@@ -318,7 +318,7 @@ void dtrsm(char *side_p, char *uplo_p, char *transa_p, char *diag_p,
 		    bcolj[k] = temp;
 		  }
 		  temp = -temp;
-		  daxpy(&mmkm1,&temp,&acolk[k+1],&inc1,&bcolj[k+1],&inc1);
+		  daxpy_(&mmkm1,&temp,&acolk[k+1],&inc1,&bcolj[k+1],&inc1);
 		}
 		mmkm1 = mmkm1 - 1;
 		acolk_pos = acolk_pos + lda;
@@ -338,7 +338,7 @@ void dtrsm(char *side_p, char *uplo_p, char *transa_p, char *diag_p,
 	      acoli_pos = 0;
 	      for (i=0;i<m;i++) {
 		acoli = &a[acoli_pos];
-		temp = ddot(&i,acoli,&inc1,bcolj,&inc1);
+		temp = ddot_(&i,acoli,&inc1,bcolj,&inc1);
 		temp = (alpha * bcolj[i]) - temp;
 		if (nounit) {
 		  temp = temp / acoli[i];
@@ -359,7 +359,7 @@ void dtrsm(char *side_p, char *uplo_p, char *transa_p, char *diag_p,
 	      mmim1 = 0;
 	      for (i=m-1;i>=0;i-=1) {
 		acoli = &a[acoli_pos];
-		temp = ddot(&mmim1,&acoli[i+1],&inc1,&bcolj[i+1],&inc1);
+		temp = ddot_(&mmim1,&acoli[i+1],&inc1,&bcolj[i+1],&inc1);
 		temp = (alpha * bcolj[i]) - temp;
 		if (nounit) {
 		  temp = temp/acoli[i];
@@ -387,20 +387,20 @@ void dtrsm(char *side_p, char *uplo_p, char *transa_p, char *diag_p,
 	      bcolj = &b[bcolj_pos];
 	      acolj = &a[acolj_pos];
 	      if (alpha != one) {
-		dscal(&m,&alpha,bcolj,&inc1);
+		dscal_(&m,&alpha,bcolj,&inc1);
 	      }
 	      bcolk_pos = 0;
 	      for (k=0;k<j;k++) {
 		bcolk = &b[bcolk_pos];
 		temp = - acolj[k];
 		if (temp != zero) {
-		  daxpy(&m,&temp,bcolk,&inc1,bcolj,&inc1);
+		  daxpy_(&m,&temp,bcolk,&inc1,bcolj,&inc1);
 		}
 		bcolk_pos = bcolk_pos + ldb;
 	      } /* end for (k...) */
 	      if (nounit) {
 		temp = one/acolj[j];
-		dscal(&m,&temp,bcolj,&inc1);
+		dscal_(&m,&temp,bcolj,&inc1);
 	      }
 	      bcolj_pos = bcolj_pos + ldb;
 	      acolj_pos = acolj_pos + lda;
@@ -418,20 +418,20 @@ void dtrsm(char *side_p, char *uplo_p, char *transa_p, char *diag_p,
 	      acolj = &a[acolj_pos];
 	      bcolj = &b[bcolj_pos];
 	      if (alpha != one) {
-		dscal(&m,&alpha,bcolj,&inc1);
+		dscal_(&m,&alpha,bcolj,&inc1);
 	      }
 	      bcolk_pos = bcolj_pos + ldb;
 	      for(k=j+1;k<n;k++) {
 		temp = - acolj[k];
 		bcolk = &b[bcolk_pos];
 		if (temp != zero) {
-		  daxpy(&m,&temp,bcolk,&inc1,bcolj,&inc1);
+		  daxpy_(&m,&temp,bcolk,&inc1,bcolj,&inc1);
 		}
 		bcolk_pos = bcolk_pos + ldb;
 	      } /* end for (k...) */
 	      if (nounit) {
 		temp = one/acolj[j];
-		dscal(&m,&temp,bcolj,&inc1);
+		dscal_(&m,&temp,bcolj,&inc1);
 	      }
 	      bcolj_pos = bcolj_pos - ldb;
 	      acolj_pos = acolj_pos - lda;
@@ -453,19 +453,19 @@ void dtrsm(char *side_p, char *uplo_p, char *transa_p, char *diag_p,
 	      bcolk = &b[bcolk_pos];
 	      if (nounit) {
 		temp = one/acolk[k];
-		dscal(&m,&temp,bcolk,&inc1);
+		dscal_(&m,&temp,bcolk,&inc1);
 	      }
 	      bcolj_pos = 0;
 	      for (j = 0;j<k;j++) {
 		bcolj = &b[bcolj_pos];
 		temp = -acolk[j];
 		if (temp != zero) {
-		  daxpy(&m,&temp,bcolk,&inc1,bcolj,&inc1);
+		  daxpy_(&m,&temp,bcolk,&inc1,bcolj,&inc1);
 		}
 		bcolj_pos = bcolj_pos + ldb;
 	      } /* end for (j...) */
 	      if (alpha != one) {
-		dscal(&m,&alpha,bcolk,&inc1);
+		dscal_(&m,&alpha,bcolk,&inc1);
 	      }
 	      acolk_pos = acolk_pos - lda;
 	      bcolk_pos = bcolk_pos - ldb;
@@ -482,19 +482,19 @@ void dtrsm(char *side_p, char *uplo_p, char *transa_p, char *diag_p,
 	      bcolk = &b[bcolk_pos];
 	      if (nounit) {
 		temp = one/acolk[k];
-		dscal(&m,&temp,bcolk,&inc1);
+		dscal_(&m,&temp,bcolk,&inc1);
 	      }
 	      bcolj_pos = bcolk_pos + ldb;
 	      for (j=k+1;j<n;j++) {
 		bcolj = &b[bcolj_pos];
 		temp = -acolk[j];
 		if (temp != zero) {
-		  daxpy(&m,&temp,bcolk,&inc1,bcolj,&inc1);
+		  daxpy_(&m,&temp,bcolk,&inc1,bcolj,&inc1);
 		}
 		bcolj_pos = bcolj_pos + ldb;
 	      } /* end for (j...) */
 	      if (alpha != one) {
-		dscal(&m,&alpha,bcolk,&inc1);
+		dscal_(&m,&alpha,bcolk,&inc1);
 	      }
 	      acolk_pos = acolk_pos + lda;
 	      bcolk_pos = bcolk_pos + ldb;
