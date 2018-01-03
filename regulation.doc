@@ -1,0 +1,33 @@
+So regulation is a way to specify activities.
+We will add fields to the rxn_struct p_reg_constant and p_reg_exp,
+n_reg_constant and n_reg_exp
+
+where the activity for a reacion is then
+
+   p_act = s_1^p_reg_exp/(p_reg_const + s_1^p_reg_exp)
+
+   n_act = n_reg_constant/n_reg_const + s_2^n_reg_exp) 
+
+
+   if p_reg_exp is 0 and p_reg_const is 0 we have activity of 1.
+   if n_reg_const 0 and n_reg_exp is 0 we have activity of 0.
+
+  where s_1 and s_2 are the relevant species, now s_1 and s_2
+need to be specified by species number, to start with though we will only 
+have the names, but just as we look up the names for the left and right species,
+so we will look up the names of the regulation species.
+
+   Talking with Bill if we have both p_act and n_act the we should use as
+   activity sqrt(p_act * n_act).
+
+   so we need to track if PREGULATION and/or NREGULATION are specified.
+   For now we will leave the ability to explicitly specify activity,
+   with the activity line, but we will modify that if
+
+May have more than one/2 regulators, Bill says not more than 4.
+
+So we need a notion number of regulators, and a max_num_regulators,
+
+   for each regulator we need a species, a constant, and an exponent, and a direction (positive or negative).
+
+   If we have more than one regulator for a reaction we will use the product for the activity for now, at some point we might decide to use the nth root of the product where n is the number of regulators
