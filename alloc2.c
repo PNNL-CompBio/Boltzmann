@@ -28,8 +28,8 @@ int alloc2(struct state_struct *state) {
     Allocate space for the text strings to store all of the
     information within the reactions file. Also allocate space
     for the reaction structure and meta data.
-    Called by: boltzmann
-    Calls:     calloc, fprintf (intrinsic)
+    Called by: boltzmann_init
+    Calls:     calloc, fprintf, fflush (intrinsic)
   */
   struct vgrng_state_struct vss;
   struct rxn_struct rs;
@@ -191,7 +191,7 @@ int alloc2(struct state_struct *state) {
     }
   }
   if (success) {
-    ask_for = nze * ((int64_t)sizeof(int64_t *));
+    ask_for = nze * ((int64_t)sizeof(int64_t));
     usage += ask_for;
     reactions_matrix->text = (int64_t *)calloc(one_l,ask_for);
     if (reactions_matrix->text == NULL) {
