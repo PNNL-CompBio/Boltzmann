@@ -137,6 +137,12 @@ int free_boot_state2(struct state_struct *state) {
     if (state->molecule_chemical_potentials) {
       free(state->molecule_chemical_potentials);
     }
+    if (state->count_to_conc) {
+      free(state->count_to_conc);
+    }
+    if (state->conc_to_count) {
+      free(state->conc_to_count);
+    }
     if (state->workspace_base) {
       free(state->workspace_base);
     }
