@@ -1,7 +1,8 @@
 SUNDIALS_ROOT = ${PWD}/../..
 include ../../../Makefile.head
 
-all: $(SUNDIALS_LIB_DIR)/libsundials_cvodes.so $(SUNDIALS_LIB_DIR)/libsundials_cvodes.a
+#all: $(SUNDIALS_LIB_DIR)/libsundials_cvodes.so $(SUNDIALS_LIB_DIR)/libsundials_cvodes.a
+all: $(SUNDIALS_LIB_DIR)/libsundials_cvodes.a
 
 
 
@@ -9,8 +10,8 @@ all: $(SUNDIALS_LIB_DIR)/libsundials_cvodes.so $(SUNDIALS_LIB_DIR)/libsundials_c
 
 OBJ_FILES = cvodea.o cvodea_io.o cvodes.o cvodes_band.o cvodes_bandpre.o cvodes_bbdpre.o cvodes_dense.o cvodes_diag.o cvodes_direct.o cvodes_io.o cvodes_lapack.o cvodes_sparse.o cvodes_spbcgs.o cvodes_spgmr.o cvodes_spils.o cvodes_sptfqmr.o 
      
-$(SUNDIALS_LIB_DIR)/libsundials_cvodes.so: $(OBJ_FILES)
-				 gcc -shared -o $(SUNDIALS_LIB_DIR)/libsundials_cvodes.so $(OBJ_FILES)
+#$(SUNDIALS_LIB_DIR)/libsundials_cvodes.so: $(OBJ_FILES)
+#				 gcc -shared -o $(SUNDIALS_LIB_DIR)/libsundials_cvodes.so $(OBJ_FILES)
 
 $(SUNDIALS_LIB_DIR)/libsundials_cvodes.a: $(OBJ_FILES)
 				$(AR) $(ARFLAGS) $(SUNDIALS_LIB_DIR)/libsundials_cvodes.a cvodea.o
