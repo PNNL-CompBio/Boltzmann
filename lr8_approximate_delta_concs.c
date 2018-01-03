@@ -145,7 +145,7 @@ int lr8_approximate_delta_concs(struct state_struct *state,
     Compute the reaction flux contributions for each reaction:
 
     rfc   = k_f * product of reactants^stoichiometric_coef -
-            k_r * product of products*stoichiometric_coef,
+            k_r * product of products^stoichiometric_coef,
 
 	 where k_f = k_eq/ thermo_product of products.
 
