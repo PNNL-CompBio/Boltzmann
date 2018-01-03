@@ -36,7 +36,7 @@ int bndry_flux_update(int rxn_no, int direction,
   */
   struct molecule_struct *sorted_molecules;
   struct molecule_struct *molecule;
-  struct rxn_matrix_struct   *rxns_matrix;
+  struct reactions_matrix_struct *rxns_matrix;
   double *bndry_flux_counts;
   int64_t *rxn_ptrs;
   int64_t *molecules_indices;
