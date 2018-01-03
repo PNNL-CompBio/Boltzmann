@@ -28,7 +28,7 @@ specific language governing permissions and limitations under the License.
 int free_boot_state2(struct state_struct **statep) {
   /*
     Free space allocated by alloc2 and alloc3 calls.
-    Called by: boltzmann_boot
+    Called by: boltzmann_boot, free_boot_state
     Calls:     free.
   */
   struct state_struct *state;
@@ -104,6 +104,15 @@ int free_boot_state2(struct state_struct **statep) {
     }
     if (state->ke) {
       free(state->ke);
+    }
+    if (state->molecule_dg0tfs) {
+      free(state->molecule_dg0tfs);
+    }
+    if (state->molecule_probabilities) {
+      free(state->molecule_probabilities);
+    }
+    if (state->molecule_chemical_potentials) {
+      free(state->molecule_chemical_potentials);
     }
     if (state->workspace_base) {
       free(state->workspace_base);
