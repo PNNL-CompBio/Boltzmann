@@ -51,11 +51,16 @@ struct istring_elem_struct {
 	          by the global reader.
 	
   */
+  double conc_multiple;
   int64_t string;
   int  m_index;
   int  c_index;
+
   int  variable;
   int  g_index;
+
+  int  compute_init_conc;
+  int  solvent;
 }
 ;
 #endif
