@@ -155,14 +155,15 @@ int boltzmann_boot(char *param_file_name,
   struct vgrng_state_struct *vgrng_state;
   struct vgrng_state_struct *vgrng2_state;
   struct molecule_struct mes;
+  struct molecule_struct ces;
   struct molecule_struct *molecules;
-  struct molecule_struct *compartments;
-  struct molecule_struct *compartment_sort_ws;
   struct molecule_struct *molecule_sort_ws;
-  struct molecule_struct *sorted_compartments;
-  struct molecule_struct *unsorted_compartments;
   struct molecule_struct *sorted_molecules;
   struct molecule_struct *unsorted_molecules;
+  struct molecule_struct *compartments;
+  struct molecule_struct *compartment_sort_ws;
+  struct molecule_struct *sorted_compartments;
+  struct molecule_struct *unsorted_compartments;
   struct formation_energy_struct *formation_energies;
 
   double *dg0s;
@@ -810,7 +811,7 @@ int boltzmann_boot(char *param_file_name,
     }
   }
   if (success) {
-    ask_for = (int64_t)(2*sizeof(mes)) * 
+    ask_for = (int64_t)(2*sizeof(ces)) * 
       global_number_of_compartments;
     compartment_sort_ws = (struct molecule_struct*)calloc(one_l,ask_for);
     if (compartment_sort_ws == NULL) {
@@ -913,7 +914,7 @@ int boltzmann_boot(char *param_file_name,
 	  read in the meta data  for the compartments.
 	*/
 	nunique_compartments = local_state.nunique_compartments;
-	compartment_space = nunique_compartments * sizeof(mes);
+	compartment_space = nunique_compartments * sizeof(ces);
 	lseek_pos = offset + local_state.sorted_compartments_offset_in_bytes;
 	lseek(tmp_state_fd,lseek_pos,whence);
 	ci_base = compartment_list_starts[i];
