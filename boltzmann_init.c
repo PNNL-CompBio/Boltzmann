@@ -42,6 +42,7 @@ specific language governing permissions and limitations under the License.
 #include "read_initial_concentrations.h"
 #include "compute_standard_energies.h"
 #include "compute_ke.h"
+#include "compute_kss.h"
 #include "print_dg0_ke.h"
 #include "zero_solvent_coefficients.h"
 #include "print_rxn_likelihoods_header.h"
@@ -76,6 +77,7 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
 	       read_initial_concentrations,
 	       compute_standard_energies,
 	       compute_ke,
+	       compute_kss,
 	       print_rxn_likelihoods_header,
 	       print_free_energy_header
   */
@@ -213,8 +215,8 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
     success = unique_molecules(state);
   }
   /*
-    Now we need to allocate space for the concentrations,
-    and read in the intial concentrations.
+    Now we need to allocate space for the counts, concentrations,
+    and read in the intial concentrations converting them to counts.
   */
   if (success) {
     success = alloc3(state);
@@ -235,7 +237,7 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
   }
   /*
     Read initial concentrations.
-    And print them to the concentrations output file.
+    And print them to the counts output file.
   */
   if (success) {
     success = read_initial_concentrations(state);
@@ -275,7 +277,7 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
   }
   /*
     Print the molecules dictionary and the header lines for 
-    the concentrations output file.
+    the counts output file.
   */
   if (success) {
     if (print_output) {
@@ -287,6 +289,12 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
   */
   if (success) {
     success = compute_ke(state);
+  }
+  /*
+    Compute the reaction kss's.
+  */
+  if (success) {
+    success = compute_kss(state);
   }
   if (success) {
     if (print_output) {
