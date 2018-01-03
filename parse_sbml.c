@@ -47,16 +47,7 @@ int parse_sbml(struct sbml2bo_struct *state) {
   char **translations;
   char **sort_species_trans_scratch;
 
-  int64_t ask_for;
-  int64_t one_l;
-
-  int in_list_of_compartments;
-  int in_list_of_species;
-
-  int in_list_of_reactions;
   int success;
-
-  int in_species_tag;
   int sbml_buffer_len;
 
   int num_species;
@@ -83,7 +74,6 @@ int parse_sbml(struct sbml2bo_struct *state) {
     error_fp = lfp;
   }
   success     = 1;
-  one_l   = (int64_t)1;
   if (success) {
     sbml_fp = fopen(state->sbml_file,"r");
     if (sbml_fp == NULL) {
