@@ -75,8 +75,8 @@ int unique_molecules(struct state_struct *state) {
   align_mask          = state->align_mask;
   success = unique_molecules_core(nzr,
 				  sorted_molecules,
-				  molecules_indices,
 				  molecules_text,
+				  molecules_indices,
 				  &nunique_molecules,
 				  &sum_molecule_len,
 				  align_len,
