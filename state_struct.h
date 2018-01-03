@@ -175,6 +175,12 @@ struct state_struct {
   int64_t regulation_text_length;
   int64_t run_workspace_bytes;
   int64_t use_bulk_water;
+  int64_t cvodes_rhs_choice;
+  int64_t cvodes_jtimes_choice;
+  int64_t cvodes_prec_choice;
+  int64_t cvodes_params_size;
+  int64_t ode_jacobian_choice;
+  int64_t cvodes_prec_fill;
   /*
     offsets used to self-describe this state vector.
     only needed for parallel version multiple instantiations
@@ -238,6 +244,7 @@ struct state_struct {
   double  *net_likelihood;          /* len = number_reactions */
   struct  vgrng_state_struct *vgrng_state; /* len = 16 */
   struct  vgrng_state_struct *vgrng2_state;/* len = 16 */ 
+  struct  cvodes_params_struct *cvodes_params; /* len = 168, round up to 256 */
   /* 
     (2 + (3*unique_molecules)+ number_reactions) * sizeof(double) 
     + 2 * sizeof(vgrng_state_struct)
@@ -371,6 +378,7 @@ struct state_struct {
   double *log_kr_rel;
   double *ode_counts; /* counts from concentrations */
   double *ode_concs;  /* concentrations from counts. */
+  double *ode_f;      /* vector used for computing delta concs for printing */
   double *ode_forward_lklhds;
   double *ode_reverse_lklhds;
   int *rxn_has_flux; /* Indicator as to whether a reaction contributes to 
