@@ -165,8 +165,8 @@ int boltzmann_run(struct state_struct *state) {
     rxn_choice = choose_rxn(state,&r_sum_likelihood);
     if (rxn_choice < 0) break;
     if (print_output && lfp) {
-      fprintf(lfp,"%d\t%d\t%le\t%le\n",i,rxn_choice,forward_rxn_likelihood[i],
-	      reverse_rxn_likelihood[i]);
+      fprintf(lfp,"%d\t%d\t%le\t%le\n",i,rxn_choice,forward_rxn_likelihood[rxn_choice],
+	      reverse_rxn_likelihood[rxn_choice]);
       fflush(lfp);
     }
     /*
@@ -220,8 +220,8 @@ int boltzmann_run(struct state_struct *state) {
       if (rxn_choice < 0) break;
       if (print_output) {
 	if (lfp) {
-	  fprintf(lfp,"%d\t%d\t%le\t%le\n",i,rxn_choice,forward_rxn_likelihood[i],
-		  reverse_rxn_likelihood[i]);
+	  fprintf(lfp,"%d\t%d\t%le\t%le\n",i,rxn_choice,forward_rxn_likelihood[rxn_choice],
+		  reverse_rxn_likelihood[rxn_choice]);
 	  fflush(lfp);
 	}
 	if (rxn_choice <= number_reactions_t2) {
