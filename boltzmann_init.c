@@ -25,9 +25,11 @@ specific language governing permissions and limitations under the License.
 #include "read_params.h"
 #include "boltzmann_init_core.h"
 #include "free_boot_state.h"
+
 /*
-#define DBG_BOLTZMANN_INIT  
+#define DBG_BOLTZMANN_INIT
 */
+
 #include "boltzmann_init.h"
 int boltzmann_init(char *param_file_name, struct state_struct **statep) {
   /*
