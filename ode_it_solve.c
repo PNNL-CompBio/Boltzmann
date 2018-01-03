@@ -204,7 +204,7 @@ int ode_it_solve(struct state_struct *state,
 	    cand_rate = p9_old_rate;
 	  }
 	  rate = cand_rate;
-	  errit = newnrm * rate/(1 - rate);
+	  errit = newnrm * rate/(1.0 - rate);
 	  if (errit <= kappa_rtol) {
 	    iter_count = iter+1;
 	    break;
