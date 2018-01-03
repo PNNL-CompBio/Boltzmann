@@ -21,4 +21,4 @@ CONDITIONS OF ANY KIND, either express or implied. See the License for the
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
 extern int boltzmann_boot(char *param_file_name, 
-			  int64_t **super_statep);
+			  struct super_state_struct **super_statep);
