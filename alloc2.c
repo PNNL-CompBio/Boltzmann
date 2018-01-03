@@ -22,6 +22,8 @@ specific language governing permissions and limitations under the License.
 ******************************************************************************/
 #include "boltzmann_structs.h"
 
+#include "alloc2_a.h"
+
 #include "alloc2.h"
 int alloc2(struct state_struct *state, int setup) {
   /*
@@ -71,7 +73,7 @@ int alloc2(struct state_struct *state, int setup) {
       vgnrg2_state
 
     Called by: boltzmann_init
-    Calls:     calloc, fprintf, fflush (intrinsic)
+    Calls:     alloc2_a, calloc, fprintf, fflush 
   */
   struct vgrng_state_struct vss;
   struct reaction_struct rs;
@@ -80,22 +82,11 @@ int alloc2(struct state_struct *state, int setup) {
   struct molecule_struct ises;
   struct compartment_struct ces;
   int64_t usage;
-  int64_t reaction_titles_length;
-  int64_t pathway_text_length;
-  int64_t compartment_text_length;
-  int64_t molecule_text_length;
-  int64_t regulation_text_length;
   int64_t align_len;
   int64_t align_mask;
   int64_t ask_for;
   int64_t one_l;
   int64_t nze;
-  char *rxn_title_text;
-  char *pathway_text;
-  char *compartment_text;
-  char *regulation_text;
-  char *molecules_text;
-  char *raw_molecules_text;
   int64_t num_rxns;
   int64_t num_molecules;
   int64_t num_cmpts;
@@ -119,70 +110,7 @@ int alloc2(struct state_struct *state, int setup) {
   int64_t_size       = (int64_t)sizeof(int64_t);
 
   if (setup > 0) {
-    if (setup == 1) {
-      reaction_titles_length    =  state->reaction_titles_length + num_rxns * align_len;
-      reaction_titles_length    += ((align_len - (reaction_titles_length & align_mask)) & align_mask);
-      pathway_text_length      =  state->pathway_text_length + (num_rxns * align_len);
-      pathway_text_length      += (align_len - (pathway_text_length & align_mask));
-      if (state->number_compartments > 0) {
-	compartment_text_length = state->compartment_text_length +
-	  (num_rxns * align_len);
-	compartment_text_length += ((align_len - (compartment_text_length & align_mask)) & align_mask);
-      } else {
-	compartment_text_length = 0;
-      }
-      molecule_text_length  = state->molecule_text_length + (num_molecules * align_len);
-      molecule_text_length  += ((align_len - (molecule_text_length & align_mask)) & align_mask);
-      regulation_text_length  = state->regulation_text_length + (num_regulations * align_len);
-      regulation_text_length  += (align_len - (regulation_text_length & align_mask));
-      ask_for = reaction_titles_length + pathway_text_length + 
-	compartment_text_length + molecule_text_length + 
-	molecule_text_length + regulation_text_length;
-      /* end if setup == 1 */
-    } else {
-      reaction_titles_length   =  state->reaction_titles_length;
-      pathway_text_length      =  state->pathway_text_length;
-      compartment_text_length  =  state->compartment_text_length;
-      molecule_text_length     =  state->molecule_text_length;
-      regulation_text_length   = state->regulation_text_length;
-      ask_for = reaction_titles_length + pathway_text_length + 
-	compartment_text_length + molecule_text_length + 
-	regulation_text_length;
-    }
-    usage += ask_for;
-    rxn_title_text = (char *) calloc(one_l,ask_for);
-    if (rxn_title_text) {
-      if (setup == 1) {
-	state->reaction_titles_length   = reaction_titles_length;
-	state->pathway_text_length      = pathway_text_length;
-	state->compartment_text_length  = compartment_text_length;
-	state->molecule_text_length     = molecule_text_length;
-	state->regulation_text_length   = regulation_text_length;
-      }
-      /*
-	Caution address arithmetic follows.
-      */
-      pathway_text              = rxn_title_text + reaction_titles_length;
-      compartment_text          = pathway_text + pathway_text_length;
-      regulation_text           = compartment_text + compartment_text_length;
-      molecules_text     	= regulation_text + regulation_text_length;
-      if (setup == 1) {
-	raw_molecules_text 	      = molecules_text + molecule_text_length;
-      }
-      state->rxn_title_text     = rxn_title_text;
-      state->pathway_text       = pathway_text;
-      state->compartment_text   = compartment_text;
-      state->regulation_text    = regulation_text;
-      state->molecules_text     = molecules_text;
-      if (setup == 1) {
-	state->raw_molecules_text = raw_molecules_text;
-      }
-    } else {
-      fprintf(stderr,"alloc2: Error, unable to allocate %lld bytes of space "
-	      "for text strings in core.\n",ask_for);
-      fflush(stderr);
-      success = 0;
-    }
+    success = alloc2_a(state,setup);
   }
   if (success) {
     /*
@@ -291,15 +219,19 @@ int alloc2(struct state_struct *state, int setup) {
   */
   if (success) {
     ask_for = num_molecules * ((int64_t)sizeof(ises));
-    ask_for = ask_for << 1;
+    if (setup == 1) {
+      ask_for = ask_for << 1;
+    }
     usage += ask_for;
-    state->unsorted_molecules = (struct molecule_struct *)calloc(one_l,ask_for);
-    if (state->unsorted_molecules) {
+    state->sorted_molecules = (struct molecule_struct *)calloc(one_l,ask_for);
+    if (state->sorted_molecules) {
       /*
 	Caution address arithmetic follows.
 	state->sorted_molecules = &state->unsorted_molecules[num_molecules];
       */
-      state->sorted_molecules = state->unsorted_molecules + num_molecules;
+      if (setup == 1) {
+	state->unsorted_molecules = state->sorted_molecules + num_molecules;
+      }
     } else {
       fprintf(stderr,"alloc2: Error, unable to allocate %lld bytes of space "
 	      "for sorted and unsorted molecules pointers\n",ask_for);
@@ -309,15 +241,19 @@ int alloc2(struct state_struct *state, int setup) {
   }
   if (success) {
     ask_for = num_cmpts * ((int64_t)sizeof(ces));
-    ask_for = ask_for << 1;
+    if (setup == 1) {
+      ask_for = ask_for << 1;
+    }
     usage += ask_for;
-    state->unsorted_cmpts = (struct compartment_struct *)calloc(one_l,ask_for);
-    if (state->unsorted_molecules) {
+    state->sorted_compartments = (struct compartment_struct *)calloc(one_l,ask_for);
+    if (state->sorted_compartments) {
       /*
 	Caution address arithmetic follows.
 	state->sorted_compartments = &state->unsorted_cmpts[num_cmpts];
       */
-      state->sorted_compartments = state->unsorted_cmpts + num_cmpts;
+      if (setup == 1) {
+	state->unsorted_cmpts = state->sorted_compartments + num_cmpts;
+      }
     } else {
       fprintf(stderr,"alloc2: Error, unable to allocate %lld bytes of space "
 	      "for sorted and unsorted molecules pointers\n",ask_for);
