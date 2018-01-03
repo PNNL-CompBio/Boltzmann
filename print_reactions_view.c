@@ -31,7 +31,6 @@ int print_reactions_view(struct state_struct *state) {
     Called by: boltzmann_run
     Calls:     fopen, fprintf, fclose (intrinsic)
   */
-  struct rxn_struct *reactions;
   struct rxn_struct *reaction;
   struct rxn_matrix_struct *rxns_matrix;
   int64_t *rxn_ptrs;
@@ -51,9 +50,6 @@ int print_reactions_view(struct state_struct *state) {
 
   int success;
   int rxns;
-
-  int ns;
-  int padding;
 
   int np;
   int nr;
