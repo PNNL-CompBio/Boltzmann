@@ -1,13 +1,14 @@
 SUNDIALS_ROOT = ${PWD}/../..
 include ../../../Makefile.head
 
-all: $(SUNDIALS_LIB_DIR)/libsundials.so $(SUNDIALS_LIB_DIR)/libsundials.a
+#all: $(SUNDIALS_LIB_DIR)/libsundials.so $(SUNDIALS_LIB_DIR)/libsundials.a
+all: $(SUNDIALS_LIB_DIR)/libsundials.a
 
 
 OBJ_FILES = sundials_band.o sundials_dense.o sundials_direct.o sundials_iterative.o sundials_math.o sundials_nvector.o sundials_pcg.o sundials_sparse.o sundials_spbcgs.o sundials_spfgmr.o sundials_spgmr.o sundials_sptfqmr.o
      
-$(SUNDIALS_LIB_DIR)/libsundials.so: $(OBJ_FILES)
-				 gcc -shared -o $(SUNDIALS_LIB_DIR)/libsundials.so $(OBJ_FILES)
+#$(SUNDIALS_LIB_DIR)/libsundials.so: $(OBJ_FILES)
+#				 gcc -shared -o $(SUNDIALS_LIB_DIR)/libsundials.so $(OBJ_FILES)
 
 $(SUNDIALS_LIB_DIR)/libsundials.a: $(OBJ_FILES)
 			  $(AR) $(ARFLAGS) $(SUNDIALS_LIB_DIR)/libsundials.a sundials_band.o
