@@ -33,6 +33,8 @@ int zero_solvent_coefficients (struct state_struct *state) {
     Calls:
   */
   struct reactions_matrix_struct *rxns_matrix;
+  struct molecule_struct *sorted_molecules;
+  struct molecule_struct *molecule;
   int64_t num_molecules;
   int64_t *rcoef;
   int64_t *scoef;
@@ -44,10 +46,14 @@ int zero_solvent_coefficients (struct state_struct *state) {
   int64_t solvent_pos;
   int success;
   int solvent_coef_count;
+  int use_bulk_water;
+  int padi;
   success           = 1;
   nrxns             = state->number_reactions;
   rxns_matrix       = state->reactions_matrix;
   solvent_pos       = state->solvent_pos;
+  sorted_molecules  = state->sorted_molecules;
+  use_bulk_water    = state->use_bulk_water;
   rxn_ptrs          = rxns_matrix->rxn_ptrs;
   num_molecules     = rxn_ptrs[nrxns];
   rcoef             = rxns_matrix->coefficients;
@@ -60,6 +66,13 @@ int zero_solvent_coefficients (struct state_struct *state) {
       scoef[solvent_coef_count] = rcoef[j];
       solvent_coef_count += 1;
       rcoef[j] = 0.0;
+    } else {
+      molecule = (struct molecule_struct*)&sorted_molecules[index];
+      if (molecule->solvent && use_bulk_water) {
+	scoef[solvent_coef_count] = rcoef[j];
+	solvent_coef_count += 1;
+	rcoef[j] = 0.0;
+      }
     }
   }
   return(success);
