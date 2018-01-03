@@ -128,7 +128,7 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
     }
   }
   if (success) {
-    success = size_rxns_file(state);
+    success = size_rxns_file(state,state->reaction_file);
   }
   if (success) {
     success = alloc2(state);
@@ -170,7 +170,7 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
     /*
       Read and parse the reactions file.
     */
-    success = parse_reactions_file(state);
+    success = parse_reactions_file(state,state->reaction_file);
   }
   if (success) {
     if (print_output) {
@@ -319,11 +319,9 @@ int boltzmann_init(char *param_file_name, struct state_struct **statep) {
     *statep = NULL;
     boot_state->workspace_base = NULL;
     success = flatten_state(boot_state,statep);
-    /*
     if (success) {
       success = free_boot_state(&boot_state);
     }
-    */
   }
   return(success);
 }
