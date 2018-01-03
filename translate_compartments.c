@@ -35,7 +35,7 @@ int translate_compartments(struct state_struct *state) {
   /*
     Assign the proper compartment numbers to the 
     unsorted molecules, using the compartment_indices field
-    of the rxns_matrix.
+    of the rxns_matrix as set by call to unique_compartments.
     Called by: boltzmann_init
   */
   struct rxn_struct *reactions;
