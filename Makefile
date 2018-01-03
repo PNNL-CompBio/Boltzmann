@@ -65,7 +65,7 @@ AUTOCONF = ${SHELL} /home/dbaxter/boltzmann/trunk/missing --run autoconf
 AUTOHEADER = ${SHELL} /home/dbaxter/boltzmann/trunk/missing --run autoheader
 AUTOMAKE = ${SHELL} /home/dbaxter/boltzmann/trunk/missing --run automake-1.11
 AWK = gawk
-CC = gcc
+CC = gcc 
 CCDEPMODE = depmode=none
 CFLAGS = ${OPT_FLAGS}
 CPP = gcc -E
@@ -152,10 +152,10 @@ CLINKER = gcc
 AR = ar
 ARFLAGS = -crv
 #OPT_FLAGS = -g -O2
-OPT_FLAGS = -g -O0
-EXECS = boltzmann boltzmann_boot_test deq lapack_test sbml2bo
-DBG_FLAGS = -O0 -g
-NO_OPT_FLAGS = -O0 -g
+OPT_FLAGS = -g -O0 -Wall
+EXECS = boltzmann boltzmann_boot_test deq lapack_test sbml2bo kegg_ms_ids ms2js_ids kegg_ids
+DBG_FLAGS = -O0 -g -Wall
+NO_OPT_FLAGS = -O0 -g -Wall
 DCFLAGS = ${CFLAGS}
 TFLAGS = -DTIMING_ON 
 LFLAGS = -g -lm
@@ -172,7 +172,7 @@ SERIAL_OBJS5 = boltzmann_boot.o boot_init.o boot_alloc0.o boot_alloc1.o boot_io_
 SERIAL_OBJS6 = boltzmann_global_to_local_counts.o boltzmann_global_to_local_fluxes.o boltzmann_local_to_global_counts.o boltzmann_local_to_global_fluxes.o size_file.o boltzmann_load.o boltzmann_number_of_reaction_files.o boltzmann_global_molecule_count.o boltzmann_length_state_i.o boltzmann_max_local_state_size.o boltzmann_size_superstate.o
 
 #SERIAL_OBJS7 = deq_run.o alloc7.o fill_flux_pieces.o ode_solver.o ode23tb.o init_base_reactants.o ode_num_jac.o num_jac_col.o blas.o ode_it_solve.o compute_flux_scaling.o approximate_delta_concs.o vec_abs.o vec_div.o vec_max.o vec_mul.o ce_approximate_delta_concs.o update_rxn_likelihoods.o print_concs_fluxes.o ode_print_concs_header.o ode_print_concs.o
-SERIAL_OBJS7 = deq_run.o alloc7.o ode_solver.o ode23tb.o init_base_reactants.o ode_num_jac.o num_jac_col.o blas.o ode_it_solve.o compute_flux_scaling.o approximate_delta_concs.o compute_net_likelihoods.o compute_net_lklhd_bndry_flux.o print_net_likelihood_header.o print_net_likelihoods.o print_net_lklhd_bndry_flux_header.o print_net_lklhd_bndry_flux.o vec_abs.o vec_div.o vec_max.o vec_mul.o lr_approximate_delta_concs.o ce_approximate_delta_concs.o update_rxn_likelihoods.o print_concs_fluxes.o lsame.o dtrsm.o dlaswp.o dgetrf2.o dgetrf.o dgetrs.o dgemm.o ode_print_concs_header.o ode_print_concs.o
+SERIAL_OBJS7 = deq_run.o alloc7.o ode_solver.o ode23tb.o init_base_reactants.o ode_num_jac.o num_jac_col.o blas.o ode_it_solve.o compute_flux_scaling.o approximate_delta_concs.o compute_net_likelihoods.o compute_net_lklhd_bndry_flux.o print_net_likelihood_header.o print_net_likelihoods.o print_net_lklhd_bndry_flux_header.o print_net_lklhd_bndry_flux.o vec_abs.o vec_div.o vec_max.o vec_mul.o lr_approximate_delta_concs.o lr2_approximate_delta_concs.o lr3_approximate_delta_concs.o lr1_approximate_delta_concs.o ce_approximate_delta_concs.o update_rxn_likelihoods.o print_concs_fluxes.o lsame.o dtrsm.o dlaswp.o dgetrf2.o dgetrf.o dgetrs.o dgemm.o ode_print_concs_header.o ode_print_concs.o ode_print_flux_header.o ode_print_fluxes.o ode_print_lklhd_header.o ode_print_lklhds.o ode_print_bflux_header.o
 SBML_OBJS = sbml_to_boltzmann.o size_ms2js_file.o size_kg2js_file.o \
 	sbml_alloc0.o sbml_set_file_names.o sbml_alloc2.o read_ms2js.o \
 	read_kg2js.o sort_json_ids.o merge_sorted_strings.o \
@@ -194,8 +194,8 @@ SBML_OBJS = sbml_to_boltzmann.o size_ms2js_file.o size_kg2js_file.o \
 	sbml_process_species_reference_tag.o \
 	sbml_lookup_speciesref_attribute.o compartment_lookup.o \
 	count_ntb.o
-KFP_OBJS = keg_from_pseudoisomer.o count_ws.o count_nlb.o check_for_ws.o boltzmannize_json_id.o
-KFM_OBJS = keg_from_modelseed.o count_ws.o count_ntb.o count_nor.o check_for_ws.o boltzmannize_json_id.o
+KFP_OBJS = kegg_from_pseudoisomer.o count_ws.o count_nlb.o check_for_ws.o boltzmannize_json_id.o
+KFM_OBJS = kegg_from_modelseed.o count_ws.o count_ntb.o count_nor.o check_for_ws.o boltzmannize_json_id.o
 KPM_OBJS = count_ws.o count_ntb.o count_nws.o 
 all: all-am
 
@@ -540,20 +540,20 @@ djb_timing.a(itc_clock.o): itc_clock.c itc_clock.h
 ms2js_ids: $(KPM_OBJS)
 	$(CLINKER) -O0 -o ms2js_ids $(KPM_OBJS)
 
-#modelseed_2_json.o: modelseed_2_json.c $(SERIAL_INCS)
-#	$(CC) $(DCFLAGS) $(TFLAGS) -c modelseed_2_json.c 
+modelseed_2_json.o: modelseed_2_json.c $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c modelseed_2_json.c 
 
-keg_ms_ids: $(KFM_OBJS)
-	$(CLINKER) -O0 -o keg_ms_ids $(KFM_OBJS)
+kegg_ms_ids: $(KFM_OBJS)
+	$(CLINKER) -O0 -o kegg_ms_ids $(KFM_OBJS)
 
-keg_from_modelseed.o: keg_from_modelseed.c count_ws.h count_ntb.h count_nor.h check_for_ws.h boltzmannize_json_id.h $(SERIAL_INCS) 
-	$(CC) $(DCFLAGS) $(TFLAGS) -c keg_from_modelseed.c 
+kegg_from_modelseed.o: kegg_from_modelseed.c count_ws.h count_ntb.h count_nor.h check_for_ws.h boltzmannize_json_id.h $(SERIAL_INCS) 
+	$(CC) $(DCFLAGS) $(TFLAGS) -c kegg_from_modelseed.c 
 
-keg_ids: $(KFP_OBJS)
-	$(CLINKER) -O0 -o keg_ids $(KFP_OBJS)
+kegg_ids: $(KFP_OBJS)
+	$(CLINKER) -O0 -o kegg_ids $(KFP_OBJS)
 
-keg_from_pseudoisomer.o: keg_from_pseudoisomer.c count_ws.h count_nlb.h check_for_ws.h boltzmannize_json_id.h $(SERIAL_INCS) 
-	$(CC) $(DCFLAGS) $(TFLAGS) -c keg_from_pseudoisomer.c 
+kegg_from_pseudoisomer.o: kegg_from_pseudoisomer.c count_ws.h count_nlb.h check_for_ws.h boltzmannize_json_id.h $(SERIAL_INCS) 
+	$(CC) $(DCFLAGS) $(TFLAGS) -c kegg_from_pseudoisomer.c 
 
 boltzmannize_json_id.o: boltzmannize_json_id.c boltzmannize_json_id.h $(SERIAL_INCS) 
 	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmannize_json_id.c
@@ -751,9 +751,14 @@ libboltzmann.a: $(SERIAL_OBJS1)  $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SERIAL_OBJS4)
 	$(AR) $(ARFLAGS) libboltzmann.a deq_run.o
 	$(AR) $(ARFLAGS) libboltzmann.a alloc7.o
 	$(AR) $(ARFLAGS) libboltzmann.a ode_print_concs_header.o
+	$(AR) $(ARFLAGS) libboltzmann.a ode_print_flux_header.o
+	$(AR) $(ARFLAGS) libboltzmann.a ode_print_lklhd_header.o
+	$(AR) $(ARFLAGS) libboltzmann.a ode_print_bflux_header.o
 	$(AR) $(ARFLAGS) libboltzmann.a ode_solver.o
 	$(AR) $(ARFLAGS) libboltzmann.a ode23tb.o
 	$(AR) $(ARFLAGS) libboltzmann.a ode_print_concs.o
+	$(AR) $(ARFLAGS) libboltzmann.a ode_print_fluxes.o
+	$(AR) $(ARFLAGS) libboltzmann.a ode_print_lklhds.o
 	$(AR) $(ARFLAGS) libboltzmann.a init_base_reactants.o
 	$(AR) $(ARFLAGS) libboltzmann.a blas.o
 	$(AR) $(ARFLAGS) libboltzmann.a lsame.o
@@ -770,8 +775,11 @@ libboltzmann.a: $(SERIAL_OBJS1)  $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SERIAL_OBJS4)
 	$(AR) $(ARFLAGS) libboltzmann.a vec_div.o
 	$(AR) $(ARFLAGS) libboltzmann.a vec_max.o
 	$(AR) $(ARFLAGS) libboltzmann.a vec_mul.o
-	$(AR) $(ARFLAGS) libboltzmann.a ce_approximate_delta_concs.o
 	$(AR) $(ARFLAGS) libboltzmann.a lr_approximate_delta_concs.o
+	$(AR) $(ARFLAGS) libboltzmann.a lr1_approximate_delta_concs.o
+	$(AR) $(ARFLAGS) libboltzmann.a lr2_approximate_delta_concs.o
+	$(AR) $(ARFLAGS) libboltzmann.a lr3_approximate_delta_concs.o
+	$(AR) $(ARFLAGS) libboltzmann.a ce_approximate_delta_concs.o
 	$(AR) $(ARFLAGS) libboltzmann.a num_jac_col.o
 	$(AR) $(ARFLAGS) libboltzmann.a ode_it_solve.o
 	$(AR) $(ARFLAGS) libboltzmann.a update_rxn_likelihoods.o
@@ -1313,7 +1321,7 @@ deq.o : deq.c $(SERIAL_INCS) boltzmann_init.h deq_run.h print_counts.h print_res
 
 #deq_run.o: deq_run.c deq_run.h $(SERIAL_INCS) flatten_state.h alloc4.h form_molecules_matrix.h alloc7.h update_rxn_log_likelihoods.h fill_flux_pieces.h ode23tb.h
 
-deq_run.o: deq_run.c deq_run.h $(SERIAL_INCS) flatten_state.h alloc4.h form_molecules_matrix.h alloc7.h update_rxn_log_likelihoods.h ode_solver.h ode_print_concs_header.h
+deq_run.o: deq_run.c deq_run.h $(SERIAL_INCS) flatten_state.h alloc4.h form_molecules_matrix.h alloc7.h update_rxn_log_likelihoods.h ode_solver.h ode_print_concs_header.h ode_print_flux_header.h ode_print_lklhd_header.h ode_print_bflux_header.h
 	   $(CC) $(DCFLAGS) $(TFLAGS) -c deq_run.c
 
 alloc7.o: alloc7.c alloc7.h $(SERIAL_INCS)
@@ -1325,6 +1333,15 @@ alloc7.o: alloc7.c alloc7.h $(SERIAL_INCS)
 ode_print_concs_header.o: ode_print_concs_header.c ode_print_concs_header.h $(SERIAL_INCS) 
 	$(CC) $(DCFLAGS) $(TFLAGS) -c ode_print_concs_header.c
 
+ode_print_flux_header.o: ode_print_flux_header.c ode_print_flux_header.h $(SERIAL_INCS) 
+	$(CC) $(DCFLAGS) $(TFLAGS) -c ode_print_flux_header.c
+
+ode_print_bflux_header.o: ode_print_bflux_header.c ode_print_bflux_header.h $(SERIAL_INCS) 
+	$(CC) $(DCFLAGS) $(TFLAGS) -c ode_print_bflux_header.c
+
+ode_print_lklhd_header.o: ode_print_lklhd_header.c ode_print_lklhd_header.h $(SERIAL_INCS) 
+	$(CC) $(DCFLAGS) $(TFLAGS) -c ode_print_lklhd_header.c
+
 ode_solver.o: ode_solver.c ode_solver.h ode23tb.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c ode_solver.c
 
@@ -1333,6 +1350,12 @@ ode23tb.o: ode23tb.c ode23tb.h $(SERIAL_INCS) init_base_reactants.h compute_flux
 
 ode_print_concs.o: ode_print_concs.c ode_print_concs.h $(SERIAL_INCS) 
 	$(CC) $(DCFLAGS) $(TFLAGS) -c ode_print_concs.c
+
+ode_print_fluxes.o: ode_print_fluxes.c ode_print_fluxes.h ${SERIAL_INCS}
+	$(CC) $(DCFLAGS) $(TFLAGS) -c ode_print_fluxes.c
+
+ode_print_lklhds.o: ode_print_lklhds.c ode_print_lklhds.h ${SERIAL_INCS}
+	$(CC) $(DCFLAGS) $(TFLAGS) -c ode_print_lklhds.c
 
 compute_net_likelihoods.o: compute_net_likelihoods.c compute_net_likelihoods.h $(SERIAL_INCS) 
 	$(CC) $(DCFLAGS) $(TFLAGS) -c compute_net_likelihoods.c
@@ -1358,7 +1381,7 @@ init_base_reactants.o: init_base_reactants.c init_base_reactants.h $(SERIAL_INCS
 compute_flux_scaling.o: compute_flux_scaling.c compute_flux_scaling.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c compute_flux_scaling.c
 
-approximate_delta_concs.o: approximate_delta_concs.c approximate_delta_concs.h ce_approximate_delta_concs.h lr_approximate_delta_concs.h $(SERIAL_INCS)
+approximate_delta_concs.o: approximate_delta_concs.c approximate_delta_concs.h ce_approximate_delta_concs.h lr_approximate_delta_concs.h lr2_approximate_delta_concs.h lr1_approximate_delta_concs.h lr3_approximate_delta_concs.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c approximate_delta_concs.c 
 
 vec_abs.o: vec_abs.c vec_abs.h $(SERIAL_INCS)
@@ -1378,6 +1401,15 @@ ce_approximate_delta_concs.o: ce_approximate_delta_concs.c ce_approximate_delta_
 
 lr_approximate_delta_concs.o: lr_approximate_delta_concs.c lr_approximate_delta_concs.h update_rxn_likelihoods.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS) $(TFLAGS) -c lr_approximate_delta_concs.c 
+
+lr3_approximate_delta_concs.o: lr3_approximate_delta_concs.c lr3_approximate_delta_concs.h update_rxn_likelihoods.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c lr3_approximate_delta_concs.c 
+
+lr2_approximate_delta_concs.o: lr2_approximate_delta_concs.c lr2_approximate_delta_concs.h update_rxn_likelihoods.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c lr2_approximate_delta_concs.c 
+
+lr1_approximate_delta_concs.o: lr1_approximate_delta_concs.c lr1_approximate_delta_concs.h update_rxn_likelihoods.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS) $(TFLAGS) -c lr1_approximate_delta_concs.c 
 
 ode_num_jac.o: ode_num_jac.c ode_num_jac.h $(SERIAL_INCS) num_jac_col.h blas.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c ode_num_jac.c 
