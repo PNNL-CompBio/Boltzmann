@@ -8,7 +8,7 @@ SUNDIALS_INC_DIR = $(SUNDIALS_ROOT)/include
 SUNDIALS_LIBS = $(SUNDIALS_LIB_DIR)/libsundials.a $(SUNDIALS_LIB_DIR)/libsundials_cvodes.a $(SUNDIALS_LIB_DIR)/libsundials_cvodes.a $(SUNDIALS_LIB_DIR)/libsundials_nvec_ser.a
 SUNDIALS_INCS = -I $(SUNDIALS_INC_DIR) -I $(SUNDIALS_INC_DIR)/sundials -I $(SUNDIALS_INC_DIR)/cvodes -I $(SUNDIALS_INC_DIR)/cvode -I$(SUNDIALS_INC_DIR)/nvector
 
-LIBS = libboltzmann.a -lm $(SUNDIALS_LIBS) libboltzmann.a
+LIBS = libboltzmann.a -lm $(SUNDIALS_LIBS) libboltzmann.a $(SUNDIALS_LIBS)
 
 DBG_FLAGS = -O0 -g -fPIC -Wall $(SUNDIALS_INCS)
 NO_OPT_FLAGS = -O0 -g -fPIC -Wall $(SUNDIALS_INCS)
