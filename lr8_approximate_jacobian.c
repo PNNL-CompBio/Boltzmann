@@ -12,7 +12,9 @@ int lr8_approximate_jacobian(struct state_struct *state,
 			 int choice) {
 			 
   /*
-    Compute approximations to the jacobian of theconcentration changes. wrt time,   Based on thermodynamics formulation for concentraion rate
+    Compute approximations to the jacobian of the
+    concentration changes. wrt time,   
+    Based on thermodynamics formulation for concentraion rate
     changes     using counts to compute tr, tp, pt, rt instead of concs.
     Based on lr8_approximate delta concs.
     drfc could be taken from state and is a number_reactions * nunique_molecules
@@ -74,6 +76,7 @@ int lr8_approximate_jacobian(struct state_struct *state,
   double  *rke;
   double  *counts;
   double  *conc_to_count;
+  double  *count_to_conc;
   double  *drfc;
   double  *dfdy_a;
   double  *dfdy_at;
@@ -95,6 +98,7 @@ int lr8_approximate_jacobian(struct state_struct *state,
   */
   double  fluxi;
   double  count_mi;
+  double  conc_mi;
   double  activityi;
   double  dzero;
   int64_t *molecules_ptrs;
@@ -125,10 +129,12 @@ int lr8_approximate_jacobian(struct state_struct *state,
 
   int use_regulation;
   int count_or_conc;
-
   
   int mk;
   int mj;
+
+  int ndfdy_pos;
+  int padi;
 
   FILE *lfp;
   FILE *efp;
@@ -158,6 +164,7 @@ int lr8_approximate_jacobian(struct state_struct *state,
   rfc              = state->rfc;
   counts           = state->ode_counts;
   conc_to_count    = state->conc_to_count;
+  count_to_conc    = state->count_to_conc;
   use_regulation   = state->use_regulation;
   /*
     The following vectors are allocated in boltzmann_cvodes 
@@ -254,16 +261,23 @@ int lr8_approximate_jacobian(struct state_struct *state,
 	*/
 	coef = (int)rcoefficients[j];
 	count_mi = counts[mi];
+	conc_mi  = concs[mi];
 	if (coef < 0) {
 	  if (count_mi > 0) {
+	    drfc[j] =  0.0 -coef * ((flklhd/conc_mi) + (rlklhd/(conc_mi - (coef*count_to_conc[mi])))) * activityi;	
+	    /*
 	    drfc[j] =  0.0 -coef * ((flklhd/count_mi) + (rlklhd/(count_mi - coef))) * activityi;	
+	    */
 	  } else {
 	    drfc[j] = rlklhd * activityi;
 	  }
 	} else {
 	  if (coef > 0) {
 	    if (count_mi > 0) {
+	      /*
 	      drfc[j] = 0.0 - coef *((flklhd/(count_mi + coef)) + (rlklhd/count_mi)) * activityi;
+	      */
+	      drfc[j] = 0.0 - coef *((flklhd/(conc_mi + (coef*count_to_conc[mi]))) + (rlklhd/conc_mi)) * activityi;
 	    } else {
 	      drfc[j] = - flklhd * activityi;
 	    }
@@ -291,44 +305,54 @@ int lr8_approximate_jacobian(struct state_struct *state,
     column_mask[i] = 1;
     dfdy_ja[dfdy_pos] = i;
     dfdy_pos += 1;
+    ndfdy_pos = dfdy_pos;
     if (molecule->variable == 1) {
-  	for (j=molecules_ptrs[i];j<molecules_ptrs[i+1];j++) {
-  	  rxn = rxn_indices[j];
-  	  if (coefficients[j]  != 0) {
-  	    recip_coefficient = recip_coeffs[j];
-  	    /*
-  	      Add rxn row of drfc * recip_coefficient to row i of dfdy
-  	    */
-  	    for (k=rxn_ptrs[rxn];k<rxn_ptrs[rxn+1];k++) {
-  	      mk = molecule_indices[k];
-  	      if (column_mask[mk] == 0) {
-  		column_mask[mk] = 1;
-  		dfdy_ja[dfdy_pos] = mk;
-  		dfdy_pos += 1;
-  	      }
-  	      dfdy_row[mk] += drfc[k] * recip_coefficient;
-  	    }
-  	  }
-  	}
-  	/*
-  	  The column numbers of nonzero elements in row i of
-  	  dfdy are now in dfdy_ja[dfdy_ia[i]:dfdy_pos-1]
-  	  Ultimately we want to sort them to so as 
-  	  to make preconditioning computation and mvp computation 
-  	  more effiecient, but that is more efficiently done
-  	  with a double transpose algorithm.
+      for (j=molecules_ptrs[i];j<molecules_ptrs[i+1];j++) {
+	rxn = rxn_indices[j];
+	if (coefficients[j]  != 0) {
+	  recip_coefficient = recip_coeffs[j];
+	  /*
+	    Add rxn row of drfc * recip_coefficient to row i of dfdy
+	  */
+	  for (k=rxn_ptrs[rxn];k<rxn_ptrs[rxn+1];k++) {
+	    mk = molecule_indices[k];
+	    if (column_mask[mk] == 0) {
+	      column_mask[mk] = 1;
+	      dfdy_ja[dfdy_pos] = mk;
+	      dfdy_pos += 1;
+	    }
+	    dfdy_row[mk] += drfc[k] * recip_coefficient;
+	  }
+	}
+      }
+      /*
+	The column numbers of nonzero elements in row i of
+	dfdy are now in dfdy_ja[dfdy_ia[i]:dfdy_pos-1]
+	Ultimately we want to sort them to so as 
+	to make preconditioning computation and mvp computation 
+	more effiecient, but that is more efficiently done
+	with a double transpose algorithm.
 
-  	  Extract the sparse dfdy row from the dfd_row vector,
-  	  reseting it and the column_mask vector as we go.
-  	*/
-  	for (j=dfdy_ia[i];j<dfdy_pos;j++) {
-  	  mj = dfdy_ja[j];
-  	  dfdy_a[j] = dfdy_row[mj];
-  	  dfdy_row[mj] = 0.0;
-  	  column_mask[mj] = 0;
-  	}
+	Extract the sparse dfdy row from the dfd_row vector,
+	reseting it and the column_mask vector as we go.
+      */
+      ndfdy_pos = dfdy_ia[i];
+      for (j=dfdy_ia[i];j<dfdy_pos;j++) {
+	mj = dfdy_ja[j];
+	/* 
+	   Always store a diagonal element, but don't store zero's
+	   off the diagonal.
+	*/
+	if ((mj == i) || (dfdy_row[mj] != 0.0)) {
+	  dfdy_a[ndfdy_pos] = dfdy_row[mj];
+	  dfdy_ja[ndfdy_pos] = mj;
+	  ndfdy_pos += 1;
+	}
+	dfdy_row[mj] = 0.0;
+	column_mask[mj] = 0;
+      }
     } /* end if (molecule->variable) */
-    dfdy_ia[i+1] = dfdy_pos;
+    dfdy_ia[i+1] = ndfdy_pos;
   } /* end for (i...) */
   /*
     Now we want rows of dfdy in dfdy_a to be sorted by column number,
