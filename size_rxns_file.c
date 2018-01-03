@@ -219,7 +219,7 @@ int size_rxns_file(struct state_struct *state,
     state->molecule_text_length    = molecules_len;
     state->pathway_text_length     = pathway_len;
     state->compartment_text_length = compartment_len;
-    state->rxn_title_text_length   = rxn_title_len;
+    state->reaction_titles_length   = rxn_title_len;
     state->regulation_text_length  = regulation_len;
     fclose(rxn_fp);
   }
