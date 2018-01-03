@@ -37,7 +37,7 @@ int bndry_flux_update(int rxn_no, int direction,
   struct molecule_struct *sorted_molecules;
   struct molecule_struct *molecule;
   struct rxn_matrix_struct   *rxns_matrix;
-  double *bndry_flux_concs;
+  double *bndry_flux_counts;
   int64_t *rxn_ptrs;
   int64_t *molecules_indices;
   int64_t *coefficients;
@@ -49,7 +49,7 @@ int bndry_flux_update(int rxn_no, int direction,
   int     k;
 			 
   success           = 1;
-  bndry_flux_concs  = state->bndry_flux_concs;
+  bndry_flux_counts = state->bndry_flux_counts;
   nu_molecules      = state->nunique_molecules;
   sorted_molecules  = state->sorted_molecules;
   rxns_matrix       = state->reactions_matrix;
@@ -64,7 +64,7 @@ int bndry_flux_update(int rxn_no, int direction,
       k = molecules_indices[j];
       molecule = (struct molecule_struct *) &sorted_molecules[k];
       if (molecule->variable == 0) {
-        bndry_flux_concs[k] += (double)coefficients[j];
+        bndry_flux_counts[k] += (double)coefficients[j];
       }
     } 
   } else {
@@ -72,7 +72,7 @@ int bndry_flux_update(int rxn_no, int direction,
       k = molecules_indices[j];
       molecule = (struct molecule_struct *) &sorted_molecules[k];
       if (molecule->variable == 0) {
-        bndry_flux_concs[k] -= (double)coefficients[j];
+        bndry_flux_counts[k] -= (double)coefficients[j];
       }
     }
   }
