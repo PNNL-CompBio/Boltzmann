@@ -150,13 +150,12 @@ int rxn_likelihoods(double *free_energy,
     */
     if ((left_concs < 1.0) && (right_concs > 1.0)) {
       left_concs = small_nonzero;
-      rxn_likelihood[i] = 0.0;
     } else {
       if (right_concs < 1.0) {
 	right_concs = small_nonzero;
-	rxn_likelihood[i] = eq_k * (left_concs/ right_concs);
       }
     }
+    rxn_likelihood[i] = eq_k * (left_concs/ right_concs);
   } /* end for(i...) */
   return(success);
 }
