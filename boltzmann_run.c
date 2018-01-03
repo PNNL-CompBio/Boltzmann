@@ -97,6 +97,9 @@ int boltzmann_run(struct state_struct *state) {
   int lklhd_view_step;
   int lklhd_view_freq;
 
+  int choice_view_step;
+  int choice_view_freq;
+
   int conc_view_step;
   int conc_view_freq;
 
@@ -128,9 +131,11 @@ int boltzmann_run(struct state_struct *state) {
   lklhd_view_freq        = (int)state->lklhd_view_freq;
   conc_view_freq         = (int)state->conc_view_freq;
   rxn_view_pos         	 = 0;
+  choice_view_freq       = lklhd_view_freq;
   rxn_view_step        	 = 1;
   conc_view_step         = 1;
   lklhd_view_step 	 = 1;
+  choice_view_step       = 1;
   lfp                    = state->lfp;
   noop_rxn               = number_reactions + number_reactions;
   /*
@@ -166,12 +171,18 @@ int boltzmann_run(struct state_struct *state) {
     rxn_choice = choose_rxn(state,&r_sum_likelihood);
     if (rxn_choice < 0) break;
     if (print_output && lfp) {
-      if (rxn_choice == noop_rxn) {
-	fprintf(lfp,"%d\tnone\n",i);
-      } else {
-	fprintf(lfp,"%d\t%d\t%le\t%le\n",i,rxn_choice,forward_rxn_likelihood[rxn_choice],
-		reverse_rxn_likelihood[rxn_choice]);
-	fflush(lfp);
+      if (choice_view_freq > 0) {
+	choice_view_step = choice_view_step - 1;
+	if ((choice_view_step <= 0) || (i == (n_warmup_steps-1))) {
+	  if (rxn_choice == noop_rxn) {
+	    fprintf(lfp,"%d\tnone\n",i);
+	  } else {
+	    fprintf(lfp,"%d\t%d\t%le\t%le\n",i,rxn_choice,forward_rxn_likelihood[rxn_choice],
+		    reverse_rxn_likelihood[rxn_choice]);
+	  }
+	  fflush(lfp);
+	  choice_view_step = choice_view_freq;
+	}
       }
     }
     /*
@@ -215,6 +226,10 @@ int boltzmann_run(struct state_struct *state) {
     for (i=0;i<unique_molecules;i++) {
       bndry_flux_concs[i] = 0.0;
     }
+    rxn_view_step    = 1;
+    conc_view_step   = 1;
+    lklhd_view_step  = 1;
+    choice_view_step = 1;
     for (i=0;i<n_record_steps;i++) {
       /*
 	Choose a reaction setting the future_concentrations field of
@@ -225,17 +240,23 @@ int boltzmann_run(struct state_struct *state) {
       if (rxn_choice < 0) break;
       if (print_output) {
 	if (lfp) {
-	  if (rxn_choice == noop_rxn) {
-	    fprintf(lfp,"%d\tnone\n",i);
-	  } else {
-	    fprintf(lfp,"%d\t%d\t%le\t%le\n",i,rxn_choice,forward_rxn_likelihood[rxn_choice],
-		    reverse_rxn_likelihood[rxn_choice]);
-	    fflush(lfp);
+	  if (choice_view_freq > 0) {
+	    choice_view_step = choice_view_step - 1;
+	    if ((choice_view_step <= 0) || (i == (n_record_steps-1))) {
+	      if (rxn_choice == noop_rxn) {
+		fprintf(lfp,"%d\tnone\n",i);
+	      } else {
+		fprintf(lfp,"%d\t%d\t%le\t%le\n",i,rxn_choice,forward_rxn_likelihood[rxn_choice],
+			reverse_rxn_likelihood[rxn_choice]);
+	      }
+	      fflush(lfp);
+	      choice_view_step = choice_view_freq;
+	    }
 	  }
 	}
-	if (rxn_choice <= number_reactions_t2) {
-	  rxn_fire[rxn_choice] += 1;
-	}
+      }
+      if (rxn_choice <= number_reactions_t2) {
+	rxn_fire[rxn_choice] += 1;
       }
       /*
 	Copy the future concentrations, the result of the reaction firing
@@ -273,10 +294,12 @@ int boltzmann_run(struct state_struct *state) {
 	/* 
 	  print the entropy, dg_forward and the reaction likelihoods, 
 	*/
-	lklhd_view_step = lklhd_view_step - 1;
-	if ((lklhd_view_step <= 0) || (i == (n_record_steps-1))) {
-	  print_likelihoods(state,entropy,dg_forward,i) ;
-	  lklhd_view_step = lklhd_view_freq;
+	if (lklhd_view_freq > 0) {
+	  lklhd_view_step = lklhd_view_step - 1;
+	  if ((lklhd_view_step <= 0) || (i == (n_record_steps-1))) {
+	    print_likelihoods(state,entropy,dg_forward,i) ;
+	    lklhd_view_step = lklhd_view_freq;
+	  }
 	}
 	if (rxn_view_freq > 0) {
 	  rxn_view_step = rxn_view_step - 1;
