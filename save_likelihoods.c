@@ -23,7 +23,7 @@ specific language governing permissions and limitations under the License.
 #include "boltzmann_structs.h"
 
 #include "save_likelihoods.h"
-void save_likelihoods(struct state_struct *state, int rxn_view_pos) {
+void save_likelihoods(struct state_struct *state, int64_t rxn_view_pos) {
   /*
     save the likelihoods in a transposed matrix for output to the rxns.view 
     file.
@@ -48,7 +48,7 @@ void save_likelihoods(struct state_struct *state, int rxn_view_pos) {
 			                    
 
 			   
-    rxn_view_pos  ISI      which row of the saved likelihood matrix
+    rxn_view_pos  JSI      which row of the saved likelihood matrix
 			   we are mpdateing.
                   
     
@@ -68,7 +68,7 @@ void save_likelihoods(struct state_struct *state, int rxn_view_pos) {
   int padi;
 
   number_reactions     	 = (int)state->number_reactions;
-  rxn_view_hist_length 	 = (int)state->rxn_view_hist_length;
+  rxn_view_hist_length 	 = state->rxn_view_hist_length;
   forward_rxn_likelihood = state->forward_rxn_likelihood;
   reverse_rxn_likelihood = state->reverse_rxn_likelihood;
   activities        	 = state->activities;
