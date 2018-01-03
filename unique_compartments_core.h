@@ -21,7 +21,7 @@ CONDITIONS OF ANY KIND, either express or implied. See the License for the
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
 extern int unique_compartments_core(int nzr,
-				    struct istring_elem_struct *sorted_cmpts,
+				    struct molecule_struct *sorted_cmpts,
 				    char   *compartment_text,
 				    int64_t *compartment_indices,
 				    int64_t *nunique_compartments,
