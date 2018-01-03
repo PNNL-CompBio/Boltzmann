@@ -106,6 +106,9 @@ int boltzmann_run(struct state_struct *state) {
   int print_output;
   int noop_rxn;
 
+  int rxn_no;
+  int padi;
+
   FILE *lfp;
   success = 1;
   nstate = state;
@@ -177,8 +180,15 @@ int boltzmann_run(struct state_struct *state) {
 	  if (rxn_choice == noop_rxn) {
 	    fprintf(lfp,"%d\tnone\n",i);
 	  } else {
-	    fprintf(lfp,"%d\t%d\t%le\t%le\n",i,rxn_choice,forward_rxn_likelihood[rxn_choice],
-		    reverse_rxn_likelihood[rxn_choice]);
+	    if (rxn_choice < number_reactions) {
+	      fprintf(lfp,"%d\t%d\t%le\t%le\n",i,rxn_choice,forward_rxn_likelihood[rxn_choice],
+		      reverse_rxn_likelihood[rxn_choice]);
+	    } else {
+	      rxn_no = rxn_choice - number_reactions;
+	      fprintf(lfp,"%d\t%d\t%le\t%le\n",i,rxn_choice,reverse_rxn_likelihood[rxn_no],
+		      forward_rxn_likelihood[rxn_no]);
+	      
+	    }
 	  }
 	  fflush(lfp);
 	  choice_view_step = choice_view_freq;
@@ -246,8 +256,15 @@ int boltzmann_run(struct state_struct *state) {
 	      if (rxn_choice == noop_rxn) {
 		fprintf(lfp,"%d\tnone\n",i);
 	      } else {
-		fprintf(lfp,"%d\t%d\t%le\t%le\n",i,rxn_choice,forward_rxn_likelihood[rxn_choice],
-			reverse_rxn_likelihood[rxn_choice]);
+		if (rxn_choice < number_reactions) {
+		  fprintf(lfp,"%d\t%d\t%le\t%le\n",i,rxn_choice,forward_rxn_likelihood[rxn_choice],
+			  reverse_rxn_likelihood[rxn_choice]);
+		} else {
+		  rxn_no = rxn_choice - number_reactions;
+		  fprintf(lfp,"%d\t%d\t%le\t%le\n",i,rxn_choice,reverse_rxn_likelihood[rxn_no],
+			  forward_rxn_likelihood[rxn_no]);
+		  
+		}
 	      }
 	      fflush(lfp);
 	      choice_view_step = choice_view_freq;
