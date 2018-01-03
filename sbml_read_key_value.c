@@ -20,6 +20,8 @@ specific language governing permissions and limitations under the License.
 */
 #include "boltzmann_structs.h"
 
+#include "count_ws.h"
+#include "count_nws.h"
 #include "sbml_read_key_value.h"
 
 int sbml_read_key_value(char *buffer, char *key, char *value, int max_key_len, 
