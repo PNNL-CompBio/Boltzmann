@@ -72,10 +72,6 @@ struct reactions_matrix_struct {
     there will be at most num_rxns solvent coefficients.
   */
   int64_t *solvent_coefficients;
-  /*
-    Padding.
-  */
-  int64_t padl;
 }
 ;
 #endif
