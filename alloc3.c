@@ -52,22 +52,22 @@ int alloc3(struct state_struct *state) {
 
   int success;
   int nrxns;
-  int lthf;
-  int lthl;
+  int rxn_view_freq;
+  int rxn_view_hist_lngth;
 
   int nzr;
   int max_compartment_len;
   success = 1;
-  one_l      = (int64_t)1;
-  usage      = state->usage;
-  align_mask = state->align_mask;
-  align_len  = state->align_len;
-  nu_molecules = state->unique_molecules;
-  nzr        = state->number_molecules;
-  nrxns      = state->number_reactions;
-  max_molecule_len = state->max_molecule_len + 1;
+  one_l      		  = (int64_t)1;
+  usage      		  = state->usage;
+  align_mask 		  = state->align_mask;
+  align_len  		  = state->align_len;
+  nu_molecules            = state->unique_molecules;
+  nzr                     = state->number_molecules;
+  nrxns                   = state->number_reactions;
+  max_molecule_len        = state->max_molecule_len + 1;
   max_compartment_len     = state->max_compartment_len + 1;
-  lthf                    = state->lthf;
+  rxn_view_freq           = state->rxn_view_freq;
   /*
     Allocate space for molecules name when reading initial 
     concentrations file.
@@ -333,9 +333,9 @@ int alloc3(struct state_struct *state) {
     } 
   }
   if (success) {
-    if (lthf > 0) {
-      lthl = 1 + (int)((state->record_steps + lthf - 1) /lthf);
-      ask_for = (((int64_t)nrxns) * ((int64_t)sizeof(double)))*((int64_t)lthl);
+    if (rxn_view_freq > 0) {
+      rxn_view_hist_lngth = 1 + (int)((state->record_steps + rxn_view_freq - 1) /rxn_view_freq);
+      ask_for = (((int64_t)nrxns) * ((int64_t)sizeof(double)))*((int64_t)rxn_view_hist_lngth);
       usage += ask_for;
       state->rxn_view_likelihoods = (double *)calloc(one_l,ask_for);
       if (state->rxn_view_likelihoods == NULL) {
@@ -344,15 +344,15 @@ int alloc3(struct state_struct *state) {
 	fflush(stderr);
 	success = 0;
       }
-      state->lthl = lthl;
+      state->rxn_view_hist_lngth = rxn_view_hist_lngth;
     } else {
       state->rxn_view_likelihoods = NULL;
     }
   }
   if (success) {
-    if (lthf > 0) {
-      lthl = state->lthl;
-      ask_for = (((int64_t)nrxns) * ((int64_t)sizeof(double)))*((int64_t)lthl);
+    if (rxn_view_freq > 0) {
+      rxn_view_hist_lngth = state->rxn_view_hist_lngth;
+      ask_for = (((int64_t)nrxns) * ((int64_t)sizeof(double)))*((int64_t)rxn_view_hist_lngth);
       usage += ask_for;
       state->rev_rxn_view_likelihoods = (double *)calloc(one_l,ask_for);
       if (state->rev_rxn_view_likelihoods == NULL) {
