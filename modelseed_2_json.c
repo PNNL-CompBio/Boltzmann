@@ -27,6 +27,14 @@ specific language governing permissions and limitations under the License.
 #include "count_ntb.h"
 
 int main(int argc, char **argv) {
+  /*
+    This routine creates the "modelseed_2_json.srt" file and the 
+    "modelseed_json_mismatches" file from the 
+    "kegg_2_modelseed.srt" and 
+    "kegg_2_json.srt" files.
+    It produces scratch file "modelseed_2_json.dat" (the unsorted file).
+    
+  */
   FILE *msfp;
   FILE *jsfp;
   FILE *m2jfp;
@@ -37,8 +45,8 @@ int main(int argc, char **argv) {
   char *jline;
   char *jp;
   char *mp;
-  char *j_kegid;
-  char *m_kegid;
+  char *j_kegg_id;
+  char *m_kegg_id;
   char *json_id;
   char *modelseed_id;
   int  line_len;
@@ -47,9 +55,9 @@ int main(int argc, char **argv) {
   line_len = 1048576;
   mline = (char *)&mline_c[0];
   jline = (char *)&jline_c[0];
-  msfp = fopen("unique_modelseed_ids_sorted_by_keg.txt","r");
+  msfp = fopen("kegg_2_modelseed.srt","r");
   if (msfp != NULL) {
-    jsfp = fopen("unique_json_ids_sorted_by_keg.txt","r");
+    jsfp = fopen("kegg_2_json.srt","r");
     if (jsfp != NULL) {
       m2jfp = fopen("modelseed_2_json.dat","w");
       if (m2jfp != NULL) {
@@ -61,7 +69,7 @@ int main(int argc, char **argv) {
 	  */
 	  ns = count_ws(jp);
 	  jp += ns; /* Caution address arithmetic */
-	  j_kegid = jp;
+	  j_kegg_id = jp;
 	  nc = count_ntb(jp);
 	  jp[nc] = '\0';
 	  jp += (nc+1); /* Caution address arithmetic */
@@ -75,19 +83,19 @@ int main(int argc, char **argv) {
 	    */
 	    ns = count_ws(mp);
 	    mp += ns; /* Caution address arithmetic */
-	    m_kegid = mp;
+	    m_kegg_id = mp;
 	    nc = count_ntb(mp);
 	    mp[nc] = '\0';
 	    mp += (nc+1); /* Caution address arithmetic */
 	    modelseed_id = mp;
 	    nc = count_nws(mp);
 	    mp[nc] = '\0';
-	    while ((strcmp(j_kegid,m_kegid) < 0) && !feof(jsfp)) {
+	    while ((strcmp(j_kegg_id,m_kegg_id) < 0) && !feof(jsfp)) {
 	      jp = fgets(jline,line_len,jsfp);
 	      if (!feof(jsfp)) {
 		ns = count_ws(jp);
 		jp += ns; /* Caution address arithmetic */
-		j_kegid = jp;
+		j_kegg_id = jp;
 		nc = count_ntb(jp);
 		jp[nc] = '\0';
 		jp += (nc+1); /* Caution address arithmetic */
@@ -96,10 +104,10 @@ int main(int argc, char **argv) {
 		jp[nc] = '\0';
 	      }
 	    }
-	    if (strcmp(j_kegid,m_kegid) == 0) {
+	    if (strcmp(j_kegg_id,m_kegg_id) == 0) {
 	      fprintf(m2jfp,"%s\t%s\n",modelseed_id,json_id);
 	    } else {
-	      fprintf(mmfp,"%s\t%s\n",m_kegid,modelseed_id);
+	      fprintf(mmfp,"%s\t%s\n",m_kegg_id,modelseed_id);
 	    }
 	    mp = fgets(mline,line_len,msfp);
 	  }
@@ -107,17 +115,18 @@ int main(int argc, char **argv) {
 	  fprintf(stderr,"unable to open modelseed_json_mismatches\n");
 	}
       } else {
-	fprintf(stderr,"unable to open modelseed_json.dat\n");
+	fprintf(stderr,"unable to open modelseed_2_json.dat\n");
       }
     } else {
-      fprintf(stderr,"unable to open unique_json_ids_sorted_by_keg.txt\n");
+      fprintf(stderr,"unable to open kegg_2_json.srt\n");
     }
   } else {
-    fprintf(stderr,"unable to open unique_modelseed_ids_sorted_by_keg.txt\n");
+    fprintf(stderr,"unable to open kegg_2_modelseed.srt\n");
   }
   fclose(msfp);
   fclose(jsfp);
   fclose(m2jfp);
   fclose(mmfp);
+  system("sort -k 1 -u modelseed_2_json.dat > modelseed_2_json.srt");  
   return(0);
 }
