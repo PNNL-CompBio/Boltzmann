@@ -17,7 +17,6 @@ int energy_init(struct state_struct *state) {
 	       zero_solvent_coefficients,
 	       compute_kss
   */
-  struct formation_energy_struct *formation_energies;
   int success;
   int padi;
   /*
@@ -25,8 +24,7 @@ int energy_init(struct state_struct *state) {
   */
   success = 1;
   if (state->use_pseudoisomers) {
-    formation_energies = NULL;
-    success = compute_standard_energies(state,&formation_energies);
+    success = compute_standard_energies(state);
   }
   /*
     Compute the reaction ke's.
