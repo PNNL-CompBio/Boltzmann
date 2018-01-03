@@ -33,15 +33,10 @@ int alloc2(struct state_struct *state) {
   */
   struct vgrng_state_struct vss;
   struct rxn_struct rs;
-  struct rxn_struct *reactions;
   struct rxn_matrix_struct rms;
   struct rxn_matrix_struct *reactions_matrix;
   struct molecule_struct ises;
-  struct molecule_struct *sorted_molecules;
-  struct molecule_struct *unsorted_molecules;
   struct compartment_struct ces;
-  struct compartment_struct *sorted_cmpts;
-  struct compartment_struct *unsorted_cmpts;
   int64_t usage;
   int64_t rxn_title_text_length;
   int64_t pathway_text_length;
@@ -50,10 +45,6 @@ int alloc2(struct state_struct *state) {
   int64_t regulation_text_length;
   int64_t align_len;
   int64_t align_mask;
-  int64_t rxn_title_len;
-  int64_t pathway_len;
-  int64_t compartment_len;
-  int64_t molecules_len;
   int64_t ask_for;
   int64_t one_l;
   int64_t nze;
