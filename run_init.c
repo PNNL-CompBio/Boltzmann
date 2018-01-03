@@ -3,6 +3,7 @@
 #include "print_rxn_likelihoods_header.h"
 #include "print_free_energy_header.h"
 #include "flatten_state.h"
+#include "print_reactions_matrix.h"
 /*
 #include "zero_solvent_coefficients.h"
 */
@@ -20,7 +21,7 @@ int run_init(struct state_struct *state, struct state_struct **flattened_state) 
                print_rxn_likelihoods_header,
 	       print_free_endrgy_header,
                flatten_state,
-	       zero_solvent_coefficients,
+	       print_reactions_matrix
 	       free_boot_state2
 
   */
@@ -80,6 +81,11 @@ int run_init(struct state_struct *state, struct state_struct **flattened_state) 
   stateq  = NULL;
   state->workspace_base = NULL;
   success = flatten_state(state,&stateq);
+  if (success) {
+    if (stateq->print_output) {
+      success = print_reactions_matrix(stateq);
+    }
+  }
   /*
   if (success) {
     success = zero_solvent_coefficients(stateq);
