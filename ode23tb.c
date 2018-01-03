@@ -6,7 +6,7 @@
 #include "ode_num_jac.h"
 #include "ode_it_solve.h"
 #include "ode_print_concs.h"
-#include "ode_print_fluxes.h"
+#include "ode_print_dconcs.h"
 #include "ode_print_lklhds.h"
 /*#include "ode_print_bflux.h"*/
 #include "blas.h"
@@ -22,7 +22,7 @@
 #define DBG 1
 */
 #ifdef DBG 
-#include "print_concs_fluxes.h"
+#include "print_concs_dconcs.h"
 #endif
 
 #include "ode23tb.h"
@@ -44,7 +44,7 @@ int ode23tb (struct state_struct *state, double *concs,
 
     Called by: ode_solver
     Calls:     approximate_delta_concs, ode_num_jac, ode_it_solve,
-               print_concs_fluxes,
+               print_concs_dconcs, ode_print_dconcs
 	       dnrm2_, dgemv_, dscal_, idamax_
 	       sizeof, calloc, sqrt, pow, fabs, dgetrf_, dgetrs_
 
@@ -167,8 +167,6 @@ int ode23tb (struct state_struct *state, double *concs,
   int64_t ode_rxn_view_step;
 
 
-  int *base_reactant_indicator; /* length nunique_molecules */
-  int *base_reactants;          /* length nunique_molecules */
   int *ipivot;                  /* overlaid on pivot space */
 
   int ny;
@@ -178,7 +176,7 @@ int ode23tb (struct state_struct *state, double *concs,
   int not_done;
 
   int success;
-  int base_rxn;
+  int nl_success;
 
   int need_new_j;
   int need_new_m;
@@ -205,9 +203,6 @@ int ode23tb (struct state_struct *state, double *concs,
   int iter_count;
   int nnrejectstep;
 
-  int number_base_reaction_reactants;
-  int nnreset_znew;
-
   int origin;
   int done;
 
@@ -217,7 +212,7 @@ int ode23tb (struct state_struct *state, double *concs,
   int ode_solver_choice;
   int delta_concs_choice;
 
-  int nl_success;
+  int nnreset_znew;
   int padi;
 
   char  trans_chars[8];
@@ -244,7 +239,6 @@ int ode23tb (struct state_struct *state, double *concs,
   dzero    = 0.0;
   count_to_conc = state->count_to_conc;
   conc_to_count = state->conc_to_count;
-  base_rxn      = state->base_reaction;
   ny            = state->nunique_molecules;
   delta_concs_choice = (int)state->delta_concs_choice;
   nrxns         = state->number_reactions;
@@ -329,7 +323,7 @@ int ode23tb (struct state_struct *state, double *concs,
   if (success) {
     approximate_delta_concs(state,y,f0,delta_concs_choice);
     if (ode_rxn_view_freq > 0) {
-      ode_print_fluxes(state,t,f0);
+      ode_print_dconcs(state,t,f0);
     }
     nfevals = (int64_t)1;
     /*
@@ -486,7 +480,7 @@ int ode23tb (struct state_struct *state, double *concs,
       approximate_delta_concs(state,y,f1,delta_concs_choice);
       if (ode_rxn_view_freq > 0) {
 	t1 = t + tdel;
-	ode_print_fluxes(state,t1,f1);
+	ode_print_dconcs(state,t1,f1);
       }
       nfevals += 1;
       recip_tdel = 1.0/tdel;
@@ -626,7 +620,7 @@ int ode23tb (struct state_struct *state, double *concs,
 	  */
 	  approximate_delta_concs(state,y,f0,delta_concs_choice);
 	  if (ode_rxn_view_freq > 0) {
-	    ode_print_fluxes(state,t,f0);
+	    ode_print_dconcs(state,t,f0);
 	  }
 	  /*
 	    Compute new Jacobian, dfdy.
@@ -711,7 +705,7 @@ int ode23tb (struct state_struct *state, double *concs,
 	if (lfp) {
 	  fprintf(lfp," Stage1 y2, y2_counts, and z2 before ode_it_solve\n");
 	  origin = 3; 
-	  print_concs_fluxes(state,ny,z2,y2,t,h,nsteps,origin);
+	  print_concs_dconcs(state,ny,z2,y2,t,h,nsteps,origin);
 	}
 #endif
 	*/
@@ -724,7 +718,7 @@ int ode23tb (struct state_struct *state, double *concs,
 	if (lfp) {
 	  fprintf(lfp," Stage1 y2, y2_counts, and z2 after ode_it_solve\n");
 	  origin = 4; 
-	  print_concs_fluxes(state,ny,z2,y2,t,h,nsteps,origin);
+	  print_concs_dconcs(state,ny,z2,y2,t,h,nsteps,origin);
 	}
 #endif
 	*/
@@ -779,7 +773,7 @@ int ode23tb (struct state_struct *state, double *concs,
 	    fprintf(lfp," Stage2 ynew, ynew_counts, and znew "
 		    "before ode_it_solve\n");
 	    origin = 5; 
-	    print_concs_fluxes(state,ny,znew,ynew,t,h,nsteps,origin);
+	    print_concs_dconcs(state,ny,znew,ynew,t,h,nsteps,origin);
 	  }
 #endif
 	  */
@@ -794,7 +788,7 @@ int ode23tb (struct state_struct *state, double *concs,
 	    fprintf(lfp," Stage2 ynew, ynew_counts, and znew "
 		    "after ode_it_solve\n");
 	    origin = 6; 
-	    print_concs_fluxes(state,ny,znew,ynew,t,h,nsteps,origin);
+	    print_concs_dconcs(state,ny,znew,ynew,t,h,nsteps,origin);
 	  }
 #endif
 	  */
@@ -1040,7 +1034,7 @@ int ode23tb (struct state_struct *state, double *concs,
 			   reverse_rxn_likelihoods);
 	  ode_rxn_view_step = ode_rxn_view_freq;
 	  approximate_delta_concs(state,y,f0,delta_concs_choice);
-	  ode_print_fluxes(state,t,f0);
+	  ode_print_dconcs(state,t,f0);
 	}
       }
       if (not_done) {
