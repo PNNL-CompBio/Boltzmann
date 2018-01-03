@@ -48,7 +48,7 @@ int compute_reaction_dg0(struct formation_energy_struct *fes){
 
   struct rxn_struct *reactions;
   struct rxn_struct *reaction;
-  struct istring_elem_struct *sorted_molecules;
+  struct molecule_struct *sorted_molecules;
   struct rxn_matrix_struct *rxns_matrix;
   int64_t *rxn_ptrs;
   int64_t *molecules_indices;
