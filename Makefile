@@ -167,7 +167,7 @@ DCFLAGS = ${NO_OPT_CFLAGS}
 DLFLAGS = ${BLFLAGS} 
 TIMING_DEPS = timingi.h djb_timing_b.h djb_timing.h
 LUNWIND_DEPS = luwtb.h luwtb1.h luwtb2.h
-SERIAL_INCS = boltzmann_structs.h super_state_struct.h super_state_pointers_struct.h state_struct.h rxn_struct.h rxn_matrix_struct.h molecules_matrix_struct.h molecule_struct.h compartment_struct.h vgrng_state_struct.h pseudoisomer_struct.h formation_energy_struct.h stack_level_elem_struct.h sbml2bo_struct.h ms2js_struct.h $(TIMING_DEPS) $(LUNWIND_DEPS) 
+SERIAL_INCS = boltzmann_structs.h super_state_struct.h super_state_pointers_struct.h state_struct.h rxn_struct.h rxn_matrix_struct.h molecules_matrix_struct.h molecule_struct.h compartment_struct.h vgrng_state_struct.h pseudoisomer_struct.h formation_energy_struct.h stack_level_elem_struct.h sbml2bo_struct.h t2js_struct.h $(TIMING_DEPS) $(LUNWIND_DEPS) 
 SERIAL_OBJS1 = boltzmann_boot.o boltzmann_mmap_superstate.o \
 	flatten_super_state.o boltzmann_boot_check.o \
 	boltzmann_rep_state_i.o boltzmann_init.o alloc0.o \
@@ -218,7 +218,7 @@ SBML_OBJS = sbml_to_boltzmann.o size_ms2js_file.o size_kg2js_file.o \
 	count_ntb.o
 KFP_OBJS = keg_from_pseudoisomer.o count_ws.o count_nlb.o check_for_ws.o boltzmannize_json_id.o
 KFM_OBJS = keg_from_modelseed.o count_ws.o count_ntb.o count_nor.o check_for_ws.o boltzmannize_json_id.o
-KPM_OBJS = modelseed_2_json.o count_ws.o count_ntb.o count_nws.o 
+KPM_OBJS = count_ws.o count_ntb.o count_nws.o 
 all: all-am
 
 .SUFFIXES:
@@ -536,8 +536,8 @@ include Makefile.no_timing
 ms2js_ids: $(KPM_OBJS)
 	$(CLINKER) -O0 -o ms2js_ids $(KPM_OBJS)
 
-modelseed_2_json.o: modelseed_2_json.c ${SERIAL_INCS}
-	$(CC) $(DCFLAGS) $(TFLAGS) -c modelseed_2_json.c 
+#modelseed_2_json.o: modelseed_2_json.c ${SERIAL_INCS}
+#	$(CC) $(DCFLAGS) $(TFLAGS) -c modelseed_2_json.c 
 
 keg_ms_ids: $(KFM_OBJS)
 	$(CLINKER) -O0 -o keg_ms_ids $(KFM_OBJS)
