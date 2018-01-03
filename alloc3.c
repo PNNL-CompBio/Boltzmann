@@ -55,7 +55,7 @@ int alloc3(struct state_struct *state) {
   int success;
   int nrxns;
   int rxn_view_freq;
-  int rxn_view_hist_lngth;
+  int rxn_view_hist_length;
 
   int nzr;
   int max_compartment_len;
@@ -335,8 +335,8 @@ int alloc3(struct state_struct *state) {
   }
   if (success) {
     if (rxn_view_freq > 0) {
-      rxn_view_hist_lngth = 1 + (int)(((int)(state->record_steps) + rxn_view_freq - 1) /rxn_view_freq);
-      ask_for = (((int64_t)nrxns) * ((int64_t)sizeof(double)))*((int64_t)rxn_view_hist_lngth);
+      rxn_view_hist_length = 1 + (int)(((int)(state->record_steps) + rxn_view_freq - 1) /rxn_view_freq);
+      ask_for = (((int64_t)nrxns) * ((int64_t)sizeof(double)))*((int64_t)rxn_view_hist_length);
       usage += ask_for;
       state->rxn_view_likelihoods = (double *)calloc(one_l,ask_for);
       if (state->rxn_view_likelihoods == NULL) {
@@ -345,15 +345,15 @@ int alloc3(struct state_struct *state) {
 	fflush(stderr);
 	success = 0;
       }
-      state->rxn_view_hist_lngth = (int64_t)rxn_view_hist_lngth;
+      state->rxn_view_hist_length = (int64_t)rxn_view_hist_length;
     } else {
       state->rxn_view_likelihoods = NULL;
     }
   }
   if (success) {
     if (rxn_view_freq > 0) {
-      rxn_view_hist_lngth = (int)state->rxn_view_hist_lngth;
-      ask_for = (((int64_t)nrxns) * ((int64_t)sizeof(double)))*((int64_t)rxn_view_hist_lngth);
+      rxn_view_hist_length = (int)state->rxn_view_hist_length;
+      ask_for = (((int64_t)nrxns) * ((int64_t)sizeof(double)))*((int64_t)rxn_view_hist_length);
       usage += ask_for;
       state->rev_rxn_view_likelihoods = (double *)calloc(one_l,ask_for);
       if (state->rev_rxn_view_likelihoods == NULL) {
@@ -368,8 +368,8 @@ int alloc3(struct state_struct *state) {
   }
   if (success) {
     if (rxn_view_freq > 0) {
-      rxn_view_hist_lngth = (int)state->rxn_view_hist_lngth;
-      ask_for = ((int64_t)sizeof(double))*((int64_t)rxn_view_hist_lngth);
+      rxn_view_hist_length = (int)state->rxn_view_hist_length;
+      ask_for = ((int64_t)sizeof(double))*((int64_t)rxn_view_hist_length);
       usage += ask_for;
       state->no_op_likelihood = (double *)calloc(one_l,ask_for);
       if (state->no_op_likelihood == NULL) {
