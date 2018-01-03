@@ -97,7 +97,7 @@ int print_reactions_view(struct state_struct *state) {
     rev_rxn_view_data 	 = state->rev_rxn_view_likelihoods;
     rxn_fire          	 = state->rxn_fire;
     rxn_view_hist_lngth  = state->rxn_view_hist_lngth;
-    nrxns                = state->number_reactions;
+    nrxns                = (int)state->number_reactions;
     no_op_likelihood     = state->no_op_likelihood;
     /*
       Print out the number of times no reaction was chosen and its likelihoods.
