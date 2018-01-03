@@ -1,5 +1,6 @@
 #include "boltzmann_structs.h"
 #include "get_counts.h"
+#include "update_regulations.h"
 #include "lr8_approximate_delta_concs.h"
 
 int lr8_approximate_delta_concs(struct state_struct *state, 
@@ -14,7 +15,8 @@ int lr8_approximate_delta_concs(struct state_struct *state,
 
     Get reference from Bill Cannon
     Called by: approximate_delta_concs
-    Calls:     update_rxn_likelihoods
+    Calls:     get_counts,
+               update_regulations,
 
                                 TMF
     state                       *SI   Boltzmant state structure.
@@ -86,6 +88,9 @@ int lr8_approximate_delta_concs(struct state_struct *state,
   int k;
   int klim;
 
+  int use_regulation;
+  int count_or_conc;
+
   FILE *lfp;
   FILE *efp;
   /*
@@ -115,6 +120,7 @@ int lr8_approximate_delta_concs(struct state_struct *state,
   rfc              = state->product_term;
   counts           = state->ode_counts;
   conc_to_count    = state->conc_to_count;
+  use_regulation   = state->use_regulation;
   /*
   recip_avogadro   = state->recip_avogadro;
   */
@@ -124,6 +130,14 @@ int lr8_approximate_delta_concs(struct state_struct *state,
   get_counts(num_species,concs,conc_to_count,counts);
   flux_scaling     = 1.0;
   lfp      = state->lfp;
+  /*
+    As per discusion with Bill Cannon, we want to update the activities
+    if reguation is in play. So do that here.
+  */
+  if (use_regulation) {
+    count_or_conc = 0;
+    update_regulations(state,concs,count_or_conc);
+  }
   /*
     Compute the reaction flux contributions for each reaction:
 
