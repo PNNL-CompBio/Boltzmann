@@ -1,8 +1,7 @@
 #include "boltzmann_structs.h"
 
 #include "compute_flux_scaling.h"
-#include "approximate_fluxes.h"
-#include "ce_approximate_fluxes.h"
+#include "approximate_delta_concs.h"
 #include "blas.h"
 #include "lapack.h"
 #include "vec_abs.h"
@@ -37,7 +36,7 @@ int ode_it_solve(struct state_struct *state,
     miter and ipivot contain the LU factorization of I-d*h*dfdy,
     Returns 0 on successful iteration, 1 on a fail.
     Called by: ode23tb
-    Calls:     approximate_fluxes, fabs, dgetrs,
+    Calls:     approximate_delta_concs, fabs, dgetrs,
   */
   double kappa;
   double errit;
@@ -86,15 +85,16 @@ int ode_it_solve(struct state_struct *state,
   int inc1;
 
   int exit_not;
-  int padi;
+  int choice;
 
   char  trans_chars[8];
   char  *trans;
   FILE *lfp;
   FILE *efp;
 /*
-*/
 #define DBG 1
+*/
+  choice           = (int)state->delta_concs_choice;
   max_iter     	   = 5;
   kappa        	   = 0.5;
   itfail       	   = 0;
@@ -156,34 +156,17 @@ int ode_it_solve(struct state_struct *state,
     */
     vec_mul(&ny,y_count,y,conc_to_count);
     /*
-      rhs <- y', approximate fluxes.
+      rhs <- y', approximate delta concentraions.
     */
     
     flux_scaling = compute_flux_scaling(state,y);
-    ce_approximate_fluxes(state,y_count,forward_rxn_likelihoods, 
-		       reverse_rxn_likelihoods,
-		       rhs,flux_scaling,base_rxn);
+    approximate_delta_concs(state,y_count,forward_rxn_likelihoods, 
+			    reverse_rxn_likelihoods,
+			    rhs,flux_scaling,base_rxn,choice);
     /*
 #ifdef DBG
     if (lfp) {
-      fprintf(lfp,"ode_it_solve: after call to ce_approximate_fluxes:\n");
-      nsteps = 0;
-      origin = 7;
-      print_concs_fluxes(state,ny,rhs,y,y_count,
-			 forward_rxn_likelihoods,
-			 reverse_rxn_likelihoods,t,h,nsteps,origin);
-    }
-#endif    
-    */
-    /*
-    approximate_fluxes(state,y_count,forward_rxn_likelihoods, 
-		       reverse_rxn_likelihoods,
-		       rhs,flux_scaling,base_rxn);
-    */
-    /*
-#ifdef DBG
-    if (lfp) {
-      fprintf(lfp,"ode_it_solve: after call to approximate_fluxes:, flux_scaling = %le\n",flux_scaling);
+      fprintf(lfp,"ode_it_solve: after call to approximate_delta_concs:, flux_scaling = %le\n",flux_scaling);
       nsteps = 0;
       origin = 7;
       print_concs_fluxes(state,ny,rhs,y,y_count,
