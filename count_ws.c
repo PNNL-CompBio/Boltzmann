@@ -34,7 +34,7 @@ int count_ws(char *line) {
   /*
     Return the number of leading white space characters (<=32) 
     int the character string, line.\
-    Called by: count_species.
+    Called by: count_molecules.
     Calls      strlen(intrinsic).
   */
   int ws_chars;
