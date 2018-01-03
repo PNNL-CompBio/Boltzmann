@@ -185,6 +185,8 @@ struct state_struct {
   int64_t ode_stop_norm; /* 0 for infinity(max), 1 for 1(sum abs), 2 for 2 */
   int64_t ode_stop_rel;  /* 0 for absolute  1 for relative */
   int64_t ode_stop_style; /*0 for off, 1 for vector, 2 for element_wise */
+  int64_t compute_sensitivities; 
+  /* 0 for no, 1 for yes, only when ode_solver_choice == 1 */
   /*
     offsets used to self-describe this state vector.
     only needed for parallel version multiple instantiations
@@ -362,6 +364,8 @@ struct state_struct {
   char *concs_out_file;    /* max_filename_len */
   char *aux_data_file;     /* max_filename_len */
   char *ode_counts_file;   /* max_filename_len */
+  char *ode_sens_file;     /* max_filename_len */
+  char *ode_dsens_file;    /* max_filename_len */
   char *solvent_string;    /* Length is 64. Allocated in alloc0 */
 
   char *rxn_title_text;    /* rxn_title_text_length. Allocated in alloc2  */
@@ -457,6 +461,9 @@ struct state_struct {
 
   FILE *ode_counts_fp;
   FILE *aux_data_fp;
+
+  FILE *ode_sens_fp;
+  FILE *ode_dsens_fp;
   /*
     Instrumentation.     
   */
