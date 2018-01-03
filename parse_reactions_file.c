@@ -80,6 +80,7 @@ int parse_reactions_file(struct state_struct *state,
   struct molecule_struct *rxn_molecules;
   struct compartment_struct *unsorted_cmpts;
   double *activities;
+  double *enzyme_level;
   double *reg_constant;
   double *reg_exponent;
   double *reg_drctn;
@@ -215,6 +216,7 @@ int parse_reactions_file(struct state_struct *state,
     raw_molecules_text          = state->raw_molecules_text;
     regulation_text             = state->regulation_text;
     activities                  = state->activities;
+    enzyme_level                = state->enzyme_level;
     reactions                   = state->reactions;
     rxns_matrix                 = state->reactions_matrix;
     rxn_ptrs                    = rxns_matrix->rxn_ptrs;
@@ -233,7 +235,6 @@ int parse_reactions_file(struct state_struct *state,
     reaction->deltag0_computed  = 0;
     reaction->ph                = state->ph;
     reaction->ionic_strength    = state->ionic_strength;
-    activities[0]               = 1.0;
     for (i=0;i<max_regs_per_rxn;i++) {
       reg_constant[reg_base+i] = 1.0;
       reg_exponent[reg_base+i] = 0.0;
@@ -281,7 +282,7 @@ int parse_reactions_file(struct state_struct *state,
       	  ends with a // line.
       	  It requires: LEFT, RIGHT, DGZERO and DGZERO-UNITS lines.
       	  It may have PATHWAY and LEFT_COMPARTMENT, RIGHT_COMPARTMENT  
-	  ACTIVITY, PREGULATION and or NREGULATION lines.
+	  ACTIVITY/ENZYME_LEVEL, PREGULATION and or NREGULATION lines.
 
       	  Allow pre REACTION lines in reactions file as a header.
       	  So before the first REACTION line the state is -1
@@ -522,15 +523,16 @@ int parse_reactions_file(struct state_struct *state,
 	  }
 	  break;
         case 9:
+	case 12:
 	  /*
-	    An ACTIVITY line.
+	    An ACTIVITY/ENZYME_LEVEL line.
 	  */
 	  ns = sscanf ((char*)&rxn_buffer[word1],"%le",
-		       &reaction->activity);
+		       &reaction->enzyme_level);
 	  if (ns < 1) {
 	    if (lfp) {
 	      fprintf(lfp,
-		    "parse_reactions_file: malformed ACTIVITY line was\n%s\n",
+		    "parse_reactions_file: malformed ACTIVITY/ENZYME_LEVEL line was\n%s\n",
 		    rxn_buffer);
 	      fflush(lfp);
 	    }
@@ -615,12 +617,15 @@ int parse_reactions_file(struct state_struct *state,
 	  reg_pos += 1;		 
 
 	  break;
-	case 12:
+	case 13:
 	  /*
 	    // reaction terminator line
 	  */
 	  reaction->self_id = rxns;
+	  /*
 	  activities[rxns]  = reaction->activity;
+	  */
+	  enzyme_level[rxns] = reaction->enzyme_level;
 	  /*
 	    Since a compartment line could have come any where in
 	    the reaction input lines, we need to go back
@@ -664,7 +669,10 @@ int parse_reactions_file(struct state_struct *state,
 	    reaction->right_compartment = 0;
 	    reaction->num_reactants     = 0;
 	    reaction->num_products      = 0;
+	    /*
 	    reaction->activity          = 1.0;
+	    */
+	    reaction->enzyme_level      = 1.0;
 	    /*
 	      The following three lines added by DGT on 4/18/2013
 	    */
