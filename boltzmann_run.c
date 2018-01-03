@@ -28,10 +28,14 @@ specific language governing permissions and limitations under the License.
 #include "choose_rxn.h"
 #include "deq_run.h"
 #include "compute_delta_g_forward_entropy_free_energy.h"
+#include "print_rxn_choice.h"
 #include "print_counts.h"
+/*
 #include "print_likelihoods.h"
 #include "save_likelihoods.h"
 #include "print_free_energy.h"
+*/
+#include "boltzmann_watch.h"
 #include "print_boundary_flux.h"
 #include "print_restart_file.h"
 #include "print_reactions_view.h"
@@ -47,10 +51,9 @@ int boltzmann_run(struct state_struct *state) {
 	       choose_rxn,
                deq_run,
 	       compute_delta_g_forward_entropy_free_energy
+	       print_rxh_choice,
 	       print_counts,
-	       print_concs,
-	       print_likelihoods,
-	       print free_energy,
+	       boltzmann_watch,
 	       print boundary_flux,
 	       print_restart_file
 	       print_reactions_view
@@ -107,11 +110,8 @@ int boltzmann_run(struct state_struct *state) {
   int print_output;
   int noop_rxn;
 
-  int rxn_no;
   int j;
-
-  int ierr;
-  int padi;
+  int i0;
 
   FILE *lfp;
   success = 1;
@@ -183,20 +183,7 @@ int boltzmann_run(struct state_struct *state) {
 	if (choice_view_freq > zero_l) {
 	  choice_view_step = choice_view_step - one_l;
 	  if ((choice_view_step <= zero_l) || (i == (n_warmup_steps-one_l))) {
-	    if (rxn_choice == noop_rxn) {
-	      fprintf(lfp,"%lld\tnone\n",i);
-	    } else {
-	      if (rxn_choice < number_reactions) {
-		fprintf(lfp,"%lld\t%d\t%le\t%le\n",i,rxn_choice,forward_rxn_likelihood[rxn_choice],
-			reverse_rxn_likelihood[rxn_choice]);
-	      } else {
-		rxn_no = rxn_choice - number_reactions;
-		fprintf(lfp,"%lld\t%d\t%le\t%le\n",i,rxn_choice,reverse_rxn_likelihood[rxn_no],
-			forward_rxn_likelihood[rxn_no]);
-	      
-	      }
-	    }
-	    fflush(lfp);
+	    print_rxn_choice(state,i,rxn_choice);
 	    choice_view_step = choice_view_freq;
 	  }
 	}
@@ -221,14 +208,23 @@ int boltzmann_run(struct state_struct *state) {
     /*
       Use ode solver to move from initial concentrations to
       steady state.
-    */
     state->print_ode_concs = 0;
+    */
     success = deq_run(state);
     i = -1;
   }
-  print_counts(state,i);
+  if (print_output) {
+    print_counts(state,i);
+  }
   if (success) {
     success = update_rxn_log_likelihoods(state);
+  }
+  if (success) {
+    i0 = 0;
+    success = compute_delta_g_forward_entropy_free_energy(state,
+							  &dg_forward,
+							  &entropy,
+							  i0);
   }
   /* 
     Data collection phase (recording).
@@ -253,43 +249,39 @@ int boltzmann_run(struct state_struct *state) {
     for (i=0;i<unique_molecules;i++) {
       bndry_flux_counts[i] = 0.0;
     }
-    rxn_view_step    = one_l;
+    /*
+      Cause step 0 to print if we are printing.
+    */
+    choice_view_step = one_l;
     count_view_step  = one_l;
     lklhd_view_step  = one_l;
+    rxn_view_step    = one_l;
     fe_view_step     = one_l;
-    choice_view_step = one_l;
+    r_sum_likelihood = one_l;
+    rxn_choice       = -1;
     for (i=0;i<n_record_steps;i++) {
       /*
 	Choose a reaction setting the future_counts field of
 	the state structure and counting the number of times this
 	reaction in this direction has fired.
       */
+      if (print_output) {
+	boltzmann_watch(state,
+			&choice_view_step,
+			&count_view_step,
+			&lklhd_view_step,
+			&rxn_view_step,
+			&fe_view_step,
+			&rxn_view_pos,
+			r_sum_likelihood,
+			dg_forward,
+			entropy,
+			i,
+			rxn_choice);
+      }
+			
       rxn_choice = choose_rxn(state,&r_sum_likelihood);
       if (rxn_choice < 0) break;
-      if (print_output > 1) {
-	if (lfp) {
-	  if (choice_view_freq > zero_l) {
-	    choice_view_step = choice_view_step - one_l;
-	    if ((choice_view_step <= zero_l) || (i == (n_record_steps-one_l))) {
-	      if (rxn_choice == noop_rxn) {
-		fprintf(lfp,"%lld\tnone\n",i);
-	      } else {
-		if (rxn_choice < number_reactions) {
-		  fprintf(lfp,"%lld\t%d\t%le\t%le\n",i,rxn_choice,forward_rxn_likelihood[rxn_choice],
-			  reverse_rxn_likelihood[rxn_choice]);
-		} else {
-		  rxn_no = rxn_choice - number_reactions;
-		  fprintf(lfp,"%lld\t%d\t%le\t%le\n",i,rxn_choice,reverse_rxn_likelihood[rxn_no],
-			  forward_rxn_likelihood[rxn_no]);
-		  
-		}
-	      }
-	      fflush(lfp);
-	      choice_view_step = choice_view_freq;
-	    }
-	  }
-	}
-      }
       if (print_output) {
 	if (rxn_choice <= number_reactions_t2) {
 	  rxn_fire[rxn_choice] += (int64_t)1;
@@ -319,53 +311,29 @@ int boltzmann_run(struct state_struct *state) {
 							    &dg_forward,
 							    &entropy,
 							    i);
-      if (print_output) {
-	/* 
-	  print the counts. 
-	*/
-	count_view_step = count_view_step - one_l;
-	if ((count_view_step <= zero_l) || (i == (n_record_steps-1))) {
-	  print_counts(state,i);
-	  count_view_step = count_view_freq;
-	}
-	/* 
-	  print the entropy, dg_forward and the reaction likelihoods, 
-	*/
-	if (lklhd_view_freq > zero_l) {
-	  lklhd_view_step = lklhd_view_step - one_l;
-	  if ((lklhd_view_step <= zero_l) || (i == (n_record_steps-one_l))) {
-	    print_likelihoods(state,entropy,dg_forward,i) ;
-	    lklhd_view_step = lklhd_view_freq;
-	  }
-	}
-	if (rxn_view_freq > zero_l) {
-	  rxn_view_step = rxn_view_step - one_l;
-	  /*
-	    Save the likelihoods on a per reaction basis for later 
-	    printing to the rxns.view file.
-	  */
-	  if ((rxn_view_step <= zero_l) || (i == (n_record_steps-one_l))) {
-	    no_op_likelihood[rxn_view_pos] = r_sum_likelihood;
-	    save_likelihoods(state,rxn_view_pos);
-	    rxn_view_step = rxn_view_freq;
-	    rxn_view_pos  += one_l;
-	  }
-	}
-	/*
-	  If user has requested them, print out free energies as well.
-	*/
-	if (state->free_energy_format > zero_l) {
-	  if (fe_view_freq > zero_l) {
-	    fe_view_step = fe_view_step - one_l;
-	    if ((fe_view_step <= zero_l) || (i == (n_record_steps-one_l))) {
-	      print_free_energy(state,i);
-	      fe_view_step = fe_view_freq;
-	    }
-	  }
-	}
-      } /* end if (print_output) */
     } /* end for(i...) */
     if (print_output) {
+      /* 
+	print results from last iteration. 
+      */
+      choice_view_step = one_l;
+      count_view_step  = one_l;
+      lklhd_view_step  = one_l;
+      rxn_view_step    = one_l;
+      fe_view_step     = one_l;
+      boltzmann_watch(state,
+		      &choice_view_step,
+		      &count_view_step,
+		      &lklhd_view_step,
+		      &rxn_view_step,
+		      &fe_view_step,
+		      &rxn_view_pos,
+		      r_sum_likelihood,
+		      dg_forward,
+		      entropy,
+		      n_record_steps,
+		      rxn_choice);
+
       if (state->num_fixed_concs > (int64_t)0) {
 	print_boundary_flux(state);
       } /* end if (state->num_fixed_concs ...) */
@@ -377,7 +345,7 @@ int boltzmann_run(struct state_struct *state) {
 	  success = print_reactions_view(state);
 	}
       }
-    }
+    } /* end if (print_output) */
     state->entropy = entropy;
     state->dg_forward = dg_forward;
   }
