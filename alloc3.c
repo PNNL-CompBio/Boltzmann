@@ -78,14 +78,14 @@ int alloc3(struct state_struct *state) {
 
   if (success) {
     /*
-      Allocate space for the current concentrations buffer.
+      Allocate space for the current counts buffer.
     */
     ask_for = ((int64_t)nu_molecules) * ((int64_t)sizeof(double));
     usage += ask_for;
-    state->current_concentrations = (double *)calloc(one_l,ask_for);
-    if (state->current_concentrations == NULL) {
+    state->current_counts = (double *)calloc(one_l,ask_for);
+    if (state->current_counts == NULL) {
       fprintf(stderr,"alloc3: Error unable to allocate %ld bytes for "
-	      "current_concentrations field\n",ask_for);
+	      "current_counts field\n",ask_for);
       fflush(stderr);
       success = 0;
     }
@@ -96,10 +96,10 @@ int alloc3(struct state_struct *state) {
     */
     ask_for = ((int64_t)nu_molecules) * ((int64_t)sizeof(double));
     usage += ask_for;
-    state->bndry_flux_concs = (double *)calloc(one_l,ask_for);
-    if (state->bndry_flux_concs == NULL) {
+    state->bndry_flux_counts = (double *)calloc(one_l,ask_for);
+    if (state->bndry_flux_counts == NULL) {
       fprintf(stderr,"alloc3: Error unable to allocate %ld bytes for "
-	      "bndry_flux_concs field\n",ask_for);
+	      "bndry_flux_counts field\n",ask_for);
       fflush(stderr);
       success = 0;
     }
@@ -129,6 +129,56 @@ int alloc3(struct state_struct *state) {
     if (state->ke == NULL) {
       fprintf(stderr,"alloc3: Error unable to allocate %ld bytes for "
 	      "state->ke field.\n",ask_for);
+      fflush(stderr);
+      success = 0;
+    } 
+  }
+  /*
+    Allocate space for the steady state reaction equilibrium coefficients
+    adjustments..
+  */
+  if (success) {
+    ask_for = ((int64_t)nrxns) * ((int64_t)sizeof(double));
+    /*
+      We also need to store a kss for each reverse reaction as
+      they are not reciprocals.
+    */
+    ask_for += ask_for;
+    usage += ask_for;
+    state->kss = (double *)calloc(one_l,ask_for);
+    if (state->kss == NULL) {
+      fprintf(stderr,"alloc3: Error unable to allocate %ld bytes for "
+	      "state->kss field.\n",ask_for);
+      fflush(stderr);
+      success = 0;
+    } else {
+      state->kssr = (double *)&(state->kss[nrxns]);
+    }
+  }
+  /*
+    Allocate space for experimental concentration.
+  */
+  if (success) {
+    ask_for = ((int64_t)nu_molecules) * ((int64_t)sizeof(double));
+    usage += ask_for;
+    state->kss_e_val = (double *)calloc(one_l,ask_for);
+    if (state->kss_e_val == NULL) {
+      fprintf(stderr,"alloc3: Error unable to allocate %ld bytes for "
+	      "state->kss_e_val field.\n",ask_for);
+      fflush(stderr);
+      success = 0;
+    } 
+  }
+  /*
+    Allocate space for user concentrataion
+  */
+  if (success) {
+    ask_for = ((int64_t)nu_molecules) * ((int64_t)sizeof(double));
+    usage += ask_for;
+    state->kss_u_val = (double *)calloc(one_l,ask_for);
+    if (state->kss_u_val == NULL) {
+      fprintf(stderr,"alloc3: Error unable to allocate %ld bytes for "
+	      "state->kss_u_val field.\n",ask_for);
       fflush(stderr);
       success = 0;
     } 
