@@ -7,7 +7,7 @@ SERIAL_OBJS1 = boltzmann_boot.o boltzmann_mmap_superstate.o flatten_super_state.
 
 SERIAL_OBJS1_5 = compute_standard_energies.o size_pseudoisomer_file.o alloc5.o parse_pseudoisomer_dg0f_file.o sharp_pos.o blank_to_dash.o alloc6.o compute_molecule_dg0tfs.o compute_molecule_dg0tf.o pseudoisomer_dg0tf.o compute_molecular_partition_probability.o compute_chemical_potential.o compute_reaction_dg0.o unalloc6.o check_initial_concentrations.o
 
-SERIAL_OBJS2 = boltzmann_run.o update_rxn_log_likelihoods.o choose_rxn.o bndry_flux_update.o candidate_rxn.o rxn_likelihood.o rxn_likelihood_postselection.o rxn_log_likelihoods.o rxn_likelihoods.o binary_search_l_u_b.o rxn_count_update.o compute_delta_g_forward_entropy_free_energy.o print_counts.o print_likelihoods.o save_likelihoods.o print_free_energy.o print_boundary_flux.o print_restart_file.o print_reactions_view.o
+SERIAL_OBJS2 = boltzmann_run.o update_rxn_log_likelihoods.o choose_rxn.o bndry_flux_update.o candidate_rxn.o metropolis.o rxn_likelihood.o rxn_likelihood_postselection.o rxn_log_likelihoods.o rxn_likelihoods.o binary_search_l_u_b.o rxn_count_update.o compute_delta_g_forward_entropy_free_energy.o print_counts.o print_likelihoods.o save_likelihoods.o print_free_energy.o print_boundary_flux.o print_restart_file.o print_reactions_view.o
 
 #SERIAL_OBJS3 = 
 SERIAL_OBJS3 = rxn_map_init.o rxn_map_parse_start_stop_line.o rxn_map_run.o alloc4.o form_molecules_matrix.o
@@ -88,6 +88,7 @@ libboltzmann.a: $(SERIAL_OBJS1) $(SERIAL_OBJS1_5) $(SERIAL_OBJS2) $(SERIAL_OBJS3
 	$(AR) $(ARFLAGS) libboltzmann.a choose_rxn.o
 	$(AR) $(ARFLAGS) libboltzmann.a bndry_flux_update.o
 	$(AR) $(ARFLAGS) libboltzmann.a candidate_rxn.o
+	$(AR) $(ARFLAGS) libboltzmann.a metropolis.o
 	$(AR) $(ARFLAGS) libboltzmann.a rxn_likelihood.o
 	$(AR) $(ARFLAGS) libboltzmann.a rxn_likelihood_postselection.o
 	$(AR) $(ARFLAGS) libboltzmann.a rxn_log_likelihoods.o
@@ -366,11 +367,14 @@ boltzmann_run.o: $(SERIAL_INCS) boltzmann_run.c boltzmann_run.h update_rxn_log_l
 update_rxn_log_likelihoods.o: $(SERIAL_INCS) update_rxn_log_likelihoods.c update_rxn_log_likelihoods.h rxn_log_likelihoods.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c update_rxn_log_likelihoods.c
 
-choose_rxn.o: ${SERIAL_INCS} choose_rxn.c choose_rxn.h candidate_rxn.h rxn_likelihood_postselection.h bndry_flux_update.h
+choose_rxn.o: ${SERIAL_INCS} choose_rxn.c choose_rxn.h candidate_rxn.h metropolis.h bndry_flux_update.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c choose_rxn.c
 
 candidate_rxn.o: $(SERIAL_INCS) candidate_rxn.c candidate_rxn.h vgrng.h binary_search_l_u_b.h rxn_count_update.h rxn_count_update.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c candidate_rxn.c
+
+metropolis.o: ${SERIAL_INCS} metropolis.c metropolis.h rxn_likelihood_postselection.h bndry_flux_update.h vgrng.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c metropolis.c
 
 rxn_likelihood.o: $(SERIAL_INCS) rxn_likelihood.c rxn_likelihood.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c rxn_likelihood.c
