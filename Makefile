@@ -564,8 +564,8 @@ boltzmann_init.o: $(SERIAL_INCS) boltzmann_init.c boltzmann_init.h alloc0.h read
 alloc0.o: $(SERIAL_INCS) alloc0.c alloc0.h boltzmann_set_filename_ptrs.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c alloc0.c
 
-boltzmann_set_filenmae_ptrs.h: $(SERIAL_INCS) boltzmann_set_filenmae_ptrs.c boltzmann_set_filenmae_ptrs.h
-	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_set_filenmae_ptrs.c
+boltzmann_set_filename_ptrs.h: $(SERIAL_INCS) boltzmann_set_filename_ptrs.c boltzmann_set_filename_ptrs.h
+	$(CC) $(DCFLAGS) $(TFLAGS) -c boltzmann_set_filename_ptrs.c
 
 read_params.o: $(SERIAL_INCS) read_params.c read_params.h
 	$(CC) $(DCFLAGS) $(TFLAGS) -c read_params.c
