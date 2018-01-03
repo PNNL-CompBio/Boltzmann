@@ -22,8 +22,8 @@ specific language governing permissions and limitations under the License.
 ******************************************************************************/
 extern int unique_molecules_core(int nzr,
 				 struct istring_elem_struct *sorted_molecules,
-				 int64_t *molecules_indices,
 				 char *molecules_text,
+				 int64_t *molecules_map,
 				 int64_t *nunique_molecules,
 				 int64_t *sum_molecule_len,
 				 int64_t align_len,
