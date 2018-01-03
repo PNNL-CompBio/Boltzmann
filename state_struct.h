@@ -31,6 +31,7 @@ struct state_struct {
   struct istring_elem_struct *unsorted_cmpts;
   struct istring_elem_struct *sorted_cmpts;
   struct vgrng_state_struct  *vgrng_state;
+  struct vgrng_state_struct  *vgrng2_state;
   char *params_file;
   char *reaction_file;
   char *init_conc_file;
@@ -102,6 +103,7 @@ struct state_struct {
   double  *current_rxn_log_likelihood_ratio;
   double  *future_rxn_log_likelihood_ratio;
   double  *activities;
+  double  *activities_save;
   double  *l_thermo;
   double  *rxn_view_likelihoods;
   double  *rev_rxn_view_likelihoods;
