@@ -33,8 +33,8 @@ int print_restart_file(struct state_struct *state) {
   struct rxn_struct *reactions;
   struct rxn_matrix_struct *rxns_matrix;
   struct molecule_struct *cur_molecules;
-  struct molecule_struct *cur_cmpts;
-  struct molecule_struct *cur_cmpt;
+  struct compartment_struct *cur_cmpts;
+  struct compartment_struct *cur_cmpt;
   double *ccounts;
   double multiplier;
   double conc;
@@ -92,7 +92,7 @@ int print_restart_file(struct state_struct *state) {
       ci = cur_molecules->c_index;
       if (ci != oi) {
 	oi = ci;
-	cur_cmpt   = (struct molecule_struct *)&(cur_cmpts[ci]);
+	cur_cmpt   = (struct compartment_struct *)&(cur_cmpts[ci]);
 	multiplier = cur_cmpt->count_to_conc;
 	if (ci > 0) {
 	  cmpt_string = (char*)&compartment_text[cur_cmpt->string];
