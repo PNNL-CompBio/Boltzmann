@@ -53,7 +53,7 @@ int rxn_likelihoods(double *counts,
 
      counts         D*I          double precision vector of length number-
                                  unique-molecules with the molecule
-				 counts to be use in the reaction
+				 counts to be used in the reaction
 				 likelihood computation.
 				 
      rxn_likelihood_values       double precision vector of length 
