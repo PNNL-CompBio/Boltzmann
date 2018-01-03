@@ -230,7 +230,7 @@ struct state_struct {
   char *output_file;       /* max_filename_len */
   char *log_file;          /* max_filename_len */
   char *output_dir;        /* max_filename_len */
-  char *concs_out_file;    /* max_filename_len */
+  char *counts_out_file;   /* max_filename_len */
   char *rxn_lklhd_file;    /* max_filename_len */
   char *free_energy_file;  /* max_filename_len */
   char *restart_file;      /* max_filename_len */
@@ -274,7 +274,7 @@ struct state_struct {
   FILE *rxn_fp;
   FILE *conc_fp;
   FILE *out_fp;
-  FILE *concs_out_fp;
+  FILE *counts_out_fp;
   FILE *rxn_lklhd_fp;
   FILE *free_energy_fp;
   FILE *restart_fp;
