@@ -1,6 +1,6 @@
 #ifndef _DGEMM_H_
 #define _DGEMM_H_ 1
-extern void dgemm(char *transa_p, 
+extern void dgemm_(char *transa_p, 
 		  char *transb_p, 
 		  int *m_p, 
 		  int *n_p, 
