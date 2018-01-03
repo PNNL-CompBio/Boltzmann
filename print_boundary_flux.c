@@ -67,7 +67,7 @@ void print_boundary_flux(struct state_struct *state) {
   sorted_molecules = state->sorted_molecules;
   bndry_flux_fp    = state->bndry_flux_fp;
   sorted_cmpts     = state->sorted_cmpts;
-  unique_molecules = state->unique_molecules;
+  unique_molecules = state->nunique_molecules;
   bndry_flux_concs = state->bndry_flux_concs;
   molecules_text   = state->molecules_text;
   compartment_text = state->compartment_text;
