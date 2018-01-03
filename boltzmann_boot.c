@@ -47,6 +47,7 @@ specific language governing permissions and limitations under the License.
 */
 #include "compute_standard_energies.h"
 #include "compute_ke.h"
+#include "zero_solvent_coefficients.h"
 #include "print_rxn_likelihoods_header.h"
 #include "print_free_energy_header.h"
 #include "flatten_state.h"
