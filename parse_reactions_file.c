@@ -58,6 +58,7 @@ int parse_reactions_file(struct state_struct *state) {
   struct istring_elem_struct *unsorted_molecules;
   struct istring_elem_struct *rxn_molecules;
   struct istring_elem_struct *unsorted_cmpts;
+  double *activities;
   int64_t *keyword_lens;
   int64_t *rxn_ptrs;
   int64_t *molecules_indices;
@@ -152,21 +153,22 @@ int parse_reactions_file(struct state_struct *state) {
       compartment line.
       
     */
-    rxn_title_pos          = (int64_t)0;
-    pathway_pos            = (int64_t)0;
-    compartment_pos        = (int64_t)0;
-    molecules_pos            = (int64_t)0;
-    unsorted_molecules            = state->unsorted_molecules;
+    rxn_title_pos               = (int64_t)0;
+    pathway_pos                 = (int64_t)0;
+    compartment_pos             = (int64_t)0;
+    molecules_pos               = (int64_t)0;
+    unsorted_molecules          = state->unsorted_molecules;
     unsorted_cmpts              = state->unsorted_cmpts;
     rxn_title_text              = state->rxn_title_text;
     pathway_text                = state->pathway_text;
     compartment_text            = state->compartment_text;
-    molecules_text                = state->molecules_text;
-    raw_molecules_text            = state->raw_molecules_text;
+    molecules_text              = state->molecules_text;
+    raw_molecules_text          = state->raw_molecules_text;
+    activities                  = state->activities;
     reactions                   = state->reactions;
     rxns_matrix                 = state->reactions_matrix;
     rxn_ptrs                    = rxns_matrix->rxn_ptrs;
-    molecules_indices              = rxns_matrix->molecules_indices;
+    molecules_indices           = rxns_matrix->molecules_indices;
     coefficients                = rxns_matrix->coefficients;
     matrix_text                 = rxns_matrix->text;
     reaction                    = reactions;
@@ -177,6 +179,8 @@ int parse_reactions_file(struct state_struct *state) {
     reaction->right_compartment = -1;
     reaction->num_reactants     = 0;
     reaction->num_products      = 0;
+    reaction->activity          = 1.0;
+    activities[0]               = 1.0;
     rxn_ptrs[rxns]              = molecules;
     fgp = fgets(rxn_buffer,rxn_buff_len,rxn_fp);
     state->max_molecule_len = 0;
@@ -590,15 +594,42 @@ int parse_reactions_file(struct state_struct *state) {
 	     A DGZERO-UNITS line
 	  */
 	  sl = count_nws((char*)&rxn_buffer[ws_chars+kl]);
-	  upcase(sl,(char*)&rxn_buffer[ws_chars+kl],(char*)&rxn_buffer[ws_chars+kl]);
-	  if (strncmp((char*)&rxn_buffer[ws_chars+kl],"KJ/MOL",6) == 0) {
-	    reaction->unit_i = 1;
-	  } else {
+	  if (sl < 1) {
+	    fprintf(stderr,
+		    "parse_reactions_file: Malformed DGZERO-UNITS line,"
+		    " using KCAL/MOL\n");
+	    fflush(stderr);
 	    reaction->unit_i = 0;
+	  } else {
+	    upcase(sl,(char*)&rxn_buffer[ws_chars+kl],(char*)&rxn_buffer[ws_chars+kl]);
+	    if (strncmp((char*)&rxn_buffer[ws_chars+kl],"KJ/MOL",6) == 0) {
+	      reaction->unit_i = 1;
+	    } else {
+	      reaction->unit_i = 0;
+	    }
 	  }
 	  break;
-	case 9:
+        case 9:
+	  /*
+	    An ACTIVITY line.
+	  */
+	  ns = sscanf ((char*)&rxn_buffer[ws_chars+kl],"%le",
+		       &reaction->activity);
+	  if (ns < 1) {
+	    fprintf(stderr,
+		    "parse_reactions_file: malformed ACTIVITY line was\n%s\n",
+		    rxn_buffer);
+	    fflush(stderr);
+	    success = 0;
+	    break;
+	  }
+	  break;
+	case 10:
+	  /*
+	    // reaction terminator line
+	  */
 	  reaction->self_id = rxns;
+	  activities[rxns]  = reaction->activity;
 	  /*
 	    Since a compartment line could have come any where in
 	    the reaction input lines, we need to go back
@@ -639,6 +670,7 @@ int parse_reactions_file(struct state_struct *state) {
 	    reaction->right_compartment = -1;
 	    reaction->num_reactants     = 0;
 	    reaction->num_products      = 0;
+	    reaction->activity          = 1.0;
 	    rxn_ptrs[rxns]              = molecules;
 	  }
 	  break;
