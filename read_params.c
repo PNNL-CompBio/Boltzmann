@@ -90,6 +90,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
     state->record_steps     = 1000;
     state->free_energy_format = 0;
     state->lthf             = 0;
+    state->use_activities   = 0;
     param_buffer       = state->param_buffer;
     max_param_line_len = state->max_param_line_len;
     key                = state->param_key;
@@ -145,6 +146,11 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	sscan_ok = sscanf(value,"%d",&(state->lthf));
 	if (state->lthf < 0) {
 	  state->lthf = 0;
+	}
+      } else if (strncmp(key,"USE_ACTIVITIES",14) == 0) {
+	sscan_ok = sscanf(value,"%d",&(state->use_activities));
+	if (state->use_activities < 0) {
+	  state->use_activities = 0;
 	}
       } else if (strncmp(key,"RECORD_STEPS",12) == 0) {
 	sscan_ok = sscanf(value,"%d",&(state->record_steps));
