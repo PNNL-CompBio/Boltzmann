@@ -265,7 +265,7 @@ int ode_num_jac(struct state_struct *state,
 	    tmpfac = min(sqrt(facj),facmax);
 	  */
 	  tmpfac = sqrt(facj);
-	  tmpfac - (tmpfac < facmax) ? tmpfac : facmax ;
+	  tmpfac = (tmpfac < facmax) ? tmpfac : facmax ;
 	  delj   = (yj + (tmpfac * yscalej)) - yj;
 #ifdef DBG
 	  if (lfp) {
