@@ -21,8 +21,8 @@ CONDITIONS OF ANY KIND, either express or implied. See the License for the
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
 extern int sort_global_compartments(
-			    struct istring_elem_struct **unsorted_compartments,
-			    struct istring_elem_struct **sorted_compartments,
+			    struct molecule_struct **unsorted_compartments,
+			    struct molecule_struct **sorted_compartments,
 			    int64_t *compartment_map_indices,
 			    char *compartment_text,
 			    int n);
