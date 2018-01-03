@@ -162,14 +162,17 @@ int free_boot_state2(struct state_struct *state) {
       if (molecules_matrix->rxn_indices) {
 	free(molecules_matrix->rxn_indices);
       }
+      /*
       if (molecules_matrix->transpose_work) {
 	free(molecules_matrix->transpose_work);
       }
+      */
       free(state->molecules_matrix);
     }
     /*
       Free variables allocated in alloc5
     */
+    /*
     formation_energies = state->formation_energies;
     if (formation_energies) {
       if (formation_energies->pseudoisomers) {
@@ -180,6 +183,7 @@ int free_boot_state2(struct state_struct *state) {
       }
       free(state->formation_energies);
     }
+    */
     /*
       Free workspace if it existed
     */
