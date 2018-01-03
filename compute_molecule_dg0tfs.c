@@ -86,27 +86,31 @@ int compute_molecule_dg0tfs(struct state_struct *state,
 	      "molecule name\t deltaG0_tf(kJ/mol)\n");
     }
   }
-  for (i=0;i<nu_molecules;i++) {
+  for (i=0;((i<nu_molecules) && success);i++) {
 
     molecule    = (char *)&molecules_text[cur_molecules->string];
 
-    compute_molecule_dg0tf(ph,
-			   m_rt,
-			   m_r_rt,
-			   ionic_strength,
-			   molecule,
-			   pseudoisomers,
-			   pseudoisomer_strings,
-			   num_cpds,
-			   &molecule_dg0tfs[i]);
-    if ((i == 0) || (molecule_dg0tfs[i] < min_molecule_dg0tf)) {
-      min_molecule_dg0tf = molecule_dg0tfs[i];
-    }
-    if (print_output) {
-      if (lfp) {
-	fprintf(lfp,"%i \t %s \t %f \n",i,molecule,
-		molecule_dg0tfs[i]);
+    success = compute_molecule_dg0tf(ph,
+				     m_rt,
+				     m_r_rt,
+				     ionic_strength,
+				     molecule,
+				     pseudoisomers,
+				     pseudoisomer_strings,
+				     num_cpds,
+				     &molecule_dg0tfs[i]);
+    if (success) {
+      if ((i == 0) || (molecule_dg0tfs[i] < min_molecule_dg0tf)) {
+	min_molecule_dg0tf = molecule_dg0tfs[i];
       }
+      if (print_output) {
+	if (lfp) {
+	  fprintf(lfp,"%i \t %s \t %f \n",i,molecule,
+		  molecule_dg0tfs[i]);
+	}
+      }
+    } else {
+      break;
     }
     cur_molecules += 1; /* Caution address arithmetic. */
   }
