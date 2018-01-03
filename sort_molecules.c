@@ -25,12 +25,12 @@ specific language governing permissions and limitations under the License.
 #include "merge_molecules.h"
 
 #include "sort_molecules.h"
-int sort_molecules(struct istring_elem_struct *unsorted_molecules,
-		   struct istring_elem_struct *sorted_molecules,
+int sort_molecules(struct molecule_struct *unsorted_molecules,
+		   struct molecule_struct *sorted_molecules,
 		   char *molecules_text,
 		   int n) {
   /*
-    Sort the uppercase istring names.
+    Sort the uppercase molecule names.
     Called by: boltzmann_init, boltzmann_boot, rxn_map_init
     Calls    : merge_molecules, memmove
 
@@ -42,10 +42,10 @@ int sort_molecules(struct istring_elem_struct *unsorted_molecules,
     of the same length.
   
   */
-  struct istring_elem_struct *u_molecules;
-  struct istring_elem_struct *s_molecules;
-  struct istring_elem_struct *temp;
-  struct istring_elem_struct ies;
+  struct molecule_struct *u_molecules;
+  struct molecule_struct *s_molecules;
+  struct molecule_struct *temp;
+  struct molecule_struct ies;
 
   int64_t move_size;
   
@@ -67,9 +67,9 @@ int sort_molecules(struct istring_elem_struct *unsorted_molecules,
 	l1 = step;
 	l2 = n - j - step;
 	if (l2 > step) l2 = step;
-	merge_molecules((struct istring_elem_struct *)&u_molecules[j],
-			(struct istring_elem_struct *)&u_molecules[j+step],
-			(struct istring_elem_struct *)&s_molecules[j],
+	merge_molecules((struct molecule_struct *)&u_molecules[j],
+			(struct molecule_struct *)&u_molecules[j+step],
+			(struct molecule_struct *)&s_molecules[j],
 			molecules_text,
 			l1,l2);
       }
