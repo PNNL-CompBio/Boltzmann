@@ -39,7 +39,7 @@ int lr_approximate_delta_concs(struct state_struct *state, double *concs,
   struct molecule_struct *molecules;
   struct molecule_struct *molecule;
   struct molecules_matrix_struct *molecules_matrix;
-  struct rxn_matrix_struct *rxn_matrix;
+  struct reactions_matrix_struct *rxn_matrix;
   double *forward_rxn_likelihoods;  
   double *reverse_rxn_likelihoods;
   double flux_scaling;
@@ -86,7 +86,7 @@ int lr_approximate_delta_concs(struct state_struct *state, double *concs,
   molecules   = state->sorted_molecules;
   molecules_matrix = state->molecules_matrix;
   molecules_ptrs   = molecules_matrix->molecules_ptrs;
-  rxn_indices      = molecules_matrix->rxn_indices;
+  rxn_indices      = molecules_matrix->reaction_indices;
   coefficients     = molecules_matrix->coefficients;
   rxn_matrix       = state->reactions_matrix;
   rxn_ptrs         = rxn_matrix->rxn_ptrs;
