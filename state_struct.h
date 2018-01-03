@@ -186,6 +186,9 @@ struct state_struct {
   */
   double  *dg0s;      /* len = number_reactions */
   double  *ke;        /* len = number_reactions */
+  double  *molecule_dg0tfs; /* len = unique_molecules */
+  double  *molecule_probabilities; /* len = unique_molecules */
+  double  *molecule_chemical_potentials; /* len = unique_molecules */
   double  *activities; /* len = unique_molecules */
   /* 
      sizeof(rxn_struct) * number of reactions. 
