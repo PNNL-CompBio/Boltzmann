@@ -20,9 +20,30 @@ specific language governing permissions and limitations under the License.
 */
 #ifndef __BOLTZMANN_STRUCTS__
 #define __BOLTZMANN_STRUCTS__ 1
-#ifdef TIMING_ON
-#include "djb_timing_b.h"
+/*
+  System include files.
+*/
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <strings.h>
+#include <float.h>
+#include <signal.h>
+#include <unistd.h>
+#include <errno.h>
+#include <sys/mman.h>
+/*
+  Maybe only for linux systems.
+*/
+#ifdef LIBUNWIND
+#include <libunwind.h>
+#include <unwind.h>
 #endif
+
+#include "djb_timing_b.h"
+/*
+  Data structures include files.
+*/
 #include "super_state_struct.h"
 #include "super_state_pointers_struct.h"
 #include "state_struct.h"
