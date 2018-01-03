@@ -169,53 +169,7 @@ int boltzmann_run(struct state_struct *state) {
 	    "\nWarmup_step rxn_choice forward_likelihood "
 	    "reverse_likelihood\n");
   }
-  if (use_deq == zero_l) {
-    for (i=0;i<n_warmup_steps;i++) {
-      /*
-	Compute the reaction likelihoods: forward_rxn_likelihood, 
-	and reverse_rxn_likelihood fields of state..
-      */
-      success = update_rxn_log_likelihoods(state);
-      /*
-	Choose a reaction by computing the partial sums of the reaction 
-	likelihoods and then using a uniform random number generator to pick one
-	with probability proportional to the relative size of the reaction
-	likelihood ratio. A second step called the metropolis method is 
-	employed to allow reactions that use the last reactant molecules or
-	produce the first product molecules to fire.
-	This call also updates the future_counts vector.
-      */
-      rxn_choice = choose_rxn(state,&r_sum_likelihood);
-      if (rxn_choice < 0) break;
-      if ((print_output >= 1) && lfp) {
-	if (choice_view_freq > zero_l) {
-	  choice_view_step = choice_view_step - one_l;
-	  if ((choice_view_step <= zero_l) || (i == (n_warmup_steps-one_l))) {
-	    print_rxn_choice(state,i,rxn_choice);
-	    choice_view_step = choice_view_freq;
-	  }
-	}
-      }
-      /*
-	Copy the future counts, resulting from the reaction firing
-	to the current counts.
-      */
-      /*
-      for (j=0;j<unique_molecules;j++) {
-	current_counts[j] = future_counts[j];
-      }
-      */
-      dcopy_(&unique_molecules,future_counts,&incx,current_counts,&incx);
-      /*
-	Doug thinks we can remove these calls.
-	success = update_rxn_log_likelihoods(state);
-	success = compute_delta_g_forward_entropy_free_energy(state,
-	                                                     &dg_forward,
-							     &entropy);
-      */
-    } /* end for(i...) */
-    i = -2;
-  } else {
+  if (use_deq != zero_l) {
     /*
       Use ode solver to move from initial concentrations to
       steady state.
@@ -223,7 +177,55 @@ int boltzmann_run(struct state_struct *state) {
     */
     success = deq_run(state);
     i = -1;
+    if (print_output) {
+      print_counts(state,i);
+    }
   }
+  for (i=0;i<n_warmup_steps;i++) {
+    /*
+      Compute the reaction likelihoods: forward_rxn_likelihood, 
+      and reverse_rxn_likelihood fields of state..
+    */
+    success = update_rxn_log_likelihoods(state);
+    /*
+      Choose a reaction by computing the partial sums of the reaction 
+      likelihoods and then using a uniform random number generator to pick one
+      with probability proportional to the relative size of the reaction
+      likelihood ratio. A second step called the metropolis method is 
+      employed to allow reactions that use the last reactant molecules or
+      produce the first product molecules to fire.
+      This call also updates the future_counts vector.
+    */
+    rxn_choice = choose_rxn(state,&r_sum_likelihood);
+    if (rxn_choice < 0) break;
+    if ((print_output >= 1) && lfp) {
+      if (choice_view_freq > zero_l) {
+	choice_view_step = choice_view_step - one_l;
+	if ((choice_view_step <= zero_l) || (i == (n_warmup_steps-one_l))) {
+	  print_rxn_choice(state,i,rxn_choice);
+	  choice_view_step = choice_view_freq;
+	}
+      }
+    }
+    /*
+      Copy the future counts, resulting from the reaction firing
+      to the current counts.
+    */
+    /*
+      for (j=0;j<unique_molecules;j++) {
+      current_counts[j] = future_counts[j];
+      }
+    */
+    dcopy_(&unique_molecules,future_counts,&incx,current_counts,&incx);
+    /*
+      Doug thinks we can remove these calls.
+      success = update_rxn_log_likelihoods(state);
+      success = compute_delta_g_forward_entropy_free_energy(state,
+      &dg_forward,
+      &entropy);
+    */
+  } /* end for(i...) */
+  i = -2;
   if (print_output) {
     print_counts(state,i);
   }
