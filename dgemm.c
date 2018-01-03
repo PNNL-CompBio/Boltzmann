@@ -3,8 +3,9 @@
 #include "blas.h"
 #include "dgemm.h"
 void dgemm_(char *transa_p, char *transb_p, int *m_p, int *n_p, int *k_p,
-	   double *alpha_p, double *a, int *lda_p, double *b, 
-	   int *ldb_p, double *beta_p, double *c, int *ldc_p) {
+	    double *alpha_p, double *a, int *lda_p, double *b, 
+	    int *ldb_p, double *beta_p, double *c, int *ldc_p,
+	    int len_transa, int len_transb) {
   /*
     Adapted from netlib dgemm.f
     Compute 
@@ -80,8 +81,8 @@ void dgemm_(char *transa_p, char *transb_p, int *m_p, int *n_p, int *k_p,
   zero    = 0.0;
   inc1    = 1;
 
-  nota = lsame_(&transa,&n_char);
-  notb = lsame_(&transb,&n_char);
+  nota = lsame_(&transa,&n_char,1,1);
+  notb = lsame_(&transb,&n_char,1,1);
    
   if (nota) {
     nrowa = m;
@@ -97,11 +98,11 @@ void dgemm_(char *transa_p, char *transb_p, int *m_p, int *n_p, int *k_p,
   }
   info = 0;
   if ((nota == 0)  && 
-      (lsame_(&transa,&c_char) + lsame_(&transa,&t_char) == 0)) {
+      (lsame_(&transa,&c_char,1,1) + lsame_(&transa,&t_char,1,1) == 0)) {
     info = 1;
   } else {
     if ((notb == 0) && 
-	(lsame_(&transb,&c_char) + lsame_(&transb,&t_char) == 0)) {
+	(lsame_(&transb,&c_char,1,1) + lsame_(&transb,&t_char,1,1) == 0)) {
       info = 2;
     } else {
       if (m < 0) {
