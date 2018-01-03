@@ -90,6 +90,7 @@ int lr8_approximate_jacobian(struct state_struct *state,
   double  flklhd;
   double  rlklhd;
   double  recip_coefficient;
+  double  coeff;
   /*
   double  conc_mi;
   double  thermo_adj;
@@ -264,12 +265,12 @@ int lr8_approximate_jacobian(struct state_struct *state,
 	conc_mi  = concs[mi];
 	if (coef < 0) {
 	  if (count_mi > 0) {
-	    drfc[j] =  0.0 -coef * ((flklhd/conc_mi) + (rlklhd/(conc_mi - (coef*count_to_conc[mi])))) * activityi;	
+   	    drfc[j] =  0.0 -coef * ((flklhd/conc_mi) + (rlklhd/(conc_mi - (coef*count_to_conc[mi])))) * activityi;	
 	    /*
 	    drfc[j] =  0.0 -coef * ((flklhd/count_mi) + (rlklhd/(count_mi - coef))) * activityi;	
 	    */
 	  } else {
-	    drfc[j] = rlklhd * activityi;
+	    drfc[j] = (rlklhd/(count_to_conc[mi])) * activityi;
 	  }
 	} else {
 	  if (coef > 0) {
@@ -279,7 +280,7 @@ int lr8_approximate_jacobian(struct state_struct *state,
 	      */
 	      drfc[j] = 0.0 - coef *((flklhd/(conc_mi + (coef*count_to_conc[mi]))) + (rlklhd/conc_mi)) * activityi;
 	    } else {
-	      drfc[j] = - flklhd * activityi;
+	      drfc[j] = - (flklhd/(count_to_conc[mi])) * activityi;
 	    }
 	  } else {
 	    drfc[j] = 0.0;
@@ -311,10 +312,13 @@ int lr8_approximate_jacobian(struct state_struct *state,
     if (molecule->variable == 1) {
       for (j=molecules_ptrs[i];j<molecules_ptrs[i+1];j++) {
 	rxn = rxn_indices[j];
-	if (coefficients[j]  != 0) {
-	  recip_coefficient = recip_coeffs[j];
+	coeff = coefficients[j];
+	if (coeff  != 0) {
 	  /*
-	    Add rxn row of drfc * recip_coefficient to row i of dfdy
+	  recip_coefficient = recip_coeffs[j];
+	  */
+	  /*
+	    Add rxn row of drfc * coeff to row i of dfdy
 	  */
 	  for (k=rxn_ptrs[rxn];k<rxn_ptrs[rxn+1];k++) {
 	    mk = molecule_indices[k];
@@ -323,7 +327,7 @@ int lr8_approximate_jacobian(struct state_struct *state,
 	      dfdy_ja[dfdy_pos] = mk;
 	      dfdy_pos += 1;
 	    }
-	    dfdy_row[mk] += drfc[k] * recip_coefficient;
+	    dfdy_row[mk] += drfc[k] * coeff;
 	  }
 	}
       }
