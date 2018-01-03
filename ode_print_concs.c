@@ -49,19 +49,58 @@ void ode_print_concs(struct state_struct *state, double time, double *concs) {
   int unique_molecules;
   int j;
 
+  int print_concs_or_counts;
+  int do_concs;
+
+  int do_counts;
+  int padi;
+
   FILE *ode_concs_fp;
+  FILE *ode_counts_fp;
+
   ode_concs_fp           = state->ode_concs_fp;
+  ode_counts_fp          = state->ode_counts_fp;
+  print_concs_or_counts  = state->print_concs_or_counts;
   unique_molecules       = state->nunique_molecules;
   cur_molecule           = state->sorted_molecules;
-  if (ode_concs_fp) {
+
+  do_concs = 0;
+  do_counts = 0;
+  if (print_concs_or_counts & 2) {
+    if (ode_concs_fp) {
+      do_concs = 1;
+    }
+  }
+  if (print_concs_or_counts & 1) {
+    if (ode_counts_fp) {
+      do_counts = 1;
+    }
+  }
+  if (do_concs) {
     fprintf(ode_concs_fp,"%le",time);
+  }
+  if (do_counts) {
+    fprintf(ode_counts_fp,"%le",time);
+  }
+  if (do_concs || do_counts) {
     for (j=0;j<unique_molecules;j++) {
       if ((cur_molecule->solvent == 0) || (cur_molecule->variable == 1)) {
-	fprintf(ode_concs_fp,"\t%le",concs[j]);
+	if (do_concs) {
+	  fprintf(ode_concs_fp,"\t%le",concs[j]);
+	}
+	if (do_counts) {
+	  fprintf(ode_counts_fp,"\t%le",concs[j]);
+	}
       }
       cur_molecule += 1; /* caution address arithmetic.*/
     }
-    fprintf(ode_concs_fp,"\n");
-    fflush(ode_concs_fp);
-  }
+    if (do_concs) {
+      fprintf(ode_concs_fp,"\n");
+      fflush(ode_concs_fp);
+    }
+    if (do_counts) {
+      fprintf(ode_counts_fp,"\n");
+      fflush(ode_counts_fp);
+    }
+  } /* end if (do_concs || do_counts) */
 }
