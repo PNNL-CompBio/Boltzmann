@@ -137,8 +137,8 @@ int read_initial_concentrations(struct state_struct *state) {
 	    molecule->variable = variable;
 	  } else {
 	    fprintf(stderr,"read_initial_concentrations: Error "
-		    "unrecognized molecule in conc.in was %s\n",
-		    molecule_name);
+		    "unrecognized molecule in %s was %s\n",
+		    state->init_conc_file,molecule_name);
 	    fflush(stderr);
 	    success = 0;
 	    break;
