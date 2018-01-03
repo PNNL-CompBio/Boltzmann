@@ -21,7 +21,6 @@ CONDITIONS OF ANY KIND, either express or implied. See the License for the
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
 #include "boltzmann_structs.h"
-#include "vgrng.h"
 #include "candidate_rxn.h"
 #include "bndry_flux_update.h"
 #include "metropolis.h"
@@ -33,10 +32,9 @@ int choose_rxn(struct state_struct *state,
     Choose a reaction using Metropolis Monte Carlo Methods.
 
     Called by: boltzmann_run
-    Calls:     vgrng,
-               candidate_rxn,
-	       rxn_likelihood_postselection.
-	       bndry_flux_update
+    Calls:     candidate_rxn,
+               bndry_flux_update
+	       metroplis
 
     Arguments: 
     Name        TMF   Description
