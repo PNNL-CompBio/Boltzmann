@@ -28,7 +28,7 @@ int update_rxn_log_likelihoods(struct state_struct *state) {
   /*
     Update the forward_rxn_likelihood, forward_rxn_log_likelihood_ratio,
                reverse_rxn_likelihood, and reverse_rxn_log_likelihood_ratio
-	       fields of the state vector, based on the current_concentrations
+	       fields of the state vector, based on the current_counts
 	       field.
 
     Called by: boltzmann_run
@@ -37,14 +37,14 @@ int update_rxn_log_likelihoods(struct state_struct *state) {
     Arguments:
     Name        TMF       Description
     state       G*B       pointer to the state structure.
-                          Input field is current_concentrations.
+                          Input field is current_counts.
 			  Modified fields are:
 			  forward_rxn_likelihood
 			  forward_rxn_log_likelihood_ratio
 			  reverse_rxn_likelihood
 			  reverse_rxn_log_likelihood_ratio
   */
-  double *current_concentrations;
+  double *current_counts;
   double *forward_rxn_log_likelihood_ratio;
   double *reverse_rxn_log_likelihood_ratio;
   double *forward_rxn_likelihood;
@@ -58,16 +58,16 @@ int update_rxn_log_likelihoods(struct state_struct *state) {
   success       		   = 1;
   forward       		   = 1;
   reverse       		   = -1;
-  current_concentrations           = state->current_concentrations;
+  current_counts                   = state->current_counts;
   forward_rxn_log_likelihood_ratio = state->forward_rxn_log_likelihood_ratio;
   reverse_rxn_log_likelihood_ratio = state->reverse_rxn_log_likelihood_ratio;
   forward_rxn_likelihood           = state->forward_rxn_likelihood;
   reverse_rxn_likelihood           = state->reverse_rxn_likelihood;
   /*
   */
-  rxn_log_likelihoods(current_concentrations,forward_rxn_likelihood,
+  rxn_log_likelihoods(current_counts,forward_rxn_likelihood,
 		      forward_rxn_log_likelihood_ratio,state,forward);
-  rxn_log_likelihoods(current_concentrations,reverse_rxn_likelihood,
+  rxn_log_likelihoods(current_counts,reverse_rxn_likelihood,
 		      reverse_rxn_log_likelihood_ratio,state,reverse);
   return(success);
 }
