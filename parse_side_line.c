@@ -197,8 +197,7 @@ int parse_side_line(char *rctnts_p,
 	ci = cmpts;
 	cmpts += 1;
 	strcpy(compartment,(char*)&rctnts[colon_loc+1]);
-	upcase(compartment_len,compartment,
-	       compartment);
+	upcase(compartment_len,compartment);
 	padding = (align_len - (compartment_len & align_mask)) & align_mask;
 	compartment_pos += compartment_len + padding;
       }
@@ -215,9 +214,9 @@ int parse_side_line(char *rctnts_p,
       matrix_text[molecules] = molecules_pos;
       sll = (int64_t)sl + (int64_t)1;
       padding = (align_len - (sll & align_mask)) & align_mask;
-      strcpy((char *)&raw_molecules_text[molecules_pos],rctnts);
-      upcase(sl,(char *)&raw_molecules_text[molecules_pos],
-	     (char *)&molecules_text[molecules_pos]);
+      strcpy((char *)&molecules_text[molecules_pos],rctnts);
+      upcase(sl,(char *)&molecules_text[molecules_pos]);
+
       /*
       unsorted_molecules->string = (char *)&molecules_text[molecules_pos];
       */
