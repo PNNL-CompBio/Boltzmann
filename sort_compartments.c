@@ -20,26 +20,18 @@ under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <strings.h>
-#include <float.h>
-#include <signal.h>
-#include <unistd.h>
-
 #include "boltzmann_structs.h"
 #include "merge_compartments.h"
 
 #include "sort_compartments.h"
-int sort_compartments(struct istring_elem_struct **unsorted_compartments,
-		      struct istring_elem_struct **sorted_compartments,
+int sort_compartments(struct istring_elem_struct *unsorted_compartments,
+		      struct istring_elem_struct *sorted_compartments,
 		      char *compartment_text,
 		      int n) {
   /*
     Sort the uppercase istring names.
-    Called by: boltzman_init
-    Calls    : merge_compartments
+    Called by: boltzmann_init, boltzmann_boot, rxn_map_init
+    Calls    : merge_compartments, memmove
 
     for now we use a simple merge sort, with strcmp as the
     comparator function. In the future might want to bin sort
@@ -62,8 +54,8 @@ int sort_compartments(struct istring_elem_struct **unsorted_compartments,
   int ln;
   int j;
   success = 1;
-  u_compartments = *unsorted_compartments;
-  s_compartments = *sorted_compartments;
+  u_compartments = unsorted_compartments;
+  s_compartments = sorted_compartments;
   
   if (n > 2) {
     for (step = 1; step < n; step += step) {
@@ -85,6 +77,8 @@ int sort_compartments(struct istring_elem_struct **unsorted_compartments,
 	  s_compartments[j].string   = u_compartments[j].string;
 	  s_compartments[j].m_index  = u_compartments[j].m_index;
 	  s_compartments[j].c_index  = u_compartments[j].c_index;
+	  s_compartments[j].g_index  = u_compartments[j].g_index;
+	  s_compartments[j].variable = u_compartments[j].variable;
 	}
       }
       temp               = s_compartments;
@@ -92,7 +86,13 @@ int sort_compartments(struct istring_elem_struct **unsorted_compartments,
       u_compartments     = temp;
     }
   }
+  if (u_compartments != sorted_compartments) {
+    move_size = ((int64_t)n) * ((int64_t)sizeof(ies));
+    memmove(s_compartments,u_compartments,move_size);
+  }
+  /*
   *sorted_compartments   = u_compartments;
   *unsorted_compartments = s_compartments;
+  */
   return(success);
 }
