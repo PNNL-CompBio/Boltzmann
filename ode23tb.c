@@ -8,6 +8,9 @@
 #include "ode_num_jac.h"
 #include "ode_it_solve.h"
 #include "ode_print_concs.h"
+#include "ode_print_fluxes.h"
+#include "ode_print_lklhds.h"
+/*#include "ode_print_bflux.h"*/
 #include "blas.h"
 #include "lapack.h"
 #include "compute_net_likelihoods.h"
@@ -16,6 +19,7 @@
 #include "print_net_lklhd_bndry_flux_header.h"
 #include "print_net_likelihoods.h"
 #include "print_net_lklhd_bndry_flux.h"
+
 /*
 #define DBG 1
 */
@@ -43,7 +47,7 @@ int ode23tb (struct state_struct *state, double *counts,
     Called by: ode_solver
     Calls:     init_base_reactants,
                compute_flux_scaling,
-               approximate_fluxes, ode_num_jac, ode_it_solve,
+               approximate_delta_concs, ode_num_jac, ode_it_solve,
                print_concs_fluxes,
 	       dnrm2_, dgemv_, dscal_, idamax_
 	       sizeof, calloc, sqrt, pow, fabs, dgetrf_, dgetrs_
@@ -90,6 +94,7 @@ int ode23tb (struct state_struct *state, double *counts,
   double *dbl_ptr;
   double t0;
   double t;
+  double t1;
   double t2;
   double tdel;
   double tnew;
@@ -251,6 +256,7 @@ int ode23tb (struct state_struct *state, double *counts,
   nrxns         = state->number_reactions;
   min_conc      = state->min_conc;
   lfp           = state->lfp;
+  ode_rxn_view_freq = state->ode_rxn_view_freq;
   nysq          = ny * ny;
   trans_chars[0] = 'N';
   trans_chars[1] = 'T';
@@ -326,6 +332,10 @@ int ode23tb (struct state_struct *state, double *counts,
       y_counts[i] = counts[i];
       thresh[i] = njthreshold;
     }
+    t= t0;
+    if (print_concs) {
+      ode_print_concs(state,t,y);
+    }
     /*
       Fill the base_reactant_indicator, and base_reactants vectors,
       and set number_base_reaction_reactants.
@@ -343,17 +353,9 @@ int ode23tb (struct state_struct *state, double *counts,
 			    forward_rxn_likelihoods,reverse_rxn_likelihoods,
 			    f0,flux_scaling,base_rxn,
 			    delta_concs_choice);
-#ifdef DBG
-    if (lfp) {
-      fprintf(lfp," ode23tb: After first call to approximate_delta_concs, flux_scaling = %le\n",flux_scaling);
-      origin = 0; 
-      t = 0;
-      h = 0;
-      print_concs_fluxes(state,ny,f0,y,y_counts,
-			 forward_rxn_likelihoods,
-			 reverse_rxn_likelihoods,t,h,nsteps,origin);
+    if (ode_rxn_view_freq > 0) {
+      ode_print_fluxes(state,t,f0);
     }
-#endif
     nfevals = (int64_t)1;
     /*
       Fill the Jacobian. jac is a ny x ny array.
@@ -506,15 +508,10 @@ int ode23tb (struct state_struct *state, double *counts,
       approximate_delta_concs(state,y_counts,
 			 forward_rxn_likelihoods,reverse_rxn_likelihoods,
 			      f1,flux_scaling1,base_rxn,delta_concs_choice);
-#ifdef DBG
-      if (lfp) {
-	fprintf(lfp,"ode23tb: After call to approximate_delta_concs in f1, flux_scaling = %le\n",flux_scaling);
-	origin = 1; 
-	print_concs_fluxes(state,ny,f1,y1,y1_counts,
-			   forward_rxn_likelihoods,
-			   reverse_rxn_likelihoods,t,h,nsteps,origin);
+      if (ode_rxn_view_freq > 0) {
+	t1 = t + tdel;
+	ode_print_fluxes(state,t1,f1);
       }
-#endif
       nfevals += 1;
       recip_tdel = 1.0/tdel;
       for (i=0;i<ny;i++) {
@@ -580,15 +577,12 @@ int ode23tb (struct state_struct *state, double *counts,
     /*
       Set up to print net likelihoods and net-likelihood-boundary fluxes
     */
-    ode_rxn_view_freq = state->ode_rxn_view_freq;
     if (ode_rxn_view_freq > 0) {
       /* 
 	If tracking net likelihoods and fluxes, set up to
 	print the first iteration, and open and print headers to 
 	the .nl_flux and .nlklhd files.
       */
-      print_net_likelihood_header(state);
-      print_net_lklhd_bndry_flux_header(state);
       ode_rxn_view_step = one_l;
     }
     /*
@@ -658,16 +652,9 @@ int ode23tb (struct state_struct *state, double *counts,
 	  approximate_delta_concs(state,y_counts,
 			     forward_rxn_likelihoods,reverse_rxn_likelihoods,
 				  f0,flux_scaling,base_rxn,delta_concs_choice);
-#ifdef DBG
-	  if (lfp) {
-	    fprintf(lfp,"ode23tb: after new Jacobian call to approximate_delta_concs, flux_scaling = %le\n",flux_scaling);
-	    origin = 2; 
-	    print_concs_fluxes(state,ny,f0,y,y_counts,
-			       forward_rxn_likelihoods,
-			       reverse_rxn_likelihoods,t,h,nsteps,origin);
+	  if (ode_rxn_view_freq > 0) {
+	    ode_print_fluxes(state,t,f0);
 	  }
-#endif
-
 	  /*
 	    Compute new Jacobian, dfdy.
 	  */
@@ -1083,9 +1070,9 @@ int ode23tb (struct state_struct *state, double *counts,
 					 net_lklhd_bndry_flux);
 	    print_net_lklhd_bndry_flux(state,net_lklhd_bndry_flux,t);
 	  }
-	  if (print_concs) {
-	    ode_print_concs(state,t,y);
-	  }
+	  ode_print_concs(state,t,y);
+	  ode_print_lklhds(state,t,forward_rxn_likelihoods,
+			   reverse_rxn_likelihoods);
 	  ode_rxn_view_step = ode_rxn_view_freq;
 	}
       }
