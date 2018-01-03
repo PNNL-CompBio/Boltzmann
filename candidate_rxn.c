@@ -36,7 +36,8 @@ specific language governing permissions and limitations under the License.
 #include "rxn_conc_update.h"
 
 #include "candidate_rxn.h"
-int candidate_rxn(struct state_struct *state, double *scalingp) {
+int candidate_rxn(struct state_struct *state, double *scalingp, 
+		  double *r_sum_likelihoodp) {
   /*
     Generate a candidate reaction, to be tested by
     choose_rxn, and update concentrations as though
@@ -51,6 +52,7 @@ int candidate_rxn(struct state_struct *state, double *scalingp) {
   double *forward_rxn_likelihood;
   double *reverse_rxn_likelihood;
   double *activities;
+  double r_sum_likelihood;
   double dchoice;
   double uni_multiplier;
   double vall;
@@ -95,6 +97,12 @@ int candidate_rxn(struct state_struct *state, double *scalingp) {
     likeilhood that the state does not change.
   */
   vall = 1.0 + rxn_likelihood_ps[num_rxns+num_rxns-1];
+  if (vall > 0.0) {
+    r_sum_likelihood = 1.0/vall;
+  } else {
+    r_sum_likelihood = 1.0;
+  }
+  *r_sum_likelihoodp = r_sum_likelihood;
   rxn_likelihood_ps[num_rxns_t2] = vall;
   /*
     Unimultiplier is 1.0/2^31-1
