@@ -23,6 +23,35 @@ specific language governing permissions and limitations under the License.
 #ifndef __ISTRING_ELEM_STRUCT__
 #define __ISTRING_ELEM_STRUCT__
 struct istring_elem_struct {
+  /*
+    An istring_elem_struct has 4 fields. The first three are initially set by 
+    the parse_side_line routine called by the parse_reactions_file routine.
+    
+        string  - pointer to a null terminated string that
+	          contains the molecule or compartment string.
+
+	m_index - If string points to a molecule, m_index
+         	  is the ordinal position of the molecule in the
+		  LEFT and RIGHT lines of the reactions.dat input file.
+		  If the string is a compartment name m_index will be -1.
+
+        c_index - If the string points to a compartment, c_index is the
+	          ordinal position of the compartment name in the
+		  COMPARTMENT, LEFT_COMPARTMENT, RIGHT_COMPARTMENT line, or
+		  colon preceded fields of the LEFT and RIGHT lines in 
+		  the reactions.dat input file.
+		  If the string points to a molecule and the molecule
+		  is in a compartment, c_index is set to the ordinal number
+		  of the containing compartment, otherwise if the 
+		  molecule is not in a compartment its c_index is -1.
+
+	variable - An indicator set by the read_initial_concentrations
+	          routine indicating whether or not this molecule is 
+		  held fixed in concentration.
+		  
+       The padi field is just a padding field to make the length a multiple
+       of 8.
+  */
   char *string;
   int  m_index;
   int  c_index;
