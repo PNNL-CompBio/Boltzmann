@@ -32,7 +32,6 @@ int free_boot_state(struct state_struct **statep) {
     Calls:     free.
   */
   struct state_struct *state;
-  struct rxn_matrix_struct *reactions_matrix; 
   int success;
   int padi;
   success = 1;
