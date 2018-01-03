@@ -120,6 +120,9 @@ int boltzmann_free_state(struct state_struct *state) {
       if (molecules_matrix->coefficients != NULL) {
 	free((void*)molecules_matrix->coefficients);
       }
+      if (molecules_matrix->recip_coeffs != NULL) {
+	free((void*)molecules_matrix->recip_coeffs);
+      }
       free((void*)molecules_matrix);
     }
     if (state->transpose_workspace != NULL) {
@@ -198,6 +201,9 @@ int boltzmann_free_state(struct state_struct *state) {
       }
       if (reactions_matrix->coefficients != NULL) {
 	free((void*)reactions_matrix->coefficients);
+      }
+      if (reactions_matrix->recip_coeffs != NULL) {
+	free((void*)reactions_matrix->recip_coeffs);
       }
       if (reactions_matrix->solvent_coefficients != NULL) {
 	free((void*)reactions_matrix->solvent_coefficients);
