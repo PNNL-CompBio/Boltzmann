@@ -53,17 +53,32 @@ int compute_ke(struct state_struct *state) {
   int nrxns;
   int i;
   int padi;
+  /*
+  int print_output;
+  FILE *lfp;
+  */
   success   = 1;
   nrxns     = (int)state->number_reactions;
   reactions = state->reactions;
   dg0s      = state->dg0s;
   ke        = state->ke;
   /*
+  print_output = (int)state->print_output;
+  lfp          = state->lfp;
+  */
+  /*
     m_r_rt = -1/(RT)
   */
   cals_per_joule    = state->cals_per_joule;
   m_r_rt = state->m_r_rt;
   reaction = reactions;
+  /*
+  if (print_output) {
+    if (lfp) {
+      fprintf(lfp,"\n\nOutput from compute_ke\n");
+    }
+  }
+  */
   for (i=0;i<nrxns;i++) {
     if (reaction->unit_i == 1) {
       dg0 = reaction->delta_g0;
@@ -75,8 +90,23 @@ int compute_ke(struct state_struct *state) {
     }
     dg0s[i] = dg0;
     ke[i] = exp(dg0 * m_r_rt);
+    /*
+    if (print_output) {
+      if (lfp) {
+	fprintf(lfp,"dg0s[%d] = %le, ke[%d] = %le\n",
+		i,dg0s[i],i,ke[i]);
+      }
+    }
+    */
     reaction += 1; /* Caution address arithmetic */
   }
+  /*
+  if (print_output) {
+    if (lfp) {
+      fflush(lfp);
+    }
+  }
+  */
   return (success);
 }
   
