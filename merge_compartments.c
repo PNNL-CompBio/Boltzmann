@@ -38,7 +38,7 @@ int merge_compartments(struct istring_elem_struct *list1,
 		       int l2) {
   /*
     Merge two sorted arrays of istrings of length l1 and l2 respectively.
-    Called by: sort_istrings:
+    Called by: sort_compartments
     Calls:     strcmp (intrinsic)
   */
   struct istring_elem_struct *p1;
