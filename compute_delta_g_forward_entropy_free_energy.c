@@ -28,7 +28,7 @@ specific language governing permissions and limitations under the License.
 int compute_delta_g_forward_entropy_free_energy(struct state_struct *state,
 						double *dg_forward_p,
 						double *entropy_p,
-						int    step) {
+						int64_t step) {
   /*
     Compute the delta G for the forward reactions, dg_forward,
     the system entropy, and the free_energy field of state 
@@ -55,7 +55,7 @@ int compute_delta_g_forward_entropy_free_energy(struct state_struct *state,
                                    products of the normalized likelihoods and
 				   their logs.
                                    
-    step              ISI          integer recording step for 
+    step              JSI          eight byte integer recording step for 
                                    error reporting.
                                 
   */
@@ -119,7 +119,7 @@ int compute_delta_g_forward_entropy_free_energy(struct state_struct *state,
     }
     dg_forward *= m_rt;
     if (sum_likelihood <= 0.0) {
-      fprintf(stderr,"boltzmann_run: Error, nonpositivity sum_likelihood = %le in recording loop iteration %d\n",sum_likelihood,step);
+      fprintf(stderr,"boltzmann_run: Error, nonpositivity sum_likelihood = %le in recording loop iteration %ld\n",sum_likelihood,step);
       success = 0;
     }
     r_sum_likelihood = 0.0;
