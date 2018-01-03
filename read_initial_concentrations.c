@@ -32,7 +32,7 @@ int read_initial_concentrations(struct state_struct *state) {
   /*
     Read the concs.in file for initial concentrations, and
     set the concentrations array.
-    Called by: boltzmann_init
+    Called by: species_init
     Calls:     molecules_lookup
                compartment_lookup,
 	       upcase,
