@@ -33,7 +33,7 @@ int unique_compartments(struct state_struct *state) {
     Called by: rxns_init
     Calls:     unique_compartments_core
   */
-  struct rxn_matrix_struct *rxns_matrix;
+  struct reactions_matrix_struct *rxns_matrix;
   int64_t *compartment_indices;
   struct compartment_struct *sorted_cmpts;
   char *compartment_text;
@@ -49,7 +49,7 @@ int unique_compartments(struct state_struct *state) {
   align_len     = state->align_len;
   align_mask     = state->align_mask;
   nzr            = state->number_compartments;
-  sorted_cmpts   = state->sorted_cmpts;
+  sorted_cmpts   = state->sorted_compartments;
   rxns_matrix    = state->reactions_matrix;
   compartment_text = state->compartment_text;
   compartment_indices = rxns_matrix->compartment_indices;
