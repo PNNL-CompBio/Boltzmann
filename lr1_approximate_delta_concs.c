@@ -34,7 +34,7 @@ int lr1_approximate_delta_concs(struct state_struct *state, double *counts,
                                       of concentration change per unit time.
 				      Set by this routine.
 
-    flux_scaling                  D0I   forward rate constant for base
+    flux_scaling                D0I   forward rate constant for base
                                       reaction multplied by base reaction
 				      reactant concentration prodeuct.
 				      
