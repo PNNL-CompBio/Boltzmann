@@ -40,7 +40,7 @@ int echo_params (FILE *lfp, struct state_struct *state) {
     fprintf(lfp,"state->input_dir      	       = %s\n",state->input_dir);
     fprintf(lfp,"state->output_file    	       = %s\n",state->output_file);
     fprintf(lfp,"state->log_file      	       = %s\n",state->log_file);
-    fprintf(lfp,"state->concs_out_file         = %s\n",state->concs_out_file);
+    fprintf(lfp,"state->counts_out_file        = %s\n",state->counts_out_file);
     fprintf(lfp,"state->rxn_lklhd_file         = %s\n",state->rxn_lklhd_file);
     fprintf(lfp,"state->free_energy_file       = %s\n",state->free_energy_file);
     fprintf(lfp,"state->restart_file           = %s\n",state->restart_file);
