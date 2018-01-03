@@ -1,6 +1,5 @@
 #include "boltzmann_structs.h"
 #include "boltzmann_size_jacobian.h"
-
 void boltzmann_size_jacobian(struct state_struct *state) {
   /*
     Set the nnz, nnzm, nnzl, and nnzu fields of the cvodes_params struct
