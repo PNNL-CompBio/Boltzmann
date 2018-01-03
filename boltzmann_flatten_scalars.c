@@ -7,8 +7,8 @@ int boltzmann_flatten_scalars(struct state_struct *state,
     Transfer scalar variabless, to or from flattened
     Called by: boltzmann_flatten_state
     
-    Right now this section has length 96 words, 
-    2 meta data words, 2 meta data words, 52 int64_t's 
+    Right now this section has length 104 words, 
+    2 meta data words, 2 meta data words, 60 int64_t's 
     2 meta_data words, 38 doubles,
  
     Word_pos (*word_pos_p) is assumed to point to the last set/read 
@@ -24,7 +24,7 @@ int boltzmann_flatten_scalars(struct state_struct *state,
   dflattened = (double  *)flattened;
   word_pos += 1; /* 32 */
   if (direction == 0) {
-    lflattened[word_pos] = (int64_t)96;
+    lflattened[word_pos] = (int64_t)104;
   }
   word_pos += 1; /* 33 */
   if (direction == 0) {
@@ -32,7 +32,7 @@ int boltzmann_flatten_scalars(struct state_struct *state,
   }
   word_pos += 1; /* 34 */
   if (direction == 0) {
-    lflattened[word_pos] = (int64_t)54;
+    lflattened[word_pos] = (int64_t)62;
   }
   word_pos += 1; /* 35 */
   if (direction == 0) {
@@ -326,10 +326,46 @@ int boltzmann_flatten_scalars(struct state_struct *state,
   } else {
     state->use_bulk_water = lflattened[word_pos];
   }
+  word_pos += 1; /* 84 */
+  if (direction == 0) {
+    lflattened[word_pos] = state->cvodes_rhs_choice;
+  } else {
+    state->cvodes_rhs_choice = lflattened[word_pos];
+  }
+  word_pos += 1; /* 85 */
+  if (direction == 0) {
+    lflattened[word_pos] = state->cvodes_jtimes_choice;
+  } else {
+    state->cvodes_jtimes_choice = lflattened[word_pos];
+  }
+  word_pos += 1; /* 86 */
+  if (direction == 0) {
+    lflattened[word_pos] = state->cvodes_prec_choice;
+  } else {
+    state->cvodes_prec_choice = lflattened[word_pos];
+  }
+  word_pos += 1; /* 87 */
+  if (direction == 0) {
+    lflattened[word_pos] = state->cvodes_params_size;
+  } else {
+    state->cvodes_params_size = lflattened[word_pos];
+  }
+  word_pos += 1; /* 88 */
+  if (direction == 0) {
+    lflattened[word_pos] = state->ode_jacobian_choice;
+  } else {
+    state->ode_jacobian_choice = lflattened[word_pos];
+  }
+  word_pos += 1; /* 89 */
+  if (direction == 0) {
+    lflattened[word_pos] = state->cvodes_prec_fill;
+  } else {
+    state->cvodes_prec_fill = lflattened[word_pos];
+  }
   /*
-    Leave a litle extra space, round up to 52 data words 
+    Leave a litle extra space, round up to 62 data words 
   */
-  word_pos += 4;
+  word_pos += 7;
   if (direction == 0) {
     lflattened[word_pos] = 40;
   }
