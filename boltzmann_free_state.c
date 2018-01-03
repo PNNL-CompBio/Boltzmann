@@ -1,4 +1,6 @@
 #include "boltzmann_structs.h"
+#include "boltzmann_cvodes_headers.h"
+#include "cvodes_params_struct.h"
 #include "boltzmann_free_state.h"
 int boltzmann_free_state(struct state_struct *state) {
   /*
