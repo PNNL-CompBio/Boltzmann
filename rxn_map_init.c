@@ -185,7 +185,7 @@ int rxn_map_init(char *param_file_name, struct state_struct **statep,
   */
   if (success) {
     success = sort_compartments(state->unsorted_cmpts,
-				state->sorted_cmpts,
+				state->sorted_compartments,
 				state->compartment_text,
 				state->number_compartments);
   }
