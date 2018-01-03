@@ -98,6 +98,7 @@ int alloc0(struct state_struct **state) {
     statep->restart_file       = statep->free_energy_file + max_file_name_len;
     statep->rxn_view_file      = statep->restart_file + max_file_name_len;
     statep->bndry_flux_file    = statep->rxn_view_file + max_file_name_len;
+    statep->pseudoisomer_file  = statep->bndry_flux_file + max_file_name_len;
     */
 
     statep->max_param_line_len = max_param_line_len;
