@@ -30,11 +30,12 @@ int boltzmann_init_core(struct state_struct *state) {
   */
   int success;
   int print_output;
-  int one;
+  int setup;
   int padi;
 
   print_output = state->print_output;
   success = io_size_init(state);
+  setup   = 1;
   /*
     At this point in time we can compute how much space the aligned
     reaction titles, pathway descriptions, compartments and molecules
@@ -45,8 +46,7 @@ int boltzmann_init_core(struct state_struct *state) {
     sorting.
   */
   if (success) {
-    one = 1;
-    success = alloc2(state,one);
+    success = alloc2(state,setup);
   }
   /*
     Read reactions file to count molecules and reactions,
@@ -62,7 +62,7 @@ int boltzmann_init_core(struct state_struct *state) {
     and read in the intial concentrations converting them to counts.
   */
   if (success) {
-    success = alloc3(state);
+    success = alloc3(state,setup);
   }
   /*
     Now in order to enable molecule/compartment lookup for
@@ -82,10 +82,10 @@ int boltzmann_init_core(struct state_struct *state) {
     Compute the molecules matrix.
   */
   if (success) {
-    success = alloc4(state,&state->molecules_matrix,&state->transpose_workspace);
+    success = alloc4(state,setup);
   }
   if (success) {
-    success = form_molecules_matrix(state,state->molecules_matrix,state->transpose_workspace);
+    success = form_molecules_matrix(state);
   }
   /*
     Compute the reaction energies of formation if called for.
