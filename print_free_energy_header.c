@@ -40,22 +40,23 @@ void print_free_energy_header(struct state_struct *state) {
   */
   struct rxn_struct *reactions;
   int i;
-  int padi;
+  int free_energy_format;
 
+  free_energy = (int)state->free_energy_format;
   /*
     Print header lines for the free energy file.
   */
   if (state->free_energy_fp) {
-    if (state->free_energy_format == 1) {
+    if (free_energy_format == 1) {
       fprintf(state->free_energy_fp,"negative_log_likelihoods\n");
-    } else if (state->free_energy_format == 2) {
+    } else if (free_energy_format == 2) {
       fprintf(state->free_energy_fp,"free energy (KJ/mol)\n");
-    } else if (state->free_energy_format == 3) {
+    } else if (free_energy_format == 3) {
       fprintf(state->free_energy_fp,"free energy (Kcal/mol)\n");
     }
     fprintf(state->free_energy_fp,"iter");
     reactions = state->reactions;
-    for (i=0;i<state->number_reactions;i++) {
+    for (i=0;i<(int)state->number_reactions;i++) {
       fprintf(state->free_energy_fp,"\t%s",reactions->title);
       reactions += 1; /* Caution address arithmetic */
     }
