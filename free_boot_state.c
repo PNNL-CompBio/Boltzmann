@@ -28,6 +28,7 @@ specific language governing permissions and limitations under the License.
 #include "free_boot_state2.h"
 int free_boot_state(struct state_struct **statep) {
   /*
+    Free temporary space used in setup.
     Called by: boltzmann_init
     Calls:     free_boot_state2, free.
   */
@@ -52,6 +53,9 @@ int free_boot_state(struct state_struct **statep) {
     }
     if (state->rxn_file_keyword_lengths) {
       free(state->rxn_file_keyword_lengths);
+    }
+    if (state->workspace_base) {
+      free(state->workspace_base);
     }
     success = free_boot_state2(statep);
     free(state);
