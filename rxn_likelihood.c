@@ -121,9 +121,15 @@ double rxn_likelihood(double *concs,
 	left_concs = left_concs * (conc-k);	
       } 
     } else {
-      for (k=1;k<=coeff;k++) {
-	right_concs = right_concs * (conc+k);
-      } 
+      if (coeff > 0) {
+	for (k=1;k<=coeff;k++) {
+	  right_concs = right_concs * (conc+k);
+	} 
+      }
+      /*
+	NB if the coeff is == 0 then this molecule was a solvent and
+	is not to be used in computing likelihoods.
+      */
     }
   }
   likelihood = eq_k * (left_concs/ right_concs);
