@@ -21,7 +21,6 @@ CONDITIONS OF ANY KIND, either express or implied. See the License for the
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
 #include "boltzmann_structs.h"
-
 #include "read_params.h"
 int read_params (char *param_file_name, struct state_struct *state) {
   /*
@@ -67,6 +66,9 @@ int read_params (char *param_file_name, struct state_struct *state) {
       Set defaults.
     */
     strcpy(state->reaction_file,"./rxns.dat");
+    strcpy(state->ms2js_file,"./modelseed_2_json.srt");
+    strcpy(state->pseudoisomer_file,"./pseudoisomer_dg0f.txt");
+    /*
     strcpy(state->init_conc_file,"./rxns.concs");
     strcpy(state->log_file,"./boltzmann.log");
     strcpy(state->output_file,"./boltzmann.out");
@@ -76,13 +78,25 @@ int read_params (char *param_file_name, struct state_struct *state) {
     strcpy(state->restart_file,"./restart.concs");
     strcpy(state->rxn_view_file,"./rxns.view");
     strcpy(state->bndry_flux_file,"./boundary_flux.txt");
-    strcpy(state->ms2js_file,"./modelseed_2_json.srt");
+    */
+    state->init_conc_file[0]   = '\0';
+    state->log_file[0]         = '\0';
+    state->output_file[0]      = '\0';
+    state->counts_out_file[0]  = '\0';
+    state->rxn_lklhd_file[0]   = '\0';
+    state->free_energy_file[0] = '\0';
+    state->restart_file[0]     = '\0';
+    state->rxn_view_file[0]    = '\0';
+    state->bndry_flux_file[0]  = '\0';
     state->compartment_file[0] = '\0';
     state->sbml_file[0]        = '\0';
+    state->rxn_echo_file[0]    = '\0';
+    state->rxn_mat_file[0]     = '\0';
+    state->dg0ke_file[0]       = '\0';
+    state->dictionary_file[0]  = '\0';
     /*
       Following line Added by DGT on 4/18/2013
      */
-    strcpy(state->pseudoisomer_file,"./pseudoisomer_dg0f.txt");
     strcpy(state->solvent_string,"H2O");
     strcpy(state->input_dir,"./");
     strcpy(state->output_dir,"./");
@@ -117,6 +131,9 @@ int read_params (char *param_file_name, struct state_struct *state) {
     state->print_output        = (int64_t)0;
     state->use_pseudoisomers   = (int64_t)1;
     state->use_metropolis      = (int64_t)1;
+    state->use_regulation      = (int64_t)1;
+    state->max_regs_per_rxn    = (int64_t)4;
+
     state->default_initial_count = (int64_t)0;
     param_buffer       = state->param_buffer;
     max_param_line_len = state->max_param_line_len;
@@ -175,6 +192,8 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	sscan_ok = sscanf(value,"%ld",&state->use_pseudoisomers);
       } else if (strncmp(key,"USE_METROPOLIS",14) == 0) {
 	sscan_ok = sscanf(value,"%ld",&state->use_metropolis);
+      } else if (strncmp(key,"USE_REGULATION",14) == 0) {
+	sscan_ok = sscanf(value,"%ld",&state->use_regulation);
       } else if (strncmp(key,"LOG_FILE",8) == 0) {
 	sscan_ok = sscanf(value,"%s",state->log_file);
       } else if (strncmp(key,"SOLVENT",7) == 0) {
@@ -184,7 +203,12 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	if (state->align_len < 0) {
 	  state->align_len = 16;
 	}
-	state->align_mask = state->align_len - 1;
+	state->align_mask = state->align_len - (int64_t)1;
+      } else if (strncmp(key,"MAX_REGS_PER_RXN",18) == 0) {
+	sscan_ok = sscanf(value,"%ld",&(state->max_regs_per_rxn));
+	if (state->max_regs_per_rxn <= 0) {
+	  state->max_regs_per_rxn = 4;
+	}
       } else if (strncmp(key,"EPSILON",7) == 0) {
 	sscan_ok = sscanf(value,"%le",&state->epsilon);
       } else if (strncmp(key,"IDEAL_GAS_R",11) == 0) {
