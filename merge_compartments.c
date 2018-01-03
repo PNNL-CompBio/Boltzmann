@@ -94,6 +94,7 @@ int merge_compartments(struct molecule_struct *list1,
       p3->c_index  = p1->c_index;
       p3->variable = p1->variable;
       p3->g_index  = p1->g_index;
+      p3->volume   = p1->volume;
       j1++;
       p1 += 1; /* Caution Address arithmetic here. */
       p3 += 1; /* Caution Address arithmetic here. */
@@ -107,6 +108,7 @@ int merge_compartments(struct molecule_struct *list1,
 	  p3->c_index  = p2->c_index;
 	  p3->variable = p2->variable;
 	  p3->g_index  = p2->g_index;
+	  p3->volume   = p2->volume;
 	  p2 += 1; /* Caution Address arithmetic here. */
 	  p3 += 1; /* Caution Address arithmetic here. */
 	}
@@ -127,6 +129,7 @@ int merge_compartments(struct molecule_struct *list1,
       p3->c_index  = p2->c_index;
       p3->variable = p2->variable;
       p3->g_index  = p2->g_index;
+      p3->volume   = p2->volume;
       j2++;
       p2 += 1; /* Caution Address arithmetic here. */
       p3 += 1; /* Caution Address arithmetic here. */
@@ -140,6 +143,7 @@ int merge_compartments(struct molecule_struct *list1,
 	  p3->c_index  = p1->c_index;
 	  p3->variable = p1->variable;
 	  p3->g_index  = p1->g_index;
+	  p3->volume   = p1->volume;
 	  p1 += 1; /* Caution Address arithmetic here. */
 	  p3 += 1; /* Caution Address arithmetic here. */
 	}
