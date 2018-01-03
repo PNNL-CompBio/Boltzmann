@@ -62,12 +62,12 @@ int alloc3(struct state_struct *state) {
   usage      		  = state->usage;
   align_mask 		  = state->align_mask;
   align_len  		  = state->align_len;
-  nu_molecules            = state->unique_molecules;
-  nzr                     = state->number_molecules;
-  nrxns                   = state->number_reactions;
-  max_molecule_len        = state->max_molecule_len + 1;
-  max_compartment_len     = state->max_compartment_len + 1;
-  rxn_view_freq           = state->rxn_view_freq;
+  nu_molecules            = (int)state->unique_molecules;
+  nzr                     = (int)state->number_molecules;
+  nrxns                   = (int)state->number_reactions;
+  max_molecule_len        = (int)state->max_molecule_len + 1;
+  max_compartment_len     = (int)state->max_compartment_len + 1;
+  rxn_view_freq           = (int)state->rxn_view_freq;
   /*
     Allocate space for molecules name when reading initial 
     concentrations file.
@@ -310,8 +310,8 @@ int alloc3(struct state_struct *state) {
     } 
   }
   if (success) {
-    ask_for = ((int64_t)nrxns) * ((int64_t)sizeof(double));
-    ask_for += ask_for + 1;
+    ask_for = ((int64_t)nrxns+1) * ((int64_t)sizeof(double));
+    ask_for += ask_for;
     usage += ask_for;
     state->rxn_likelihood_ps = (double *)calloc(one_l,ask_for);
     if (state->rxn_likelihood_ps == NULL) {
@@ -322,19 +322,8 @@ int alloc3(struct state_struct *state) {
     } 
   }
   if (success) {
-    ask_for = ((int64_t)nrxns) * ((int64_t)sizeof(double));
-    usage += ask_for;
-    state->l_thermo = (double *)calloc(one_l,ask_for);
-    if (state->l_thermo == NULL) {
-      fprintf(stderr,"alloc3: Error unable to allocate %ld bytes for "
-	      "state->l_thermo field.\n",ask_for);
-      fflush(stderr);
-      success = 0;
-    } 
-  }
-  if (success) {
     if (rxn_view_freq > 0) {
-      rxn_view_hist_lngth = 1 + (int)((state->record_steps + rxn_view_freq - 1) /rxn_view_freq);
+      rxn_view_hist_lngth = 1 + (int)(((int)(state->record_steps) + rxn_view_freq - 1) /rxn_view_freq);
       ask_for = (((int64_t)nrxns) * ((int64_t)sizeof(double)))*((int64_t)rxn_view_hist_lngth);
       usage += ask_for;
       state->rxn_view_likelihoods = (double *)calloc(one_l,ask_for);
@@ -344,14 +333,14 @@ int alloc3(struct state_struct *state) {
 	fflush(stderr);
 	success = 0;
       }
-      state->rxn_view_hist_lngth = rxn_view_hist_lngth;
+      state->rxn_view_hist_lngth = (int64_t)rxn_view_hist_lngth;
     } else {
       state->rxn_view_likelihoods = NULL;
     }
   }
   if (success) {
     if (rxn_view_freq > 0) {
-      rxn_view_hist_lngth = state->rxn_view_hist_lngth;
+      rxn_view_hist_lngth = (int)state->rxn_view_hist_lngth;
       ask_for = (((int64_t)nrxns) * ((int64_t)sizeof(double)))*((int64_t)rxn_view_hist_lngth);
       usage += ask_for;
       state->rev_rxn_view_likelihoods = (double *)calloc(one_l,ask_for);
@@ -367,7 +356,7 @@ int alloc3(struct state_struct *state) {
   }
   if (success) {
     if (rxn_view_freq > 0) {
-      rxn_view_hist_lngth = state->rxn_view_hist_lngth;
+      rxn_view_hist_lngth = (int)state->rxn_view_hist_lngth;
       ask_for = ((int64_t)sizeof(double))*((int64_t)rxn_view_hist_lngth);
       usage += ask_for;
       state->no_op_likelihood = (double *)calloc(one_l,ask_for);
