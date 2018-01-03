@@ -54,15 +54,20 @@ int alloc7(struct state_struct *state) {
   int64_t one_l;
   int64_t usage;
   int    *rxn_has_flux;
+  int    *base_reactants;
+  int    *base_reactant_indicator;
   int num_rxns;
   int num_species;
   int success;
   int padi;
+  FILE *lfp;
+  FILE *efp;
 
   one_l         = (int64_t)1;
   usage         = state->usage;
   num_species   = (int)state->nunique_molecules;
   num_rxns      = (int)state->number_reactions;
+  lfp           = state->lfp;
   success       = 1;
   /*
     Allocate space for the ode_counts vector to be computed
@@ -86,9 +91,11 @@ int alloc7(struct state_struct *state) {
     usage += ask_for;
     ode_concs = (double *)calloc(one_l,ask_for);
     if (ode_concs == NULL) {
-      fprintf(stderr,"alloc7: Error unable to allocate %lld bytes for "
-	      "ode_concs\n",ask_for);
-      fflush(stderr);
+      if (lfp) {
+	fprintf(lfp,"alloc7: Error unable to allocate %lld bytes for "
+		"ode_concs\n",ask_for);
+	fflush(lfp);
+      }
       success = 0;
     } else {
       state->ode_concs = ode_concs;
@@ -102,9 +109,11 @@ int alloc7(struct state_struct *state) {
     usage += ask_for;
     reactant_term = (double *)calloc(one_l,ask_for);
     if (reactant_term == NULL) {
-      fprintf(stderr,"alloc7: Error unable to allocate %lld bytes for "
+      if (lfp) {
+	fprintf(lfp,"alloc7: Error unable to allocate %lld bytes for "
 	      "reactant_term\n",ask_for);
-      fflush(stderr);
+	fflush(lfp);
+      }
       success = 0;
     } else {
       state->reactant_term = reactant_term;
@@ -118,9 +127,11 @@ int alloc7(struct state_struct *state) {
     usage += ask_for;
     product_term = (double *)calloc(one_l,ask_for);
     if (product_term == NULL) {
-      fprintf(stderr,"alloc7: Error unable to allocate %lld bytes for "
-	      "product_term\n",ask_for);
-      fflush(stderr);
+      if (lfp) {
+	fprintf(lfp,"alloc7: Error unable to allocate %lld bytes for "
+		"product_term\n",ask_for);
+	fflush(lfp);
+      }
       success = 0;
     } else {
       state->product_term = product_term;
@@ -134,9 +145,11 @@ int alloc7(struct state_struct *state) {
     usage += ask_for;
     rxn_q = (double *)calloc(one_l,ask_for);
     if (rxn_q == NULL) {
-      fprintf(stderr,"alloc7: Error unable to allocate %lld bytes for "
+      if (lfp) {
+	fprintf(lfp,"alloc7: Error unable to allocate %lld bytes for "
 	      "rxn_q\n",ask_for);
-      fflush(stderr);
+	fflush(lfp);
+      }
       success = 0;
     } else {
       state->rxn_q = rxn_q;
@@ -150,9 +163,11 @@ int alloc7(struct state_struct *state) {
     usage += ask_for;
     recip_rxn_q = (double *)calloc(one_l,ask_for);
     if (recip_rxn_q == NULL) {
-      fprintf(stderr,"alloc7: Error unable to allocate %lld bytes for "
-	      "recip_rxn_q\n",ask_for);
-      fflush(stderr);
+      if (lfp) {
+	fprintf(lfp,"alloc7: Error unable to allocate %lld bytes for "
+		"recip_rxn_q\n",ask_for);
+	fflush(lfp);
+      }
       success = 0;
     } else {
       state->recip_rxn_q = recip_rxn_q;
@@ -166,9 +181,11 @@ int alloc7(struct state_struct *state) {
     usage += ask_for;
     log_kf_rel = (double *)calloc(one_l,ask_for);
     if (log_kf_rel == NULL) {
-      fprintf(stderr,"alloc7: Error unable to allocate %lld bytes for "
+      if (lfp) {
+	fprintf(lfp,"alloc7: Error unable to allocate %lld bytes for "
 	      "log_kf_rel\n",ask_for);
-      fflush(stderr);
+	fflush(lfp);
+      }
       success = 0;
     } else {
       state->log_kf_rel = log_kf_rel;
@@ -182,9 +199,11 @@ int alloc7(struct state_struct *state) {
     usage += ask_for;
     log_kr_rel = (double *)calloc(one_l,ask_for);
     if (log_kr_rel == NULL) {
-      fprintf(stderr,"alloc7: Error unable to allocate %lld bytes for "
-	      "log_kr_rel\n",ask_for);
-      fflush(stderr);
+      if (lfp) {
+	fprintf(lfp,"alloc7: Error unable to allocate %lld bytes for "
+		"log_kr_rel\n",ask_for);
+	fflush(lfp);
+      }
       success = 0;
     } else {
       state->log_kr_rel = log_kr_rel;
@@ -195,9 +214,11 @@ int alloc7(struct state_struct *state) {
     usage += ask_for;
     ode_forward_lklhds = (double *)calloc(one_l,ask_for);
     if (ode_forward_lklhds == NULL) {
-      fprintf(stderr,"alloc7: Error unable to allocate %lld bytes for "
-	      "ode_forward_lklhds\n",ask_for);
-      fflush(stderr);
+      if (lfp) {
+	fprintf(lfp,"alloc7: Error unable to allocate %lld bytes for "
+		"ode_forward_lklhds\n",ask_for);
+	fflush(lfp);
+      }
       success = 0;
     } else {
       state->ode_forward_lklhds = ode_forward_lklhds;
@@ -208,9 +229,11 @@ int alloc7(struct state_struct *state) {
     usage += ask_for;
     ode_reverse_lklhds = (double *)calloc(one_l,ask_for);
     if (ode_reverse_lklhds == NULL) {
-      fprintf(stderr,"alloc7: Error unable to allocate %lld bytes for "
-	      "ode_reverse_lklhds\n",ask_for);
-      fflush(stderr);
+      if (lfp) {
+	fprintf(lfp,"alloc7: Error unable to allocate %lld bytes for "
+		"ode_reverse_lklhds\n",ask_for);
+	fflush(lfp);
+      }
       success = 0;
     } else {
       state->ode_reverse_lklhds = ode_reverse_lklhds;
@@ -226,13 +249,33 @@ int alloc7(struct state_struct *state) {
     usage += ask_for;
     rxn_has_flux = (int*)calloc(one_l,ask_for);
     if (rxn_has_flux == NULL) {
-      fprintf(stderr,"alloc7: Error unable to allocate %lld bytes for "
+      if (lfp) {
+	fprintf(lfp,"alloc7: Error unable to allocate %lld bytes for "
 	      "rxn_has_flux\n",ask_for);
-      fflush(stderr);
+	fflush(lfp);
+      }
       success = 0;
     } else {
       state->rxn_has_flux = rxn_has_flux;
     }
+  }
+  if (success) {
+    ask_for = (int64_t)(num_species+num_species)*sizeof(int);
+    usage += ask_for;
+    base_reactant_indicator = (int*)calloc(ask_for,one_l);
+    if (base_reactant_indicator == NULL) {
+      success = 0;
+      if (lfp) {
+	fprintf(lfp,"alloc7: Error could not allocate %lld "
+		"bytes for int base_reactant scratch space.\n",ask_for);
+	fflush(lfp);
+      }
+    }
+  }
+  if (success) {
+    base_reactants = (int*)&base_reactant_indicator[num_species];
+    state->base_reactant_indicator = base_reactant_indicator;
+    state->base_reactants          = base_reactants;
   }
   state->usage = usage;
   return(success);
