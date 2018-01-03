@@ -50,7 +50,6 @@ int size_pseudoisomer_file(struct state_struct *state,
   int64_t wc;
   int64_t cc;
   int success;
-  int command_len;
   int name_len;
   int buff_len;
   int ns;
