@@ -61,9 +61,9 @@ void print_free_energy(struct state_struct *state, int step) {
   int padi;
   FILE *free_energy_fp;
   
-  free_energy_format 		   = state->free_energy_format;
+  free_energy_format 		   = (int)state->free_energy_format;
   free_energy_fp     		   = state->free_energy_fp;
-  number_reactions    		   = state->number_reactions;
+  number_reactions    		   = (int)state->number_reactions;
   free_energy                      = state->free_energy;
   forward_rxn_log_likelihood_ratio = state->forward_rxn_log_likelihood_ratio;
   cal_gm_per_joule  	           = state->cal_gm_per_joule;
@@ -75,13 +75,13 @@ void print_free_energy(struct state_struct *state, int step) {
 		-forward_rxn_log_likelihood_ratio[j]);
       }
     }
-    if (state->free_energy_format == 2) {
+    if (free_energy_format == 2) {
       for (j=0;j<number_reactions;j++) {
 	fe = free_energy[j]*cal_gm_per_joule;
 	fprintf(state->free_energy_fp,"\t%le",fe);
       }
     }
-    if (state->free_energy_format == 3) {
+    if (free_energy_format == 3) {
       for (j=0;j<number_reactions;j++) {
 	fprintf(state->free_energy_fp,"\t%le",free_energy[j]);
       }
