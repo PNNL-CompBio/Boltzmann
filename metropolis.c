@@ -55,19 +55,22 @@ int metropolis(struct state_struct *state,
   double *activities;
   double *reverse_rxn_likelihood;
   double *forward_rxn_likelihood;
+  double *counts_or_concs;
   double likelihood;
   double dchoice;
   int64_t choice;
   int accept;
   int success;
   int use_regulation;
-  int padi;
+  int count_or_conc;
   use_regulation         = state->use_regulation;
   future_counts          = state->future_counts;
   forward_rxn_likelihood = state->forward_rxn_likelihood;
   reverse_rxn_likelihood = state->reverse_rxn_likelihood;
   activities             = state->activities;
   vgrng2_state           = state->vgrng2_state;
+  counts_or_concs        = state->current_counts;
+  count_or_conc          = 1;
   /*
     Compute the reaction likelihood for this reaction.
   */
@@ -92,7 +95,7 @@ int metropolis(struct state_struct *state,
     choice  = vgrng(vgrng2_state);
     dchoice = ((double)choice)*scaling;
     if (use_regulation) {
-      update_regulation(state,rxn_number);
+      update_regulation(state,rxn_number,counts_or_concs,count_or_conc);
     }
     if (dchoice < likelihood*activities[rxn_number]) {
       accept = 1;
