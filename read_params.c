@@ -21,6 +21,8 @@ CONDITIONS OF ANY KIND, either express or implied. See the License for the
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
 #include "boltzmann_structs.h"
+#include "count_nws.h"
+#include "upcase.h"
 #include "read_params.h"
 int read_params (char *param_file_name, struct state_struct *state) {
   /*
@@ -46,6 +48,8 @@ int read_params (char *param_file_name, struct state_struct *state) {
   char *rtp;
   int success;
   int sscan_ok;
+  int kl;
+  int padi;
   FILE *in_fp;
   success = 1;
   vgrng_state  = state->vgrng_state;
@@ -193,6 +197,8 @@ int read_params (char *param_file_name, struct state_struct *state) {
       sscan_ok = sscanf(param_buffer,"%s %s",key,value);
     }
     while ((!feof(in_fp)) && (sscan_ok == 2)) {
+      kl = count_nws(key);
+      upcase(kl,key);
       if (strncmp(key,"RXN_FILE",8) == 0) {
 	sscan_ok = sscanf(value,"%s",state->reaction_file);
       } else if (strncmp(key,"RXN_LIST_FILE",13) == 0) {
