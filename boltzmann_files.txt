@@ -1,0 +1,113 @@
+The reaction file, recommended extension .dat but coud be .rxn
+see tca.dat for example. It is read by parse_reactions_file.c
+
+This file is a list of ASCI lines with information about the chemical reactions
+to be simulated with statistical thermodynamics.
+In the text below things in angle brackets, <> denote variable quanties
+things in uppercase are Verbatim, lines refer to LF terminated lines (\n)
+(linux style not MS style)
+
+Each Reaction description starts with a title line:
+
+REACTION <title_name>
+
+and ends with a line containing only two forward slashes:
+
+//
+
+all other lines in the file must be between a REACTION title line and
+its closing //
+
+Each reaction must have a LEFT line and a RIGHT line that lists 
+the chemical species involved in the reaction with the reactants on 
+the "LEFT" line and the products on the RIGHT line.
+
+The chemical species within a line must be separated by a white space surrounded plus sign. Each chemical species may be preceded by a stoichimetric 
+coefficient (which is assumed to be 1 if it is absent) and a space or tab, 
+and postfixed with a charge (no space between the charge and species names).
+Because spaces are used as delimiters between stoichmetric coeffiecents and
+the species separating plus signs - species chemical names may not contain
+any white space and ion indications must immediately follow species designation with no intervening white space:
+
+LEFT	D-RIBULOSE-1,5-BISPHOSPHATE + CO2 + H2O
+RIGHT	2 3-PHOSPHO-D-GLYCERATE + 2 H+
+
+Also a DGZERO line specifies the Gibbs free energy of formation if it is known
+and the DGZERO-UNITS line specifies the units for DGZERO either KJ/MOL or 
+KCAL/MOL.
+
+A PATHWAY Line may be used to specify a PATHWAY name that the reaction is
+part of
+and a COMMENT line/lines may be used to add any documentation that
+may be relevant to the reaction information. It is not actually used by
+the boltzmann code.
+
+
+Here is a simple reaction entry in a rxn.dat file.
+
+REACTION 21, 62  RIBULOSE BISPHOSPHATE CARBOXYLASE
+DGZERO	61.1	
+DGZERO-UNITS	KJ/MOL
+COMMENT from Dennis' calculations
+PATHWAY	CALVIN CYCLE, RUBISCO SHUNT
+//
+
+
+Other possible lines describing a reaction are
+COMPARTMENT  <compartment_name>
+LEFT_COMPARTMENT <left_compartment_name>
+RIGHT_COMPARTMENT <right_compartament_name>
+
+Compartment names are optional, and if not specified the default 
+global compartment is assumed.
+The left and right compartment names allow for reactants to be in one
+compartment and products to be in another, enabling the transfer of
+species from one compartment to another.
+
+Also available are
+ACTIVITY
+PREGULATION and
+NREGULATION lines.
+
+ACTIVITY lines are
+
+ACTIVITY <floating_point_number_in_0_to_1>
+
+and are not currently used - ask Bill Cannon about intended future use. 
+
+PREGULATION lines are of the format:
+
+PREGULATION <metabolite> <constant> <exponent>
+
+NREGULATION lines have the same format replacing the P with N
+
+
+-------------------------------------------------------------------
+Initial concentrations file:
+Read by read_initial_concentrations.c
+
+First line in an initial concentrations file must be a VOLUME line
+specifying the default compartment volume 
+What are the assumed units (liters)
+Usual value is 1.e-15
+
+Next a CONC_UNITS line is required this is a constant 
+stored in state->conc_units
+This value is a scaling applied to the input concentrations,
+so if concs are Moles/ml, this would be 1.0e-3
+if concs are Moles/l this would be 1.0, usually 1.0
+
+Then one per line 
+
+<species_name> <concentration> <variable_or_fixed> <compute_c> <e_val> <u_val>
+
+where <variable_or_fixed> is the single letter V or F for whether this
+species concentration is allowed to vary during the simulation or whether
+it is fixed.
+
+<compute_c> <e_val> and <uval> are optional and used in respect to 
+kss stuff, and don't seem to be used any more. check with Bill on that.
+
+---------------------------------------------------------------------
+
+
