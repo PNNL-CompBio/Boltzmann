@@ -73,9 +73,9 @@ int parse_reactions_file(struct state_struct *state,
 	       upcase,
 	       fseek, feof, fgets, fprintf, fflush, sscanf (intrinsic)
   */
-  struct rxn_struct *reactions;
-  struct rxn_struct *reaction;
-  struct rxn_matrix_struct *rxns_matrix;
+  struct reaction_struct *reactions;
+  struct reaction_struct *reaction;
+  struct reactions_matrix_struct *rxns_matrix;
   struct molecule_struct *unsorted_molecules;
   struct molecule_struct *rxn_molecules;
   struct compartment_struct *unsorted_cmpts;
@@ -460,7 +460,7 @@ int parse_reactions_file(struct state_struct *state,
 				    (int64_t *)&compartment_pos,
 				    (int *)&molecules,
 				    (int *)&cmpts,
-				    (struct rxn_struct *)reaction,
+				    (struct reaction_struct *)reaction,
 				    state,
 				    side);
 	  break;
@@ -474,7 +474,7 @@ int parse_reactions_file(struct state_struct *state,
 				    (int64_t *)&compartment_pos,
 				    (int *)&molecules,
 				    (int *)&cmpts,
-				    (struct rxn_struct *)reaction,
+				    (struct reaction_struct *)reaction,
 				    state,
 				    side);
 	  break;
@@ -650,7 +650,7 @@ int parse_reactions_file(struct state_struct *state,
 	  rxns += 1;
 	  /*
 	    Caution address arithmetic follows
-	    reaction = (struct rxn_struct*)&reactions[rxns];
+	    reaction = (struct reaction_struct*)&reactions[rxns];
 	  */
 	  reaction += 1;
 	  reg_base  += max_regs_per_rxn;
