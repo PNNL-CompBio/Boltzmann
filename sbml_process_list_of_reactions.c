@@ -26,11 +26,10 @@ specific language governing permissions and limitations under the License.
 #include "count_ws.h"
 #include "count_nws.h"
 #include "sbml_look_for_in_reaction_tag.h"
-#include "sbml_key_value.h"
-#include "sbml_lookup_reaction_attribute.h"
-#include "sbml_lookup_speciesref_attribute.h"
-#include "translate_ms_2_js.h"
-
+#include "sbml_process_reaction_tag.h"
+#include "sbml_process_list_of_reactants_tag.h"
+#include "sbml_process_list_of_products_tag.h"
+#include "sbml_process_species_reference_tag.h"
 #include "sbml_process_list_of_reactions.h"
 
 int sbml_process_list_of_reactions(FILE *sbml_fp,
@@ -44,9 +43,10 @@ int sbml_process_list_of_reactions(FILE *sbml_fp,
     Calls:     fprintf, feof, fgets, fflush, strcpy, strcmp, strncmp, sscanf
                count_ws, count_nws,
 	       sbml_look_for_in_reaction_tag,
-	       sbml_key_value,
-               sbml_lookup_reaction_attribute
-               sbml_lookup_speciesref_attribute
+	       sbml_process_reaction_tag,
+	       sbml_process_list_of_reactants_tag,
+	       sbml_process_list_of_products_tag,
+	       sbml_process_species_reference_tag
 	       
   */
   /*
@@ -66,31 +66,28 @@ int sbml_process_list_of_reactions(FILE *sbml_fp,
     "</reaction>" {in_reaction=0}
     {print //}
   */
-  struct ms2js_struct *ms2js_data;
   char comp_c[1024];
   char species_c[1024];
   char value_c[1024];
   char rxn_id_c[1024];
   char key_c[1024];
   char units_c[1024];
+  char name_c[1024];
   char *key;
   char *value;
   char *comp;
   char *species;
-  char *tspecies;
   char *rxn_id;
+  char *rxn_name;
   char *units;
-  char bcf[8];
-  char vc[8];
-  char *concs_file;
-  char *bc;
+  char **spec_ids;
+  char **translations;
   char *line;
   
-  double init_amt;
   double delta_g0;
 
-  int variable;
   int in_reaction_tag;
+  int padi;
 
   int in_list_of_reactions;
   int in_list_of_reactants;
@@ -128,41 +125,29 @@ int sbml_process_list_of_reactions(FILE *sbml_fp,
   int max_key_len;
   int max_val_len;
 
-  int translate_from_modelseed;
-  int padi;
 
   FILE *lfp;
   FILE *error_fp;
   FILE *rxns_fp;
+  FILE *efp;
 
-  success     = 1;
-  key         = (char *)&(key_c[0]);
-  value       = (char *)&(value_c[0]);
-  comp        = (char *)&(comp_c[0]);
-  species     = (char *)&(species_c[0]);
-  units       = (char *)&(units_c[0]);
-  rxn_id      = (char *)&(rxn_id_c[0]);
-  bc          = (char *)&bcf[0];
-  vc[0]       = 'F';
-  vc[1]       = 'V';
-  max_key_len = 1023;
-  max_val_len = 1023;
-  ms2js_data = state->ms2js_data;
-  lfp        = state->log_fp;
-  rxns_fp    = state->rxns_fp;
+  success      = 1;
+  key          = (char *)&(key_c[0]);
+  value        = (char *)&(value_c[0]);
+  comp         = (char *)&(comp_c[0]);
+  species      = (char *)&(species_c[0]);
+  units        = (char *)&(units_c[0]);
+  rxn_id       = (char *)&(rxn_id_c[0]);
+  rxn_name     = (char *)&(name_c[0]);
+  max_key_len  = 1023;
+  max_val_len  = 1023;
+  lfp          = state->log_fp;
+  rxns_fp      = state->rxns_fp;
   if (lfp == NULL) {
     error_fp = stderr;
   } else {
     error_fp = lfp;
   }
-  /*
-    For now we hardware translate_from_modelseed to be 1,
-    assuming the sbml files are using the modelseed id's.
-    Could become a parameter later.
-  */
-  translate_from_modelseed = 1;
-
-
   /*
     Set the default delta_g0 and delta_g0_units.
   */
@@ -171,8 +156,6 @@ int sbml_process_list_of_reactions(FILE *sbml_fp,
 
   comp[0] = '\0';
   species[0] = '\0';
-  init_amt=0;
-  variable     = 1;
   in_reaction = 0;
   in_reaction_tag = 0;
   rxn_count          = 0;
@@ -234,143 +217,32 @@ int sbml_process_list_of_reactions(FILE *sbml_fp,
 	break;
       case 2:
 	/*
-	  in_reaction_tag
-	  "<reaction" tab has already been skipped over. 
-	  Look for end of reaction tag,">"
+	  in_reaction_tag, process the <reaction> tag fields.
 	*/
-	nb = count_ws(line);
-	line += nb; /* Caution address arithmetic */
-	ns = count_nws(line);
-	while (ns != 0) {
-	  if (line[0] == '>') {
-	    /*
-	      We have hit the end of the reaction tag,
-	      generate  the reaction label, and
-	      compartment if there was one, reset
-	      the compartment, enclosing_tag and set the
-	      species count to 0. and break out of this loop.
-	    */
-	    fprintf(rxns_fp,"REACTION\t%s\n",rxn_id);
-	    if (comp[0] != '\0') {
-	      fprintf(rxns_fp,"COMPARTEMNT\t%s\n",comp);
-	    }
-	    comp[0] = '\0';
-	    species_count = 0;
-	    enclosing_tag = not_in_tag;
-	    ns = 0;
-	  } else {
-	    /*
-	      look for key=value triples, expecting keys of
-	      "id", "reversible" "fast" and possibly "compartment"
-	    */
-	    tl = sbml_key_value(line,key,value,max_key_len,max_val_len);
-	    if (tl <= 0) {
-	      ns = 0;
-	    } else {
-	      line += tl;
-	      tag = sbml_lookup_reaction_attribute(key);
-	      nb = count_ws(line);
-	      line += nb; /* Caution address arithmetic */
-	      ns = count_nws(line);
-	      if (tag >= 0) {
-		switch (tag) {
-		case 0:
-		  /*
-		    compartment.
-		  */
-		  strcpy (comp,value);
-		  break;
-		case 1:
-		  /*
-		    delta_g0
-		  */
-		  sscanf(value,"%le",&delta_g0);
-		  break;
-		case 2:
-		  /*
-		    delta_g0_units
-		  */
-		  strcpy(units,value);
-		case 3:
-		  /*
-		    fast, ignored for now.
-		  */
-		  break;
-		case 4:
-		  /*
-		    id
-		  */
-		  strcpy(rxn_id,value);
-		  break;
-		case 5:
-		  /*
-		    reversible, ignored for now.
-		  */
-		  break;
-		} /* end switch */  
-	      } else {
-		fprintf(error_fp,"sbml_process_list_of_reactions: "
-			"Error found unexpected reaction key :%s\n",key);
-		fflush(error_fp);
-	      }
-	    } /* end else we found a keyword=value triple. */
-	  } /* end else we did not find and en reaction_tag tag */
-	} /* end while (ns != 0), in reaction tag. */
+	sbml_process_reaction_tag(max_key_len,max_val_len,
+				  key,value,line,comp,units,
+				  rxn_id,rxn_name,&delta_g0,rxns_fp,error_fp);
+	enclosing_tag = not_in_tag;
 	break;
       case 4:
 	/*
-	  In list_of_reactants tag.
-	  skip over "<listOfReactants"
+	  <listOfReactants tag.
 	*/
-	line += 16;
-	nb = count_ws(line);
-	line += nb; /* Caution address arithmetic */
-	ns = strlen(line);
-	while (ns != 0)  {
-	  if (line[0] == '>') {
-	    /*
-	      End of list_of_reactants tab,
-	      print a LEFT_COMPARTMENT line if compartment is not null,
-	      Then print the start of the LEFT line.
-	    */
-	    if (comp[0] != '\0') {
-	      fprintf(rxns_fp,"LEFT_COMPARTMENT\t%s\n",comp);
-	      comp[0] = '\0';
-	    }
-	    fprintf(rxns_fp,"LEFT\t");
-	    enclosing_tag = not_in_tag;
-	    species_count = 0;
-	    ns = 0;
-	  } else {
-	    tl = sbml_key_value(line,key,value,max_key_len,max_val_len);
-	    if (tl <= 0) {
-	      ns = 0;
-	    } else {
-	      line += tl;
-	      nb = count_ws(line);
-	      line += nb; /* Caution address arithmetic */
-	      ns = strlen(line);
-	      if (strcmp(key,"compartment") == 0) {
-		strcpy(comp,value);
-		nb = count_ws(line);
-		line += nb; /* Caution address arithmetic */
-		ns = count_nws(line);
-	      } else {
-		fprintf(error_fp,"sbml_process_list_of_reactions: Error "
-			"Unrecognized key=value pair in listOfReactants "
-			"tag:%s=%s\n",key,value);
-	      }
-	    } /* end else found a key=value field in the listOfReactans tag.*/
-	  } /* end else didn't find end of listOfReactants tag */	  
-	} /* end while (ns != 0) */
+	sbml_process_list_of_reactants_tag(max_key_len,max_val_len,
+					   key,value,line,comp,
+					   not_in_tag,
+					   &enclosing_tag,
+					   &species_count,
+					   rxns_fp,error_fp);
+					   
 	break;
       case 8:
 	/*
 	  We found the </listOfReactants> tag, write a new line and
 	  set the species count to zero and the compartment to the 
 	  null string.
-	*/
 	fprintf(rxns_fp,"\n");
+	*/
 	species_count = 0;
 	comp[0] = '\0';
 	enclosing_tag = not_in_tag;
@@ -381,52 +253,20 @@ int sbml_process_list_of_reactions(FILE *sbml_fp,
 	   We found the <listOfProducts> tag look for a compartment.
 	   skip over "<listOfProducts"
 	*/
-	line += 15;
-	nb = count_ws(line);
-	line += nb; /* Caution address arithmetic */
-	ns = strlen(line);
-	while (ns != 0)  {
-	  if (line[0] == '>') {
-	    /*
-	      End of list_of_products tab,
-	      print a RIGHT_COMPARTMENT line if compartment is not null,
-	      Then print the start of the RIGHT line.
-	    */
-	    if (comp[0] != '\0') {
-	      fprintf(rxns_fp,"RIGHT_COMPARTMENT\t%s\n",comp);
-	      comp[0] = '\0';
-	    }
-	    fprintf(rxns_fp,"RIGHT\t");
-	    enclosing_tag = not_in_tag;
-	    species_count = 0;
-	    ns = 0;
-	  } else {
-	    tl = sbml_key_value(line,key,value,max_key_len,max_val_len);
-	    if (tl <= 0) {
-	      ns = 0;
-	    } else {
-	      line += tl;
-	      nb = count_ws(line);
-	      line += nb; /* Caution address arithmetic */
-	      ns = strlen(line);
-	      if (strcmp(key,"compartment") == 0) {
-		strcpy(comp,value);
-	      } else {
-		fprintf(error_fp,"sbml_process_list_of_reactions: Error "
-			"Unrecognized key=value pair in listOfProducts "
-			"tag:%s=%s\n",key,value);
-	      }
-	    } /* end else found a key=value field in the listOfProducts tag.*/
-	  } /* end else didn't find end of listOfProducts tag */	  
-	} /* end while (ns != 0) */
+	sbml_process_list_of_products_tag(max_key_len,max_val_len,
+					  key,value,line,comp,
+					  not_in_tag,
+					  &enclosing_tag,
+					  &species_count,
+  					  rxns_fp,error_fp);
 	break;
       case 32:
 	/*
 	  We found the </listOfProducts> tag, write a new line and
 	  set the species count to zero and the compartment to the 
 	  null string.
-	*/
 	fprintf(rxns_fp,"\n");
+	*/
 	species_count = 0;
 	comp[0] = '\0';
 	enclosing_tag = not_in_tag;
@@ -438,92 +278,20 @@ int sbml_process_list_of_reactions(FILE *sbml_fp,
 	  its compartment if specified and a constant field ignored
 	  here.
 	*/
-	line += 17;
-	nb = count_ws(line);
-	line += nb; /* Caution address arithmetic */
-	ns = count_nws(line);
-	while (ns != 0) {
-	  if ((strncmp(line,"/>",2) == 0) || (line[0] == '>')){
-	    /*
-	      We have reached the end of the speciesReference tag,
-	      print out the stoichiometry, species name and compartment
-	      if it exists, and preceding + sign if species_count is > 0.
-	    */
-	    if (species_count > 0) {
-	      fprintf(rxns_fp,"\t+\t");
-	    }
-	    if (coefficient > 1) {
-	      fprintf(rxns_fp,"%d ",coefficient);
-	    }
-	    fprintf(rxns_fp,"%s",tspecies);
-	    if (comp[0] != '\0') {
-	      fprintf(rxns_fp,":%s",comp);
-	      comp[0] = '\0';
-	    }
-	    coefficient = 1;
-	    species_count += 1;
-	    enclosing_tag = not_in_tag;
-	    ns = 0;
-	  } else {
-	    /*
-	      look for key=value triples, expecting keys of
-	      "species", "stoichiometry" "constant" and possibly "compartment"
-	    */
-	    tl = sbml_key_value(line,key,value,max_key_len,max_val_len);
-	    if (tl <= 0) {
-	      ns = 0;
-	    } else {
-	      line += tl;
-	      nb = count_ws(line);
-	      line += nb; /* Caution address arithmetic */
-	      tag = sbml_lookup_speciesref_attribute(key);
-	      
-	      if (tag >= 0) {
-		switch (tag) {
-		case 0:
-		  /*
-		    compartment.
-		  */
-		  strcpy (comp,value);
-		  break;
-		case 1:
-		  /*
-		    constant, ignored for now.
-		  */
-		  break;
-		case 2:
-		  /*
-		    species
-		  */
-		  strcpy(species,value);
-		  if (translate_from_modelseed) {
-		    tspecies = translate_ms_2_js(ms2js_data,species);
-		    if (tspecies == NULL) {
-		      /*
-			Warning will have already been printed by
-			sbml_process_list_of_species
-		      */
-		      tspecies = species;
-		    }
-		  } else {
-		    tspecies = species;
-		  }
-		  break;
-		case 3:
-		  /*
-		    stoichiometry.
-		  */
-		  sscanf(value,"%d",&coefficient);
-		  break;
-		} /* end switch */  
-	      } else {
-		fprintf(error_fp,"sbml_process_list_of_reactions: "
-			"Error found unexpected speciesref key :%s\n",key);
-		fflush(error_fp);
-	      } 
-	    } /* end else we had key=value triple */
-	  } /* end else not at end of speciesReference tag. */
-	} /* end while (ns ...) */
+	sbml_process_species_reference_tag(state,
+					   max_key_len,
+					   max_val_len,
+					   key,
+					   value,
+					   line,
+					   species,
+					   comp, 
+					   not_in_tag, 
+					   &species_count,
+					   &coefficient,
+					   &enclosing_tag,
+   					   rxns_fp,
+					   error_fp);
 	break;
       case 128:
 	/*
