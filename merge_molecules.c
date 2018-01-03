@@ -24,20 +24,20 @@ specific language governing permissions and limitations under the License.
 #include "boltzmann_structs.h"
 
 #include "merge_molecules.h"
-int merge_molecules(struct istring_elem_struct *list1,
-		    struct istring_elem_struct *list2,
-		    struct istring_elem_struct *mlist,
+int merge_molecules(struct molecule_struct *list1,
+		    struct molecule_struct *list2,
+		    struct molecule_struct *mlist,
 		    char *molecules_text,
 		    int l1,
 		    int l2) {
   /*
-    Merge two sorted arrays of istrings of length l1 and l2 respectively.
+    Merge two sorted arrays of molecules of length l1 and l2 respectively.
     Called by: sort_molecules
     Calls:     strcmp (intrinsic)
   */
-  struct istring_elem_struct *p1;
-  struct istring_elem_struct *p2;
-  struct istring_elem_struct *p3;
+  struct molecule_struct *p1;
+  struct molecule_struct *p2;
+  struct molecule_struct *p3;
   
   char *string1;
   char *string2;
