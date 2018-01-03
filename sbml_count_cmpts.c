@@ -22,8 +22,6 @@ specific language governing permissions and limitations under the License.
 ******************************************************************************/
 
 #include "boltzmann_structs.h"
-#include "sbml2bo_structs.h"
-
 
 int sbml_count_cmpts(struct sbml2bo_struct *sbml_state) {
   /*
