@@ -30,6 +30,8 @@ specific language governing permissions and limitations under the License.
 #include "boltzmann_structs.h"
 
 #include "molecules_lookup.h"
+#include "compartment_lookup.h"
+#include "upcase.h"
 
 #include "read_initial_concentrations.h"
 int read_initial_concentrations(struct state_struct *state) {
@@ -38,6 +40,8 @@ int read_initial_concentrations(struct state_struct *state) {
     set the concentrations array.
     Called by: boltzmann_init
     Calls:     molecules_lookup
+               compartment_lookup,
+	       upcase,
                fopen, fgets, fclose, fprintf, fflush (intrinsic)
   */
   struct istring_elem_struct *sorted_molecules;
@@ -58,6 +62,8 @@ int read_initial_concentrations(struct state_struct *state) {
   int si;
   int ci;
 
+  int mol_len;
+  int cmpt_len;
   
   char *molecules_buffer;
   char *molecule_name;
@@ -85,64 +91,65 @@ int read_initial_concentrations(struct state_struct *state) {
     while (!feof(conc_fp)) {
       fgp = fgets(molecules_buffer,molecules_buff_len,conc_fp);
       if (fgp) {
-	nscan = sscanf(molecules_buffer,"%s:%s %le %1s",
-		       molecule_name, compartment_name, &conc,variable_c);
-	if (nscan >= 3) {
+	nscan = sscanf(molecules_buffer,"%s %le %1s",
+		       molecule_name, &conc,variable_c);
+	variable = 1;
+	if (nscan == 3) {
 	  /*
-	    A compartment was specified.
+	    A variable or constant specifier was givven.
 	  */
+	  vc[0] = vc[0] & 95;
+	  if (strncmp(variable_c,"C",one_l) == 0) {
+	    variable = 0;
+	  }
+	}
+	mol_len = strlen(molecule_name);
+	compartment_name = molecule_name;
+	for (i=0;i<mol_len-1;i++) {
+	  if (molecule_name[i] == ':') {
+	    compartment_name = (char *)&molecule_name[i+1];
+	    molecule_name[i] = '\0';
+	    cmpt_len = mol_len - i - 1;
+	    mol_len = i;
+	    break;
+	  }
+	}
+	if (compartment_name == molecule_name) {
+	  ci = -1;
+	} else {
+	  upcase(cmpt_len,compartment_name,compartment_name);
 	  ci = compartment_lookup(compartment_name,state);
-	  variable = 1;
-	  if (nscan == 4) {
-	    vc[0] = vc[0] & 95;
-	    if (strncmp(variable_c,"C",one_l) == 0) {
-	      variable = 0;
-	    }
+	}
+	if (nscan >= 2) {
+	  upcase(mol_len,molecule_name,molecule_name);
+	  si = molecules_lookup(molecule_name,ci,state);
+	  if ((si >=0) && si < nu_molecules) {
+	    concs[si] = conc;
+	    molecule = (struct istring_elem_struct *)&sorted_molecules[si];
+	    molecule->variable = variable;
+	  } else {
+	    fprintf(stderr,"read_initial_concentrations: Error "
+		    "unrecognized molecules in conc.in was %s\n",
+		    molecule_name);
+	    fflush(stderr);
+	    success = 0;
+	    break;
 	  }
 	} else {
-	  ci = -1;
-	  nscan = sscanf(molecules_buffer,"%s %le %1s",molecule_name,
-			 &conc,variable_c);
-	  variable = 1;
-	  if (nscan == 3) {
-	    vc[0] = vc[0] & 95;
-	    if (strncmp(variable_c,"C",one_l) == 0) {
-	      variable = 0;
-	    }
-	  } else {
-	    if (nscan < 2) {
-	      fprintf(stderr,"read_initial_concentrations: Error "
-		      "poorly formated line was\n%s\n",molecules_buffer);
-	      fflush(stderr);
-	      success = 0;
-	    }
-	  }
+	  fprintf(stderr,"read_initial_concentrations: Error "
+		  "poorly formated line was\n%s\n",molecules_buffer);
+	  fflush(stderr);
+	  success = 0;
 	}
-	if (success) {
-	  if (strcmp(molecule_name,"*") == 0) {
-	    state->default_initial_conc = conc;
-	  } else {
-	    si = molecules_lookup(molecule_name,ci,state);
-	    if ((si >=0) && si < nu_molecules) {
-	      concs[si] = conc;
-	      molecule = (struct istring_elem_struct *)&sorted_molecules[si];
-	      molecule->variable = variable;
-	    } else {
-	      fprintf(stderr,"read_initial_concentrations: Error "
-		      "unrecognized molecules in conc.in was %s\n",
-		      molecule_name);
-	      fflush(stderr);
-	    }
-	  }
-	}
-      }
-    }
+      } /* end if (fgp) */
+    } /* end while (!feof(conc_fp)) */
     fclose(conc_fp);
   } else {
     fprintf(stderr,
-	    "read_initial_concentrations: Warning unable to open concs.in ."
-	    " Will use %le for all molecules\n",state->default_initial_conc);
+	    "read_initial_concentrations: Warning unable to open %s\n",
+	    state->init_conc_file);
     fflush(stderr);
+    success = 0;
   }
   if (success) {
     conc = state->default_initial_conc;
@@ -152,5 +159,21 @@ int read_initial_concentrations(struct state_struct *state) {
       }
     }
   }
+  /*
+    Print the initial concentrations to the concentrations output file.
+  */
+  if (state->concs_out_fp) {
+    fprintf(state->concs_out_fp,"init ");
+    for (i=0;i<nu_molecules;i++) {
+      fprintf(state->concs_out_fp," %le",concs[i]);
+    }
+    fprintf(state->concs_out_fp,"\n");
+  } else {
+    fprintf(stderr,
+	    "read_initial_concentrations: Error concs_out_fp not open\n");
+    fflush(stderr);
+    success = 0;
+  }
+
   return(success);
 }
