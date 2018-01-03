@@ -48,7 +48,6 @@ specific language governing permissions and limitations under the License.
 #include "alloc3.h"
 #include "set_compartment_ptrs.h"
 #include "read_initial_concentrations.h"
-#include "form_molecules_matrix.h"
 #include "compute_ke.h"
 #include "print_rxn_likelihoods_header.h"
 #include "print_free_energy_header.h"
