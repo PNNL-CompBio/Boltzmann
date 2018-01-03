@@ -71,7 +71,7 @@ void print_likelihoods(struct state_struct *state,
   activities        	 = state->activities;
 
   if (rxn_lklhd_fp) {
-    fprintf(rxn_lklhd_fp,"%lld\t%le\t%le",step,entropy,dg_forward);
+    fprintf(rxn_lklhd_fp,"%ld\t%le\t%le",step,entropy,dg_forward);
     for (j=0;j<number_reactions;j++) {
       fprintf(rxn_lklhd_fp,"\t%le",forward_rxn_likelihood[j]*activities[j]);
       fprintf(rxn_lklhd_fp,"\t%le",reverse_rxn_likelihood[j]*activities[j]);
