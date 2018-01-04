@@ -92,9 +92,9 @@ int count_molecules(char* molecules_line, int64_t *molecules_len) {
 	  if we are not at the end of the line, 
 	  the next character needs to be a '+'
 	*/
-	if (line[0] != '+') {
+	if ((line[0] != '+') && (line[0] != '-')) {
 	  fprintf(stderr,"count_molecules: Error - malformed line\n"
-		  "expecting a +, got a %c\n",line[0]);
+		  "expecting a + or -, got a %c\n",line[0]);
 	  fflush(stderr);
 	}
 	pos += 1;
