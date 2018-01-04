@@ -1,5 +1,0 @@
-r4811 | dbaxter | 2017-11-10 15:22:17 -0800 (Fri, 10 Nov 2017) | 3 lines
-
-changed clean target to only clean .a and .so files in the lib subdirctory.
-M    Makefile.pnnl
-
