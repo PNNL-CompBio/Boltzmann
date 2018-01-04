@@ -519,8 +519,11 @@ uninstall-am:
 
 all:  $(EXECS) $(SUNDIALS_LIB_DIR)/libsundials_cvodes.a $(SUNDIALS_LIB_DIR)/libsundials_nvec_ser.a $(SUNDIALS_LIB_DIR)/libsundials.a
 
-$(SUNDIALS_LIB_DIR)/libsundials_cvodes.a $(SUNDIALS_LIB_DIR)/libsundials_nvec_ser.a $(SUNDIALS_LIB_DIR)/libsundials.a:
+$(SUNDIALS_LIB_DIR)/libsundials_cvodes.a $(SUNDIALS_LIB_DIR)/libsundials_nvec_ser.a $(SUNDIALS_LIB_DIR)/libsundials.a: $(SUNDIALS_LIB_DIR)
 	cd $(SUNDIALS_ROOT) && $(MAKE)
+
+$(SUNDIALS_LIB_DIR): $(SUNDIALS_ROOT)
+	mkdir -p $(SUNDIALS_LIB_DIR)
 
 default: $(EXECS) $(SUNDIALS_LIBS) libboltzmann.a
 

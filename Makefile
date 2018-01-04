@@ -59,11 +59,11 @@ DIST_ARCHIVES = $(distdir).tar.gz
 GZIP_ENV = --best
 distuninstallcheck_listfiles = find . -type f -print
 distcleancheck_listfiles = find . -type f -print
-ACLOCAL = ${SHELL} /home/dbaxter/boltzmann/trunk/missing --run aclocal-1.11
-AMTAR = ${SHELL} /home/dbaxter/boltzmann/trunk/missing --run tar
-AUTOCONF = ${SHELL} /home/dbaxter/boltzmann/trunk/missing --run autoconf
-AUTOHEADER = ${SHELL} /home/dbaxter/boltzmann/trunk/missing --run autoheader
-AUTOMAKE = ${SHELL} /home/dbaxter/boltzmann/trunk/missing --run automake-1.11
+ACLOCAL = ${SHELL} /home/dbaxter/boltzmann/git/missing --run aclocal-1.11
+AMTAR = ${SHELL} /home/dbaxter/boltzmann/git/missing --run tar
+AUTOCONF = ${SHELL} /home/dbaxter/boltzmann/git/missing --run autoconf
+AUTOHEADER = ${SHELL} /home/dbaxter/boltzmann/git/missing --run autoheader
+AUTOMAKE = ${SHELL} /home/dbaxter/boltzmann/git/missing --run automake-1.11
 AWK = gawk
 CC = gcc 
 CCDEPMODE = depmode=none
@@ -87,7 +87,7 @@ LDFLAGS =
 LIBOBJS = 
 LIBS = libboltzmann.a -lm $(SUNDIALS_LIBS) libboltzmann.a $(SUNDIALS_LIBS)
 LTLIBOBJS = 
-MAKEINFO = ${SHELL} /home/dbaxter/boltzmann/trunk/missing --run makeinfo
+MAKEINFO = ${SHELL} /home/dbaxter/boltzmann/git/missing --run makeinfo
 MKDIR_P = /bin/mkdir -p
 MMAP_CONFIG = no_
 MPI_EXECS = 
@@ -105,10 +105,10 @@ SHELL = /bin/sh
 STRIP = 
 TIMING_CONFIG = no_
 VERSION = 0.1
-abs_builddir = /home/dbaxter/boltzmann/trunk
-abs_srcdir = /home/dbaxter/boltzmann/trunk
-abs_top_builddir = /home/dbaxter/boltzmann/trunk
-abs_top_srcdir = /home/dbaxter/boltzmann/trunk
+abs_builddir = /home/dbaxter/boltzmann/git
+abs_srcdir = /home/dbaxter/boltzmann/git
+abs_top_builddir = /home/dbaxter/boltzmann/git
+abs_top_srcdir = /home/dbaxter/boltzmann/git
 ac_ct_CC = gcc
 am__include = include
 am__leading_dot = .
@@ -127,7 +127,7 @@ host_alias =
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/dbaxter/boltzmann/trunk/install-sh
+install_sh = ${SHELL} /home/dbaxter/boltzmann/git/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -519,8 +519,11 @@ uninstall-am:
 
 all:  $(EXECS) $(SUNDIALS_LIB_DIR)/libsundials_cvodes.a $(SUNDIALS_LIB_DIR)/libsundials_nvec_ser.a $(SUNDIALS_LIB_DIR)/libsundials.a
 
-$(SUNDIALS_LIB_DIR)/libsundials_cvodes.a $(SUNDIALS_LIB_DIR)/libsundials_nvec_ser.a $(SUNDIALS_LIB_DIR)/libsundials.a:
+$(SUNDIALS_LIB_DIR)/libsundials_cvodes.a $(SUNDIALS_LIB_DIR)/libsundials_nvec_ser.a $(SUNDIALS_LIB_DIR)/libsundials.a: $(SUNDIALS_LIB_DIR)
 	cd $(SUNDIALS_ROOT) && $(MAKE)
+
+$(SUNDIALS_LIB_DIR): $(SUNDIALS_ROOT)
+	mkdir -p $(SUNDIALS_LIB_DIR)
 
 default: $(EXECS) $(SUNDIALS_LIBS) libboltzmann.a
 
