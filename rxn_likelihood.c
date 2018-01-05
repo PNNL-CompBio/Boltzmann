@@ -84,20 +84,21 @@ double rxn_likelihood(double *counts,
   struct molecule_struct  *molecules;
   struct molecule_struct  *molecule;
   
-  double likelihood;
-  double *ke;
-  double *kss;
+  double  *ke;
+  double  *kss;
+  double  *count_to_conc;
   /*
   double *kssr;
   */
+  double  likelihood;
   double  count;
   double  left_counts;
   double  right_counts;
   double  left_concs;
   double  right_concs;
   double  eq_k;
-  double  *count_to_conc;
   double  volume_recip;
+  double  recip_avogadro;
   int64_t m_index;
   int64_t coeff;
   int64_t *rcoef;
@@ -127,6 +128,7 @@ double rxn_likelihood(double *counts,
   kss               = state->kss;
   use_deq           = state->use_deq;
   ode_solver_choice = state->ode_solver_choice;
+  recip_avogadro    = state->recip_avogadro;
   compute_sensitivities = state->compute_sensitivities;
   if (use_deq && compute_sensitivities && (ode_solver_choice == 1)) {
     cvodes_params = state->cvodes_params;
@@ -164,7 +166,7 @@ double rxn_likelihood(double *counts,
     if (coeff < 0) {
       for (k=0;k<(0-coeff);k++) {
 
-	left_concs = left_concs * ((count-k) * volume_recip);
+	left_concs = left_concs * ((count-k) * (volume_recip * recip_avogadro));
 	left_counts = left_counts * (count-k);
 
       } 
@@ -172,7 +174,7 @@ double rxn_likelihood(double *counts,
       if (coeff > 0) {
 	for (k=1;k<=coeff;k++) {
 
-	  right_concs = right_concs * (count+k) * volume_recip;
+	  right_concs = right_concs * ((count+k) * (volume_recip * recip_avogadro));
 	  right_counts = right_counts * (count+k);
 	} 
       }
