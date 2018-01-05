@@ -667,8 +667,8 @@ N-Acetyl-D-glucosamine#C00140#2#Group Contribution#12#-3#-664.619082184317#
 N-Acetyl-D-glucosamine#C00140#2#Group Contribution#13#-2#-741.350603798317#ChemAxon
 N-Acetyl-D-glucosamine#C00140#2#Group Contribution#14#-1#-814.430960071576#ChemAxon
 N-Acetyl-D-glucosamine#C00140#2#Group Contribution#15#0#-880.608331872497#ChemAxon
-3-Methyl-2-oxobutanoic acid#C00141#2#Group Contribution#7#-1#-461.223239243537#
-3-Methyl-2-oxobutanoic acid#C00141#2#Group Contribution#8#0#-480.448906740874#ChemAxon
+3-Methyl-2-oxobutanoic_acid#C00141#2#Group Contribution#7#-1#-461.223239243537#
+3-Methyl-2-oxobutanoic_acid#C00141#2#Group Contribution#8#0#-480.448906740874#ChemAxon
 5,10-Methylenetetrahydrofolate#C00143#2#Group Contribution#20#-3#-331.856702385294#
 5,10-Methylenetetrahydrofolate#C00143#2#Group Contribution#21#-2#-395.238650722211#ChemAxon
 5,10-Methylenetetrahydrofolate#C00143#2#Group Contribution#22#-1#-421.481401608783#ChemAxon
@@ -1036,10 +1036,10 @@ Riboflavin#C00255#2#Group Contribution#20#0#-318.814778840395#ChemAxon
 Riboflavin#C00255#2#Group Contribution#21#1#-358.578251379397#ChemAxon
 (R)-Lactate#C00256#2#Group Contribution#5#-1#-512.23205044673#
 (R)-Lactate#C00256#2#Group Contribution#6#0#-533.796745740478#ChemAxon
-D-Gluconic acid#C00257#2#Group Contribution#9#-3#-977.899673608651#
-D-Gluconic acid#C00257#2#Group Contribution#10#-2#-1054.11775009661#ChemAxon
-D-Gluconic acid#C00257#2#Group Contribution#11#-1#-1125.94301828399#ChemAxon
-D-Gluconic acid#C00257#2#Group Contribution#12#0#-1145.28278469822#ChemAxon
+D-Gluconic_acid#C00257#2#Group Contribution#9#-3#-977.899673608651#
+D-Gluconic_acid#C00257#2#Group Contribution#10#-2#-1054.11775009661#ChemAxon
+D-Gluconic_acid#C00257#2#Group Contribution#11#-1#-1125.94301828399#ChemAxon
+D-Gluconic_acid#C00257#2#Group Contribution#12#0#-1145.28278469822#ChemAxon
 D-Glycerate#C00258#1#Alberty (2006)#5#-1#-661.01#Alberty 2006
 D-Glycerate#C00258#1#Alberty (2006)#6#0#-681.1#Alberty 2006
 D-Glycerate#C00258#2#Group Contribution#4#-2#-587.941227049142#
@@ -13553,6 +13553,9 @@ L-Iduronic acid#C06472#2#Group Contribution#10#0#-1110.32662357621#ChemAxon
 2-Keto-D-gluconic acid#C06473#2#Group Contribution#8#-2#-1020.82034851619#ChemAxon
 2-Keto-D-gluconic acid#C06473#2#Group Contribution#9#-1#-1087.62526436005#ChemAxon
 2-Keto-D-gluconic acid#C06473#2#Group Contribution#10#0#-1102.85746976595#ChemAxon
+2-Keto-3-deoxy-D-gluconate#C00204#2#Group Contribution#8#-2#-846.7#ChemAxon
+2-Keto-3-deoxy-D-gluconate#C00204#2#Group Contribution#9#-1#-922.3#ChemAxon
+2-Keto-3-deoxy-D-gluconate#C00204#2#Group Contribution#10#0#-938.9#ChemAxon
 3,6-Anhydrogalactose#C06474#2#Group Contribution#8#-2#-548.500590160855#
 3,6-Anhydrogalactose#C06474#2#Group Contribution#9#-1#-626.601298777632#ChemAxon
 3,6-Anhydrogalactose#C06474#2#Group Contribution#10#0#-698.997061549503#ChemAxon
@@ -13560,11 +13563,11 @@ Prostaglandin F1alpha#C06475#2#Group Contribution#35#-1#-589.971271960848#
 Prostaglandin F1alpha#C06475#2#Group Contribution#36#0#-615.130083136888#ChemAxon
 Prostaglandin F3alpha#C06476#2#Group Contribution#31#-1#-428.104311339799#
 Prostaglandin F3alpha#C06476#2#Group Contribution#32#0#-452.977875223594#ChemAxon
-L-Guluronic acid#C06477#2#Group Contribution#6#-4#-876.937289061066#
-L-Guluronic acid#C06477#2#Group Contribution#7#-3#-954.866849302496#ChemAxon
-L-Guluronic acid#C06477#2#Group Contribution#8#-2#-1027.49080990816#ChemAxon
-L-Guluronic acid#C06477#2#Group Contribution#9#-1#-1092.01374741406#ChemAxon
-L-Guluronic acid#C06477#2#Group Contribution#10#0#-1110.32662357621#ChemAxon
+L-Guluronic_acid#C06477#2#Group Contribution#6#-4#-876.937289061066#
+L-Guluronic_acid#C06477#2#Group Contribution#7#-3#-954.866849302496#ChemAxon
+L-Guluronic_acid#C06477#2#Group Contribution#8#-2#-1027.49080990816#ChemAxon
+L-Guluronic_acid#C06477#2#Group Contribution#9#-1#-1092.01374741406#ChemAxon
+L-Guluronic_acid#C06477#2#Group Contribution#10#0#-1110.32662357621#ChemAxon
 3,6-Anhydroglucose#C06478#2#Group Contribution#8#-2#-548.500590160855#
 3,6-Anhydroglucose#C06478#2#Group Contribution#9#-1#-626.601298777632#ChemAxon
 3,6-Anhydroglucose#C06478#2#Group Contribution#10#0#-698.997061549503#ChemAxon
@@ -42333,6 +42336,8 @@ Plastoquinol-9-TM#C16695#2#Group Contribution#82#0#702.119253044361#ChemAxon
 Plastoquinone-9-TM#C10385#2#Group Contribution#78#-2#990.452807140543#
 Plastoquinone-9-TM#C10385#2#Group Contribution#79#-1#923.704940755131#ChemAxon
 Plastoquinone-9-TM#C10385#2#Group Contribution#80#0#867.168927432102#ChemAxon
+isobutanol#xxx#2#Group Contribution#10#0#-163.3#
+isobutyraldehyde#xxx#2#Group Contribution#8#0#-123.2#
 H+-TL#C00080#1#Alberty (2006)#1#1#0#Alberty 2006
 H+-TL#C00080#2#Alberty (2006)#1#1#0#
 HV680-PLASTOQUINONE-9-TM#XXXXXX#1#Sun#0#0#175.81#negative of absorption oflight at wavelength 680 nm by plastoquinone
@@ -42349,3 +42354,17 @@ redox1#xxx#1#Alberty (2006)#4#0#-645.8#
 redox1#xxx#2#Group Contribution#2#-2#-596.950453312941#
 redox1#xxx#2#Group Contribution#3#-1#-622.10926448898#
 redox1#xxx#2#Group Contribution#4#0#-642.3618222384#
+A#xxxxxx#1#Bill#0#0#-4.184#Hypothetical comnpound A
+B#xxxxxx#1#Bill#0#0#-10.08747756#Hypothetical comnpound B
+C#xxxxxx#1#Bill#0#0#-12.552#Hypothetical comnpound C
+D#xxxxxx#1#Bill#0#0#-15.000#Hypothetical comnpound C
+QH#xxx#1#Group Contribution#0#0#-650.0#
+QH#xxx#2#Group Contribution#0#0#-650.0#
+Q#xxx#1#Group Contribution#0#0#-650.0#
+Q#xxx#2#Group Contribution#0#0#-650.0#
+C4H7O2N#xxx#1#Estimate via Chemostat#0#0#0.67588#
+C4H7O2N#xxx#2#Estimate via Chemostat#0#0#0.67588#
+C4H7O2N_0#xxx#1#Estimate via Chemostat#0#0#1887.61#
+C4H7O2N_0#xxx#2#Estimate via Chemostat#0#0#1887.61#
+C4H7O2N_1#xxx#1#Estimate via Chemostat#0#0#1887.61#
+C4H7O2N_1#xxx#2#Estimate via Chemostat#0#0#1887.61#
