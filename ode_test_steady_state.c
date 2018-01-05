@@ -99,7 +99,7 @@ int ode_test_steady_state(struct state_struct *state,
         /*
       	Use the infinity norm
         */
-        ynorm = fabs(y[idamax_(&ny,y,&incx)]);
+        ynorm = fabs(y[idamax_(&ny,y,&incx)-1]);
       } 
       ode_stop_thresh = ode_stop_thresh * ynorm;
     } /* end if ode_stop_rel */
