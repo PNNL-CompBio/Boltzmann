@@ -76,9 +76,10 @@ int ode_test_steady_state(struct state_struct *state,
       fnorm = dnrm2_(&ny,f,&incx);
     } else {
       /*
-	Use the infinity norm
+	Use the infinity norm - note idamax_ is a fortran function and
+	returns a fortran index from which we must subtract 1.
       */
-      fnorm = fabs(f[idamax_(&ny,f,&incx)]);
+      fnorm = fabs(f[idamax_(&ny,f,&incx)-1]);
     }
     if (ode_stop_rel) {
       if (ode_stop_norm == 1) {
