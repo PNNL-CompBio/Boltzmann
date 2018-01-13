@@ -1,0 +1,171 @@
+<html>
+<head>
+<title> Boltzmann User Guide </title>
+</head>
+<body>
+<h3><p align="center"> Phyiscal Constants </p></h3>
+<a name="input_files_desc">
+<a href="control_parameters.html">up: Control Parameters</a>
+<table border=1>
+<tr>
+<td>
+Keyword  
+</td>
+<td>
+Description
+</td>
+<td>
+Default
+</td>
+</tr>
+
+<tr>
+<td>
+<b>
+IDEAL_GAS_R
+</b>
+</td>
+<td>
+Value to use for the ideal gas constant.
+</td>
+<td>
+<b>
+0.008314
+</b>
+</td>
+</tr>
+
+<tr>
+<td>
+<b>
+PH
+</b>
+</td>
+<td>
+-log(concentration of H+)
+</td>
+<td>
+<b>
+7.5
+</b>
+</td>
+</tr>
+
+<tr>
+<td>
+<b>
+TEMP_KELVIN
+</b>
+</td>
+<td>
+Temperature in degrees Kelvin.
+</td>
+<td>
+<b>
+298.15
+</b>
+</td>
+</tr>
+
+<tr>
+<td>
+<b>
+IONIC_STRENGTH
+</b>
+</td>
+<td>
+Constant used in computing the transformed Gibbs energy of formation for a 
+molecule in the pseudoisomer database.
+</td>
+<td>
+<b>
+0.15
+</b>
+</td>
+</tr>
+
+<tr>
+<td>
+<b>
+DEFAULT_VOLUME
+</b>
+</td>
+<td>
+Default volume for compartments in liters.
+</td>
+<td>
+<b>
+1.0e-15
+</b>
+</td>
+</tr>
+
+<tr>
+<td>
+<b>
+MIN_CONC
+</b>
+</td>
+<td>
+Minimum concentration allowed for any species in moles/L.
+</td>
+<td>
+<b>
+0.0
+</b>
+</td>
+</tr>
+
+<tr>
+<td>
+<b>
+SOLVENT
+</b>
+</td>
+<td>
+Molecule name of the solvent molecule.
+</td>
+<td>
+<b>
+H2O
+</b>
+</td>
+</tr>
+
+<tr>
+<td>
+<b>
+EPSILON
+</b>
+</td>
+<td>
+Measure of how close to equlibirium we are before stopping.
+if (1 - 1/(1 + sum(likelihoods))) < epsilon then we have reached equilibrium.
+Used in the choose_rxn routine.
+</td>
+<td>
+<b>
+1.e-7
+</b>
+</td>
+</tr>
+
+
+<tr>
+<td>
+<b>
+ALIGN_LEN
+</b>
+</td>
+<td>
+Default string alignment byte count.
+</td>
+<td>
+<b>
+64
+</b>
+</td>
+</tr>
+</table>
+</body>
+</html>

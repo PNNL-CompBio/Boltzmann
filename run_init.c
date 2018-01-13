@@ -22,6 +22,7 @@ int run_init(struct state_struct *state) {
     Calls:     vgrng_init,
                print_rxn_likelihoods_header,
 	       print_free_energy_header,
+	       alloc7,
 	       alloc8,
                alloc9,
 	       print_reactions_matrix

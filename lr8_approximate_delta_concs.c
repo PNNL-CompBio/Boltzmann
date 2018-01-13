@@ -229,7 +229,7 @@ int lr8_approximate_delta_concs(struct state_struct *state,
     NB if use_activities is not set activities[i] will be 1.0 for all i.
     */
     rfc[i] = (forward_lklhd[i] - reverse_lklhd[i]) * activities[i];
-  }
+  } /* end for (i...) */
   if (success) {
     molecule = molecules;
     for (i=0;i<num_species;i++) {

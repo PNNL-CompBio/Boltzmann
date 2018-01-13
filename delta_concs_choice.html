@@ -1,0 +1,847 @@
+<html>
+<head>
+<title> Boltzmann User Guide </title>
+</head>
+<body>
+<h3><p align="center"> ODE derivative functions </p></h3>
+<a href="generic_ode.html">up: Generic ODE method Parameters</a>
+<a name="ode_derivative_functions_desc">
+<p>
+Suppose we have <i>n</i> reactions with reaction <i>i</i> being represented by:
+<table>
+<tr>
+<td>
+<table>
+<tr>
+<td>
+&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+&#x2211
+</td>
+</tr> 
+<tr>
+<td>
+<i><sup>r</sup></i>
+</td>
+</tr> 
+</table>
+</td>
+<td>
+&Gamma;<sub><i>i,r</i></sub>S<sub><i>r</i></sub>  &#x21D4
+</td>
+<td>
+<table>
+<tr>
+<td>
+&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+&#x2211
+</td>
+</tr> 
+<tr>
+<td>
+<i><sub>p</sub></i>
+</td>
+</tr> 
+</table>
+</td>
+<td>
+&Gamma;<sub><i>i,p</i></sub>S<sub><i>p<i></sub>
+</td>
+</tr>
+</table>
+Where the &Gamma;<sub><i>i,j</i></sub>'s are the stoichoimetric coefficients of species <i>j</i>, S<sub><i>j</i></sub>.
+
+Then let us define a &gamma;<sub><i>i,p</i></sub> = &Gamma;<sub><i>i,p</i></sub> for species S<sub><i>p</i></sub> that are products (on the right side) in
+reaction <i>i</i>, and &gamma;<sub><i>i,r</i></sub> = -&Gamma;<sub><i>i,r</i></sub> for species S<sub><i>r</i></sub> that are reactants (on the left side) in
+reaction <i>i</i>.
+
+
+The empirical rate change equation for concentration of chemical species S<sub><i>m</i></sub> is
+</p>
+<p>
+<table>
+<tr>
+<td>
+<table>
+<tr>
+<td>
+<!--<i>d</i>S<sub>m</sub>/<i>dt</i></u>-->
+<i>d</i>[S<sub><i>m</i></sub>]
+</td>
+</tr>
+<tr>
+<td>
+<hr>
+</td>
+</tr>
+<tr>
+<td>
+<i>dt</i> 
+</td>
+</tr>
+</table>
+</td>
+<td>
+= 
+</td>
+<td>
+<table>
+<tr>
+<td>
+&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+&#x2211
+</td>
+</tr>
+<tr>
+<td>
+<sub><i>i</i></sub>
+</td>
+</tr>
+</table>
+</td>
+<td>
+&gamma;<sub><i>i,m</i></sub>
+</td>
+<td>
+(k<sub>f</sub>(<i>i</i>) R<sub><i>i</i></sub> - k<sub>r</sub>(<i>i</i>) P<sub><i>i</i></sub>)
+</td>
+</tr>
+</table>
+<br>
+where k<sub>f</sub>(<i>i</i>) is the forward rate constant for reaction <i>i</i>,
+<br>
+k<sub>r</sub>(<i>i</i>) is reverse rate constant for reaction <i>i</i>,
+<br>
+<table>
+<tr>
+<td>
+R<sub><i>i</i></sub> = 
+</td>
+<td>
+<table>
+<tr>
+<td>
+&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+&Pi;
+<td>
+</tr>
+<tr>
+<td>
+<sub><i>r</i></sub> 
+</td>
+</tr>
+</table>
+</td>
+<td>
+[S<sub><i>r</i></sub>]<sup>&Gamma;<sub><i>i,r</i></sub></sup>
+</td>
+</tr>
+</table>
+<table> 
+<tr>
+<td>
+P<sub><i>i</i></sub> = 
+</td>
+<td>
+<table>
+<tr>
+<td>
+&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+&Pi;
+</td>
+</tr> 
+<tr>
+<td>
+<sup><i>p</i></sup>
+</td>
+</tr> 
+</table>
+</td>
+<td>
+[S<sub><i>p</i></sub>]<sup>&Gamma;<sub><i>i,p</i></sub></sup>
+</td>
+</tr>
+</table>
+<br>
+<br>
+Usually we don't have the forward and reverse rate constants for the
+reactions and hence for specifying the ODE's to be integrated to reach
+steady state we use some approximation to them. Another variation in computing
+the ode right hand side (<i>d</i>[S<sub><i>m</i></sub>]/<i>dt</i> is whether
+the R<sub><i>i</i></sub> and P<sub><i>i</i></sub> are computed with species
+concentrations or species counts. To date we have 14 variations on this each 
+in its own lr*_approximate_delta_concs.c routine described below.
+<br>
+First we develop some useful notation:
+<br>
+<br>
+<i>&Kappa;</i><sub><i>e</i></sub>(<i>i</i>) is the equilibrium constant for 
+reaction <i>i</i>.
+<br>
+<i>&Kappa;</i><sub><i>e</i></sub>(<i>i</i>)<sup>-1</sup> is the equilibrium constant for the reverse of reaction <i>i</i>.
+<br>
+Q<sub><i>i</i></sub> = P<sub><i>i</i></sub>/R<sub><i>i</i></sub> is the reaction quotient for reaction <i>i</i>.
+<br>
+<br>
+To indicate the use of counts instead of concentrations we will use curly braces
+instead of square brackets and give the corresponding species count products a
+single prime superscript:
+<table> 
+<tr>
+<td>
+R<sup>'</sup>(<i>i</i>) = 
+</td>
+<td>
+<table>
+<tr>
+<td>
+&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+&Pi;
+</td>
+</tr> 
+<tr>
+<td>
+<sup><i>r</i></sup>
+</td>
+</tr> 
+</table>
+</td>
+<td>
+{S<sub><i>r</i></sub>}<sup>&Gamma;<sub><i>i,r</i></sub></sup>
+</td>
+</tr>
+</table>
+<table> 
+<tr>
+<td>
+P<sup>'</sup>(<i>i</i>) = 
+</td>
+<td>
+<table>
+<tr>
+<td>
+&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+&Pi;
+</td>
+</tr> 
+<tr>
+<td>
+<sup><i>p</i></sup>
+</td>
+</tr> 
+</table>
+</td>
+<td>
+{S<sub><i>p</i></sub>}<sup>&Gamma;<sub><i>i,p</i></sub></sup>
+</td>
+</tr>
+</table>
+<br>
+<br>
+Some additional quantitesfor the <i>i<sup>th</sup></i> reaction, the forward thermodyanmic species products R<sup>''</sup><sub>f</sub>(i) and P<sup>''</sup><sub>f</sub>(i) defined as:
+<br>
+<table>
+<tr>
+<td>
+R<sup>''</sup><sub>f</sub>(<i>i</i>) = 
+</td>
+<td>
+<table>
+<tr>
+<td>
+&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+&Pi;
+<td>
+</tr>
+<tr>
+<td>
+<sub><i>r</i></sub> 
+</td>
+</tr>
+</table>
+</td>
+<td>
+([S<sub><i>r</i></sub>]+&gamma;<sub><i>i,r</i></sub>/(A*V))<sup>&Gamma;<sub><i>i,r</i></sub></sup>
+</td>
+</tr>
+</table>
+where A is Avogadro's number (6.022140857e23) and V is the compartment volume.
+<br>
+<table> 
+<tr>
+<td>
+P<sup>''</sup><sub>f</sub>(<i>i</i>) = 
+</td>
+<td>
+<table>
+<tr>
+<td>
+&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+&Pi;
+</td>
+</tr> 
+<tr>
+<td>
+<sup><i>p</i></sup>
+</td>
+</tr> 
+</table>
+</td>
+<td>
+([S<sub><i>p</i></sub>]+&gamma;<sub><i>i,p</i></sub>/(A*V))<sup>&Gamma;<sub><i>i,p</i></sub></sup>
+</td>
+</tr>
+</table>
+<br>
+where A and V are the same as for
+R<sup>''</sup> above.
+<br>
+Note the use of the signed lower case &gamma;<sub>i,j</sub> in the thermodynamic
+quantities for R<sup>''</sup><sub>f</sub>(<i>i</i>) and P<sup>''</sup><sub>f</sub>(<i>i</i>). This is because it is useful to define separate 
+thermodynamic quantities for the reverse of reaction <i>i</i>, R<sup>''</sup><sub>r</sub>(<i>i</i>) and P<sup>''</sup><sub>r</sub>(<i>i</i>):
+
+<table>
+<tr>
+<td>
+R<sup>''</sup><sub>r</sub>(<i>i</i>) = 
+</td>
+<td>
+<table>
+<tr>
+<td>
+&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+&Pi;
+<td>
+</tr>
+<tr>
+<td>
+<sub><i>r</i></sub> 
+</td>
+</tr>
+</table>
+</td>
+<td>
+([S<sub><i>r</i></sub>]&nbsp;-&nbsp;&gamma;<sub><i>i,r</i></sub>/(A*V))<sup>&Gamma;<sub><i>i,r</i></sub></sup>
+</td>
+</tr>
+</table>
+<br>
+and
+<br>
+<table>
+<tr>
+<td>
+P<sup>''</sup><sub>r</sub>&nbsp;(<i>i</i>) = 
+</td>
+<td>
+<table>
+<tr>
+<td>
+&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+&Pi;
+<td>
+</tr>
+<tr>
+<td>
+<sub><i>p</i></sub> 
+</td>
+</tr>
+</table>
+</td>
+<td>
+([S<sub><i>p</i></sub>]&nbsp;-&nbsp;&gamma;<sub><i>i,p</i></sub>/(A*V))<sup>&Gamma;<sub><i>i,r</i></sub></sup>
+</td>
+</tr>
+</table>
+
+
+
+Also the concentration based analogues of R<sup>''</sup><sub>r|f</sub> and P<sup>''</sup><sub>r|f</sub> which we designate with a triple prime:
+<table>
+<tr>
+<td>
+R<sup>'''</sup><sub>f</sub>(<i>i</i>) = 
+</td>
+<td>
+<table>
+<tr>
+<td>
+&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+&Pi;
+<td>
+</tr>
+<tr>
+<td>
+<sub><i>r</i></sub> 
+</td>
+</tr>
+</table>
+</td>
+<td>
+({S<sub><i>r</i></sub>}+&gamma;<sub><i>i,r</i></sub>)<sup>&Gamma;<sub><i>i,r</i></sub></sup>
+</td>
+</tr>
+</table>
+<table> 
+<tr>
+<td>
+P<sup>'''</sup><sub>f</sub>(<i>i</i>) = 
+</td>
+<td>
+<table>
+<tr>
+<td>
+&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+&Pi;
+</td>
+</tr> 
+<tr>
+<td>
+<sup><i>p</i></sup>
+</td>
+</tr> 
+</table>
+</td>
+<td>
+({S<sub><i>p</i></sub>}+&gamma;<sub><i>i,p</i></sub>)<sup>&Gamma;<sub><i>i,p</i></sub></sup>
+</td>
+</tr>
+</table>
+
+<table>
+<tr>
+<td>
+R<sup>'''</sup><sub>r</sub>(<i>i</i>) = 
+</td>
+<td>
+<table>
+<tr>
+<td>
+&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+&Pi;
+<td>
+</tr>
+<tr>
+<td>
+<sub><i>r</i></sub> 
+</td>
+</tr>
+</table>
+</td>
+<td>
+({S<sub><i>r</i></sub>}&nbsp;-&nbsp;&gamma;<sub><i>i,r</i></sub>)<sup>&Gamma;<sub><i>i,r</i></sub></sup>
+</td>
+</tr>
+</table>
+<table> 
+<tr>
+<td>
+P<sup>'''</sup><sub>r</sub>(<i>i</i>) = 
+</td>
+<td>
+<table>
+<tr>
+<td>
+&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+&Pi;
+</td>
+</tr> 
+<tr>
+<td>
+<sup><i>p</i></sup>
+</td>
+</tr> 
+</table>
+</td>
+<td>
+({S<sub><i>p</i></sub>}&nbsp;-&nbsp;&gamma;<sub><i>i,p</i></sub>)<sup>&Gamma;<sub><i>i,p</i></sub></sup>
+</td>
+</tr>
+</table>
+
+<br>
+Also we define the forward and reverse likelihood ratios for a reaction,
+<i>L<sub>f</sub>(i)</i> and <i>L<sub>r</sub>(i)</i> in terms of the 
+reaction equilibrium constant and the concentration based themodamic 
+species products R<sup>'''</sup> and P<sup>'''</sup>:
+<br>
+<br>
+<i>L<sub>f</sub>(i)</i> = K<sub>eq</sub>(i) R<sup>'''</sup><sub>f</sub>(i)/P<sup>'''</sup><sub>f</sub>(i).
+<br>
+<br>
+and
+<br>
+<br>
+<i>L<sub>r</sub>(i)</i> = (1/K<sub>eq</sub>(i)) P<sup>'''</sup><sub>r</sub>(i)/R<sup>'''</sup><sub>r</sub>(i).
+<br>
+<br>
+Note that 1/<i>L<sub>f</sub>(i)</i> &ne; <i>L<sub>r</sub>(i)</i>.
+<br>
+<br>
+Further we define 
+<br>
+<br>
+<table>
+<tr>
+<td>
+T<sub>r</sub> =
+</td>
+<td>
+<table><tr><td>&Sigma;</td></tr><tr><td><i>i</i></td></tr></table>
+</td>
+<td>
+<i>L<sub>r</sub>(i)</i>.
+</td>
+</tr>
+</table>
+<br>
+<br>
+And
+<br>
+<br>
+
+<table>
+<tr>
+<td>
+A<sub>f</sub>(<i>i</i>) = (
+</td>
+<td>
+<table><tr><td>&Sigma;</td></tr><tr><td><sub>r</sub></td></tr></table>
+<td>
+<td>
+&Gamma;<sub><i>i</i>,r</sub>&mu;<sub>0</sub>(r))/(RT)
+</td>
+</tr>
+</table>
+<br>
+where &mu;<sub>0</sub>(r) is the chemical potential of species r, a reactant
+in reaction <i>i</i>.
+<br>
+<br>
+<table>
+<tr>
+<td>
+A<sub>r</sub>(<i>i</i>) = (
+</td>
+<td>
+<table><tr><td>&Sigma;</td></tr><tr><td><sub>p</sub></td></tr></table>
+<td>
+<td>
+&Gamma;<sub><i>i</i>,p</sub>&mu;<sub>0</sub>(p))/(RT)
+</td>
+</tr>
+</table>
+<br>
+where &mu;<sub>0</sub>(p) is the chemical potential of species p, a product
+in reaction <i>i</i>.
+<br>
+<br>
+In the table below <i>b</i> refers to a base reaction as specified by the
+"BASE_REACTION" parameter in the input file. 
+If not specified the default is reaction 0,
+the first reaction in the reaction.dat file.
+For all but DELTA_CONCS_CHOICE = 1, if R<sup>'</sup>(<i>i</i>) = 0, k<sub>f</sub>(<i>i</i>) is taken as 0, or if P<sup>'</sup>(<i>i</i>) = 0, k<sub>r</sub>(<i>i</i>) is taken as 0.
+<br>
+<br>
+<table border=1>
+<tr> 
+<td colspan=4>
+approximate_delta_concs choice </tr>
+</td>
+</tr>
+<tr>
+<td align=center>
+&nbsp;Choice&nbsp;
+</td>
+<td align=center>
+~(k<sub>f</sub>(<i>i</i>)R(<i>i</i>))
+</td>
+<td align=center>
+~(k<sub>r</sub>(<i>i</i>)P(<i>i</i>))
+</td>
+<td align=center>
+&nbsp;Comments&nbsp;
+</td>
+</tr>
+<tr>
+<td align=center>
+1
+</td>
+<td align=center>
+&nbsp;<i>L<sub>f</sub>(i)</i>/<i>L<sub>f</sub>(b)</i>&nbsp;
+</td>
+<td align=center>
+&nbsp;<i>L<sub>f</sub>(i)L<sub>r</sub>(i)</i>/<i>L<sub>f</sub>(b)</i>&nbsp;
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td align=center>
+2
+</td>
+<td align=center>
+<i>L<sub>f</sub>(i)</i>/<i>L<sub>f</sub>(b)</i>
+</td>
+<td align=center>
+<i>L<sub>r</sub>(i)</i></td>
+</td>
+<td align=center>
+</td>
+</tr>
+<tr>
+<td align=center>
+3
+</td>
+<td align=center>
+&nbsp;<i>L<sub>f</sub>(i)</i>/<i>L<sub>f</sub>(b)</i>&nbsp;
+</td>
+<td align=center>
+&nbsp;<i>L<sub>f</sub>(i)L<sub>r</sub>(i)</i>/<i>L<sub>f</sub>(b)</i>&nbsp;
+</td>
+<td>
+</td> 
+</tr>
+<tr>
+<td align=center>
+4
+</td>
+<td align=center>
+&nbsp;<i>L<sub>f</sub>(i)</i>/<i>L<sub>f</sub>(b)</i>&nbsp;
+</td>
+<td align=center>
+&nbsp;<i>L<sub>r</sub>(i)</i>/<i>L<sub>f</sub>(b)</i>&nbsp;
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td align=center>
+5
+</td>
+<td align=center>
+<i>L<sub>f</sub>(i)</i>/T<sub>r</sub>
+</td>
+<td align=center>
+<i>L<sub>r</sub>(i)</i>/T<sub>r</sub>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td align=center>
+6
+</td>
+<td align=center>
+<table>
+<tr>
+<i>e</i><sup>(A<sub>f</sub>(i))</sup>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+K<sub>eq</sub>(i)<i>e</i><sup>(A<sub>r</sub>(i))</sup>
+</td>
+</tr>
+</table>
+</td>
+<td align=center>
+<table>
+<tr>
+<td>
+<i>e</i><sup>(A<sub>f</sub>(i))</sup>/K<sub>eq</sub>(i)
+</td>
+</tr>
+<tr>
+<td>
+<i>e</i><sup>(A<sub>r</sub>(i))</sup>
+</td>
+</tr>
+</table>
+</td>
+<td>
+<table>
+<tr>
+<td>
+</td>
+If |A<sub>f</sub>(i)| < |A<sub>r</sub>(i)| 
+</tr>
+<tr>
+<td>
+else
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td align=center>
+7
+</td>
+<td align=center>
+R(<i>i</i>)K<sub>eq</sub>(<i>i</i>)/P<sup>''</sup><sub>f</sub>(<i>i</i>)
+</td>
+<td align=center>
+P(<i>i</i>)/(K<sub>eq</sub>(<i>i</i>)R<sup>''</sup><sub>r</sub>(<i>i</i>))
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td align=center>
+8
+</td>
+<td align=center>
+R<sup>'</sup>(<i>i</i>)K<sub>eq</sub>(<i>i</i>)/P<sup>'''</sup><sub>f</sub>(<i>i</i>)
+</td>
+<td align=center>
+P<sup>'</sup>(<i>i</i>)/(K<sub>eq</sub>(<i>i</i>)R<sup>'''</sup><sub>r</sub>(<i>i</i>))
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td align=center>
+9
+</td>
+<td align=center>
+k<sub>f</sub>(<i>i</i>)R(<i>i</i>)
+</td>
+<td align=center>
+k<sub>r</sub>(<i>i</i>)P(<i>i</i>)
+</td>
+<td>
+concentration based k<sub>f</sub> and k<sub>r</sub> read in.
+</td>
+</tr>
+<tr>
+<td align=center>
+10
+</td>
+<td align=center>
+k<sub>f</sub>(<i>i</i>)R<sup>'</sup>(<i>i</i>)
+</td>
+<td align=center>
+k<sub>r</sub>(<i>i</i>)P<sup>'</sup>(<i>i</i>)
+</td>
+<td>
+count based k<sub>f</sub> and k<sub>r</sub> read in.
+</td>
+</tr>
+<tr>
+<td align=center>
+11
+</td>
+<td align=center>
+Same as 8.
+</td>
+<td align=center>
+Same as 8.
+</td>
+<td>
+Choice 8 with stable addition implementation.
+</td>
+</tr>
+<tr>
+<td align=center>
+12
+</td>
+<td align=center>
+Same as 10.
+</td>
+<td align=center>
+Same as 10.
+</td>
+<td>
+Choice 10 with stable addition implementation.
+</td>
+</tr>
+<tr>
+<td align=center>
+13
+</td>
+<td align=center>
+K<sub>eq</sub>(<i>i</i>)/(P(i)(log({S<sub>m</sub>}) + (&mu;<sub>0</sub>(m)/RT)))
+</td>
+<td align=center>
+0
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td align=center>
+14
+</td>
+<td align=center>
+R(<i>i</i>)K<sub>eq</sub>(<i>i</i>)/P(<i>i</i>)
+</td>
+<td align=center>
+P(<i>i</i>)/(K<sub>eq</sub>(<i>i</i>)R(<i>i</i>))
+</td>
+<td>
+</td>
+</tr>
+</table>
+</body>
+</html>

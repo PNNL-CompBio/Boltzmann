@@ -1,0 +1,80 @@
+<html>
+<head>
+<title> Boltzmann User Guide </title>
+<body>
+<h1><p align="center"> Boltzmann User Guide </p></h1>
+<a name="overview">
+<h2><p align="left"> Overview </p></h2>
+<p>
+Boltzmann is a library of ANSI standard C procedures and a few executables designed to
+allow the statistical thermodynamics simulation of a set of chemical reactions
+in a collection of compartments. 
+</p>
+<p>
+The boltzmann program simulaties the system of reactions statistically, 
+determining the likelihood that reactions will fire based on thermodymanmics, 
+and species concentrations, and chooses randomly weighted by the likelihoods,
+which reactions to "fire" to change concentrations and progress the overall
+system. The main simulation of boltzmann is divided into a warm up loop,
+where observations of concentrations at intermediate time steps are not recorded
+and a record loop where concentrations, their derivitiaves, reaction likelihoods
+and other quantites may be recorded in various output files at regular
+intervals. The warm-up loop is used to allow the system to reach a steady
+state (not necessarily equilibrium) before starting to record. Depending
+on how close the initial concentrations are to the steady state concentrations
+the user might find very many warm upsteps are needed before steady state is
+achieved. Thus we have added the ability to simulate the reactions via
+solving the Intial Value Problem of ordinary differential equations (ODE's)
+specified by the chemistry of the reactions in the reactions file.
+</p>
+Input to Boltzmann is comprised of three main input files, and an auxilliary input file, <b> pseudoisomer_dg0f.txt</b>, that the user will not change often if ever.
+The three main input files are the parameters file (.in), the initial concentrations file (_concs.in) and the
+reactions file (.dat). The parameters file is specified as the first and only argument to boltzmann on the command line.
+It in turn defines the names for the intial concentrations file and the reactions file.
+<a name="usage">
+<h2> Usage </h2> 
+<p>
+Boltzman is invoked from the command line with a single argument, the name of
+the parameters input file.
+<br>
+<br>
+<pr>
+<b>boltzmann</b> <i>my_parameters.in </i>
+</p>
+<table>
+<tr>
+<td>
+File
+</td>
+<td>
+Description
+</td>
+</tr>
+<br>
+<tr>
+<td>
+<a href="parameter_file.html">Parameter (.in) file</a>
+</td>
+<td>
+A file of keyword value lines that define other parameters for boltzmann.
+</td>
+</tr>
+<tr>
+<td>
+<a href="initial_concs.html">Initial Concentrations file </a>
+</td>
+<td>
+A file specifying initial concentrations for species used in the reactions file.
+</td>
+</tr>
+<tr>
+<td>
+<a href="reactions_file.html">Reactions (.dat) file</a>
+</td>
+<td>
+A file describing the reactions to be simulated.
+</td>
+</tr>
+</table>
+</body>
+</html>

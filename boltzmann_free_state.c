@@ -98,7 +98,10 @@ int boltzmann_free_state(struct state_struct *state) {
     }
     if (state->rfc != NULL) {
       free((void*)state->rfc);
-    }      
+    }
+    if (state->dfdke_dfdmu0_work != NULL) {
+      free((void*)state->dfdke_dfdmu0_work);
+    }
     /*
       NB ode23tb allocates a large block of worksepace
       that it now frees on termination. ODE23tb really only

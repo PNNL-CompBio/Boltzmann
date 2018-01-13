@@ -1,0 +1,87 @@
+<html>
+<head>
+<title> Boltzmann User Guide </title>
+</head>
+<body>
+<h3><p align="center"> Input Files </p></h3>
+<a href="parameter_file.html">up: Parameters file</a>
+<a name="input_files_desc">
+<table border=1>
+<tr>
+<td>
+Keyword
+</td>
+<td>
+Description
+</td>  
+</tr>
+<tr>
+<td>
+<b> RXN_FILE </b>
+</td>
+<td>
+The reactions file (.dat) see <a href = "reactions_format.html">reactions_file_format<a>
+</td>
+</tr>
+<tr>
+<td>
+<b> CONC_FILE </b>
+</td>
+<td>
+The initial concentrations file (_conc.in) see <a href = "conc_file_format.html">conc_file_format<a>
+</td>
+</tr>
+<tr>
+<td>
+<b> IN_DIR </b>
+</td>
+<td>
+Path prefix for the reaction and initial concentrations files. Default is "."
+</td>
+</tr>
+<tr>
+<td>
+<b> PSEUDOISOMER_FILE </b>
+</td>
+<td>
+Database file with delta G0 information for molecules. Default value is 
+<b>pseudoisomer_dg0f.txt</b>. Most users will not want to change this, but
+may want to add molecules to this file. Please review 
+<a href = "pseudoisomer_format.html">Pseuodisomer file format </a>.
+</td>
+</tr>
+<tr>
+<td>
+<b> COMPARTMENT_FILE </b>
+</td>
+<td>
+Database file with compartment size information. 
+File format is one compartment name and its volume per line.
+A compartment name followed by 1 or more spaces followed by a volume(in liters).
+If not specified, compartments will all have the default_volume size, as
+set by the DEFAULT_VOLUME parameter.
+</td>
+</tr>
+<tr>
+<td>
+<b> SBML_FILE </b>
+</td>
+<td>
+This is only used by the <b>sbml2bo</b> executable to specify the sbml file 
+to be converted to a boltzmann style reactions file.
+No default value.
+</td>
+</tr>
+<tr>
+<td>
+<b> MS2JS_FILE </b>
+</td>
+<td>
+Data base file for translating modelseed molecule id's to json molecule id's.
+Only used by sbml2bo executable. Default value is 
+<b> modelseed_2_json.srt </b>.
+</td>
+</tr>
+</table>
+</body>
+</html>

@@ -1,6 +1,7 @@
 #include "boltzmann_structs.h"
 #include "ode23tb.h"
 #include "boltzmann_cvodes.h"
+#include "compute_dfdke_dfdmu0.h"
 #include "ode_solver.h"
 int ode_solver (struct state_struct *state, double *concs, int choice) {
   /*
@@ -29,9 +30,11 @@ int ode_solver (struct state_struct *state, double *concs, int choice) {
   */
   int success;
   int local_choice;
+  int print_output;
   FILE *lfp;
   FILE *efp;
   lfp     = state->lfp;
+  print_output = (int)state->print_output;
   success = 1;
   local_choice = choice;
   switch (local_choice) {
@@ -49,5 +52,8 @@ int ode_solver (struct state_struct *state, double *concs, int choice) {
       success = ode23tb(state,concs);
     }
   } /* end switch(local_choice) */
+  if (print_output) {
+    success = compute_dfdke_dfdmu0(state,concs);
+  }
   return(success);
 }

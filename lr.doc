@@ -80,11 +80,11 @@ Lr6 (computational alchemy)
 
 
            K_f[i] = exp (sum (g_(i,j) Dg0[j])/(-RT))
-                         g_(i,j) > 0
+                         g_(i,j) < 0
 
 
            K_r[i] = exp (sum (g_(i,j) Dg0[j])/(-RT))
-                         g_(i,j) < 0
+                         g_(i,j) > 0
 
 
 

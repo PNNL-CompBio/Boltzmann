@@ -3,7 +3,7 @@
 #include "cvodes_params_struct.h"
 #include "get_counts.h"
 #include "update_regulations.h"
-#include "lr8_approximate_delta_concs.h"
+#include "lr14_approximate_delta_concs.h"
 
 int lr14_approximate_delta_concs(struct state_struct *state, 
 				double *concs,

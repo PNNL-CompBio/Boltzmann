@@ -1,0 +1,223 @@
+<html>
+<head>
+<title> Boltzmann User Guide </title>
+<body>
+<h4>
+<a href="parameter_file.html">up </a>
+<h3><p align="center"> Output Files </p></h3>
+<a name="output_file_desc">
+<table border=1>
+<tr>
+<td>
+Keyword
+</td>
+<td>
+Description
+</td>  
+</tr>
+<tr>
+<td>
+<b>OUT_DIR</b>
+</td>
+<td>
+Path prefix for output files. This path should already exist before running boltzmann as boltzmann makes no
+effort to create the directories. Default is "."
+</td>
+</tr>
+
+
+<tr>
+<td>
+<b>OUT_FILE</b>
+</td>
+<td>
+Filename base used to set output file names if they are not explicitly specified in one of the parameters below.
+If this file has a suffix, it is replaced by the default suffix for a particular output file when generating 
+the default name for output files not explicitly given. If it doesn't have a suffix, then the the whole name
+is used as the filename base when generating default output file names.
+</td>
+</tr>
+
+<tr>
+<td>
+<b>LOG_FILE</b>
+</td>
+<td>
+Filename for the log file that boltzmann writes warning, error, and informational messages to, and echoes
+its parameters to. Default suffix is ".log"
+</td>
+</tr>
+
+<tr>
+<td>
+<b>RXN_ECHO_FILE</b>
+</td>
+<td>
+Filename for the file that echoes the reactions in the RXN_FILE.
+Default suffix is ".echo"
+</td>
+</tr>
+
+<tr>
+<td>
+<b>RXN_MAT_FILE</b>
+</td>
+<td>
+Filename for the file that the has reaction matrix printed.
+Default suffix is ".mat"
+</td>
+</tr>
+
+<tr>
+<td>
+<b>DICTIONARY_FILE</b>
+</td>
+<td>
+Filename for the file that the species in the RXN_FILE are echoed to in
+sorted order, so as to attach the numbering that boltzmann uses to the
+species name. Default suffix is ".dict"
+</td>
+</tr>
+
+<tr>
+<td>
+<b>COUNTS_OUT_FILE</b>
+</td>
+<td>
+File name for printing out species counts during record loop. Default suffix is ".count"
+</td>
+</tr>
+<tr>
+<td>
+<b>CONCS_OUT_FILE</b>
+</td>
+<td>
+File name for printing out species concs during recording loop. Default suffix is ".concs"
+</td>
+</tr>
+
+<tr>
+<td>
+<b>RXN_LKLHD_FILE</b>
+</td>
+<td>
+File name for printing reaction likelihoods to during the recording loop. Default suffix is ".lklhd"
+</td>
+</tr>
+
+<tr>
+<td>
+<b>FREE_ENERGY_FILE</b>
+</td>
+<td>
+File name for printing reaction free energy per reaction. Default suffix is ".fe"
+Only active if the free_energy_format parameter is 1,2,or 3.
+</td>
+</tr>
+
+<tr>
+<td>
+<b>DG0KE_FILE</b>
+</td>
+<td>
+File name for printing delta_g0 and equilibrium constants for each reaction. Default suffix is ".dg0ke"
+</td>
+</tr>
+
+<tr>
+<td>
+<b>RXN_VIEW_FILE</b>
+</td>
+<td>
+File name for reaction for printing the transpose of the
+matrix in the reaction likelihood file. 
+With likelihoods for each timestep  for a reaction printed accross one row.
+</td>
+</tr>
+
+<tr>
+<td>
+<b>BNDRY_FLUX_FILE</b>
+</td>
+<td>
+File name for printing the flux of the fixed concentration species in the reaction. Default suffix is ".flux"
+</td>
+</tr>
+
+<tr>
+<td>
+<b>RESTART_FILE</b>
+</td>
+<td>
+File name of the restart file, a file of the species concentrations in the same format as the initial concentrations
+file. Default suffix is ".rstrt"
+</td>
+</tr>
+
+<tr>
+<td>
+<b>ODE_CONCS_FILE</b>
+</td>
+<td>
+File name of the output repository for molecule concentrations during ode steps.
+Only used if USE_DEQ is set to 1 and PRINT_OUTPUT is set to 1 and
+PRINT_CONCS_OR_COUNTS is 2 or 3  and ODE_RXN_VIEW_FREQ > 0.
+Default suffix is ".ode_concs" 
+</td>
+</tr>
+
+<tr>
+<td>
+<b>ODE_COUNTS_FILE</b>
+</td>
+<td>
+File name of the output repository for molecule counts during ode steps.
+Only used if USE_DEQ is set to 1 and PRINT_OUTPUT is set to 1 and
+PRINT_CONCS_OR_COUNTS is 1 or 3 and ODE_RXN_VIEW_FREQ > 0.
+Default suffix is ".ode_counts" 
+</td>
+</tr>
+
+<tr>
+<td>
+<b>ODE_DCONCS_FILE</b>
+</td>
+<td>
+File name of the output repository for time derivatives of molecule 
+concentrations during ode steps.
+Only used if USE_DEQ is set to 1 and PRINT_OUTPUT is set to 1 and
+and ODE_RXN_VIEW_FREQ > 0.
+Default suffix is ".ode_dconcs" 
+</td>
+</tr>
+
+<tr>
+<td>
+<b>ODE_BFLUX_FILE</b>
+</td>
+<td>
+File name of the output repository for printing the fluxes of fixed
+concentrations molecules during ode steps.
+Only used if USE_DEQ is set to 1 and PRINT_OUTPUT is set to 1 and
+ODE_RXN_VIEW_FREQ > 0.
+Default suffix is ".ode_bflux" 
+</td>
+</tr>
+
+<tr>
+<td>
+<b>ODE_LKLHD_FILE</b>
+</td>
+<td>
+File name of the output repository for printing the reaction likelihoods
+during ode steps.
+Only used if USE_DEQ is set to 1 and PRINT_OUTPUT is set to 1 and
+ODE_RXN_VIEW_FREQ > 0.
+Default suffix is ".ode_bflux" 
+</td>
+</tr>
+
+</table>
+</body>
+</html>
+

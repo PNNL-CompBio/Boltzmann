@@ -300,6 +300,7 @@ struct state_struct {
   double  *reg_constant; /* len = number_reactions * max_regs_per_rxn */
   double  *reg_exponent; /* len = number_reactions * max_regs_per_rxn */
   double  *reg_drctn;    /* len = number_reactions * max_regs_per_rxn */
+  double  *dfdke_dfdmu0_work; /* len = 3*unique_molecules */
   int64_t *reg_species;  /* len = number_reactions * max_regs_per_rxn */
   int     *coeff_sum;    /* len = number_reactions + (number_reactions & 1) */
   /* 
@@ -366,6 +367,8 @@ struct state_struct {
   char *ode_counts_file;   /* max_filename_len */
   char *ode_sens_file;     /* max_filename_len */
   char *ode_dsens_file;    /* max_filename_len */
+  char *dfdke_file;        /* max_filename_len */
+  char *dfdmu0_file;       /* max_filename_len */
   char *solvent_string;    /* Length is 64. Allocated in alloc0 */
 
   char *rxn_title_text;    /* rxn_title_text_length. Allocated in alloc2  */
@@ -464,6 +467,9 @@ struct state_struct {
 
   FILE *ode_sens_fp;
   FILE *ode_dsens_fp;
+
+  FILE *dfdke_fp;
+  FILE *dfdmu0_fp;
   /*
     Instrumentation.     
   */

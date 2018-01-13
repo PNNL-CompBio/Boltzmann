@@ -1,0 +1,340 @@
+<html>
+<head>
+<title> Boltzmann User Guide </title>
+</head>
+<body>
+<h3><p align="center"> Generic ODE method parameters </p></h3>
+<a href="ode_parameters.html">up: ODE method Parameters</a>
+<a name="ode_generic_parameters_desc">
+<p>
+These are only active when the <B>USE_DEQ</b> parameter is set to 1.
+</p>
+<table border=1>
+<tr>
+<td>
+<b>
+Keyword
+</b>
+</td>
+<td>
+Description
+</td>
+<td>
+<b>
+Default
+</b>
+</td>
+</tr>
+
+<tr>
+<td>
+<b>
+ODE_SOLVER_CHOICE
+</b>
+</td>
+<td>
+<table>
+<tr>
+<td>
+0:
+</td>
+<td>
+ODE23TB from MATLAB.
+</td>
+</tr>
+<tr>
+<td>
+1:
+</td>
+<td>
+CVODE from SUNDIALS
+</td>
+</tr>
+</table>
+</td>
+<td>
+<b>
+0
+</b>
+</td>
+</tr>
+
+<tr>
+<td>
+<b>
+NO_ROUND_FROM_DEQ
+</b>
+</td>
+<td>
+<table>
+<tr>
+<td>
+0:
+</td>
+<td>
+When converting concentrations from the ode solve back to counts, 
+round them down to integers.
+</td>
+</tr>
+<tr>
+<td>
+1:
+</td>
+<td>
+When converting concentrations from the ode solve back to counts, 
+do not round them down to integers.
+</td>
+</tr>
+</table>
+</td>
+<td>
+<b>
+0
+</b>
+</td>
+</tr>
+
+<tr>
+<td>
+<b>
+ODE_T_FINAL
+</b>
+</td>
+<td>
+End point in time for the ODE Integration. Usually you want this to be
+sufficiently long to achieve steady state.
+</td>
+<td>
+<b>
+10.0
+</b>
+</td>
+</tr>
+
+<tr>
+<td>
+<b>
+ODE_STOP_STYLE
+</b>
+</td>
+<td>
+<table>
+<tr>
+<td>
+TIME
+</td>
+<td>
+Terminate the ODE integration only when ODE_T_FINAL is reached (or an error occurs)
+</td>
+</tr>
+<tr>
+<td>
+VEC
+</td>
+<td>
+Terminate the ODE integration when the norm of the
+derivative vector is less than some threshold. See ODE_STOP_NORM 
+and ODE_STOP_REL.
+(Currently not implemented)
+</td>
+</tr>
+</table>
+</td>
+<td>
+<b>
+TIME
+</b>
+</td>
+</tr>
+
+<tr>
+<td>
+<b>
+ODE_STOP_NORM
+</b>
+</td>
+<td>
+Not yet implemented.
+<table>
+<tr>
+<td>
+INF
+</td>
+<td>
+Infinity or max norm.
+</td>
+</tr>
+<tr>
+<td>
+1
+</td>
+<td>
+The 1 norm = sum of the absolute values of the vector elements.
+</td>
+</tr>
+<tr>
+<td>
+2
+</td>
+<td>
+The 2 norm also known as the Euclidian norm =
+square root of the sum of the squares of the vector elements.
+</td>
+</tr>
+</table>
+</td>
+<td>
+<b>
+INF
+</b>
+</td>
+</tr>
+
+<tr>
+<td>
+<b>
+ODE_STOP_REL
+</b>
+</td>
+<td>
+Not yet implemented.
+<table>
+<tr>
+<td>
+ABS
+</td>
+<td>
+When  VEC is the ODE_STOP_STYLE, stop when the specified
+norm of the derivative vector is less than ODE_STOP_THRESH.
+</td>
+</tr>
+<tr>
+<td>
+REL
+</td>
+<td>
+When  VEC is the ODE_STOP_STYLE, stop when the specified
+norm of the derivative vector divided by the corresponding
+norm of the concentrations vector is less than ODE_STOP_THRESH.
+</td>
+</tr>
+</table>
+</td>
+<td>
+<b>
+ABS
+</b>
+</td>
+</tr>
+
+<tr>
+<td>
+<b>
+ODE_STOP_THRESH
+</b>
+</td>
+<td>
+The stopping threshold for the derivative norm or relative derivative
+norm when ODE_STOP_STYLE is VEC.
+</td>
+<td>
+<b>
+1.0e-8
+</b>
+</td>
+</tr>
+
+<tr>
+<td>
+<b>
+DERIV_THRESH
+</b>
+</td>
+<td>
+When computing concentration derivatives, to avoid noisy behavior
+as steady state is approached if a derivative's magnitude  is less than
+DERIV_THRESH it is set to 0. 
+</td>
+<td>
+<b>
+1.0e-8
+</b>
+</td>
+</tr>
+
+<tr>
+<td>
+<b>
+ODE_JACOBIAN_CHOICE
+</b>
+</td>
+<td>
+Determines how the ODE solver computes the Jacobian.
+<table>
+<tr>
+<td>
+0
+</td>
+<td>
+Use the ode_num_jac routine to numerically approximate the
+Jacobian.
+</td>
+</tr>
+<tr>
+<td>
+n, n in [1:14]
+</td>
+<td>
+Use an exact formulation of the derivative corresponding to
+the derivative computation routine lr<i>n</i>_approximate_delta_concs.
+Currently only implemented for n = 8. Everything else 
+defaults to the numerical approximation.
+</td>
+</tr>
+</table>
+</td>
+<td>
+<b>
+0
+</b>
+</td>
+</tr>
+
+<tr>
+<td>
+<b>
+NJ_THRESH
+</b>
+</td>
+<td>
+Threshold used by ode_num_jac routine to avoid division by 0.
+Only relevant when USE_DEQ is 1 and ODE_JACOBIAN_CHOICE is 0.
+</td>
+<td>
+<b>
+1.0e-6
+</b>
+</td>
+</tr>
+
+
+<tr>
+<td>
+<b>
+DELTA_CONCS_CHOICE
+</b>
+</td>
+<td>
+Determines how the ODE solver computes the concentration derivatives.
+Currently a value between 1 and 14 see the 
+<a href="delta_concs_choice.html"> ODE Derivative functions</a> table.
+</td>
+<td>
+<b>
+8
+</b>
+</td>
+</tr>
+</table>
+</body>
+</html>

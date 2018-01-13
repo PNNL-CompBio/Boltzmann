@@ -165,15 +165,18 @@ int approximate_delta_concs(struct state_struct *state, double *concs,
 					   flux, 
 					   choice);
     break;
-  case 42:
+    /*
+      case 42: Disabled now as choice 10 accomodates this mode.
     /*
       Use debugging flavor with kinetic rate constants for coupledenzyme.in
     */
+    /*
     success = ce_approximate_delta_concs(state, 
 					 concs,
 					 flux, 
 					 choice);
     break;
+    */
   default :
     success = 0;
     if (lfp) {

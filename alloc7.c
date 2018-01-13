@@ -67,6 +67,7 @@ int alloc7(struct state_struct *state) {
   double *ode_counts;
   double *ode_concs;
   double *ode_f;
+  double *dfdke_dfdmu0_work;
   int64_t ask_for;
   int64_t one_l;
   int64_t usage;
@@ -348,6 +349,28 @@ int alloc7(struct state_struct *state) {
     state->rfc = rfc;
     state->deriv_acc = deriv_acc;
     state->stable_add_scr = stable_add_scr;
+  }
+  if (success) {
+    /*
+      Perhaps we should allocate this only if print_output = 1
+      as the compute_dfdke_dfdmu0 routine only get called when
+      print_output = 1.
+    */
+    ask_for = (int64_t)(3*num_species)*sizeof(double);
+    usage += ask_for;
+    run_workspace_bytes += ask_for;
+    dfdke_dfdmu0_work = (double*)calloc(ask_for,one_l);
+    if (dfdke_dfdmu0_work == NULL) {
+      success = 0;
+      if (lfp) {
+	fprintf(lfp,"alloc7: Error could not allocate %ld "
+		"bytes for dfdke_dfdmu0_work scratch space.\n",ask_for);
+	fflush(lfp);
+      }
+    }
+  }
+  if (success) {
+    state->dfdke_dfdmu0_work = dfdke_dfdmu0_work;
   }
   state->usage = usage;
   state->run_workspace_bytes  = run_workspace_bytes;

@@ -129,7 +129,9 @@ int read_params (char *param_file_name, struct state_struct *state) {
     state->concs_out_file[0]    = '\0';
     state->ode_counts_file[0]   = '\0';
     state->ode_sens_file[0]     = '\0';
-    state->ode_dsens_file[0]     = '\0';
+    state->ode_dsens_file[0]    = '\0';
+    state->dfdke_file[0]        = '\0';
+    state->dfdmu0_file[0]       = '\0';
     /*
       Following line Added by DGT on 4/18/2013
      */
@@ -305,6 +307,10 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	sscan_ok = sscanf(value,"%s",state->ode_sens_file);
       } else if (strncmp(key,"ODE_DSENS_FILE",14) == 0) {
 	sscan_ok = sscanf(value,"%s",state->ode_dsens_file);
+      } else if (strncmp(key,"DFDKE_FILE",10) == 0) {
+	sscan_ok = sscanf(value,"%s",state->dfdke_file);
+      } else if (strncmp(key,"DFDMU0_FILE",10) == 0) {
+	sscan_ok = sscanf(value,"%s",state->dfdmu0_file);
       /*
 	Following 2 lines added by DGT on 4/18/2013, Modified by DJB 6/2/2013
       */	

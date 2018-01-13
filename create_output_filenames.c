@@ -34,6 +34,8 @@ int create_output_filenames(struct state_struct *state) {
   char *ode_counts_filename;
   char *ode_sens_filename;
   char *ode_dsens_filename;
+  char *dfdke_filename;
+  char *dfdmu0_filename;
   int64_t output_filename_base_length;
   int output_filename_length;
   int success;
@@ -66,7 +68,8 @@ int create_output_filenames(struct state_struct *state) {
   aux_data_filename    = state->aux_data_file;
   ode_sens_filename    = state->ode_sens_file;
   ode_dsens_filename   = state->ode_dsens_file;
-
+  dfdke_filename       = state->dfdke_file;
+  dfdmu0_filename      = state->dfdmu0_file;
   dictionary_filename  = state->dictionary_file;
 
 
@@ -201,6 +204,14 @@ int create_output_filenames(struct state_struct *state) {
     if (ode_dsens_filename[0] == '\0') {
       strncpy(ode_dsens_filename,output_filename,output_filename_base_length);
       strcpy((char*)&ode_dsens_filename[output_filename_base_length],".dsens");
+    }
+    if (dfdke_filename[0] == '\0') {
+      strncpy(dfdke_filename,output_filename,output_filename_base_length);
+      strcpy((char*)&dfdke_filename[output_filename_base_length],".dfdke");
+    }
+    if (dfdmu0_filename[0] == '\0') {
+      strncpy(dfdmu0_filename,output_filename,output_filename_base_length);
+      strcpy((char*)&dfdmu0_filename[output_filename_base_length],".dfdmu0");
     }
   }
   return(success);
