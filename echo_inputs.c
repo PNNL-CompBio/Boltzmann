@@ -4,9 +4,6 @@
 #include "print_molecules_dictionary.h"
 #include "print_dg0_ke.h"
 #include "print_counts.h"
-/*
-#include "print_reactions_matrix.h"
-*/
 
 #include "echo_inputs.h"
 int echo_inputs(struct state_struct *state) {
@@ -19,7 +16,7 @@ int echo_inputs(struct state_struct *state) {
 	       echo_reactions_file,
 	       print_molecules_dictionary,
 	       print_dg0_ke,
-	       print_reactions_matrix,
+	       print_counts,
 
   */
   int success;

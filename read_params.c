@@ -119,6 +119,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
     state->sbml_file[0]        	= '\0';
     state->rxn_echo_file[0]    	= '\0';
     state->rxn_mat_file[0]     	= '\0';
+    state->arxn_mat_file[0]    	= '\0';
     state->dg0ke_file[0]       	= '\0';
     state->dictionary_file[0]  	= '\0';
     state->ode_dconcs_file[0]   = '\0';
@@ -275,6 +276,8 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	sscan_ok = sscanf(value,"%s",state->rxn_echo_file);
       } else if (strncmp(key,"RXN_MAT_FILE",12) == 0) {
 	sscan_ok = sscanf(value,"%s",state->rxn_mat_file);
+      } else if (strncmp(key,"ARXN_MAT_FILE",13) == 0) {
+	sscan_ok = sscanf(value,"%s",state->arxn_mat_file);
       } else if (strncmp(key,"DICTONARY_FILE",14) == 0) {
 	sscan_ok = sscanf(value,"%s",state->dictionary_file);
       } else if (strncmp(key,"COUNTS_OUT_FILE",15) == 0) {

@@ -66,7 +66,11 @@ int alloc0_a(struct state_struct *state) {
        ode_bflux_file,
        concs_out_file,
        ode_concs_file,
-
+       ode_sens_file,
+       ode_dsens_file,
+       dfdke_file,
+       dfdmu0_file,
+       arxn_mat_file,
        solvent_string
   */
   int64_t max_file_name_len;

@@ -70,4 +70,5 @@ void boltzmann_set_filename_ptrs(struct state_struct *statep) {
   statep->ode_dsens_file     = statep->ode_sens_file + max_file_name_len;
   statep->dfdke_file         = statep->ode_dsens_file + max_file_name_len;
   statep->dfdmu0_file        = statep->dfdke_file + max_file_name_len;
+  statep->arxn_mat_file      = statep->dfdmu0_file + max_file_name_len;
 }

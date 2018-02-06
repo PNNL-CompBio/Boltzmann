@@ -369,6 +369,8 @@ struct state_struct {
   char *ode_dsens_file;    /* max_filename_len */
   char *dfdke_file;        /* max_filename_len */
   char *dfdmu0_file;       /* max_filename_len */
+  char *arxn_mat_file;     /* max_filename_len */
+  
   char *solvent_string;    /* Length is 64. Allocated in alloc0 */
 
   char *rxn_title_text;    /* rxn_title_text_length. Allocated in alloc2  */

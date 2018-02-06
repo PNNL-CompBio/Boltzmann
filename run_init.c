@@ -6,10 +6,10 @@
 #include "alloc8.h"
 #include "alloc9.h"
 #include "print_reactions_matrix.h"
+#include "print_active_reactions_matrix.h"
 /*
-#include "zero_solvent_coefficients.h"
-*/
 #include "free_boot_state2.h"
+*/
 
 #include "run_init.h"
 int run_init(struct state_struct *state) {
@@ -101,6 +101,9 @@ int run_init(struct state_struct *state) {
       success = alloc9(state);
       if (success) {
 	success = print_reactions_matrix(state);
+      }
+      if (success) {
+	success = print_active_reactions_matrix(state);
       }
     }
   }

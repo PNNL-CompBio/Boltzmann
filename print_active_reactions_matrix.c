@@ -1,4 +1,4 @@
-/* print_reactions_matrix.c
+/* print_active_reactions_matrix.c
 *******************************************************************************
 boltzmann
 
@@ -25,10 +25,11 @@ specific language governing permissions and limitations under the License.
 #include "recover_solvent_coefficients.h"
 #include "zero_solvent_coefficients.h"
 
-#include "print_reactions_matrix.h"
-int print_reactions_matrix(struct state_struct *state) {
+#include "print_active_reactions_matrix.h"
+int print_active_reactions_matrix(struct state_struct *state) {
   /*
-    Print the reaction matrix
+    Print the reaction matrix only for those reactions that are active
+    (activities value is != 0)
     the reaction title and stoichiometric statement.
     Called by: run_init
     Calls:     fopen, fprintf, fclose (intrinsic)
@@ -41,6 +42,7 @@ int print_reactions_matrix(struct state_struct *state) {
   struct molecule_struct *molecules;
   struct compartment_struct *compartments;
   struct compartment_struct *cur_cmpt;
+  double *activities;
   int64_t *rxn_ptrs;
   int64_t *molecules_indices;
   int64_t *coefficients;
@@ -70,18 +72,19 @@ int print_reactions_matrix(struct state_struct *state) {
   int ci;
   int padi;
 
-  FILE *rxn_mat_fp;
+  FILE *arxn_mat_fp;
   FILE *lfp;
 
   success = 1;
   molecules_text   = state->molecules_text;
   compartment_text = state->compartment_text;
   rxn_title_text   = state->rxn_title_text;
+  activities       = state->activities;
 
-  rxn_mat_fp = fopen(state->rxn_mat_file,"w+");
-  if (rxn_mat_fp == NULL) {
+  arxn_mat_fp = fopen(state->arxn_mat_file,"w+");
+  if (arxn_mat_fp == NULL) {
     fprintf(stderr,
-	    "print_reactions_matrix: Error could not open %s file.\n",
+	    "print_active_reactions_matrix: Error could not open %s file.\n",
 	    state->rxn_mat_file);
     success = 0;
   }
@@ -108,82 +111,84 @@ int print_reactions_matrix(struct state_struct *state) {
       Print header line.
     */
 
-    fprintf(rxn_mat_fp,"reaction title\tforward reaction");
+    fprintf(arxn_mat_fp,"reaction title\tforward reaction");
     for(j=0;j<nmols;j++) {
       ci = molecules->c_index;
       molecule    = (char *)&molecules_text[molecules->string];
       if (ci > 0) {
 	cur_cmpt = (struct compartment_struct *)&(compartments[ci]);
 	cmpt_string = (char *)&compartment_text[cur_cmpt->string];
-	fprintf(rxn_mat_fp,"\t%s:%s",molecule,cmpt_string);
+	fprintf(arxn_mat_fp,"\t%s:%s",molecule,cmpt_string);
       } else {
-	fprintf(rxn_mat_fp,"\t%s",molecule);
+	fprintf(arxn_mat_fp,"\t%s",molecule);
       }
       molecules += 1; /* Caution address arithmetic. */
     }
-    fprintf(rxn_mat_fp,"\n");
+    fprintf(arxn_mat_fp,"\n");
 
     for (rxns=0;rxns < nrxns;rxns++) {
       /*
 	Initialize the matrix_row to be all zeros;
       */
-      for (j=0;j<nmols;j++) {
-	mat_row[j] = 0;
-      }
-      if (reaction->title>=0) {
-	title = (char *)&rxn_title_text[reaction->title];
-	fprintf(rxn_mat_fp,"%s\t",title);
-      } else {
-	fprintf(rxn_mat_fp," \t");
-      }
-      nr = 0;
-      for (j=rxn_ptrs[rxns];j<rxn_ptrs[rxns+1];j++) {
-	coeff = coefficients[j];
-	if (coeff < 0) {
-	  mat_row[molecules_indices[j]] = coeff;
-	  if (coeff < -1) {
-	    coeff = -coeff;
-	    fprintf(rxn_mat_fp,"%d ",coeff);
+      if (activities[rxns] != 0.0) {
+      	for (j=0;j<nmols;j++) {
+      		mat_row[j] = 0;
+      	}
+      	if (reaction->title>=0) {
+      		title = (char *)&rxn_title_text[reaction->title];
+      		fprintf(arxn_mat_fp,"%s\t",title);
+      	} else {
+      		fprintf(arxn_mat_fp," \t");
+      	}
+      	nr = 0;
+      	for (j=rxn_ptrs[rxns];j<rxn_ptrs[rxns+1];j++) {
+	  coeff = coefficients[j];
+	  if (coeff < 0) {
+	    mat_row[molecules_indices[j]] = coeff;
+	    if (coeff < -1) {
+	      coeff = -coeff;
+	      fprintf(arxn_mat_fp,"%d ",coeff);
+	    }
+	    molecule = (char*)&molecules_text[matrix_text[j]];
+	    fprintf(arxn_mat_fp,"%s",molecule);
+	    nr += 1;
+	    if (nr < reaction->num_reactants) {
+	      fprintf(arxn_mat_fp," + ");
+	    } else {
+	      fprintf(arxn_mat_fp," => ");
+	      break;
+	    }
 	  }
-	  molecule = (char*)&molecules_text[matrix_text[j]];
-	  fprintf(rxn_mat_fp,"%s",molecule);
-	  nr += 1;
-	  if (nr < reaction->num_reactants) {
-	    fprintf(rxn_mat_fp," + ");
-	  } else {
-	    fprintf(rxn_mat_fp," => ");
-	    break;
+      	}
+      	np = 0;
+      	for (j=rxn_ptrs[rxns];j<rxn_ptrs[rxns+1];j++) {
+	  coeff = coefficients[j];
+	  if (coeff > 0) {
+	    mat_row[molecules_indices[j]] = coeff;
+	    if (coeff > 1) {
+	      fprintf(arxn_mat_fp,"%d ",coeff);
+	    }
+	    molecule = (char*)&molecules_text[matrix_text[j]];
+	    fprintf(arxn_mat_fp,"%s",molecule);
+	    np += 1;
+	    if (np < reaction->num_products) {
+	      fprintf(arxn_mat_fp," + ");
+	    } else {
+	      break;
+	    }
 	  }
-	}
-      }
-      np = 0;
-      for (j=rxn_ptrs[rxns];j<rxn_ptrs[rxns+1];j++) {
-	coeff = coefficients[j];
-	if (coeff > 0) {
-	  mat_row[molecules_indices[j]] = coeff;
-	  if (coeff > 1) {
-	    fprintf(rxn_mat_fp,"%d ",coeff);
-	  }
-	  molecule = (char*)&molecules_text[matrix_text[j]];
-	  fprintf(rxn_mat_fp,"%s",molecule);
-	  np += 1;
-	  if (np < reaction->num_products) {
-	    fprintf(rxn_mat_fp," + ");
-	  } else {
-	    break;
-	  }
-	}
-      }
-      /*
-	Now print out the coefficients (including 0's for the matrix row)
-      */
-      for (j=0;j<nmols;j++) {
-	fprintf(rxn_mat_fp,"\t%d",mat_row[j]);
-      }
-      fprintf(rxn_mat_fp,"\n");
+      	}
+      	/*
+   	  Now print out the coefficients (including 0's for the matrix row)
+      	*/
+      	for (j=0;j<nmols;j++) {
+	  fprintf(arxn_mat_fp,"\t%d",mat_row[j]);
+      	}
+      	fprintf(arxn_mat_fp,"\n");
+      } /* end if (activities[rxns] != 0.0) */
       reaction += 1; /* Caution address arithmetic here.*/
-    }
-    fclose(rxn_mat_fp);
+    } /* end for (rxns...) */
+    fclose(arxn_mat_fp);
     /*
       Now we need to rezero the solvent coefficents.
     */

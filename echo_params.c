@@ -60,6 +60,7 @@ int echo_params (FILE *lfp, struct state_struct *state) {
     fprintf(lfp,"state->kg2js_file             = %s\n",state->kg2js_file);
     fprintf(lfp,"state->rxn_echo_file          = %s\n",state->rxn_echo_file);
     fprintf(lfp,"state->rxn_mat_file           = %s\n",state->rxn_mat_file);
+    fprintf(lfp,"state->arxn_mat_file          = %s\n",state->arxn_mat_file);
     fprintf(lfp,"state->dg0ke_file             = %s\n",state->dg0ke_file);
     fprintf(lfp,"state->dictionary_file        = %s\n",state->dictionary_file);
     fprintf(lfp,"state->ode_concs_file         = %s\n",state->ode_concs_file);
@@ -67,6 +68,10 @@ int echo_params (FILE *lfp, struct state_struct *state) {
     fprintf(lfp,"state->ode_dconcs_file        = %s\n",state->ode_dconcs_file);
     fprintf(lfp,"state->ode_bflux_file         = %s\n",state->ode_bflux_file);
     fprintf(lfp,"state->net_lklhd_file         = %s\n",state->net_lklhd_file);
+    fprintf(lfp,"state->ode_sens_file          = %s\n",state->ode_sens_file);
+    fprintf(lfp,"state->ode_dsens_file         = %s\n",state->ode_dsens_file);
+    fprintf(lfp,"state->dfdke_file             = %s\n",state->dfdke_file);
+    fprintf(lfp,"state->dfdmu0_file            = %s\n",state->dfdmu0_file);
     fprintf(lfp,"state->nl_bndry_flx_file      = %s\n",state->nl_bndry_flx_file);
     
     fprintf(lfp,"state->solvent_string         = %s\n",
