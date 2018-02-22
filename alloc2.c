@@ -367,6 +367,17 @@ int alloc2(struct state_struct *state, int setup) {
       success = 0;
     }
   }
+  if (success) {
+    usage += ask_for;
+    state->use_rxn = (int *)calloc(one_l,ask_for);
+    if (state->use_rxn == NULL) {
+      fprintf(stderr,"alloc2: Error unable to allocate %ld bytes for "
+	      "state->use_rxn field.\n",ask_for);
+      fflush(stderr);
+      success = 0;
+    }
+  }
+
   /* 
      These are allocated in alloc0!
   if (success) {

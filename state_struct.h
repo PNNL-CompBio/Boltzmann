@@ -165,6 +165,7 @@ struct state_struct {
     when using boltzmann_boot and boltzmann_load, with flatten_state.
   */
   int64_t keyword_buffer_length;
+  int64_t max_num_rxn_file_keywords;
   int64_t num_rxn_file_keywords;
   int64_t rxn_file_keyword_len;
   int64_t max_param_line_len;
@@ -303,6 +304,13 @@ struct state_struct {
   double  *dfdke_dfdmu0_work; /* len = 3*unique_molecules */
   int64_t *reg_species;  /* len = number_reactions * max_regs_per_rxn */
   int     *coeff_sum;    /* len = number_reactions + (number_reactions & 1) */
+  int     *use_rxn;      /* Vector of flags of length number_reactions
+	 		   indicating whether the reaction is to be included
+			   1 for use, 0 for ignore, default value is 1.
+			   Turn off by adding a USE_RXN 0 line in the
+			   reaction .dat file for each reaction to be
+			   turned off.
+		         */
   /* 
      sizeof(reaction_struct) * number of reactions. 
      Allocated in alloc2 

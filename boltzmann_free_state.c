@@ -248,6 +248,12 @@ int boltzmann_free_state(struct state_struct *state) {
     if (state->reg_species != NULL) {
       free((void*)state->reg_species);
     }
+    if (state->coeff_sum != NULL) {
+      free((void*)state->coeff_sum);
+    }
+    if (state->use_rxn != NULL) {
+      free((void*)state->use_rxn);
+    }
     /*
       alloc0_a
     */

@@ -27,6 +27,7 @@ specific language governing permissions and limitations under the License.
 #include "count_nws.h"
 #include "upcase.h"
 #include "parse_side_line.h"
+#include "boltzmann_compress_reactions.h"
 
 #include "parse_reactions_file.h"
 int parse_reactions_file(struct state_struct *state,
@@ -71,6 +72,33 @@ int parse_reactions_file(struct state_struct *state,
                parse_side_line
 	       upcase,
 	       fseek, feof, fgets, fprintf, fflush, sscanf (intrinsic)
+	       
+    Uses the following fields in state
+      lfp,
+      max_param_line_len,
+      max_regs_per_rxn
+      align_mask,
+      align_len,
+
+    Sets the following fields in state:
+      reg_constant,
+      reg_exponent,
+      reg_species,
+      reg_drctn,
+      coeff_sum,
+      use_rxn,
+      reactions,
+      reactions_matrix, and subfields
+      pathway_text,
+      compartment_text,
+      molecules_text,
+      raw_molecules_text,
+      regulation_text
+      activities,
+      enzyme_level
+     
+   and the unsorted_molecules struct, the rxn_molecules struct, and 
+   the usnorted_compartments fiedls 
   */
   struct reaction_struct *reactions;
   struct reaction_struct *reaction;
@@ -123,6 +151,7 @@ int parse_reactions_file(struct state_struct *state,
   char *pathway;
   char *metabolite;
   int  *coeff_sum;
+  int  *use_rxn;
 
   size_t word1_len;
 
@@ -159,6 +188,9 @@ int parse_reactions_file(struct state_struct *state,
   int last_line_type;
   int sum_coeffs;
 
+  int rxn_use;
+  int rxn_not_used;
+
   FILE *rxn_fp;
   FILE *lfp;
   success = 1;
@@ -172,10 +204,12 @@ int parse_reactions_file(struct state_struct *state,
   reg_species  	   = state->reg_species;
   reg_drctn    	   = state->reg_drctn;
   coeff_sum        = state->coeff_sum;
+  use_rxn          = state->use_rxn;
   max_regs_per_rxn = (int)state->max_regs_per_rxn;
   reg_base         = (int64_t)0;
   reg_pos          = reg_base;
   line_type        = 0;
+  rxn_not_used     = 0;
   /*
   strcpy(state->reaction_file,reaction_file);
   */
@@ -261,6 +295,7 @@ int parse_reactions_file(struct state_struct *state,
       reg_drctn[reg_base+i]    = 1.0;
       reg_species[reg_base+i]  = (int64_t)(-1);
     }
+    rxn_use                    = 1;
     reg_count                  = 0;
     rxn_ptrs[rxns]              = molecules;
     fgp = fgets(rxn_buffer,rxn_buff_len,rxn_fp);
@@ -303,6 +338,8 @@ int parse_reactions_file(struct state_struct *state,
       	  It requires: LEFT, RIGHT, DGZERO and DGZERO-UNITS lines.
       	  It may have PATHWAY and LEFT_COMPARTMENT, RIGHT_COMPARTMENT  
 	  ACTIVITY/ENZYME_LEVEL, PREGULATION and or NREGULATION lines.
+	  It also may have a USE_RXN 0 line to turn of a particular
+	  reaction for the duration of the run.
 
       	  Allow pre REACTION lines in reactions file as a header.
       	  So before the first REACTION line the state is -1
@@ -678,6 +715,7 @@ int parse_reactions_file(struct state_struct *state,
 	  }
 	  reaction->coefficient_sum = sum_coeffs;
 	  coeff_sum[rxns] = sum_coeffs;
+	  use_rxn[rxns]   = rxn_use;
 	  rxns += 1;
 	  /*
 	    Caution address arithmetic follows
@@ -707,9 +745,11 @@ int parse_reactions_file(struct state_struct *state,
 	    reaction->temp_kelvin       = state->temp_kelvin;
 	    reaction->ph                = state->ph;
 	    reaction->ionic_strength    = state->ionic_strength;
-	    reaction->deltag0_computed  = 0;
 
+	    reaction->deltag0_computed  = 0;
+	    
 	    rxn_ptrs[rxns]              = molecules;
+	    rxn_use                     = 1;
 	    for (i=0;i<max_regs_per_rxn;i++) {
 	      reg_constant[reg_base+i] = 1.0;
 	      reg_exponent[reg_base+i] = 0.0;
@@ -752,6 +792,22 @@ int parse_reactions_file(struct state_struct *state,
 	    break;
 	  }
 	  break;
+	case 16:
+	  /*
+	    A USE_RXN line.
+	  */
+	  ns = sscanf((char*)&rxn_buffer[word1],"%d",&rxn_use);
+	  if (rxn_use == 0) {
+	    rxn_not_used = 1;
+	  }
+	  break;
+	case 17:
+	  /*
+	    An IGNORE line.
+	  */
+	  rxn_use = 0;
+	  rxn_not_used = 1;
+	  break;
         default:
 	break;
 	} /* end switch(line_type) */
@@ -786,5 +842,14 @@ int parse_reactions_file(struct state_struct *state,
       fclose(rxn_fp);
     }
   } /* end if (success) */
+  /*
+    If one or more reactions was turned off with a USE_RXN 0 line, or an 
+    ignore line, we need to remove that reaction from the reactions struct,
+    and from the reactions matrix and adjust the num_reactions
+    field.
+  */
+  if (rxn_not_used) {
+    success = boltzmann_compress_reactions(state);
+  }
   return(success);
 }

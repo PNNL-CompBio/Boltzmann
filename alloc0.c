@@ -103,9 +103,10 @@ int alloc0(struct state_struct **statep, int setup) {
   int64_t usage;
 
   int success;
-
-  int num_rxn_file_keywords;
   int keyword_buffer_length;
+
+  int max_num_rxn_file_keywords;
+  int num_rxn_file_keywords;
 
   ask_for           = (int64_t)sizeof(bltzs);
   one_l             = (int64_t)1;
@@ -135,7 +136,7 @@ int alloc0(struct state_struct **statep, int setup) {
     usage = state->usage;
   }
   if (success && setup) {
-    state->version_no = 5080; /* Checked in revision of state_struct.h */
+    state->version_no = 5082; /* Checked in revision of state_struct.h */
     /*
       Allocate_space for reading the parameter file.
     */
@@ -201,9 +202,18 @@ int alloc0(struct state_struct **statep, int setup) {
       }
     }
     if (success) {
-      num_rxn_file_keywords = 16;
-      state->num_rxn_file_keywords = num_rxn_file_keywords;
-      ask_for = ((int64_t)num_rxn_file_keywords) * ((int64_t)sizeof(char *));
+      /*
+	To facillitate adding rxn file keywords, we introduce
+	a max_num_rxn_file_keywords parameter, we 
+	set num_rxn_file_keywords to be the value  actually needed 
+	in the init_rxn_file_keywords which called by size_rxns_file,
+	called from io_size_init, called from boltzmann_init_core.
+      */
+      max_num_rxn_file_keywords = 32;
+      num_rxn_file_keywords     = 18;
+      state->max_num_rxn_file_keywords = (int64_t)max_num_rxn_file_keywords;
+      state->num_rxn_file_keywords = (int64_t)num_rxn_file_keywords;
+      ask_for = ((int64_t)max_num_rxn_file_keywords) * ((int64_t)sizeof(char *));
       usage   += ask_for;
       rxn_keywords = (char **)calloc(one_l,ask_for);
       if (rxn_keywords) {
@@ -218,7 +228,7 @@ int alloc0(struct state_struct **statep, int setup) {
       }
     }
     if (success) {
-      ask_for = ((int64_t)num_rxn_file_keywords) * ((int64_t)sizeof(int64_t));
+      ask_for = ((int64_t)max_num_rxn_file_keywords) * ((int64_t)sizeof(int64_t));
       usage += ask_for;
       rxn_file_keyword_lengths = (int64_t *)calloc(one_l,ask_for);
       if (rxn_file_keyword_lengths) {

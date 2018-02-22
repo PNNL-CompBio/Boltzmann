@@ -40,6 +40,7 @@ int boltzmann_flatten_oneway_vecs(struct state_struct *state,
   void *count_to_conc;
   void *conc_to_count;
   void *coeff_sum;
+  void *use_rxn;
 
   int success;
   int word_pos;
@@ -61,7 +62,7 @@ int boltzmann_flatten_oneway_vecs(struct state_struct *state,
   cs_len            = cs_words * sizeof(double);
 
   oneway_vecs_len = (int64_t)2 + (13 * number_reactions) + 
-    (7*nunique_molecules) + cs_words;
+    (7*nunique_molecules) + (2*cs_words);
   word_pos += 1;
   if (direction == 0) {
     lfstate[word_pos] = oneway_vecs_len;
@@ -252,7 +253,14 @@ int boltzmann_flatten_oneway_vecs(struct state_struct *state,
     } else {
       memcpy(state->coeff_sum,coeff_sum,cs_len);
     }
-    word_pos += cs_words - 1;
+    word_pos += cs_words;
+    use_rxn = (void*)&dfstate[word_pos];
+    if (direction == 0) {
+      memcpy(use_rxn,state->use_rxn,cs_len);
+    } else {
+      memcpy(state->use_rxn,use_rxn,cs_len);
+    }
+    word_pos += cs_words -1;
   } /* end if (success) */
   *word_pos_p = word_pos;
   return(success);

@@ -175,7 +175,7 @@ void boltzmann_set_state_ptrs(struct state_struct *state,
   regulation_text_length  = state->regulation_text_length;
 
   keyword_buffer_length   = state->keyword_buffer_length; /*256*/
-  num_keywords            = state->num_rxn_file_keywords;        /*13 */
+  num_keywords            = state->max_num_rxn_file_keywords;    /*32 */
   per_keyword_pointer_size = num_keywords * sizeof(int64_t);
   max_param_line_len      = state->max_param_line_len;
 
