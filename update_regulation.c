@@ -88,7 +88,7 @@ int update_regulation (struct state_struct *state, int rxn,
     if (conc < 0) {
       success = 0;
       if (lfp) {
-	fprintf(lfp,"update_regulation non positive conc for reaction %d, regulation %lld, species %lld\n",rxn,i,species);
+	fprintf(lfp,"update_regulation non positive conc for reaction %d, regulation %ld, species %ld\n",rxn,i,species);
 	fflush(lfp);
       }
     }
@@ -98,7 +98,7 @@ int update_regulation (struct state_struct *state, int rxn,
       if (constant <=0) {
 	success = 0;
 	if (lfp) {
-	  fprintf(lfp,"update_regulation non positive regulation constant for reaction %d, regulation %lld\n",rxn,i);
+	  fprintf(lfp,"update_regulation non positive regulation constant for reaction %d, regulation %ld\n",rxn,i);
 	}
 	fflush(lfp);
       }

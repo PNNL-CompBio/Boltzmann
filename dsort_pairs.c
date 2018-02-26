@@ -5,7 +5,6 @@ void dsort_pairs(int n,double *list, double *sorted_pairs) {
     Sort pairs of doubles into ascending order, with result
     sorted pairs put into sorted_pairs.
   */
-  double temp;
   int i;
   int nm1;
   int n_odd;

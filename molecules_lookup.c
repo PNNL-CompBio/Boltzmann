@@ -37,7 +37,7 @@ int molecules_lookup(char *molecule_name, int compartment_index,
   char *molecule;
   int64_t *compartment_ptrs;
   int index;
-  int n;
+  int padi;
 
   int left_end;
   int right_end;

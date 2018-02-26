@@ -22,14 +22,11 @@ void boltzmann_size_jacobian(struct state_struct *state) {
   int64_t *rxn_ptrs;
   int64_t *molecules_indices;
 
-  int jacobian_choice;
   int ny;
+  int rowlen;
 
   int nrxns;
   int i;
-
-  int j;
-  int rowlen;
 
   int nnz;
   int nnzm;

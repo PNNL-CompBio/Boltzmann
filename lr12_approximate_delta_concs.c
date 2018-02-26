@@ -94,7 +94,7 @@ int lr12_approximate_delta_concs(struct state_struct *state,
   int j;
 
   int mi;
-  int ci;
+  int irfc;
 
   int k;
   int klim;
@@ -107,9 +107,6 @@ int lr12_approximate_delta_concs(struct state_struct *state,
 
   int compute_sensitivities;
   int ode_solver_choice;
-
-  int irfc;
-  int padi;
 
   FILE *lfp;
   FILE *efp;

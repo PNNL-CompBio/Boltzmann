@@ -50,8 +50,6 @@ int main(int argc, char **argv)
   struct state_struct *state;
   char *param_file_name;
   int success;
-  int j;
-  int print_concs;
   int padi;
   /*
 #ifdef LIBUNWIND

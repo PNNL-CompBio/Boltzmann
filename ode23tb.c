@@ -215,7 +215,7 @@ int ode23tb (struct state_struct *state, double *concs) {
   int need_new_m;
 
   int need_new_lu;
-  int i;
+  int padi;
 
   int jcurrent;
   int mcurrent;

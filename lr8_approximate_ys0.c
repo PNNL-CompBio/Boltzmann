@@ -105,4 +105,5 @@ int lr8_approximate_ys0(struct state_struct *state, double *ys0v,
     }
     ys0vi += ny; /* Caution address arithmetic */
   } /* end for i */
+  return(success);
 }

@@ -64,7 +64,6 @@ int sbml_process_list_of_compartments(FILE *sbml_fp,
   char *units;
   char bcf[8];
   char vc[8];
-  char *concs_file;
   char *bc;
   char *line;
   int64_t cmpt_pos;

@@ -9,7 +9,6 @@
 int main(int argc, char **argv)
 {
   double result;
-  double result2;
   double answer;
   double answer2;
   double two;

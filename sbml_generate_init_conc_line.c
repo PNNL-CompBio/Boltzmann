@@ -47,7 +47,6 @@ void sbml_generate_init_conc_line(struct sbml2bo_struct *state,
   struct t2js_struct *kg2js_data;
   struct t2js_struct *ms2js_data;
   double amt;
-  double default_recip_volume;
   char vc[8];
   char bspecies_c[1024];
   char bkegg_id_c[1024];
@@ -56,7 +55,6 @@ void sbml_generate_init_conc_line(struct sbml2bo_struct *state,
   char *translation;
   char *bspecies;
   char *bname;
-  char *tspecies;
   char *bkegg_id;
   char **spec_ids;
   char **translations;

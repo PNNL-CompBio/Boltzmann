@@ -80,21 +80,13 @@ int sbml_process_list_of_reactions(FILE *sbml_fp,
   char *rxn_id;
   char *rxn_name;
   char *units;
-  char **spec_ids;
-  char **translations;
   char *line;
   
   double delta_g0;
 
   int in_reaction_tag;
-  int padi;
-
   int in_list_of_reactions;
-  int in_list_of_reactants;
 
-  int in_list_of_products;
-  int in_kinetic_law;
-  
   int success;
   int rxn_count;
 
@@ -118,9 +110,6 @@ int sbml_process_list_of_reactions(FILE *sbml_fp,
 
   int nb;
   int ns;
-
-  int tl;
-  int tag;
 
   int max_key_len;
   int max_val_len;

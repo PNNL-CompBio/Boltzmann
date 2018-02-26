@@ -137,7 +137,7 @@ int rxn_map_run(struct state_struct *state,
   raw_path_count = 0;
   stack = (int64_t*)calloc(one_l,ask_for);
   if (stack == NULL) {
-    fprintf(stderr,"rxn_map_run: Could not allocate %lld bytes for stack\n",
+    fprintf(stderr,"rxn_map_run: Could not allocate %ld bytes for stack\n",
 	    ask_for);
     fflush(stderr);
     success = 0;
@@ -146,7 +146,7 @@ int rxn_map_run(struct state_struct *state,
     ask_for = num_reactions * ((int64_t)sizeof(sles));
     levels = (struct stack_level_elem_struct *)calloc(one_l,ask_for);
     if (levels == NULL) {
-      fprintf(stderr,"rxn_map_run: Could not allocate %lld bytes for levels\n",
+      fprintf(stderr,"rxn_map_run: Could not allocate %ld bytes for levels\n",
 	      ask_for);
       fflush(stderr);
       success = 0;
@@ -157,7 +157,7 @@ int rxn_map_run(struct state_struct *state,
     r_unmarked = (int64_t*)calloc(one_l,ask_for);
     if (r_unmarked == NULL) {
       fprintf(stderr,
-	      "rxn_map_run: Could not allocate %lld bytes for r_unmarked\n",
+	      "rxn_map_run: Could not allocate %ld bytes for r_unmarked\n",
 	      ask_for);
       fflush(stderr);
       success = 0;
@@ -168,7 +168,7 @@ int rxn_map_run(struct state_struct *state,
     terminal_reaction = (int64_t*)calloc(one_l,ask_for);
     if (terminal_reaction == NULL) {
       fprintf(stderr,
-      "rxn_map_run: Could not allocate %lld bytes for terminal_reaction\n",
+      "rxn_map_run: Could not allocate %ld bytes for terminal_reaction\n",
 	      ask_for);
       fflush(stderr);
       success = 0;
@@ -179,7 +179,7 @@ int rxn_map_run(struct state_struct *state,
     terminal_direction = (int64_t*)calloc(one_l,ask_for);
     if (terminal_direction == NULL) {
       fprintf(stderr,
-      "rxn_map_run: Could not allocate %lld bytes for terminal_direction\n",
+      "rxn_map_run: Could not allocate %ld bytes for terminal_direction\n",
 	      ask_for);
       fflush(stderr);
       success = 0;
@@ -345,15 +345,15 @@ int rxn_map_run(struct state_struct *state,
 	    rxn_i = stack[stack_pos];
 	    dxn_i = stack[stack_pos+1];
 	    if (dxn_i < 0) {
-	      fprintf(stdout,"-%lld\t",rxn_i);
+	      fprintf(stdout,"-%ld\t",rxn_i);
 	    } else {
-	      fprintf(stdout,"%lld\t",rxn_i);
+	      fprintf(stdout,"%ld\t",rxn_i);
 	    }
 	  }
 	  if (direction < 0) {
-	    fprintf(stdout,"-%lld\n",rxn_l);
+	    fprintf(stdout,"-%ld\n",rxn_l);
 	  } else {
-	    fprintf(stdout,"%lld\n",rxn_l);
+	    fprintf(stdout,"%ld\n",rxn_l);
 	  }
 	}
 	/*
@@ -410,7 +410,7 @@ int rxn_map_run(struct state_struct *state,
       } /* end else not the end of a level */
     } /* end while level */
   } /* end if allocate ws succeeded */
-  fprintf(stdout,"raw_path_count  = %lld\n",raw_path_count);
+  fprintf(stdout,"raw_path_count  = %ld\n",raw_path_count);
   fflush(stdout);
   return (success);
 }

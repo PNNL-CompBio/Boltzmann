@@ -37,7 +37,6 @@ int sbml_alloc1(struct sbml2bo_struct *state) {
   int64_t ask_for;
   int64_t one_l;
   int64_t trans_pos;
-  char *log_file;
   char *specid_2_json_strings;
   char **species_trans;
   char **sort_species_trans_scratch;

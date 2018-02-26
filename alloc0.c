@@ -264,7 +264,7 @@ int alloc0(struct state_struct **statep, int setup) {
     if (success) {
       ask_for = (int64_t)sizeof(ops);
       usage += ask_for;
-      state->ode23tb_params = (struct ode23tb_params_sruct *)calloc(one_l,ask_for);
+      state->ode23tb_params = (struct ode23tb_params_struct *)calloc(one_l,ask_for);
       if (state->ode23tb_params == NULL) {
 	fprintf(stderr,"alloc0: Error, unalbe to allocate %ld bytes for "
 		"ode23tb_params\n",ask_for);

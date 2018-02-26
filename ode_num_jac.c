@@ -102,7 +102,11 @@ int ode_num_jac(struct state_struct *state,
   int nrxns;
 
   int rowmax;
+#ifdef DBG
   int i;
+#else
+  int padi;
+#endif
 
   FILE *lfp;
   FILE *efp;

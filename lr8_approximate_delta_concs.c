@@ -87,7 +87,7 @@ int lr8_approximate_delta_concs(struct state_struct *state,
   int j;
 
   int mi;
-  int ci;
+  int padi;
 
   int k;
   int klim;
@@ -135,7 +135,7 @@ int lr8_approximate_delta_concs(struct state_struct *state,
   compute_sensitivities = state->compute_sensitivities;
   /*
     If we are using cvodes and computing sensitivites the 
-    call may be made with perturbed equiblrium constants (the sensitivity
+    call may be made with perturbed equilibrium constants (the sensitivity
     parameters), so take them from the cvodes_params vector.
   */
   if ((ode_solver_choice == 1) && compute_sensitivities) {

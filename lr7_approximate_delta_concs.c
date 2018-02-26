@@ -2,6 +2,7 @@
 #include "boltzmann_cvodes_headers.h"
 #include "cvodes_params_struct.h"
 
+#include "update_regulations.h"
 #include "lr7_approximate_delta_concs.h"
 
 int lr7_approximate_delta_concs(struct state_struct *state, 
@@ -14,7 +15,7 @@ int lr7_approximate_delta_concs(struct state_struct *state,
 
     Get reference from Bill Cannon
     Called by: approximate_delta_concs
-    Calls:     update_rxn_likelihoods
+    Calls:     update_regulations, fprintf, fflush
 
                                 TMF
     state                       *SI   Boltzmant state structure.
@@ -45,6 +46,7 @@ int lr7_approximate_delta_concs(struct state_struct *state,
   struct  compartment_struct *compartment;
   struct  molecules_matrix_struct *molecules_matrix;
   struct  reactions_matrix_struct *rxn_matrix;
+  double  *activities;
   double  *rfc;
   double  *ke;
   double  *rke;
@@ -91,6 +93,9 @@ int lr7_approximate_delta_concs(struct state_struct *state,
   int ode_solver_choice;
 
   int sum_coeff;
+  int use_regulation;
+
+  int count_or_conc;
   int padi;
 
   FILE *lfp;
@@ -102,10 +107,11 @@ int lr7_approximate_delta_concs(struct state_struct *state,
     Check that base_rxn is in range.
   */
   success = 1;
-  num_rxns = state->number_reactions;
-  num_species = state->nunique_molecules;
-  molecules   = state->sorted_molecules;
-  compartments = state->sorted_compartments;
+  num_rxns         = state->number_reactions;
+  num_species      = state->nunique_molecules;
+  molecules        = state->sorted_molecules;
+  activities       = state->activities;
+  compartments     = state->sorted_compartments;
   molecules_matrix = state->molecules_matrix;
   coeff_sum        = state->coeff_sum;
   molecules_ptrs   = molecules_matrix->molecules_ptrs;
@@ -120,6 +126,12 @@ int lr7_approximate_delta_concs(struct state_struct *state,
   rfc              = state->product_term;
   avogadro         = state->avogadro;
   recip_avogadro   = state->recip_avogadro;
+  use_regulation   = state->use_regulation;
+  /*
+    If we are using cvodes and computing sensitivites the 
+    call may be made with perturbed equilibrium constants (the sensitivity
+    parameters), so take them from the cvodes_params vector.
+  */
   ode_solver_choice = state->ode_solver_choice;
   compute_sensitivities = state->compute_sensitivities;
   if ((ode_solver_choice == 1) && compute_sensitivities) {
@@ -135,6 +147,14 @@ int lr7_approximate_delta_concs(struct state_struct *state,
   */
   flux_scaling     = 1.0;
   lfp      = state->lfp;
+  /*
+    As per discusion with Bill Cannon, we want to update the activities
+    if reguation is in play. So do that here.
+  */
+  if (use_regulation) {
+    count_or_conc = 0;
+    update_regulations(state,concs,count_or_conc);
+  }
   /*
     Compute the reaction flux contributions for each reaction:
 
@@ -205,8 +225,9 @@ int lr7_approximate_delta_concs(struct state_struct *state,
       NB. tp and tr will always be > 0 as thermo_adj > 0 and concs_mi >= 0;
       thermo_adj and 1/coefficients[j] could be precomputed, and stored
       as fields in the reaction and molecules matrices respectively.
+      NB if use_activities is not set activities[i] will be 1.0 for all i.
     */
-    rfc[i] = (ke[i] * keq_adj * (rt/tp)) - (rke[i] * rkeq_adj * (pt/tr));
+    rfc[i] = ((ke[i] * keq_adj * (rt/tp)) - (rke[i] * rkeq_adj * (pt/tr))) * activities[i];
   }
   if (success) {
     molecule = molecules;

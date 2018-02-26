@@ -38,8 +38,9 @@ int boltzmann_cvodes(struct state_struct *state, double *concs) {
     concs.
   */
   N_Vector y0;
+  /*
   N_Vector *ys0;
-  N_Vector *dys;
+  */
   double *drfc;
   double *dfdy_a;
   double *dfdy_at;

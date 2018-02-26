@@ -33,11 +33,14 @@ int sbml_find_string (char* string, char **strings, int num_strings) {
                sbml_process_species_reference_tag
   */
   int index;
-  int i;
   int left;
+
   int right;
   int mid;
+
   int crslt;
+  int padi;
+
   char *last;
   char *first;
   first = strings[0];

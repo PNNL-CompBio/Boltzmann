@@ -91,7 +91,9 @@ int lr8_approximate_jacobian(struct state_struct *state,
   double  tp;
   double  flklhd;
   double  rlklhd;
+  /*
   double  recip_coefficient;
+  */
   double  coeff;
   /*
   double  conc_mi;
@@ -137,7 +139,7 @@ int lr8_approximate_jacobian(struct state_struct *state,
   int mj;
 
   int ndfdy_pos;
-  int ns;
+  int padi;
 
   int ode_solver_choice;
   int compute_sensitivities;

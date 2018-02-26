@@ -69,7 +69,7 @@ void sbml_process_species_reference_tag(struct sbml2bo_struct *state,
   int trans_index;
 
   int num_species;
-  int pad;
+  int padi;
 
   num_species   = state->num_species;
   spec_ids     = state->spec_ids;

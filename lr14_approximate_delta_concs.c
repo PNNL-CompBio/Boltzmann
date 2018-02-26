@@ -71,7 +71,9 @@ int lr14_approximate_delta_concs(struct state_struct *state,
   double  recip_avogadro;
   double  fluxi;
   double  conc_mi;
+  /*
   double  count_mi;
+  */
   int64_t *molecules_ptrs;
   int64_t *rxn_indices;
   int64_t *coefficients;

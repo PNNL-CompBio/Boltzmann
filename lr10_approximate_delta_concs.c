@@ -88,7 +88,7 @@ int lr10_approximate_delta_concs(struct state_struct *state,
   int j;
 
   int mi;
-  int ci;
+  int padi;
 
   int k;
   int klim;

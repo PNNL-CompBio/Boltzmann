@@ -48,9 +48,11 @@ int bwarmup_run(struct state_struct *state) {
 	       print_counts
   */
   struct state_struct *nstate;
-  double dg_forward;
   double r_sum_likelihood;
+  /*
+  double dg_forward;
   double entropy;
+  */
   double *forward_rxn_likelihood;
   double *reverse_rxn_likelihood;
   double *current_counts;
@@ -83,9 +85,7 @@ int bwarmup_run(struct state_struct *state) {
   int64_t count_view_step;
   int64_t count_view_freq;
 
-  int64_t fe_view_step;
   int64_t fe_view_freq;
-
   int64_t use_deq;
 
   int success;
@@ -100,11 +100,8 @@ int bwarmup_run(struct state_struct *state) {
   int print_output;
   int noop_rxn;
 
-  int rxn_no;
   int j;
-
   int step;
-  int padi;
 
   FILE *lfp;
   success = 1;

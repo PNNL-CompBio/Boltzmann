@@ -100,7 +100,7 @@ int print_reactions_view(struct state_struct *state) {
       Print out the number of times no reaction was chosen and its likelihoods.
       Skipping the net reaction fire and activities fields.
     */
-    fprintf(rxn_view_fp," No Reaction\t0<=>0\t%lld\t\t",rxn_fire[nrxns+nrxns]);
+    fprintf(rxn_view_fp," No Reaction\t0<=>0\t%ld\t\t",rxn_fire[nrxns+nrxns]);
     for(k=0;k<rxn_view_hist_length;k++) {
       fprintf(rxn_view_fp,"\t1.0");
     }
@@ -154,7 +154,7 @@ int print_reactions_view(struct state_struct *state) {
 	Print out the rxn fire count.
       */
       net_fire = rxn_fire[rxns] - rxn_fire[rxns+nrxns];
-      fprintf(rxn_view_fp,"\t%lld\t%lld",rxn_fire[rxns],net_fire);
+      fprintf(rxn_view_fp,"\t%ld\t%ld",rxn_fire[rxns],net_fire);
       /*
 	Print out the rxn activity level.
       */
@@ -210,7 +210,7 @@ int print_reactions_view(struct state_struct *state) {
 	Print out the reverse rxn_fire count.
       */
       net_fire = -net_fire;
-      fprintf(rxn_view_fp,"\t%lld\t%lld",rxn_fire[nrxns+rxns],net_fire);
+      fprintf(rxn_view_fp,"\t%ld\t%ld",rxn_fire[nrxns+rxns],net_fire);
       /*
 	Print out the rxn activity level.
       */

@@ -23,14 +23,14 @@ void print_rxn_choice(struct state_struct *state,
     forward_rxn_likelihood = state->forward_rxn_likelihood;
     reverse_rxn_likelihood = state->reverse_rxn_likelihood;
     if (rxn_choice == noop_rxn) {
-      fprintf(lfp,"reaction_choice: %lld\tnone\n",iter);
+      fprintf(lfp,"reaction_choice: %ld\tnone\n",iter);
     } else {
       if (rxn_choice < number_reactions) {
-	fprintf(lfp,"%lld\t%d\t%le\t%le\n",iter,rxn_choice,forward_rxn_likelihood[rxn_choice],
+	fprintf(lfp,"%ld\t%d\t%le\t%le\n",iter,rxn_choice,forward_rxn_likelihood[rxn_choice],
 		reverse_rxn_likelihood[rxn_choice]);
       } else {
 	rxn_no = rxn_choice - number_reactions;
-	fprintf(lfp,"%lld\t%d\t%le\t%le\n",iter,rxn_choice,reverse_rxn_likelihood[rxn_no],
+	fprintf(lfp,"%ld\t%d\t%le\t%le\n",iter,rxn_choice,reverse_rxn_likelihood[rxn_no],
 		forward_rxn_likelihood[rxn_no]);
       }
     }

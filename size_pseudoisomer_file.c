@@ -75,7 +75,7 @@ int size_pseudoisomer_file(struct state_struct *state,
       success = 0;
     } else {
       fgets(command,buff_len,dg0f_size_fp);
-      ns = sscanf(command,"%lld %lld %lld",&lc,&wc,&cc);
+      ns = sscanf(command,"%ld %ld %ld",&lc,&wc,&cc);
       if (ns !=3) {
 	fprintf(stderr,
 		"size_pseudoisomer_file: Error, reading output of wc command\n");
