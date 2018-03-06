@@ -180,6 +180,7 @@ int lr7_approximate_delta_concs(struct state_struct *state,
     rt = 1.0;
     tr = 1.0;
     tp = 1.0;
+    sum_coeff = 0;
     for (j=rxn_ptrs[i];j<rxn_ptrs[i+1];j++) {
       mi = molecule_indices[j];
       molecule = (struct molecule_struct *)&molecules[mi];
@@ -188,6 +189,7 @@ int lr7_approximate_delta_concs(struct state_struct *state,
       recip_volume = compartment->recip_volume;
       volume       = compartment->volume;
       klim = rcoefficients[j];
+      sum_coeff += klim;
       thermo_adj = abs(klim) * recip_volume * recip_avogadro;
       conc_mi = concs[mi];
       if (klim < 0) {
@@ -207,7 +209,9 @@ int lr7_approximate_delta_concs(struct state_struct *state,
     keq_adj = 1.0;
     rkeq_adj = 1.0;
     multiplier = 1.0;
+    /*
     sum_coeff = coeff_sum[i];
+    */
     if (sum_coeff > 0) {
       multiplier = recip_volume * recip_avogadro;
     } else {
@@ -220,7 +224,9 @@ int lr7_approximate_delta_concs(struct state_struct *state,
       keq_adj *= multiplier;
     }
     rkeq_adj = 1.0/keq_adj;
-
+    /*
+    fprintf(stderr,"for reaction %d keq_adj = %le", i,keq_adj);
+    */
     /*
       NB. tp and tr will always be > 0 as thermo_adj > 0 and concs_mi >= 0;
       thermo_adj and 1/coefficients[j] could be precomputed, and stored
@@ -228,6 +234,9 @@ int lr7_approximate_delta_concs(struct state_struct *state,
       NB if use_activities is not set activities[i] will be 1.0 for all i.
     */
     rfc[i] = ((ke[i] * keq_adj * (rt/tp)) - (rke[i] * rkeq_adj * (pt/tr))) * activities[i];
+    /*
+    fprintf(stderr,"Rxn %d: KQ = %e K = %e  Q^-1 = %e  keq_adj = %e  activities = %e\n", i, rfc[i], ke[i], rt/tp, keq_adj, activities[i]);
+    */
   }
   if (success) {
     molecule = molecules;
