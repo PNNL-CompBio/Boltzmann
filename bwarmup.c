@@ -23,21 +23,8 @@ specific language governing permissions and limitations under the License.
 #include "boltzmann_structs.h"
 
 /*
-  Maybe only for linux systems.
-#ifdef LIBUNWIND
-#include <libunwind.h>
-#include <unwind.h>
-#include "luwtb.h"
-#endif
-*/
-
-#ifdef TIMING_ON
-struct timing_struct timing_data;
-#endif
-
-/*
-*/
 #define BOLTZMANN_DBG 1
+*/
 #include "boltzmann_init.h"
 #include "bwarmup_run.h"
 int main(int argc, char **argv)
@@ -51,30 +38,15 @@ int main(int argc, char **argv)
   char *param_file_name;
   int success;
   int padi;
-  /*
-#ifdef LIBUNWIND
-#include "luwtb1.h"
-#endif
-#ifdef LIBUNWIND
-#include "luwtb2.h"
-#endif
-  */
-  TIMING_INIT("./timingi.h");
-  TIMING_START(TOTAL_TIME);
-  TIMING_START(INITIALIZE);
   if (argc > 1) {
     param_file_name = argv[1];
   } else {
     param_file_name = NULL;
   }
   success = boltzmann_init(param_file_name,&state);
-  TIMING_STOP(INITIALIZE);
   if (success) {
     state->print_ode_concs = 1;
     success = bwarmup_run(state);
   }
-  TIMING_STOP(TOTAL_TIME);
-  TIMING_PRINT(stdout);
-  fflush(stdout);
   exit(0);
 }

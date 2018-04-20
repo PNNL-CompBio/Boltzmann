@@ -18,4 +18,3 @@ CFLAGS = $(NO_OPT_FLAGS) $(SUNDIALS_INCS)
 DCFLAGS = $(CFLAGS) 
 
 LFLAGS = -g 
-include Makefile.notiming

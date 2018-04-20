@@ -1,4 +1,6 @@
-William Cannon <william.cannon@pnnl.gov>
-Douglas Baxter <douglas.baxter@pnnl.gov>
-David Brown <david.brown@pnnl.gov>
-Dennis Thomas <dennis.thomas@pnnl.gov>
+William Cannon <william.cannon@pnnl.gov> statistical thermodynamics
+Douglas Baxter <douglas.baxter@pnnl.gov>  main coder
+David Brown <david.brown@pnnl.gov>  autoconf pieces
+Dennis Thomas <dennis.thomas@pnnl.gov> pseudoisomer data file
++MATLAB ode23tb translation, and 
+SUNDIALS package.

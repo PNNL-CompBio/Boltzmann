@@ -25,20 +25,8 @@ specific language governing permissions and limitations under the License.
 */
 #include "system_includes.h"
 /*
-  Maybe only for linux systems.
-*/
-#ifdef LIBUNWIND
-#include <libunwind.h>
-#include <unwind.h>
-#endif
-
-#include "djb_timing_b.h"
-/*
   Data structures include files.
 */
-#include "super_state_struct.h"
-#include "boot_state_struct.h"
-#include "super_state_pointers_struct.h"
 #include "state_struct.h"
 #include "reaction_struct.h"
 #include "reactions_matrix_struct.h"

@@ -21,24 +21,10 @@ CONDITIONS OF ANY KIND, either express or implied. See the License for the
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
 #include "boltzmann_structs.h"
-/*
-  Maybe only for linux systems.
-*/
-#ifdef LIBUNWIND
-#include <libunwind.h>
-#include <unwind.h>
-#endif
 
-#ifdef TIMING_ON
-struct timing_struct timing_data;
-#endif
-
-#ifdef LIBUNWIND
-#include "luwtb.h"
-#endif
 /*
-*/
 #define BOLTZMANN_DBG 1
+*/
 #include "boltzmann_init.h"
 #include "boltzmann_build_agent_data_block.h"
 #include "boltzmann_run.h"
@@ -57,15 +43,6 @@ int main(int argc, char **argv)
   int success;
   int padi;
 
-#ifdef LIBUNWIND
-#include "luwtb1.h"
-#endif
-#ifdef LIBUNWIND
-#include "luwtb2.h"
-#endif
-  TIMING_INIT("./timingi.h");
-  TIMING_START(TOTAL_TIME);
-  TIMING_START(INITIALIZE);
   if (argc > 1) {
     param_file_name = argv[1];
   } else {
@@ -75,7 +52,6 @@ int main(int argc, char **argv)
   if (success) {
     boltzmann_build_agent_data_block(state,&agent_data);
   }
-  TIMING_STOP(INITIALIZE);
   if (success) {
     success = boltzmann_run(state,agent_data);
   }
@@ -88,8 +64,5 @@ int main(int argc, char **argv)
       success = print_restart_file(state);
     }
   }
-  TIMING_STOP(TOTAL_TIME);
-  TIMING_PRINT(stdout);
-  fflush(stdout);
   exit(0);
 }

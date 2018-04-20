@@ -5,8 +5,8 @@ To build
 3.  ./configure
 4.  make 
 
-builds a libboltzmann.a library and boltzmann and boltzmann_boot_test 
-executables files.
+builds a libboltzmann.a library and boltzmann executable.
+
 
 -----
 INTERFACE ROUTINES in the library are called:

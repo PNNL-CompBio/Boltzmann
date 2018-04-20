@@ -15,8 +15,6 @@
 int run_init(struct state_struct *state) {
 /*
     Initialize the activities and the random number generator,
-    pack the state into a new state variable, flattened_state,
-    and free the fields of the boot state.
     
     Called by: boltzmann_init_core, 
     Calls:     vgrng_init,
@@ -79,8 +77,7 @@ int run_init(struct state_struct *state) {
     }
   }
   /*
-    Allocate work space vectors, this used to happen automagically in
-    flatten state.
+    Allocate work space vectors, 
   */
   if (success) {
     if (state->use_deq) {
@@ -107,14 +104,5 @@ int run_init(struct state_struct *state) {
       }
     }
   }
-  /*
-  stateq  = NULL;
-  state->workspace_base = NULL;
-  success = flatten_state(state,&stateq);
-  *flattened_state = stateq;
-  if (success) {
-    success = free_boot_state2(state);
-  }
-  */
   return(success);
 }

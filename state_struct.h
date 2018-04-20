@@ -480,10 +480,6 @@ struct state_struct {
 
   FILE *dfdke_fp;
   FILE *dfdmu0_fp;
-  /*
-    Instrumentation.     
-  */
-  struct timing_struct *timing_data;
 }
 ;
 #endif

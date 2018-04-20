@@ -1,5 +1,5 @@
 
-AC_INIT([sss],[0.1],[douglas.baxter@pnl.gov])
+AC_INIT([sss],[0.1],[douglas.baxter@pnnl.gov])
 AC_CONFIG_SRCDIR([configure.ac])
 
 AM_INIT_AUTOMAKE

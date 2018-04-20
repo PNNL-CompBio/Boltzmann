@@ -37,15 +37,6 @@ specific language governing permissions and limitations under the License.
 #include <sys/stat.h>
 #include <fcntl.h>
 /*
-  Maybe only for linux systems.
-*/
-#ifdef LIBUNWIND
-#include <libunwind.h>
-#include <unwind.h>
-#endif
-
-#include "djb_timing_b.h"
-/*
   Data structures include files.
 */
 #include "state_struct.h"
