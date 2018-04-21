@@ -1,0 +1,1003 @@
+total 84584
+
+-rwx------   1 dbaxter users  3362149 Oct 23 10:44 pseudoisomer_dg0f.txt
+This file belongs in a data subdirectory, auxilliary data file needed by
+boltzmann, specified by the PSEUDO_ISOMER file in read_params.c
+read_params.c is also where its default is specified.
+
+-rw-------   1 dbaxter users   891066 Jan  2 17:30 modelseed_2_json.srt
+-rw-------   1 dbaxter users   139937 Jan  2 17:30 modelseed_json_mismatches
+-rw-------   1 dbaxter users    80074 Jan  2 17:30 modelseed_ids_wo_keg_ids.txt
+-rw-------   1 dbaxter users   371175 Jan  2 17:30 kegg_2_json.srt
+Should probalby goin in a data subdirectory
+
+-rw-------   1 dbaxter users    37473 Jan  2 17:28 svn_files.txt
+-rw-------   1 dbaxter users   185637 Jan  2 17:28 svn_triples.txt
+-rw-------   1 dbaxter users   185637 Jan  2 17:28 svn_triples.srt
+The above three files are leftovers from the conversion to git
+
+
+-rw-------   1 dbaxter users     9498 Jan  2 17:29 INSTALL.old
+This file is the autogen version of INSTALL.
+
+-rw-------   1 dbaxter users      156 Jan  2 17:29 AUTHORS
+
+-rw-------   1 dbaxter users      993 Jan  2 17:29 LICENSE
+Reference  to the ECL-2.0_LICENSE_TERMS.TXT needs a citation in it though,
+and should be linked in from the src directory as well.
+
+-rw-------   1 dbaxter users      158 Jan  2 17:29 Makefile.mmap
+-rw-------   1 dbaxter users       26 Jan  2 17:29 Makefile.no_mmap
+-rw-------   1 dbaxter users       42 Jan  2 17:29 Makefile.no_timing
+-rw-------   1 dbaxter users       42 Jan  2 17:29 Makefile.notiming
+-rw-------   1 dbaxter users     1537 Jan  2 17:29 Makefile.timing
+These Makefiles are not used, remove them, the mmap and no_mmap files were
+things from scalablast.
+
+-rw-------   1 dbaxter users      481 Jan  2 17:29 boltzmann.log
+-rw-------   1 dbaxter users      711 Jan  2 17:29 bz.log
+-rw-------   1 dbaxter users      742 Jan  2 17:29 concs.in.old
+-rw-------   1 dbaxter users   212493 Feb 26 10:00 make.log
+-rw-------   1 dbaxter users     9161 Feb 22 14:56 config.log
+-rw-------   1 dbaxter users     5419 Feb 26 10:50 ci.msg
+should not be part of the repo.
+
+
+
+-rw-------   1 dbaxter users     2036 Jan  2 17:31 rxn_map.c
+-rw-------   1 dbaxter users    13566 Feb 26 09:32 rxn_map_run.c
+-rw-------   1 dbaxter users     1140 Jan  2 17:31 rxn_map_run.h
+
+-rw-------   1 dbaxter users     8029 Jan  2 17:31 rxn_map_init.c
+-rw-------   1 dbaxter users     1133 Jan  2 17:31 rxn_map_init.h
+
+-rw-------   1 dbaxter users     4432 Jan  2 17:31 rxn_map_parse_start_stop_line.c
+-rw-------   1 dbaxter users     1119 Jan  2 17:29 rxn_map_parse_start_stop_line.h
+
+-rwx------   1 dbaxter users      145 Jan  2 17:29 rxn_map.in
+# rxn_map stuff needs to move off somewhere else.
+
+
+
+
+-rw-------   1 dbaxter users     2843 Jan  2 17:29 luwtb.h
+-rw-------   1 dbaxter users     1664 Jan  2 17:29 luwtb1.h
+-rw-------   1 dbaxter users     1538 Jan  2 17:29 luwtb2.h
+The above moved to ~/tools/libunwind
+
+
+-rw-------   1 dbaxter users     4789 Jan  2 17:29 central_carbon_pwys_names_edited_dg_std.dat
+-rwx------   1 dbaxter users     4974 Jan  2 17:29 calvin.dat
+-rw-------   1 dbaxter users     1340 Jan  2 17:29 test.dat
+-rw-------   1 dbaxter users      198 Jan  2 17:29 boltzmann.in
+-rw-------   1 dbaxter users      316 Jan  2 17:29 tca-reductive.in
+-rw-------   1 dbaxter users      455 Jan  2 17:29 tca-reductive_concs.in
+-rw-------   1 dbaxter users     1564 Jan  2 17:29 tca.dat
+-rw-------   1 dbaxter users      304 Jan  2 17:29 tca.in
+-rw-------   1 dbaxter users      310 Jan  2 17:29 tca_concs.in
+-rw-------   1 dbaxter users      198 Jan  2 17:29 test.in
+-rw-------   1 dbaxter users      287 Jan  2 17:29 test_conc.in
+-rw-------   1 dbaxter users      384 Jan  2 17:29 tca_concs_redox1-2.in
+-rw-------   1 dbaxter users      416 Jan  2 17:29 tca_concs_redox1-2v2.in
+-rw-------   1 dbaxter users      186 Jan  2 17:29 schlogl_extended_concs.in
+-rw-------   1 dbaxter users      287 Jan  2 17:29 concs.in
+-rwx------   1 dbaxter users      229 Jan  2 17:29 calvin.in
+-rwx------   1 dbaxter users      876 Jan  2 17:29 calvin_conc.in
+-rw-------   1 dbaxter users      147 Jan  2 17:29 schlogl_extended.in
+-rw-------   1 dbaxter users      512 Jan  2 17:30 coupledenzyme.dat
+-rw-------   1 dbaxter users      230 Jan  2 17:30 coupledenzyme_concs.in
+-rw-------   1 dbaxter users      718 Jan  2 17:30 coupledenzyme.in
+-rw-------   1 dbaxter users      583 Jan  2 17:30 ce2.dat
+-rw-------   1 dbaxter users      254 Jan  2 17:30 ce2_concs.in
+-rw-------   1 dbaxter users      618 Jan  2 17:30 ce2.in
+-rwx------   1 dbaxter users    10557 Jan  4 16:18 yarrowia_itaconate.dat
+-rw-r--r--   1 dbaxter users  3384320 Jan  4 16:51 yarrowia2.tar
+-rw-------   1 dbaxter users     2692 Jan  4 16:54 yarrowia_itaconate_reg.rstrt.orig
+-rw-------   1 dbaxter users     1611 Feb 22 15:32 tca_redox1-2.dat
+-rw-------   1 dbaxter users     1072 Feb 26 09:18 tca_redox1-2.echo
+-rw-------   1 dbaxter users      505 Feb 26 09:18 tca_redox1-2.dict
+-rw-------   1 dbaxter users      537 Feb 26 09:18 tca_redox1-2.dg0ke
+-rw-------   1 dbaxter users      104 Feb 26 09:18 tca_redox1-2.ode_bflux
+-rw-------   1 dbaxter users       61 Feb 26 09:18 tca_redox1-2.nlklhd
+-rw-------   1 dbaxter users      115 Feb 26 09:18 tca_redox1-2.nl_flux
+-rw-------   1 dbaxter users      802 Feb 26 09:18 tca_redox1-2.mat
+-rw-------   1 dbaxter users      802 Feb 26 09:18 tca_redox1-2.amat
+-rw-------   1 dbaxter users    44751 Feb 26 09:18 tca_redox1-2.ode_lklhd
+-rw-------   1 dbaxter users    66880 Feb 26 09:18 tca_redox1-2.ode_dconcs
+-rw-------   1 dbaxter users    56724 Feb 26 09:18 tca_redox1-2.ode_counts
+-rw-------   1 dbaxter users    56724 Feb 26 09:18 tca_redox1-2.ode_concs
+-rw-------   1 dbaxter users     3316 Feb 26 09:18 tca_redox1-2.dfdmu0
+-rw-------   1 dbaxter users     1218 Feb 26 09:18 tca_redox1-2.dfdke
+-rw-------   1 dbaxter users      522 Feb 26 09:18 tca_redox1-2.rstrt
+-rw-------   1 dbaxter users    40351 Feb 26 09:18 tca_redox1-2.log
+-rw-------   1 dbaxter users   186904 Feb 26 09:18 tca_redox1-2.view
+-rw-------   1 dbaxter users   212267 Feb 26 09:18 tca_redox1-2.lklhd
+-rw-------   1 dbaxter users      227 Feb 26 09:18 tca_redox1-2.flux
+-rw-------   1 dbaxter users   239006 Feb 26 09:18 tca_redox1-2.count
+-rw-------   1 dbaxter users   239002 Feb 26 09:18 tca_redox1-2.concs
+-rw-------   1 dbaxter users      533 Jan  5 10:45 tca_redox1-2.in
+-rwx------   1 dbaxter users      699 Jan  5 11:06 yarrowia_itaconate_reg.in
+-rw-------   1 dbaxter users    10347 Jan  5 11:07 yarrowia_itaconate_reg.echo
+-rw-------   1 dbaxter users     2716 Jan  5 11:07 yarrowia_itaconate_reg.dict
+-rw-------   1 dbaxter users    11697 Jan  5 11:07 yarrowia_itaconate_reg.mat
+-rw-------   1 dbaxter users     4469 Jan  5 11:07 yarrowia_itaconate_reg.dg0ke
+-rw-------   1 dbaxter users      514 Jan  5 11:07 yarrowia_itaconate_reg.ode_bflux
+-rw-------   1 dbaxter users      419 Jan  5 11:07 yarrowia_itaconate_reg.nlklhd
+-rw-------   1 dbaxter users      525 Jan  5 11:07 yarrowia_itaconate_reg.nl_flux
+-rw-------   1 dbaxter users 13392327 Jan  5 11:07 yarrowia_itaconate_reg.ode_lklhd
+-rw-------   1 dbaxter users  8634741 Jan  5 11:07 yarrowia_itaconate_reg.ode_dconcs
+-rw-------   1 dbaxter users  8582365 Jan  5 11:07 yarrowia_itaconate_reg.ode_counts
+-rw-------   1 dbaxter users  8582365 Jan  5 11:07 yarrowia_itaconate_reg.ode_concs
+-rw-------   1 dbaxter users     9143 Jan  5 11:07 yarrowia_itaconate_reg.view
+-rw-------   1 dbaxter users     2692 Jan  5 11:07 yarrowia_itaconate_reg.rstrt
+-rw-------   1 dbaxter users    29311 Jan  5 11:07 yarrowia_itaconate_reg.log
+-rw-------   1 dbaxter users     2401 Jan  5 11:07 yarrowia_itaconate_reg.lklhd
+-rw-------   1 dbaxter users      842 Jan  5 11:07 yarrowia_itaconate_reg.flux
+-rw-------   1 dbaxter users     4903 Jan  5 11:07 yarrowia_itaconate_reg.count
+-rw-------   1 dbaxter users     4899 Jan  5 11:07 yarrowia_itaconate_reg.concs
+data file maybe should go into examples directory.
+
+
+-rw-------   1 dbaxter users    16343 Jan  2 17:29 state_simulation_schlogl.m
+Not clear what this is, maybe an example, input to something else?
+
+
+-rw-------   1 dbaxter users     2521 Jan  2 17:29 djb_timing.h
+-rw-------   1 dbaxter users     2926 Jan  2 17:29 djb_timing_b.h
+-rw-------   1 dbaxter users     1995 Jan  2 17:29 djb_timing_reset.c
+-rw-------   1 dbaxter users     3461 Jan  2 17:29 djb_timing_start.c
+-rw-------   1 dbaxter users     3545 Jan  2 17:29 djb_timing_stop.c
+-rw-------   1 dbaxter users      144 Jan  2 17:29 timingi.h
+-rw-------   1 dbaxter users      112 Jan  2 17:29 timingii.h
+-rw-------   1 dbaxter users      577 Jan  2 17:29 itc_clock.c
+-rw-------   1 dbaxter users       81 Jan  2 17:30 itc_clock.h
+-rwx------   1 dbaxter users      427 Jan  2 17:29 build_fptimingi.pl
+-rwx------   1 dbaxter users      419 Jan  2 17:29 build_timingi.pl
+The above removed to ~/tools/djb_time/boltzmann
+
+
+-rw-------   1 dbaxter users       71 Jan  2 17:29 boot.in
+-rw-------   1 dbaxter users       48 Jan  2 17:29 boot.lis
+-rw-------   1 dbaxter users       76 Jan  2 17:29 boltzmann_boot.in
+
+-rw-------   1 dbaxter users     4896 Jan  2 17:29 super_state_struct.h
+-rw-------   1 dbaxter users     2567 Jan  2 17:29 super_state_pointers_struct.h
+
+-rw-------   1 dbaxter users     1808 Jan  2 17:29 size_file.c
+-rw-------   1 dbaxter users     1053 Jan  2 17:29 size_file.h
+
+-rw-------   1 dbaxter users     8416 Feb 21 16:37 boltzmann_free_state.c
+-rw-------   1 dbaxter users      136 Jan  2 17:31 boltzmann_free_state.h
+
+-rw-------   1 dbaxter users     5124 Jan  2 17:30 boltzmann_boot_check.c
+-rw-------   1 dbaxter users     1094 Jan  2 17:29 boltzmann_boot_check.h
+
+-rw-------   1 dbaxter users     2589 Jan  2 17:29 boltzmann_rep_state_i.c
+-rw-------   1 dbaxter users     1130 Jan  2 17:29 boltzmann_rep_state_i.h
+
+
+-rw-------   1 dbaxter users     1319 Jan  2 17:29 boltzmann_global_molecule_count.c
+-rw-------   1 dbaxter users     1103 Jan  2 17:29 boltzmann_global_molecule_count.h
+
+-rw-------   1 dbaxter users     1941 Jan  2 17:29 boltzmann_length_state_i.c
+-rw-------   1 dbaxter users     1111 Jan  2 17:29 boltzmann_length_state_i.h
+
+-rw-------   1 dbaxter users     1438 Jan  2 17:29 boltzmann_size_superstate.c
+-rw-------   1 dbaxter users     1091 Jan  2 17:29 boltzmann_size_superstate.h
+
+-rw-------   1 dbaxter users     1452 Jan  2 17:29 boltzmann_number_of_reaction_files.c
+-rw-------   1 dbaxter users     1105 Jan  2 17:29 boltzmann_number_of_reaction_files.h
+
+-rw-------   1 dbaxter users     1857 Jan  2 17:29 boltzmann_load.c
+-rw-------   1 dbaxter users     1100 Jan  2 17:29 boltzmann_load.h
+
+-rw-------   1 dbaxter users     9475 Jan  2 17:31 boltzmann_boot.c
+-rw-------   1 dbaxter users     1096 Jan  2 17:29 boltzmann_boot.h
+
+-rw-------   1 dbaxter users     2671 Jan  2 17:30 boltzmann_mmap_superstate.c
+-rw-------   1 dbaxter users     1159 Jan  2 17:29 boltzmann_mmap_superstate.h
+
+-rw-------   1 dbaxter users     2020 Jan  2 17:29 boltzmann_boot_test.c
+
+-rw-------   1 dbaxter users     1491 Jan  2 17:29 boltzmann_max_local_state_size.c
+-rw-------   1 dbaxter users     1101 Jan  2 17:29 boltzmann_max_local_state_size.h
+
+-rw-------   1 dbaxter users     2729 Jan  2 17:29 boltzmann_global_to_local_concs.c
+-rw-------   1 dbaxter users     1172 Jan  2 17:29 boltzmann_global_to_local_concs.h
+
+-rw-------   1 dbaxter users     2801 Jan  2 17:29 boltzmann_local_to_global_concs.c
+-rw-------   1 dbaxter users     1172 Jan  2 17:29 boltzmann_local_to_global_concs.h
+
+-rw-------   1 dbaxter users     2696 Jan  2 17:30 boltzmann_global_to_local_counts.c
+-rw-------   1 dbaxter users     1174 Jan  2 17:29 boltzmann_global_to_local_counts.h
+
+-rw-------   1 dbaxter users     2768 Jan  2 17:30 boltzmann_local_to_global_counts.c
+-rw-------   1 dbaxter users     1174 Jan  2 17:29 boltzmann_local_to_global_counts.h
+
+-rw-------   1 dbaxter users     2703 Jan  2 17:30 boltzmann_global_to_local_fluxes.c
+-rw-------   1 dbaxter users     1176 Jan  2 17:29 boltzmann_global_to_local_fluxes.h
+
+-rw-------   1 dbaxter users     2711 Jan  2 17:30 boltzmann_local_to_global_fluxes.c
+-rw-------   1 dbaxter users     1176 Jan  2 17:29 boltzmann_local_to_global_fluxes.h
+
+-rw-------   1 dbaxter users     3089 Jan  2 17:29 flatten_super_state.c
+-rw-------   1 dbaxter users     1137 Jan  2 17:29 flatten_super_state.h
+
+-rw-------   1 dbaxter users    28865 Jan  2 17:31 flatten_state.c
+-rw-------   1 dbaxter users     1096 Jan  2 17:29 flatten_state.h
+
+-rw-------   1 dbaxter users     2015 Jan  2 17:30 free_boot_state.c
+-rw-------   1 dbaxter users     1057 Jan  2 17:29 free_boot_state.h
+
+-rw-------   1 dbaxter users     5667 Jan  2 17:31 free_boot_state2.c
+-rw-------   1 dbaxter users     1057 Jan  2 17:30 free_boot_state2.h
+
+-rw-------   1 dbaxter users     2158 Jan  2 17:32 boltzmann_flatten_alloc.c
+-rw-------   1 dbaxter users      252 Jan  2 17:31 boltzmann_flatten_alloc.h
+
+-rw-------   1 dbaxter users     5333 Jan  2 17:32 boltzmann_flatten_alloc1.c
+-rw-------   1 dbaxter users      148 Jan  2 17:31 boltzmann_flatten_alloc1.h
+
+-rw-------   1 dbaxter users      250 Jan  2 17:31 boltzmann_flatten_scalars.h
+-rw-------   1 dbaxter users    16055 Jan  2 17:32 boltzmann_flatten_scalars.c
+
+-rw-------   1 dbaxter users     2744 Jan  2 17:31 boltzmann_flatten_oneway_data.c
+-rw-------   1 dbaxter users      232 Jan  2 17:31 boltzmann_flatten_oneway_data.h
+
+-rw-------   1 dbaxter users     4970 Jan  2 17:31 boltzmann_flatten_reactions.c
+-rw-------   1 dbaxter users      263 Jan  2 17:31 boltzmann_flatten_reactions.h
+
+-rw-------   1 dbaxter users     2352 Jan  2 17:31 boltzmann_flatten_molecules.c
+-rw-------   1 dbaxter users      260 Jan  2 17:31 boltzmann_flatten_molecules.h
+
+-rw-------   1 dbaxter users     3006 Jan  2 17:31 boltzmann_flatten_compartments.c
+-rw-------   1 dbaxter users      253 Jan  2 17:31 boltzmann_flatten_compartments.h
+
+-rw-------   1 dbaxter users      246 Jan  2 17:31 boltzmann_flatten_rmatrix.h
+-rw-------   1 dbaxter users     3474 Jan  2 17:32 boltzmann_flatten_rmatrix.c
+
+-rw-------   1 dbaxter users      246 Jan  2 17:31 boltzmann_flatten_mmatrix.h
+-rw-------   1 dbaxter users     2662 Jan  2 17:32 boltzmann_flatten_mmatrix.c
+
+-rw-------   1 dbaxter users     7297 Feb 22 15:15 boltzmann_flatten_oneway_vecs.c
+-rw-------   1 dbaxter users      226 Jan  2 17:31 boltzmann_flatten_oneway_vecs.h
+
+-rw-------   1 dbaxter users      232 Jan  2 17:31 boltzmann_flatten_twoway_data.h
+-rw-------   1 dbaxter users     4962 Jan  2 17:32 boltzmann_flatten_twoway_data.c
+
+-rw-------   1 dbaxter users     1530 Jan  2 17:31 boltzmann_load_aux_data.c
+-rw-------   1 dbaxter users      170 Jan  2 17:31 boltzmann_load_aux_data.h
+
+-rw-------   1 dbaxter users     1261 Jan  2 17:32 boltzmann_flatten_aux_name.c
+-rw-------   1 dbaxter users      257 Jan  2 17:31 boltzmann_flatten_aux_name.h
+
+-rw-------   1 dbaxter users     4177 Jan  2 17:31 boltzmann_flatten_state.c
+-rw-------   1 dbaxter users      208 Jan  2 17:31 boltzmann_flatten_state.h
+
+-rw-------   1 dbaxter users      257 Jan  2 17:31 boltzmann_flatten_external.h
+-rw-------   1 dbaxter users     2408 Jan  2 17:31 boltzmann_flatten_external.c
+
+-rw-------   1 dbaxter users     1508 Jan  2 17:31 boltzmann_save_aux_data.c
+-rw-------   1 dbaxter users      165 Jan  2 17:31 boltzmann_save_aux_data.h
+
+-rw-------   1 dbaxter users     1973 Jan  2 17:31 boltzmann_save_state.c
+-rw-------   1 dbaxter users      188 Jan  2 17:31 boltzmann_save_state.h
+
+-rw-------   1 dbaxter users     1900 Jan  2 17:31 boltzmann_load_state.c
+-rw-------   1 dbaxter users      192 Jan  2 17:31 boltzmann_load_state.h
+
+
+-rw-------   1 dbaxter users    10791 Jan  2 17:31 boltzmann_flatten_aux_data.c
+-rw-------   1 dbaxter users      205 Jan  2 17:31 boltzmann_flatten_aux_data.h
+
+-rw-------   1 dbaxter users     4536 Jan  2 17:31 boltzmann_test_save_load.c
+
+
+These  should move to a separate biocellion directory
+
+
+-rw-------   1 dbaxter users      780 Jan  2 17:29 thoughts
+This should be up one from the git repo
+
+
+-rw-------   1 dbaxter users     2163 Jan  2 17:29 boltzmann_drv.c
+-rw-------   1 dbaxter users     1059 Jan  2 17:29 boltzmann_run_sim.h
+-rw-------   1 dbaxter users     8267 Jan  2 17:29 boltzmann_run_sim.c
+These are dperecated but should mobe to an old directory maybe.
+
+
+-rw-------   1 dbaxter users     1037 Jan  2 17:29 alloc1.h
+-rw-------   1 dbaxter users       89 Jan  2 17:29 autogen.sh
+-rw-------   1 dbaxter users     1059 Jan  2 17:29 echo_params.h
+-rw-------   1 dbaxter users     1070 Jan  2 17:29 init_rxn_file_keywords.h
+-rw-------   1 dbaxter users     1035 Jan  2 17:29 is_a_coef.h
+-rw-------   1 dbaxter users     1086 Jan  2 17:29 parse_rxn_file_keyword.h
+-rw-------   1 dbaxter users     1494 Jan  2 17:29 vgrng_init.h
+-rw-------   1 dbaxter users     1477 Jan  2 17:29 vgrng.h
+-rw-------   1 dbaxter users     1073 Jan  2 17:29 count_molecules.h
+-rw-------   1 dbaxter users     1077 Jan  2 17:29 print_molecules_dictionary.h
+-rw-------   1 dbaxter users     1057 Jan  2 17:29 unique_molecules.h
+-rw-------   1 dbaxter users     1045 Jan  2 17:29 compute_ke.h
+-rw-------   1 dbaxter users     1071 Jan  2 17:29 read_params.h
+-rw-------   1 dbaxter users     1064 Jan  2 17:29 binary_search_l_u_b.h
+-rw-------   1 dbaxter users     1065 Jan  2 17:29 set_compartment_ptrs.h
+-rw-------   1 dbaxter users     1116 Jan  2 17:29 molecules_lookup.h
+-rw-------   1 dbaxter users     1063 Jan  2 17:29 unique_compartments.h
+-rw-------   1 dbaxter users     1069 Jan  2 17:29 translate_compartments.h
+-rw-------   1 dbaxter users     1031 Jan  2 17:29 find_colon.h
+-rw-------   1 dbaxter users     1061 Jan  2 17:29 print_restart_file.h
+-rw-------   1 dbaxter users     1065 Jan  2 17:29 print_reactions_view.h
+-rw-------   1 dbaxter users     1095 Jan  2 17:29 rxn_conc_update.h
+-rw-------   1 dbaxter users     1104 Jan  2 17:29 bndry_flux_update.h
+-rw-------   1 dbaxter users     1082 Jan  2 17:29 print_rxn_likelihoods_header.h
+-rw-------   1 dbaxter users     1074 Jan  2 17:29 print_free_energy_header.h
+-rw-------   1 dbaxter users     1059 Jan  2 17:29 open_output_files.h
+-rw-------   1 dbaxter users     1064 Jan  2 17:29 print_boundary_flux.h
+-rw-------   1 dbaxter users     1077 Jan  2 17:29 update_rxn_log_likelihoods.h
+-rw-------   1 dbaxter users     1105 Jan  2 17:29 candidate_rxn.h
+-rw-------   1 dbaxter users     1080 Jan  2 17:29 choose_rxn.h
+-rw-------   1 dbaxter users     1079 Jan  2 17:29 size_rxns_file.h
+-rw-------   1 dbaxter users     1090 Jan  2 17:29 parse_reactions_file.h
+-rw-------   1 dbaxter users     1079 Jan  2 17:29 read_initial_concentrations.h
+-rw-------   1 dbaxter users    23191 Jan  2 17:29 README
+-rw-------   1 dbaxter users     1082 Jan  2 17:29 boltzmann_set_filename_ptrs.h
+-rw-------   1 dbaxter users     1399 Jan  2 17:29 find_colon.c
+-rw-------   1 dbaxter users     2390 Jan  2 17:29 istring_elem_struct.h
+-rw-------   1 dbaxter users     1205 Jan  2 17:29 stack_level_elem_struct.h
+-rw-------   1 dbaxter users     1307 Jan  2 17:29 sharp_pos.c
+-rw-------   1 dbaxter users     1015 Jan  2 17:29 sharp_pos.h
+-rw-------   1 dbaxter users     1276 Jan  2 17:29 pseudoisomer_dg0tf.h
+-rw-------   1 dbaxter users     1517 Jan  2 17:29 compute_molecule_dg0tf.h
+-rw-------   1 dbaxter users     1084 Jan  2 17:29 boltzmann_init.h
+-rw-------   1 dbaxter users     1605 Jan  2 17:29 pseudoisomer_struct.h
+-rw-------   1 dbaxter users     1148 Jan  2 17:29 size_pseudoisomer_file.h
+-rw-------   1 dbaxter users     1193 Jan  2 17:29 parse_pseudoisomer_dg0f_file.h
+-rw-------   1 dbaxter users     2583 Jan  2 17:29 blank_to_dash.c
+-rw-------   1 dbaxter users     1068 Jan  2 17:29 blank_to_dash.h
+-rw-------   1 dbaxter users     1069 Jan  2 17:29 print_reactions_matrix.h
+-rw-------   1 dbaxter users     1188 Jan  2 17:29 merge_molecules.h
+-rw-------   1 dbaxter users     1227 Jan  2 17:29 sort_global_molecules.h
+-rw-------   1 dbaxter users     1155 Jan  2 17:29 sort_molecules.h
+-rw-------   1 dbaxter users     1319 Jan  2 17:29 unique_molecules_core.h
+-rw-------   1 dbaxter users     1077 Jan  2 17:29 zero_solvent_coefficients.h
+-rw-------   1 dbaxter users     1050 Jan  2 17:29 print_dg0_ke.h
+-rw-------   1 dbaxter users     2747 Jan  2 17:29 update_rxn_log_likelihoods.c
+-rw-------   1 dbaxter users     1098 Jan  2 17:29 compute_kss.h
+-rw-------   1 dbaxter users     1125 Jan  2 17:29 rxn_likelihood.h
+-rw-------   1 dbaxter users     1140 Jan  2 17:29 rxn_likelihoods.h
+-rw-------   1 dbaxter users     1153 Jan  2 17:29 rxn_likelihood_postselection.h
+-rw-------   1 dbaxter users     1198 Jan  2 17:29 rxn_log_likelihoods.h
+-rw-------   1 dbaxter users     1097 Jan  2 17:29 rxn_count_update.h
+-rw-------   1 dbaxter users     1308 Jan  2 17:29 unique_compartments_core.h
+-rw-------   1 dbaxter users     1075 Jan  2 17:29 check_initial_concentrations.h
+-rw-------   1 dbaxter users     1246 Jan  2 17:29 sort_global_compartments.h
+-rw-------   1 dbaxter users     2834 Jan  2 17:29 molecule_struct.h
+-rw-------   1 dbaxter users     4752 Jan  2 17:29 sort_global_compartments.c
+-rw-------   1 dbaxter users     1070 Jan  2 17:29 read_compartment_sizes.h
+-rw-------   1 dbaxter users     1066 Jan  2 17:29 sbml_set_file_names.h
+-rw-------   1 dbaxter users     1132 Jan  2 17:29 sbml_find_section.h
+-rw-------   1 dbaxter users      958 Jan  2 17:29 sbml_key_value.h
+-rw-------   1 dbaxter users     1165 Jan  2 17:29 sbml_process_list_of_reactions.h
+-rw-------   1 dbaxter users     1068 Jan  2 17:29 sbml_look_for_in_reaction_tag.h
+-rw-------   1 dbaxter users     1067 Jan  2 17:29 sbml_lookup_species_attribute.h
+-rw-------   1 dbaxter users     1048 Jan  2 17:29 parse_sbml.h
+-rw-------   1 dbaxter users     1180 Jan  2 17:29 sbml_process_list_of_compartments.h
+-rw-------   1 dbaxter users     1155 Jan  2 17:29 sbml_process_list_of_species.h
+-rw-------   1 dbaxter users     1090 Jan  2 17:29 sbml_volume_units_conversion.h
+-rw-------   1 dbaxter users     1059 Jan  2 17:29 sbml_to_boltzmann.h
+-rw-------   1 dbaxter users     1065 Jan  2 17:29 sbml_count_cmpts.h
+-rw-------   1 dbaxter users     1050 Jan  2 17:29 sbml_alloc1.h
+-rw-------   1 dbaxter users     2032 Jan  2 17:29 compartment_struct.h
+-rw-------   1 dbaxter users     1417 Jan  2 17:29 sbml2bo_structs.h
+-rw-------   1 dbaxter users     1075 Jan  2 17:29 sbml_lookup_compartment_attribute.h
+-rw-------   1 dbaxter users     1073 Jan  2 17:29 sbml_lookup_speciesref_attribute.h
+-rw-------   1 dbaxter users     1069 Jan  2 17:29 sbml_lookup_reaction_attribute.h
+-rw-------   1 dbaxter users     1027 Jan  2 17:29 count_nlb.h
+-rw-------   1 dbaxter users     1027 Jan  2 17:29 count_nor.h
+-rw-------   1 dbaxter users     1187 Jan  2 17:29 ms2js_struct.h
+-rw-------   1 dbaxter users     1052 Jan  2 17:29 read_ms2js.h
+-rw-------   1 dbaxter users     1127 Jan  2 17:29 size_ms2js_file.h
+-rw-------   1 dbaxter users     1078 Jan  2 17:29 translate_ms_2_js.h
+-rw-------   1 dbaxter users     2173 Jan  2 17:29 translate_ms_2_js.c
+-rw-------   1 dbaxter users     1053 Jan  2 17:29 sbml_alloc0.h
+-rw-------   1 dbaxter users     1035 Jan  2 17:29 check_for_ws.h
+-rw-------   1 dbaxter users     1027 Jan  2 17:29 count_ntb.h
+-rw-------   1 dbaxter users     3217 Jan  2 17:29 keg_from_pseudoisomer.c
+-rw-------   1 dbaxter users     1481 Jan  2 17:29 count_ws.c
+-rw-------   1 dbaxter users     2682 Jan  2 17:29 sbml_look_for_in_reaction_tag.c
+-rw-------   1 dbaxter users     1888 Jan  2 17:29 sbml_lookup_compartment_attribute.c
+-rw-------   1 dbaxter users     4546 Jan  2 17:30 sbml_key_value.c
+-rw-------   1 dbaxter users     1195 Jan  2 17:30 sbml_alloc2.h
+-rw-------   1 dbaxter users     2167 Jan  2 17:30 sort_json_ids.h
+-rw-------   1 dbaxter users     1114 Jan  2 17:30 merge_sorted_strings.h
+-rw-------   1 dbaxter users     1795 Jan  2 17:30 merge_sorted_strings.c
+-rw-------   1 dbaxter users     1116 Jan  2 17:30 sbml_process_substanceunits.h
+-rw-------   1 dbaxter users     2328 Jan  2 17:30 sbml_process_substanceunits.c
+-rw-------   1 dbaxter users      988 Jan  2 17:30 sbml_read_key_value.h
+-rw-------   1 dbaxter users     1360 Jan  2 17:30 sbml_start_species_def.h
+-rw-------   1 dbaxter users     1831 Jan  2 17:30 sbml_start_species_def.c
+-rw-------   1 dbaxter users     1050 Jan  2 17:30 boltzmannize_string.h
+-rw-------   1 dbaxter users     2269 Jan  2 17:30 boltzmannize_string.c
+-rw-------   1 dbaxter users     1069 Jan  2 17:30 sbml_count_species.h
+-rw-------   1 dbaxter users     1176 Jan  2 17:30 t2js_struct.h
+-rw-------   1 dbaxter users     1148 Jan  2 17:30 sbml_sort_species_trans.h
+-rw-------   1 dbaxter users     3075 Jan  2 17:30 sbml_sort_species_trans.c
+-rw-------   1 dbaxter users     1234 Jan  2 17:30 sbml_merge_species_trans.h
+-rw-------   1 dbaxter users     2051 Jan  2 17:30 sbml_merge_species_trans.c
+-rw-------   1 dbaxter users     1258 Jan  2 17:30 sbml_process_list_of_reactants.h
+-rw-------   1 dbaxter users     1979 Jan  2 17:30 sbml2bo_struct.h
+-rw-------   1 dbaxter users     1078 Jan  2 17:30 sbml_find_string.h
+-rw-------   1 dbaxter users     1122 Jan  2 17:30 size_kg2js_file.h
+-rw-------   1 dbaxter users     1053 Jan  2 17:30 read_kg2js.h
+-rw-------   1 dbaxter users     1315 Jan  2 17:30 sbml_generate_init_conc_line.h
+-rw-------   1 dbaxter users     1331 Jan  2 17:30 sbml_parse_species_key_value.h
+-rw-------   1 dbaxter users     1372 Jan  2 17:30 sbml_process_list_of_reactants_tag.h
+-rw-------   1 dbaxter users     3338 Jan  2 17:30 sbml_process_list_of_reactants_tag.c
+-rw-------   1 dbaxter users     1353 Jan  2 17:30 sbml_process_list_of_products_tag.h
+-rw-------   1 dbaxter users     1464 Jan  2 17:30 sbml_process_species_reference_tag.h
+-rw-------   1 dbaxter users     1336 Jan  2 17:30 sbml_process_reaction_tag.h
+-rw-------   1 dbaxter users     4011 Jan  2 17:30 sbml_process_reaction_tag.c
+-rw-------   1 dbaxter users     1958 Jan  2 17:30 sbml_find_section.c
+-rw-------   1 dbaxter users     2073 Jan  2 17:30 sbml_lookup_reaction_attribute.c
+-rw-------   1 dbaxter users     1514 Jan  2 17:30 count_ntb.c
+-rw-------   1 dbaxter users      547 Jan  2 17:30 configure.ac
+-rw-------   1 dbaxter users     3090 Jan  2 17:30 read_kg2js.c
+-rw-------   1 dbaxter users     3462 Jan  2 17:30 sbml_process_list_of_products_tag.c
+-rw-------   1 dbaxter users     1173 Jan  2 17:30 recover_solvent_coefficients.h
+-rw-------   1 dbaxter users      145 Jan  2 17:30 create_output_filenames.h
+-rw-------   1 dbaxter users      112 Jan  2 17:30 species_init.h
+-rw-------   1 dbaxter users      103 Jan  2 17:30 rxns_init.h
+-rw-------   1 dbaxter users     1630 Jan  2 17:30 io_size_init.c
+-rw-------   1 dbaxter users      112 Jan  2 17:30 io_size_init.h
+-rw-------   1 dbaxter users      110 Jan  2 17:30 energy_init.h
+-rw-------   1 dbaxter users     1136 Jan  2 17:30 echo_reactions_file.h
+-rw-------   1 dbaxter users      109 Jan  2 17:30 echo_inputs.h
+-rw-------   1 dbaxter users      122 Jan  2 17:30 boot_alloc0.h
+-rw-------   1 dbaxter users     2172 Jan  2 17:30 boot_init.c
+-rw-------   1 dbaxter users      150 Jan  2 17:30 boot_init.h
+-rw-------   1 dbaxter users     1126 Jan  2 17:30 size_rxns_list.h
+-rw-------   1 dbaxter users      119 Jan  2 17:30 boot_alloc1.h
+-rw-------   1 dbaxter users      119 Jan  2 17:30 boot_alloc2.h
+-rw-------   1 dbaxter users      191 Jan  2 17:30 catenate_compartments_and_molecules.h
+-rw-------   1 dbaxter users      121 Jan  2 17:30 fill_meta_data.h
+-rw-------   1 dbaxter users     3475 Jan  2 17:30 save_and_count_local_state.c
+-rw-------   1 dbaxter users      210 Jan  2 17:30 save_and_count_local_state.h
+-rw-------   1 dbaxter users      137 Jan  2 17:30 copy_local_states.h
+-rw-------   1 dbaxter users       81 Jan  2 17:30 itc_clock.h
+-rw-------   1 dbaxter users      172 Jan  2 17:30 translate_regulation_metabolites.h
+-rw-------   1 dbaxter users      119 Jan  2 17:30 boot_alloc3.h
+-rw-------   1 dbaxter users     2550 Jan  2 17:30 global_merge_molecules.c
+-rw-------   1 dbaxter users      152 Jan  2 17:30 global_merge_molecules.h
+-rw-------   1 dbaxter users      134 Jan  2 17:30 condense_strings.h
+-rw-------   1 dbaxter users     2915 Jan  2 17:30 condense_strings.c
+-rw-------   1 dbaxter users      121 Jan  2 17:30 boot_alloc4.h
+-rw-------   1 dbaxter users     3739 Jan  2 17:30 global_merge_and_map_compartments.c
+-rw-------   1 dbaxter users      185 Jan  2 17:30 global_merge_and_map_compartments.h
+-rw-------   1 dbaxter users      154 Jan  2 17:30 boot_io_init.h
+-rw-------   1 dbaxter users     2248 Jan  2 17:30 boot_state_struct.h
+-rw-------   1 dbaxter users     4981 Jan  2 17:30 write_super_state.c
+-rw-------   1 dbaxter users      139 Jan  2 17:30 write_super_state.h
+-rw-------   1 dbaxter users     3394 Jan  2 17:30 sort_molecules.c
+-rw-------   1 dbaxter users     4264 Jan  2 17:30 sort_global_molecules.c
+-rw-------   1 dbaxter users     2827 Jan  2 17:30 rxn_log_likelihoods.c
+-rw-------   1 dbaxter users      188 Jan  2 17:30 parse_rxn_list_line.h
+-rw-------   1 dbaxter users     1191 Jan  2 17:30 compute_delta_g_forward_entropy_free_energy.h
+-rw-------   1 dbaxter users     1064 Jan  2 17:30 print_counts.h
+-rw-------   1 dbaxter users     1139 Jan  2 17:30 print_likelihoods.h
+-rw-------   1 dbaxter users     1080 Jan  2 17:30 save_likelihoods.h
+-rw-------   1 dbaxter users     1073 Jan  2 17:30 print_free_energy.h
+-rw-------   1 dbaxter users     3063 Jan  2 17:30 save_likelihoods.c
+-rw-------   1 dbaxter users     1493 Jan  2 17:30 count_nws.c
+-rw-------   1 dbaxter users       94 Jan  2 17:30 alloc7.h
+-rw-------   1 dbaxter users      234 Jan  2 17:30 update_rxn_likelihoods.h
+-rw-------   1 dbaxter users     1120 Jan  2 17:30 set_count_trans.h
+-rw-------   1 dbaxter users       97 Jan  2 17:30 deq_run.h
+-rw-------   1 dbaxter users      232 Jan  2 17:30 fill_flux_pieces.h
+-rw-------   1 dbaxter users     6376 Jan  2 17:30 fill_flux_pieces.c
+-rw-------   1 dbaxter users      296 Jan  2 17:30 approximate_fluxes.h
+-rw-------   1 dbaxter users      133 Jan  2 17:30 init_base_reactants.h
+-rw-------   1 dbaxter users      154 Jan  2 17:30 compute_flux_scaling.h
+-rw-------   1 dbaxter users     3681 Jan  2 17:30 rxn_likelihoods.c
+-rw-------   1 dbaxter users     2542 Jan  2 17:31 boltzmann_flatten_vgrng_state.c
+-rw-------   1 dbaxter users      255 Jan  2 17:31 boltzmann_flatten_vgrng_state.h
+-rw-------   1 dbaxter users      289 Jan  2 17:30 ce_approximate_fluxes.h
+-rw-------   1 dbaxter users      187 Jan  2 17:30 lapack.h
+-rw-------   1 dbaxter users      143 Jan  2 17:30 ode_print_concs_header.h
+-rw-------   1 dbaxter users      150 Jan  2 17:30 ode_print_concs.h
+-rw-------   1 dbaxter users      327 Jan  2 17:30 system_includes.h
+-rw-------   1 dbaxter users     3230 Jan  2 17:30 sbml_set_file_names.c
+-rw-------   1 dbaxter users  7021169 Jan  2 17:30 yeast_7.1.xml
+-rw-------   1 dbaxter users      197 Jan  2 17:30 vec_abs.c
+-rw-------   1 dbaxter users      102 Jan  2 17:30 vec_abs.h
+-rw-------   1 dbaxter users      215 Jan  2 17:30 vec_div.c
+-rw-------   1 dbaxter users      112 Jan  2 17:30 vec_div.h
+-rw-------   1 dbaxter users      235 Jan  2 17:30 vec_max.c
+-rw-------   1 dbaxter users      112 Jan  2 17:30 vec_max.h
+-rw-------   1 dbaxter users      215 Jan  2 17:30 vec_mul.c
+-rw-------   1 dbaxter users      112 Jan  2 17:30 vec_mul.h
+-rw-------   1 dbaxter users      108 Jan  2 17:30 dscal.h
+-rw-------   1 dbaxter users      118 Jan  2 17:30 dcopy.h
+-rw-------   1 dbaxter users       97 Jan  2 17:30 dnrm2.h
+-rw-------   1 dbaxter users      145 Jan  2 17:30 daxpy.h
+-rw-------   1 dbaxter users      122 Jan  2 17:30 ddot.h
+-rw-------   1 dbaxter users      102 Jan  2 17:30 idamax.h
+-rw-------   1 dbaxter users      184 Jan  2 17:30 dlaswp.h
+-rw-------   1 dbaxter users      173 Jan  2 17:30 dgetrf2.h
+-rw-------   1 dbaxter users     1523 Jan  2 17:30 global_sort.doc
+-rw-------   1 dbaxter users    10913 Jan  2 17:30 interface.doc
+-rw-------   1 dbaxter users     1454 Jan  2 17:30 regulation.doc
+-rw-------   1 dbaxter users      207 Jan  2 17:30 epsilon.doc
+-rw-------   1 dbaxter users     1636 Jan  2 17:30 binary_search_l_u_b.c
+-rw-------   1 dbaxter users     3104 Jan  2 17:30 read_ms2js.c
+-rw-------   1 dbaxter users     1806 Jan  2 17:30 sbml_lookup_speciesref_attribute.c
+-rw-------   1 dbaxter users     3898 Jan  2 17:30 sort_compartments.c
+-rw-------   1 dbaxter users     6083 Jan  2 17:30 djb_timing_init.c
+-rw-------   1 dbaxter users     5399 Jan  2 17:30 djb_timing_print.c
+-rw-------   1 dbaxter users     2167 Jan  2 17:30 species_init.c
+-rw-------   1 dbaxter users      765 Jan  2 17:30 boot_alloc0.c
+-rw-------   1 dbaxter users     3492 Jan  2 17:30 boot_alloc1.c
+-rw-------   1 dbaxter users     2754 Jan  2 17:30 parse_rxn_list_line.c
+-rw-------   1 dbaxter users     5856 Jan  2 17:30 boot_alloc3.c
+-rw-------   1 dbaxter users     3726 Jan  2 17:30 boot_alloc4.c
+-rw-------   1 dbaxter users     2322 Jan  2 17:30 sbml_count_species.c
+-rw-------   1 dbaxter users     4838 Jan  2 17:30 sbml_read_key_value.c
+-rw-------   1 dbaxter users     1999 Jan  2 17:30 sbml_volume_units_conversion.c
+-rw-------   1 dbaxter users     4752 Jan  2 17:30 keg_from_modelseed.c
+-rw-------   1 dbaxter users     1516 Jan  2 17:30 boltzmannize_json_id.c
+-rw-------   1 dbaxter users     1053 Jan  2 17:30 boltzmannize_json_id.h
+-rw-------   1 dbaxter users     1120 Jan  2 17:30 metropolis.h
+-rw-------   1 dbaxter users      176 Jan  2 17:30 print_net_lklhd_bndry_flux_header.h
+-rw-------   1 dbaxter users      154 Jan  2 17:30 print_net_likelihood_header.h
+-rw-------   1 dbaxter users      256 Jan  2 17:30 compute_net_likelihoods.h
+-rw-------   1 dbaxter users      190 Jan  2 17:30 print_net_likelihoods.h
+-rw-------   1 dbaxter users      968 Jan  2 17:30 print_net_lklhd_bndry_flux.c
+-rw-------   1 dbaxter users      222 Jan  2 17:30 print_net_lklhd_bndry_flux.h
+-rw-------   1 dbaxter users      228 Jan  2 17:30 compute_net_lklhd_bndry_flux.h
+-rw-------   1 dbaxter users     3926 Jan  2 17:30 boltzmann_files.txt
+-rw-------   1 dbaxter users     1352 Jan  2 17:30 check_for_ws.c
+-rw-------   1 dbaxter users     1530 Jan  2 17:30 count_nlb.c
+-rw-------   1 dbaxter users     3404 Jan  2 17:30 kegg_from_pseudoisomer.c
+-rw-------   1 dbaxter users     5073 Jan  2 17:30 kegg_from_modelseed.c
+-rw-------   1 dbaxter users      140 Jan  2 17:30 ode_print_flux_header.h
+-rw-------   1 dbaxter users      143 Jan  2 17:30 ode_print_bflux_header.h
+-rw-------   1 dbaxter users      143 Jan  2 17:30 ode_print_lklhd_header.h
+-rw-------   1 dbaxter users     2211 Jan  2 17:30 ode_print_fluxes.c
+-rw-------   1 dbaxter users      154 Jan  2 17:30 ode_print_fluxes.h
+-rw-------   1 dbaxter users      225 Jan  2 17:30 ode_print_lklhds.h
+-rw-------   1 dbaxter users     8332 Jan  2 17:30 boltzmann.txt
+-rw-------   1 dbaxter users    31248 Jan  2 17:30 boltzmann_flow.txt
+-rw-------   1 dbaxter users     3937 Jan  2 17:30 approximate_delta_concs.txt
+-rw-------   1 dbaxter users     4340 Jan  2 17:30 merge_molecules.c
+-rw-------   1 dbaxter users     2155 Jan  2 17:30 size_rxns_list.c
+-rw-------   1 dbaxter users     3335 Jan  2 17:30 boot_alloc2.c
+-rw-------   1 dbaxter users     4256 Jan  2 17:30 fill_meta_data.c
+-rw-------   1 dbaxter users     2147 Jan  2 17:30 copy_local_states.c
+-rw-------   1 dbaxter users     6338 Jan  2 17:30 sbml_to_boltzmann.c
+-rw-------   1 dbaxter users     2705 Jan  2 17:30 sort_json_ids.c
+-rw-------   1 dbaxter users     5225 Jan  2 17:30 parse_sbml.c
+-rw-------   1 dbaxter users     6513 Jan  2 17:30 sbml_process_list_of_species.c
+-rw-------   1 dbaxter users      766 Jan  2 17:30 print_net_likelihoods.c
+-rw-------   1 dbaxter users     3166 Jan  2 17:30 dlaswp.c
+-rw-------   1 dbaxter users     2529 Jan  2 17:30 sbml_lookup_species_attribute.c
+-rw-------   1 dbaxter users     4399 Jan  2 17:30 merge_compartments.c
+-rw-------   1 dbaxter users     4169 Jan  2 17:30 choose_rxn.c
+-rw-------   1 dbaxter users     3779 Jan  2 17:30 modelseed_2_json.c
+-rw-------   1 dbaxter users      109 Jan  2 17:30 bwarmup_run.h
+-rw-------   1 dbaxter users     4682 Jan  2 17:30 ce_approximate_delta_concs.c
+-rw-------   1 dbaxter users     2113 Jan  2 17:30 print_concs_fluxes.c
+-rw-------   1 dbaxter users     1621 Jan  2 17:30 update_rxn_likelihoods.c
+-rw-------   1 dbaxter users      232 Jan  2 17:30 lr5_approximate_delta_concs.h
+-rw-------   1 dbaxter users      232 Jan  2 17:30 lr4_approximate_delta_concs.h
+-rw-------   1 dbaxter users      232 Jan  2 17:30 lr3_approximate_delta_concs.h
+-rw-------   1 dbaxter users      232 Jan  2 17:30 lr2_approximate_delta_concs.h
+-rw-------   1 dbaxter users      233 Jan  2 17:30 lr1_approximate_delta_concs.h
+-rw-------   1 dbaxter users      226 Jan  2 17:30 lr_approximate_delta_concs.h
+-rw-------   1 dbaxter users      226 Jan  2 17:30 ce_approximate_delta_concs.h
+-rw-------   1 dbaxter users      208 Jan  2 17:30 approximate_delta_concs.h
+-rw-------   1 dbaxter users      341 Jan  2 17:30 ode_it_solve.h
+-rw-------   1 dbaxter users      370 Jan  2 17:30 ode_num_jac.h
+-rw-------   1 dbaxter users      456 Jan  2 17:30 num_jac_col.h
+-rw-------   1 dbaxter users      251 Jan  2 17:31 print_concs_fluxes.h
+-rw-------   1 dbaxter users     2298 Jan  2 17:31 compute_chemical_potential.c
+-rw-------   1 dbaxter users     1357 Jan  2 17:31 unalloc6.c
+-rw-------   1 dbaxter users     1115 Jan  2 17:31 alloc5.h
+-rw-------   1 dbaxter users     1083 Jan  2 17:31 alloc6.h
+-rw-------   1 dbaxter users     1087 Jan  2 17:31 unalloc6.h
+-rw-------   1 dbaxter users     1305 Jan  2 17:31 compute_reaction_dg0.h
+-rw-------   1 dbaxter users     1244 Jan  2 17:31 compute_molecule_dg0tfs.h
+-rw-------   1 dbaxter users     1413 Jan  2 17:31 compute_molecular_partition_probability.h
+-rw-------   1 dbaxter users     1360 Jan  2 17:31 compute_chemical_potential.h
+-rw-------   1 dbaxter users     1160 Jan  2 17:31 compute_standard_energies.h
+-rw-------   1 dbaxter users     2584 Jan  2 17:31 alloc6.c
+-rw-------   1 dbaxter users     1348 Jan  2 17:31 compute_net_likelihoods.c
+-rw-------   1 dbaxter users      133 Jan  2 17:31 init_relative_rates.h
+-rw-------   1 dbaxter users      233 Jan  2 17:31 lr6_approximate_delta_concs.h
+-rw-------   1 dbaxter users     2517 Jan  2 17:31 boot_io_init.c
+-rw-------   1 dbaxter users     2196 Jan  2 17:31 sbml_count_cmpts.c
+-rw-------   1 dbaxter users     2179 Jan  2 17:31 pseudoisomer_dg0tf.c
+-rw-------   1 dbaxter users      231 Jan  2 17:31 lr7_approximate_delta_concs.h
+-rw-------   1 dbaxter users      100 Jan  2 17:31 run_init.h
+-rw-------   1 dbaxter users      133 Jan  2 17:31 boltzmann_init_core.h
+-rw-------   1 dbaxter users     1244 Jan  2 17:31 parse_side_line.h
+-rw-------   1 dbaxter users      146 Jan  2 17:31 ode_print_dconcs_header.h
+-rw-------   1 dbaxter users      154 Jan  2 17:31 ode_print_dconcs.h
+-rw-------   1 dbaxter users     2139 Jan  2 17:31 print_concs_dconcs.c
+-rw-------   1 dbaxter users      251 Jan  2 17:31 print_concs_dconcs.h
+-rw-------   1 dbaxter users     3574 Jan  2 17:31 open_output_files.c
+-rw-------   1 dbaxter users     1783 Jan  2 17:31 deq.c
+-rw-------   1 dbaxter users     2841 Jan  2 17:31 compute_ke.c
+-rw-------   1 dbaxter users     1981 Jan  2 17:31 ode_print_lklhd_header.c
+-rw-------   1 dbaxter users     2283 Jan  2 17:31 print_free_energy_header.c
+-rw-------   1 dbaxter users     1157 Jan  2 17:31 print_net_likelihood_header.c
+-rw-------   1 dbaxter users     2323 Jan  2 17:31 print_rxn_likelihoods_header.c
+-rw-------   1 dbaxter users     6440 Jan  2 17:31 ce_approximate_fluxes.c
+-rw-------   1 dbaxter users     4994 Jan  2 17:31 init_relative_rates.c
+-rw-------   1 dbaxter users     3633 Jan  2 17:31 print_dg0_ke.c
+-rw-------   1 dbaxter users     1956 Jan  2 17:31 translate_compartments.c
+-rw-------   1 dbaxter users     3340 Jan  2 17:31 translate_regulation_metabolites.c
+-rw-------   1 dbaxter users     2547 Jan  2 17:31 unique_molecules.c
+-rw-------   1 dbaxter users     2534 Jan  2 17:31 compartment_lookup.c
+-rw-------   1 dbaxter users     5079 Jan  2 17:31 compute_kss.c
+-rw-------   1 dbaxter users     1745 Jan  2 17:31 ode_print_bflux_header.c
+-rw-------   1 dbaxter users     1830 Jan  2 17:31 print_net_lklhd_bndry_flux_header.c
+-rw-------   1 dbaxter users     3770 Jan  2 17:31 read_compartment_sizes.c
+-rw-------   1 dbaxter users     3824 Jan  2 17:31 rxn_conc_update.c
+-rw-------   1 dbaxter users     3866 Jan  2 17:31 rxn_count_update.c
+-rw-------   1 dbaxter users     1961 Jan  2 17:31 rxns_init.c
+-rw-------   1 dbaxter users     4437 Jan  2 17:31 sbml_parse_species_key_value.c
+-rw-------   1 dbaxter users     2044 Jan  2 17:31 set_count_trans.c
+-rw-------   1 dbaxter users     2349 Jan  2 17:31 unique_compartments.c
+-rw-------   1 dbaxter users     2604 Jan  2 17:31 init_base_reactants.c
+-rw-------   1 dbaxter users     3082 Jan  2 17:31 print_boundary_flux.c
+-rw-------   1 dbaxter users     6895 Jan  2 17:31 catenate_compartments_and_molecules.c
+-rw-------   1 dbaxter users     2952 Jan  2 17:31 compute_net_lklhd_bndry_flux.c
+-rw-------   1 dbaxter users     5891 Jan  2 17:31 lr_approximate_delta_concs.c
+-rw-------   1 dbaxter users      526 Jan  2 17:31 ode23tb_limit_h.c
+-rw-------   1 dbaxter users      179 Jan  2 17:31 ode23tb_limit_h.h
+-rw-------   1 dbaxter users      787 Jan  2 17:31 ode23tb_init_wt.c
+-rw-------   1 dbaxter users      213 Jan  2 17:31 ode23tb_init_wt.h
+-rw-------   1 dbaxter users      892 Jan  2 17:31 ode23tb_init_h.c
+-rw-------   1 dbaxter users      402 Jan  2 17:31 ode23tb_init_h.h
+-rw-------   1 dbaxter users      630 Jan  2 17:31 ode23tb_normyp_o_wt.c
+-rw-------   1 dbaxter users      179 Jan  2 17:31 ode23tb_normyp_o_wt.h
+-rw-------   1 dbaxter users     1373 Jan  2 17:31 ode23tb_build_factor_miter.c
+-rw-------   1 dbaxter users      310 Jan  2 17:31 ode23tb_build_factor_miter.h
+-rw-------   1 dbaxter users      853 Jan  2 17:31 ode23tb_nonneg_err.c
+-rw-------   1 dbaxter users      817 Jan  2 17:31 ode23tb_enforce_nonneg.c
+-rw-------   1 dbaxter users      195 Jan  2 17:31 ode23tb_enforce_nonneg.h
+-rw-------   1 dbaxter users      322 Jan  2 17:31 vec_set_constant.c
+-rw-------   1 dbaxter users      129 Jan  2 17:31 vec_set_constant.h
+-rw-------   1 dbaxter users      429 Jan  2 17:31 ode23tb_max_abs_ratio.c
+-rw-------   1 dbaxter users      140 Jan  2 17:31 ode23tb_max_abs_ratio.h
+-rw-------   1 dbaxter users      172 Jan  2 17:31 ode23tb_update_wt.h
+-rw-------   1 dbaxter users      245 Jan  2 17:31 ode23tb_nonneg_err.h
+-rw-------   1 dbaxter users      331 Jan  2 17:31 get_counts.c
+-rw-------   1 dbaxter users      170 Jan  2 17:31 get_counts.h
+-rw-------   1 dbaxter users      231 Jan  2 17:31 lr8_approximate_delta_concs.h
+-rw-------   1 dbaxter users     3732 Jan  2 17:31 boltzmann_watch.c
+-rw-------   1 dbaxter users      457 Jan  2 17:31 boltzmann_watch.h
+-rw-------   1 dbaxter users      172 Jan  2 17:31 print_rxn_choice.h
+-rw-------   1 dbaxter users      232 Jan  2 17:31 lr9_approximate_delta_concs.h
+-rw-------   1 dbaxter users     1872 Jan  2 17:31 ode_print_lklhds.c
+-rw-------   1 dbaxter users     6483 Jan  2 17:31 echo_reactions_file.c
+-rw-------   1 dbaxter users      199 Jan  2 17:31 update_regulation.h
+-rw-------   1 dbaxter users      193 Jan  2 17:31 update_regulations.h
+-rw-------   1 dbaxter users     4251 Jan  2 17:31 metropolis.c
+-rw-------   1 dbaxter users     4270 Jan  2 17:31 candidate_rxn.c
+-rw-------   1 dbaxter users     3938 Jan  2 17:31 compute_standard_energies.c
+-rw-------   1 dbaxter users     1050 Jan  2 17:31 alloc0.h
+-rw-------   1 dbaxter users     1048 Jan  2 17:31 alloc2.h
+-rw-------   1 dbaxter users     1936 Jan  2 17:31 boltzmann_init.c
+-rw-------   1 dbaxter users      100 Jan  2 17:31 alloc0_a.h
+-rw-------   1 dbaxter users      112 Jan  2 17:31 alloc2_a.h
+-rw-------   1 dbaxter users     1095 Jan  2 17:31 alloc3.h
+-rw-------   1 dbaxter users     1095 Jan  2 17:31 alloc4.h
+-rw-------   1 dbaxter users     2036 Jan  2 17:31 set_compartment_ptrs.c
+-rw-------   1 dbaxter users     2877 Jan  2 17:31 boltzmann_init_core.c
+-rw-------   1 dbaxter users     1144 Jan  2 17:31 form_molecules_matrix.h
+-rw-------   1 dbaxter users     5714 Jan  2 17:31 alloc2_a.c
+-rw-------   1 dbaxter users     6376 Jan  2 17:31 alloc8.c
+-rw-------   1 dbaxter users     5119 Jan  2 17:31 alloc9.c
+-rw-------   1 dbaxter users     1080 Jan  2 17:31 count_nws.h
+-rw-------   1 dbaxter users     1076 Jan  2 17:31 count_ws.h
+-rw-------   1 dbaxter users     4193 Jan  2 17:31 sbml2bo.c
+-rw-------   1 dbaxter users      209 Jan  2 17:31 alloc8.h
+-rw-------   1 dbaxter users      209 Jan  2 17:31 alloc9.h
+-rw-------   1 dbaxter users      164 Jan  2 17:31 compute_flattened_state_size.h
+-rw-------   1 dbaxter users     1253 Jan  2 17:31 sort_compartments.h
+-rw-------   1 dbaxter users     1289 Jan  2 17:31 merge_compartments.h
+-rw-------   1 dbaxter users     1166 Jan  2 17:31 compartment_lookup.h
+-rw-------   1 dbaxter users     2833 Jan  2 17:31 print_likelihoods.c
+-rw-------   1 dbaxter users     1554 Jan  2 17:31 count_nor.c
+-rw-------   1 dbaxter users     2970 Jan  2 17:31 check_initial_concentrations.c
+-rw-------   1 dbaxter users     3671 Jan  2 17:31 compute_molecule_dg0tfs.c
+-rw-------   1 dbaxter users     5170 Jan  2 17:31 compute_molecule_dg0tf.c
+-rw-------   1 dbaxter users     3166 Jan  2 17:31 size_ms2js_file.c
+-rw-------   1 dbaxter users     3146 Jan  2 17:31 size_kg2js_file.c
+-rw-------   1 dbaxter users     3559 Jan  2 17:31 sbml_alloc0.c
+-rw-------   1 dbaxter users     4481 Jan  2 17:31 sbml_alloc2.c
+-rw-------   1 dbaxter users     3499 Jan  2 17:31 unique_compartments_core.c
+-rw-------   1 dbaxter users     2112 Jan  2 17:31 vgrng_state_struct.h
+-rw-------   1 dbaxter users     1069 Jan  2 17:31 boltzmann_run.h
+-rw-------   1 dbaxter users     2448 Jan  2 17:31 boltzmann_save_agent_data.c
+-rw-------   1 dbaxter users      179 Jan  2 17:31 boltzmann_save_agent_data.h
+-rw-------   1 dbaxter users     1465 Jan  2 17:31 boltzmann_build_agent_data_block.c
+-rw-------   1 dbaxter users      203 Jan  2 17:31 boltzmann_build_agent_data_block.h
+-rw-------   1 dbaxter users     2356 Jan  2 17:31 vgrng.c
+-rw-------   1 dbaxter users     2499 Jan  2 17:31 boltzmann.c
+-rw-------   1 dbaxter users    10952 Jan  2 17:31 boltzmann_run.c
+-rw-------   1 dbaxter users     2697 Jan  2 17:31 vgrng_init.c
+-rw-------   1 dbaxter users      408 Jan  2 17:31 tca_redox1-2_concs.in
+-rw-------   1 dbaxter users     4584 Jan  2 17:31 compute_reaction_dg0.c
+-rw-------   1 dbaxter users     7040 Jan  2 17:31 size_rxns_file.c
+-rw-------   1 dbaxter users     3956 Jan  2 17:31 unique_molecules_core.c
+-rw-------   1 dbaxter users       90 Jan  2 17:31 upcase.h
+-rw-------   1 dbaxter users     8350 Jan  2 17:31 parse_pseudoisomer_dg0f_file.c
+-rw-------   1 dbaxter users     2731 Jan  2 17:31 upcase.c
+-rw-------   1 dbaxter users     2446 Jan  2 17:31 parse_rxn_file_keyword.c
+-rw-------   1 dbaxter users    11744 Jan  2 17:31 read_initial_concentrations.c
+-rw-------   1 dbaxter users     2734 Jan  2 17:31 zero_solvent_coefficients.c
+-rw-------   1 dbaxter users     2673 Jan  2 17:31 recover_solvent_coefficients.c
+-rw-------   1 dbaxter users     1119 Jan  2 17:31 energy_init.c
+-rw-------   1 dbaxter users     2829 Jan  2 17:31 ode_print_dconcs_header.c
+-rw-------   1 dbaxter users     2372 Jan  2 17:31 ode_print_dconcs.c
+-rw-------   1 dbaxter users     3675 Jan  2 17:31 print_molecules_dictionary.c
+-rw-------   1 dbaxter users     1411 Jan  2 17:31 boltzmann_monitor_ode.c
+-rw-------   1 dbaxter users      180 Jan  2 17:31 boltzmann_monitor_ode.h
+-rw-------   1 dbaxter users      637 Jan  2 17:31 boltzmann_cvodes_rhs.c
+-rw-------   1 dbaxter users      167 Jan  2 17:31 boltzmann_cvodes_rhs.h
+-rw-------   1 dbaxter users      931 Jan  2 17:31 boltzmann_print_cvodeinit_errors.c
+-rw-------   1 dbaxter users      222 Jan  2 17:31 boltzmann_print_cvodeinit_errors.h
+-rw-------   1 dbaxter users     1683 Jan  2 17:31 dcrsng_mag_sort.c
+-rw-------   1 dbaxter users      181 Jan  2 17:31 dcrsng_mag_sort.h
+-rw-------   1 dbaxter users      175 Jan  2 17:31 boltzmann_cvodes_bsolve.h
+-rw-------   1 dbaxter users      175 Jan  2 17:31 boltzmann_cvodes_fsolve.h
+-rw-------   1 dbaxter users      146 Jan  2 17:31 boltzmann_size_jacobian.h
+-rw-------   1 dbaxter users     1430 Jan  2 17:31 boltzmann_check_cvodeset_errors.c
+-rw-------   1 dbaxter users      241 Jan  2 17:31 boltzmann_check_cvodeset_errors.h
+-rw-------   1 dbaxter users      901 Jan  2 17:31 boltzmann_check_tol_errors.c
+-rw-------   1 dbaxter users      193 Jan  2 17:31 boltzmann_check_tol_errors.h
+-rw-------   1 dbaxter users     2167 Jan  2 17:31 boltzmann_check_cvdls_errors.c
+-rw-------   1 dbaxter users      223 Jan  2 17:31 boltzmann_check_cvdls_errors.h
+-rw-------   1 dbaxter users     2052 Jan  2 17:31 boltzmann_cvodes_psetup.c
+-rw-------   1 dbaxter users      315 Jan  2 17:31 boltzmann_cvodes_psetup.h
+-rw-------   1 dbaxter users      211 Jan  2 17:31 approximate_jacobian.h
+-rw-------   1 dbaxter users      237 Jan  2 17:31 lr8_approximate_jacobian.h
+-rw-------   1 dbaxter users      223 Jan  2 17:31 crs_column_sort_rows.h
+-rw-------   1 dbaxter users      154 Jan  2 17:31 precondition_newton_matrix.h
+-rw-------   1 dbaxter users     1803 Jan  2 17:31 dcrsng_mag_merge.c
+-rw-------   1 dbaxter users      229 Jan  2 17:31 dcrsng_mag_merge.h
+-rw-------   1 dbaxter users       95 Jan  2 17:31 isort.h
+-rw-------   1 dbaxter users     1117 Jan  2 17:31 imerge.c
+-rw-------   1 dbaxter users      119 Jan  2 17:31 imerge.h
+-rw-------   1 dbaxter users      306 Jan  2 17:31 boltzmann_cvodes_psolve.h
+-rw-------   1 dbaxter users      250 Jan  2 17:31 boltzmann_cvodes_jtimes.h
+-rw-------   1 dbaxter users      577 Jan  2 17:31 boltzmann_sparse_mvp.c
+-rw-------   1 dbaxter users      172 Jan  2 17:31 boltzmann_sparse_mvp.h
+-rw-------   1 dbaxter users      197 Jan  2 17:31 boltzmann_print_cvode_error.h
+-rw-------   1 dbaxter users       91 Jan  2 17:31 iluvf.h
+-rw-------   1 dbaxter users     4440 Jan  2 17:31 compute_molecular_partition_probability.c
+-rw-------   1 dbaxter users     1938 Jan  2 17:31 boltzmann_load_agent_data.h
+-rw-------   1 dbaxter users     1938 Jan  2 17:31 boltzmann_load_agent_data.c
+-rw-------   1 dbaxter users     1028 Jan  2 17:31 compute_flux_scaling.c
+-rw-------   1 dbaxter users      679 Jan  2 17:31 ode23tb_update_wt.c
+-rw-------   1 dbaxter users      139 Jan  2 17:31 boltzmann_cvodes.h
+-rw-------   1 dbaxter users      206 Jan  2 17:31 boltzmann_set_cvodes_linear_solver.h
+-rw-------   1 dbaxter users     1701 Jan  2 17:31 boltzmann_check_cvspils_errors.c
+-rw-------   1 dbaxter users      234 Jan  2 17:31 boltzmann_check_cvspils_errors.h
+-rw-------   1 dbaxter users      179 Jan  2 17:31 build_newton_matrix.h
+-rw-------   1 dbaxter users     4966 Jan  2 17:31 dswap.c
+-rw-------   1 dbaxter users      124 Jan  2 17:31 dswap.h
+-rw-------   1 dbaxter users      166 Jan  2 17:31 dgbtrf.h
+-rw-------   1 dbaxter users     8978 Jan  2 17:31 dger.c
+-rw-------   1 dbaxter users      169 Jan  2 17:31 dger.h
+-rw-------   1 dbaxter users      208 Jan  2 17:31 dgbtrs.h
+-rw-------   1 dbaxter users      175 Jan  2 17:31 dtbsv.h
+-rw-------   1 dbaxter users     1217 Jan  2 17:31 isort.c
+-rw-------   1 dbaxter users      216 Jan  2 17:31 lr10_approximate_delta_concs.h
+-rw-------   1 dbaxter users      747 Jan  2 17:31 boltzmann_cvodes_headers.h
+-rw-------   1 dbaxter users       22 Jan  2 17:32 Makefile.am
+-rw-------   1 dbaxter users      163 Jan  2 17:32 dgbtf2.h
+-rw-------   1 dbaxter users    11128 Jan  2 17:32 dgbtf2.c
+-rw-------   1 dbaxter users      839 Jan  2 17:32 Makefile.head
+-rw-------   1 dbaxter users      129 Jan  2 17:32 dsort_pairs_in_place.h
+-rw-------   1 dbaxter users      303 Jan  2 17:32 dsort_pairs_in_place.c
+-rw-------   1 dbaxter users      124 Jan  2 17:32 dsort_pairs.h
+-rw-------   1 dbaxter users       56 Jan  2 17:32 dsort.h
+-rw-------   1 dbaxter users     1866 Jan  2 17:32 dsort.c
+-rw-------   1 dbaxter users      117 Jan  2 17:32 pairwise_sum.h
+-rw-------   1 dbaxter users      698 Jan  2 17:32 pairwise_sum.c
+-rw-------   1 dbaxter users      106 Jan  2 17:32 dreverse_list.h
+-rw-------   1 dbaxter users      317 Jan  2 17:32 dreverse_list.c
+-rw-------   1 dbaxter users      116 Jan  2 17:32 stable_add.h
+-rw-------   1 dbaxter users     1891 Jan  2 17:32 stable_add.c
+-rw-------   1 dbaxter users     1427 Jan  2 17:32 molecules_matrix_struct.h
+-rw-------   1 dbaxter users     2992 Jan  2 17:32 reactions_matrix_struct.h
+-rw-------   1 dbaxter users      218 Jan  2 17:32 lr11_approximate_delta_concs.h
+-rw-------   1 dbaxter users      216 Jan  2 17:32 lr12_approximate_delta_concs.h
+-rw-------   1 dbaxter users      128 Jan  2 17:32 dmerge.h
+-rw-------   1 dbaxter users     1135 Jan  2 17:32 dmerge.c
+-rw-------   1 dbaxter users     4601 Jan  2 17:32 alloc4.c
+-rw-------   1 dbaxter users     3231 Jan  2 17:32 form_molecules_matrix.c
+-rw-------   1 dbaxter users     1790 Jan  2 17:32 crs_column_sort_rows.c
+-rw-------   1 dbaxter users     1018 Jan  2 17:32 update_regulations.c
+-rw-------   1 dbaxter users     3709 Jan  2 17:32 print_counts.c
+-rw-------   1 dbaxter users     3997 Jan  2 17:32 ode_print_concs_header.c
+-rw-------   1 dbaxter users     7640 Jan  2 17:32 deq_run.c
+-rw-------   1 dbaxter users     5107 Jan  2 17:32 num_jac_col.c
+-rw-------   1 dbaxter users      230 Jan  2 17:32 boltzmann_sparse_to_dense.h
+-rw-------   1 dbaxter users      210 Jan  2 17:32 boltzmann_dense_to_sparse.h
+-rw-------   1 dbaxter users      902 Jan  2 17:32 boltzmann_dense_to_sparse.c
+-rw-------   1 dbaxter users      135 Jan  2 17:32 ode_solver.h
+-rw-------   1 dbaxter users      113 Jan  2 17:32 ode23tb.h
+-rw-------   1 dbaxter users     1057 Jan  2 17:32 ode23tb_params_struct.h
+-rw-------   1 dbaxter users     3637 Jan  2 17:32 print_restart_file.c
+-rw-------   1 dbaxter users     5855 Jan  2 17:32 lr2_approximate_delta_concs.c
+-rw-------   1 dbaxter users     5837 Jan  2 17:32 lr3_approximate_delta_concs.c
+-rw-------   1 dbaxter users     5869 Jan  2 17:32 lr4_approximate_delta_concs.c
+-rw-------   1 dbaxter users      218 Jan  2 17:32 lr13_approximate_delta_concs.h
+-rw-------   1 dbaxter users      666 Jan  2 17:32 print_dense_jacobian.c
+-rw-------   1 dbaxter users      141 Jan  2 17:32 print_dense_jacobian.h
+-rw-------   1 dbaxter users      707 Jan  2 17:32 print_sparse_jacobian.c
+-rw-------   1 dbaxter users      188 Jan  2 17:32 print_sparse_jacobian.h
+-rw-------   1 dbaxter users      789 Jan  2 17:32 boltzmann_sparse_to_dense.c
+-rw-------   1 dbaxter users     5037 Jan  2 17:32 lr1_approximate_delta_concs.c
+-rw-------   1 dbaxter users     4541 Jan  2 17:32 lr5_approximate_delta_concs.c
+-rw-------   1 dbaxter users      218 Jan  2 17:32 lr14_approximate_delta_concs.h
+-rw-------   1 dbaxter users     2909 Jan  2 17:32 print_free_energy.c
+-rw-------   1 dbaxter users     2409 Jan  2 17:32 reaction_struct.h
+-rw-------   1 dbaxter users     3318 Jan  2 17:32 ode_print_concs.c
+-rw-------   1 dbaxter users      177 Jan  2 17:32 blas.h
+-rw-------   1 dbaxter users     1620 Jan  2 17:32 boltzmann_structs.h
+-rw-------   1 dbaxter users      147 Jan  2 17:32 dgetrf.h
+-rw-------   1 dbaxter users      228 Jan  2 17:32 dgemv.h
+-rw-------   1 dbaxter users      123 Jan  2 17:32 non_cvode_blas.h
+-rw-------   1 dbaxter users      114 Jan  2 17:32 lsame.h
+-rw-------   1 dbaxter users      279 Jan  2 17:32 dtrsm.h
+-rw-------   1 dbaxter users      188 Jan  2 17:32 dgetrs.h
+-rw-------   1 dbaxter users      342 Jan  2 17:32 dgemm.h
+-rw-------   1 dbaxter users     4152 Jan  2 17:32 cvodes_params_struct.h
+-rw-------   1 dbaxter users      175 Jan  2 17:32 boltzmann_cvodes_init.h
+-rw-------   1 dbaxter users      136 Jan  2 17:32 approximate_ys0.h
+-rw-------   1 dbaxter users     1104 Jan  2 17:32 approximate_ys0.c
+-rw-------   1 dbaxter users      172 Jan  2 17:32 lr8_approximate_ys0.h
+-rw-------   1 dbaxter users     2523 Jan  2 17:32 boltzmann_print_sensitivities.c
+-rw-------   1 dbaxter users      164 Jan  2 17:32 boltzmann_print_sensitivities.h
+-rw-------   1 dbaxter users     1455 Jan  2 17:32 boltzmann_check_cvodesens_errors.c
+-rw-------   1 dbaxter users      247 Jan  2 17:32 boltzmann_check_cvodesens_errors.h
+-rw-------   1 dbaxter users     1441 Jan  2 17:32 precondition_newton_matrix.c
+-rw-------   1 dbaxter users     6774 Jan  2 17:32 iluvf.c
+-rw-------   1 dbaxter users     2276 Jan  2 17:32 compute_flattened_state_size.c
+-rw-------   1 dbaxter users     1715 Jan  2 17:32 build_newton_matrix.c
+-rw-------   1 dbaxter users     3087 Jan  2 17:32 boltzmann_set_cvodes_linear_solver.c
+-rw-------   1 dbaxter users     2929 Jan  2 17:32 boltzmann_print_cvode_error.c
+-rw-------   1 dbaxter users     1771 Jan  2 17:32 boltzmann_cvodes_jtimes.c
+-rw-------   1 dbaxter users      993 Jan  2 17:32 boltzmann_cvodes_fsolve.c
+-rw-------   1 dbaxter users     1025 Jan  2 17:32 boltzmann_cvodes_bsolve.c
+-rw-------   1 dbaxter users     3551 Jan  2 17:32 approximate_jacobian.c
+-rw-------   1 dbaxter users     4355 Jan  2 17:32 rxn_likelihood_postselection.c
+-rw-------   1 dbaxter users     1797 Jan  2 17:32 lsame.c
+-rw-------   1 dbaxter users     3554 Jan  2 17:32 blas.c
+-rw-------   1 dbaxter users    18862 Jan  2 17:32 dtbsv.c
+-rw-------   1 dbaxter users    12103 Jan  2 17:32 dtrsm.c
+-rw-------   1 dbaxter users     2670 Jan  2 17:32 dgetrs.c
+-rw-------   1 dbaxter users     6084 Jan  2 17:32 ode_it_solve.c
+-rw-------   1 dbaxter users    10588 Jan  2 17:32 dgbtrs.c
+-rw-------   1 dbaxter users     5442 Jan  2 17:32 dgemm.c
+-rw-------   1 dbaxter users    23063 Jan  2 17:32 dgbtrf.c
+-rw-------   1 dbaxter users     4621 Jan  2 17:32 dgetrf2.c
+-rw-------   1 dbaxter users     3374 Jan  2 17:32 dgetrf.c
+-rw-------   1 dbaxter users     9104 Jan  2 17:32 lr6_approximate_delta_concs.c
+-rw-------   1 dbaxter users     8213 Jan  2 17:32 lr9_approximate_delta_concs.c
+-rw-------   1 dbaxter users     7229 Jan  2 17:32 lr13_approximate_delta_concs.c
+-rw-------   1 dbaxter users     2605 Jan  2 17:32 bndry_flux_update.c
+-rw-------   1 dbaxter users    12182 Jan  2 17:32 boltzmann_cvodes_init.c
+-rw-------   1 dbaxter users      184 Jan  2 17:32 ode_test_steady_state.h
+-rw-------   1 dbaxter users       21 Jan  2 17:32 NEWS
+-rw-------   1 dbaxter users        0 Jan  2 17:32 .missing
+-rw-------   1 dbaxter users     9683 Jan  2 17:32 ECL-2.0_LICENSE_TERMS.TXT
+-rw-------   1 dbaxter users      807 Jan  2 17:32 COPYING
+-rw-------   1 dbaxter users       14 Jan  2 17:32 ChangeLog
+-rw-------   1 dbaxter users    34611 Jan  2 17:38 aclocal.m4
+-rw-------   1 dbaxter users      143 Jan  3 09:58 test.c
+-rw-------   1 dbaxter users     1482 Jan  3 10:00 is_a_coef.c
+-rw-------   1 dbaxter users     9646 Jan  3 10:15 parse_side_line.c
+-rw-------   1 dbaxter users    14987 Jan  3 16:09 tmp.csh
+-rw-------   1 dbaxter users       62 Jan  3 17:47 additional_ode_derivative_params.html
+-rw-------   1 dbaxter users     2774 Jan  3 17:47 boltzmann.html
+-rw-------   1 dbaxter users      652 Jan  3 17:47 control_parameters.html
+-rw-------   1 dbaxter users     1816 Jan  3 17:47 input_files.html
+-rw-------   1 dbaxter users     3996 Jan  3 17:47 generic_ode.html
+-rw-------   1 dbaxter users      669 Jan  3 17:47 ode_parameters.html
+-rw-------   1 dbaxter users     4490 Jan  3 17:47 output_files.html
+-rw-------   1 dbaxter users     1594 Jan  3 17:47 physical_constants.html
+-rw-------   1 dbaxter users      667 Jan  3 17:47 parameter_file.html
+-rw-------   1 dbaxter users     2849 Jan  4 10:25 count_molecules.c
+drwx------   5 dbaxter users     4096 Jan  4 10:26 sundials-2.7.0
+-rw-------   1 dbaxter users     6446 Jan  4 13:52 rxn_likelihood.c
+-rw-------   1 dbaxter users     2761 Jan  5 10:10 ode_test_steady_state.c
+-rw-------   1 dbaxter users     2620 Jan  8 15:34 lr.doc
+-rw-------   1 dbaxter users    13053 Jan  9 10:51 delta_concs_choice.html
+-rw-------   1 dbaxter users    30127 Jan 10 11:10 ode23tbp.c
+-rw-------   1 dbaxter users    10431 Jan 11 11:13 alloc7.c
+-rw-------   1 dbaxter users      156 Jan 11 11:18 compute_dfdke_dfdmu0.h
+-rw-------   1 dbaxter users     1713 Jan 11 11:21 ode_solver.c
+-rw-------   1 dbaxter users     6222 Jan 11 15:21 compute_dfdke_dfdmu0.c
+-rw-------   1 dbaxter users     4048 Feb  5 16:44 boltzmann_set_filename_ptrs.c
+-rw-------   1 dbaxter users     9582 Feb  5 16:47 create_output_filenames.c
+-rw-------   1 dbaxter users    28089 Feb  5 16:49 read_params.c
+-rw-------   1 dbaxter users    10097 Feb  5 16:52 echo_params.c
+-rw-------   1 dbaxter users     3449 Feb  5 16:56 alloc0_a.c
+-rw-------   1 dbaxter users     1353 Feb  5 16:58 echo_inputs.c
+-rw-------   1 dbaxter users     2972 Feb  5 17:00 run_init.c
+-rw-------   1 dbaxter users      156 Feb  5 17:02 print_active_reactions_matrix.h
+-rw-------   1 dbaxter users      945 Feb  5 17:13 commit.msg
+-rw-------   1 dbaxter users     5423 Feb  5 17:22 print_reactions_matrix.c
+-rwx--x--x   1 dbaxter users      435 Feb  5 17:34 build_master_tar.pl
+-rw-------   1 dbaxter users     5761 Feb 13 10:43 print_active_reactions_matrix.c
+-rw-------   1 dbaxter users    17580 Feb 22 10:36 state_struct.h
+-rw-------   1 dbaxter users     4428 Feb 22 10:47 init_rxn_file_keywords.c
+-rw-------   1 dbaxter users    27286 Feb 22 10:49 boltzmann_set_state_ptrs.c
+-rw-------   1 dbaxter users    25770 Feb 22 14:50 parse_reactions_file.c
+-rw-------   1 dbaxter users      160 Feb 22 14:51 boltzmann_compress_reactions.h
+-rw-------   1 dbaxter users    85076 Feb 22 14:55 Makefile.body
+-rwx------   1 dbaxter users    13663 Feb 22 14:55 install-sh
+-rwx------   1 dbaxter users    11419 Feb 22 14:55 missing
+-rw-------   1 dbaxter users    15578 Feb 22 14:55 INSTALL
+-rw-------   1 dbaxter users    99515 Feb 22 14:55 Makefile.in
+drwx------   2 dbaxter users     4096 Feb 22 14:55 autom4te.cache
+-rwx------   1 dbaxter users   142312 Feb 22 14:55 configure
+-rw-------   1 dbaxter users    99878 Feb 22 14:56 Makefile
+-rw-------   1 dbaxter users     5787 Feb 22 15:00 boltzmann_compress_reactions.c
+-rw-------   1 dbaxter users    12955 Feb 22 15:12 alloc2.c
+-rw-------   1 dbaxter users     8449 Feb 26 09:24 alloc0.c
+-rw-------   1 dbaxter users    10131 Feb 26 09:26 alloc3.c
+-rw-------   1 dbaxter users     4083 Feb 26 09:27 alloc5.c
+-rw-------   1 dbaxter users     3393 Feb 26 09:28 size_pseudoisomer_file.c
+-rw-------   1 dbaxter users     2722 Feb 26 09:29 molecules_lookup.c
+-rw-------   1 dbaxter users     3959 Feb 26 09:30 update_regulation.c
+-rw-------   1 dbaxter users     1229 Feb 26 09:30 print_rxn_choice.c
+-rw-------   1 dbaxter users     6600 Feb 26 09:31 print_reactions_view.c
+-rw-------   1 dbaxter users     4665 Feb 26 09:32 sbml_alloc1.c
+-rw-------   1 dbaxter users     7748 Feb 26 09:33 sbml_process_list_of_compartments.c
+-rw-------   1 dbaxter users     7711 Feb 26 09:34 sbml_generate_init_conc_line.c
+-rw-------   1 dbaxter users     2184 Feb 26 09:35 sbml_find_string.c
+-rw-------   1 dbaxter users     4414 Feb 26 09:39 sbml_process_species_reference_tag.c
+-rw-------   1 dbaxter users     4871 Feb 26 09:41 approximate_delta_concs.c
+-rw-------   1 dbaxter users     7384 Feb 26 09:42 lr8_approximate_delta_concs.c
+-rw-------   1 dbaxter users     7839 Feb 26 09:42 lr10_approximate_delta_concs.c
+-rw-------   1 dbaxter users     7924 Feb 26 09:43 lr11_approximate_delta_concs.c
+-rw-------   1 dbaxter users      577 Feb 26 09:44 dsort_pairs.c
+-rw-------   1 dbaxter users     8549 Feb 26 09:45 lr12_approximate_delta_concs.c
+-rw-------   1 dbaxter users     8130 Feb 26 09:45 lr14_approximate_delta_concs.c
+-rw-------   1 dbaxter users     2121 Feb 26 09:48 boltzmann_size_jacobian.c
+-rw-------   1 dbaxter users     2950 Feb 26 09:48 lr8_approximate_ys0.c
+-rw-------   1 dbaxter users     1666 Feb 26 09:51 boltzmann_cvodes_psolve.c
+-rw-------   1 dbaxter users    14859 Feb 26 09:53 lapack_test.c
+-rw-------   1 dbaxter users     1992 Feb 26 09:54 bwarmup.c
+-rw-------   1 dbaxter users     6461 Feb 26 09:54 bwarmup_run.c
+-rw-------   1 dbaxter users    13406 Feb 26 09:54 boltzmann_cvodes.c
+-rw-------   1 dbaxter users    30104 Feb 26 09:54 ode23tb.c
+-rw-------   1 dbaxter users    11325 Feb 26 09:59 lr8_approximate_jacobian.c
+-rw-------   1 dbaxter users     8750 Feb 26 09:59 sbml_process_list_of_reactions.c
+-rw-------   1 dbaxter users     4939 Feb 26 10:03 compute_delta_g_forward_entropy_free_energy.c
+-rw-------   1 dbaxter users    10901 Feb 26 10:06 ode_num_jac.c
+-rw-------   1 dbaxter users     7589 Mar  5 10:50 lr7_approximate_delta_concs.c
+
+-rw-------   1 dbaxter users     4770 Mar  2 11:33 algorithm_parameters.html
+-rw-------   1 dbaxter users  5993304 Mar  5 10:20 libboltzmann.a
+-rwx------   1 dbaxter users  2375137 Mar  5 10:20 boltzmann
+-rwx------   1 dbaxter users  2375003 Mar  5 10:20 deq
+-rwx------   1 dbaxter users    56643 Mar  5 10:20 lapack_test
+-rwx------   1 dbaxter users  2377447 Mar  5 10:20 sbml2bo
+-rwx------   1 dbaxter users    16314 Mar  5 10:20 kegg_ms_ids
+-rwx------   1 dbaxter users    14407 Mar  5 10:20 ms2js_ids
+-rwx------   1 dbaxter users    14999 Mar  5 10:20 kegg_ids
+-rwx------   1 dbaxter users  2384225 Mar  5 10:20 bwarmup
+-rwx------   1 dbaxter users  2564336 Mar  5 10:20 boltzmann_test_save_load
+-rw-------   1 dbaxter users        5 Mar  6 09:53 version
+drwx------   8 dbaxter users     4096 Mar  6 09:53 .git
+drwx------ 134 dbaxter users    12288 Mar  6 09:54 ..
+-rw-------   1 dbaxter users     2065 Apr 19 09:46 git.lis
+-rw-------   1 dbaxter users        0 Apr 19 09:47 ls.lis
+drwx------   5 dbaxter users   282624 Apr 19 09:47 .
