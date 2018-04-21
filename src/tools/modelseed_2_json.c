@@ -55,13 +55,13 @@ int main(int argc, char **argv) {
   line_len = 1048576;
   mline = (char *)&mline_c[0];
   jline = (char *)&jline_c[0];
-  msfp = fopen("kegg_2_modelseed.srt","r");
+  msfp = fopen("../data/kegg_2_modelseed.srt","r");
   if (msfp != NULL) {
-    jsfp = fopen("kegg_2_json.srt","r");
+    jsfp = fopen("../data/kegg_2_json.srt","r");
     if (jsfp != NULL) {
-      m2jfp = fopen("modelseed_2_json.dat","w");
+      m2jfp = fopen("../data/modelseed_2_json.dat","w");
       if (m2jfp != NULL) {
-	mmfp = fopen("modelseed_json_mismatches","w");
+	mmfp = fopen("../data/modelseed_json_mismatches","w");
 	if (mmfp != NULL) {
 	  jp = fgets(jline,line_len,jsfp);
 	  /*
@@ -127,6 +127,6 @@ int main(int argc, char **argv) {
   } else {
     fprintf(stderr,"unable to open kegg_2_modelseed.srt\n");
   }
-  system("sort -k 1 -u modelseed_2_json.dat > modelseed_2_json.srt");  
+  system("sort -k 1 -u ../data/modelseed_2_json.dat > ../data/modelseed_2_json.srt");  
   return(0);
 }

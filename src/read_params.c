@@ -92,8 +92,8 @@ int read_params (char *param_file_name, struct state_struct *state) {
     */
 
     strcpy(state->reaction_file,"./rxns.dat");
-    strcpy(state->ms2js_file,"./modelseed_2_json.srt");
-    strcpy(state->pseudoisomer_file,"./pseudoisomer_dg0f.txt");
+    strcpy(state->ms2js_file,"../data/modelseed_2_json.srt");
+    strcpy(state->pseudoisomer_file,"../data/pseudoisomer_dg0f.txt");
     /*
     strcpy(state->init_conc_file,"./rxns.concs");
     strcpy(state->log_file,"./boltzmann.log");

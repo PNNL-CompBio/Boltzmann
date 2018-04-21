@@ -33,7 +33,7 @@ int main(int argc, char **argv) {
   /*
     This routine produces a file of unique modelseed_id's sorted by kegg_id,
     "kegg_2_modelseed.srt" from the
-    "modelseeed_compounds_db.txt" file.
+    "modelseed_compounds_db.txt" file.
     It also produces a "modelseed_multiple_kegg_id.txt" file which is a list 
     of modelseed id's having more than one kegg_id.
     In the process it creates a sorted list of modelseed id's with spaces
@@ -65,10 +65,10 @@ int main(int argc, char **argv) {
   FILE *modelseed_w_ws_fp;
   FILE *unsorted_ids_fp;
   FILE *multiple_kegg_fp;
-  infp = fopen("modelseed_compounds_db.txt","r");
-  modelseed_w_ws_fp = fopen("unsorted_modelseed_ids_with_spaces.txt","w");
-  unsorted_ids_fp = fopen("unsorted_modelseed_ids.txt","w");
-  multiple_kegg_fp = fopen("modelseed_multiple_kegg_id.txt","w");
+  infp = fopen("../data/modelseed_compounds_db.txt","r");
+  modelseed_w_ws_fp = fopen("../data/unsorted_modelseed_ids_with_spaces.txt","w");
+  unsorted_ids_fp = fopen("../data/unsorted_modelseed_ids.txt","w");
+  multiple_kegg_fp = fopen("../data/modelseed_multiple_kegg_id.txt","w");
   if (infp == NULL) {
     fprintf(stderr,"kegg_from_modelseed could not open modelseed_compounds_db.txt\n");
     fflush(stderr);
@@ -160,8 +160,8 @@ int main(int argc, char **argv) {
     fclose(modelseed_w_ws_fp);
     fclose(unsorted_ids_fp);
     fclose(multiple_kegg_fp);
-    system("sort -k 1 -u unsorted_modelseed_ids.txt > kegg_2_modelseed.srt");
-    system("sort -k 1 -u unsorted_modelseed_ids_with_spaces.txt > modelseed_ids_with_spaces.txt");
+    system("sort -k 1 -u ../data/unsorted_modelseed_ids.txt > ../data/kegg_2_modelseed.srt");
+    system("sort -k 1 -u ../data/unsorted_modelseed_ids_with_spaces.txt > ../data/modelseed_ids_with_spaces.txt");
   }
   return(0);
 }

@@ -55,9 +55,9 @@ int main(int argc, char **argv) {
   FILE *infp;
   FILE *json_w_ws_fp;
   FILE *unsorted_ids_fp;
-  infp = fopen("pseudoisomer_dg0f.txt","r");
-  json_w_ws_fp = fopen("unsorted_json_ids_with_spaces.txt","w");
-  unsorted_ids_fp = fopen("unsorted_ids.txt","w");
+  infp = fopen("../data/pseudoisomer_dg0f.txt","r");
+  json_w_ws_fp = fopen("../data/unsorted_json_ids_with_spaces.txt","w");
+  unsorted_ids_fp = fopen("../data/unsorted_ids.txt","w");
   if (infp == NULL) {
     fprintf(stderr,"kegg_from_pseudoisomer could not open pseudoisomer_dg0f.txt\n");
     fflush(stderr);
@@ -101,8 +101,8 @@ int main(int argc, char **argv) {
     } /* end while() */
     fclose(json_w_ws_fp);
     fclose(unsorted_ids_fp);
-    system("sort -k 1 -u unsorted_ids.txt > kegg_2_json.srt");
-    system("sort -k 1 -u unsorted_json_ids_with_spaces.txt > json_ids_with_spaces.txt");
+    system("sort -k 1 -u ../data/unsorted_ids.txt > ../data/kegg_2_json.srt");
+    system("sort -k 1 -u ../data/unsorted_json_ids_with_spaces.txt > ../data/json_ids_with_spaces.txt");
   }
   return(0);
 }
