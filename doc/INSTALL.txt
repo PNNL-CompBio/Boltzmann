@@ -1,10 +1,10 @@
 To build
 
 1.  Untar,
+2.  cd src
 2.  Modify the Makefile.head file to fit your build environment.
 3.  ./configure
 4.  make 
 
-builds a libboltzmann.a library and boltzmann executable.
-
-
+builds a libboltzmann.a library and bin/boltzmann executable and some auxiliary
+executables in the bin directory.

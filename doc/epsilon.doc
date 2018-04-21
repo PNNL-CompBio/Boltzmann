@@ -1,5 +1,0 @@
-Added epsilon parameter for use in choose_rxn.
- if (1-1/(1+sum_likelihoods)) < epsilon, quit returning a -1.
-This is almost (but not quite) the same as if sum_likelihoods < epsilon
-quit.
-M    state_struct.h
