@@ -1,5 +1,0 @@
-RXN_FILE schlogl_extended.dat
-INIT_FILE schlogl_extended_concs.in
-LOG_FILE  schlogl_extended.log
-OUT_FILE  schlogl_extended.out
-TEMP_KELVIN 298.15

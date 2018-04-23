@@ -1,6 +1,22 @@
-William Cannon <william.cannon@pnnl.gov> statistical thermodynamics
-Douglas Baxter <douglas.baxter@pnnl.gov>  main coder
-David Brown <david.brown@pnnl.gov>  autoconf pieces
-Dennis Thomas <dennis.thomas@pnnl.gov> pseudoisomer data file
-+MATLAB ode23tb translation, and 
-SUNDIALS package.
+William Cannon <william.cannon@pnnl.gov> developed the
+statistical thermodynamics concepts and
+algorithms use in the boltzmann package, and generated the examples.
+
+Douglas Baxter <douglas.baxter@pnnl.gov> is the lead programer and
+developed most of the source code, including the adaptation of the
+MATLAB ode23tb routine for an ode solver, and incorporation of the
+SUNDIALS cvodes package.
+
+David Brown <david.brown@pnnl.gov>
+  provided the autoconf pieces
+
+Dennis Thomas <dennis.thomas@pnnl.gov> provided pseudoisomer data file
+and some code modifications usually denoted by a comment containing
+"DGT". The pseudoisomer data was downloaded from
+http://equilibrator.weizmann.ac.il.
+
+We use a derivative of the matlab ode23tb for one of our ode solvers.
+
+The SUNDIALS package from Lawrence Livermore National Laboratory by
+A.C. Nidmarsh and R. Serban provied an alternate ode solver for the
+boltzmann code.

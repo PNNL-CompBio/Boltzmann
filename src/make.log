@@ -1,0 +1,635 @@
+gcc  -g -O2 -fPIC -Wall -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/include -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/include/sundials -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/include/cvodes -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/include/cvode -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/include/nvector -I. -I/home/dbaxter/boltzmann/git/src -I/home/dbaxter/boltzmann/git/src/../include -I/home/dbaxter/boltzmann/git/src/tools -I/home/dbaxter/boltzmann/git/src/ode23tb -I/home/dbaxter/boltzmann/git/src/sbml_interface -I/home/dbaxter/boltzmann/git/src/blas -I/home/dbaxter/boltzmann/git/src/lapack -I/home/dbaxter/boltzmann/git/src/cvodes_interface -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/include -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/include/sundials -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/include/cvodes -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/include/cvode -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/include/nvector -I. -I/home/dbaxter/boltzmann/git/src -I/home/dbaxter/boltzmann/git/src/../include -I/home/dbaxter/boltzmann/git/src/tools -I/home/dbaxter/boltzmann/git/src/ode23tb -I/home/dbaxter/boltzmann/git/src/sbml_interface -I/home/dbaxter/boltzmann/git/src/blas -I/home/dbaxter/boltzmann/git/src/lapack -I/home/dbaxter/boltzmann/git/src/cvodes_interface   -c boltzmann_print_sensitivities.c
+boltzmann_print_sensitivities.c: In function ‘boltzmann_print_sensitivities’:
+boltzmann_print_sensitivities.c:24: warning: unused variable ‘efp’
+gcc  -g -O2 -fPIC -Wall -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/include -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/include/sundials -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/include/cvodes -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/include/cvode -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/include/nvector -I. -I/home/dbaxter/boltzmann/git/src -I/home/dbaxter/boltzmann/git/src/../include -I/home/dbaxter/boltzmann/git/src/tools -I/home/dbaxter/boltzmann/git/src/ode23tb -I/home/dbaxter/boltzmann/git/src/sbml_interface -I/home/dbaxter/boltzmann/git/src/blas -I/home/dbaxter/boltzmann/git/src/lapack -I/home/dbaxter/boltzmann/git/src/cvodes_interface -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/include -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/include/sundials -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/include/cvodes -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/include/cvode -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/include/nvector -I. -I/home/dbaxter/boltzmann/git/src -I/home/dbaxter/boltzmann/git/src/../include -I/home/dbaxter/boltzmann/git/src/tools -I/home/dbaxter/boltzmann/git/src/ode23tb -I/home/dbaxter/boltzmann/git/src/sbml_interface -I/home/dbaxter/boltzmann/git/src/blas -I/home/dbaxter/boltzmann/git/src/lapack -I/home/dbaxter/boltzmann/git/src/cvodes_interface   -c tools/bwarmup_run.c
+ar -crv libboltzmann.a boltzmann_init.o
+a - boltzmann_init.o
+ar -crv libboltzmann.a alloc0.o
+a - alloc0.o
+ar -crv libboltzmann.a alloc0_a.o
+a - alloc0_a.o
+ar -crv libboltzmann.a boltzmann_set_filename_ptrs.o
+a - boltzmann_set_filename_ptrs.o
+ar -crv libboltzmann.a read_params.o
+a - read_params.o
+ar -crv libboltzmann.a boltzmann_init_core.o
+a - boltzmann_init_core.o
+ar -crv libboltzmann.a io_size_init.o
+a - io_size_init.o
+ar -crv libboltzmann.a create_output_filenames.o
+a - create_output_filenames.o
+ar -crv libboltzmann.a open_output_files.o
+a - open_output_files.o
+ar -crv libboltzmann.a size_rxns_file.o
+a - size_rxns_file.o
+ar -crv libboltzmann.a init_rxn_file_keywords.o
+a - init_rxn_file_keywords.o
+ar -crv libboltzmann.a parse_rxn_file_keyword.o
+a - parse_rxn_file_keyword.o
+ar -crv libboltzmann.a count_molecules.o
+a - count_molecules.o
+ar -crv libboltzmann.a count_ws.o
+a - count_ws.o
+ar -crv libboltzmann.a count_nws.o
+a - count_nws.o
+ar -crv libboltzmann.a is_a_coef.o
+a - is_a_coef.o
+ar -crv libboltzmann.a alloc2.o
+a - alloc2.o
+ar -crv libboltzmann.a alloc2_a.o
+a - alloc2_a.o
+ar -crv libboltzmann.a rxns_init.o
+a - rxns_init.o
+ar -crv libboltzmann.a parse_reactions_file.o
+a - parse_reactions_file.o
+ar -crv libboltzmann.a parse_side_line.o
+a - parse_side_line.o
+ar -crv libboltzmann.a upcase.o
+a - upcase.o
+ar -crv libboltzmann.a find_colon.o
+a - find_colon.o
+ar -crv libboltzmann.a boltzmann_compress_reactions.o
+a - boltzmann_compress_reactions.o
+ar -crv libboltzmann.a sort_compartments.o
+a - sort_compartments.o
+ar -crv libboltzmann.a merge_compartments.o
+a - merge_compartments.o
+ar -crv libboltzmann.a unique_compartments.o
+a - unique_compartments.o
+ar -crv libboltzmann.a unique_compartments_core.o
+a - unique_compartments_core.o
+ar -crv libboltzmann.a translate_compartments.o
+a - translate_compartments.o
+ar -crv libboltzmann.a sort_molecules.o
+a - sort_molecules.o
+ar -crv libboltzmann.a merge_molecules.o
+a - merge_molecules.o
+ar -crv libboltzmann.a unique_molecules.o
+a - unique_molecules.o
+ar -crv libboltzmann.a unique_molecules_core.o
+a - unique_molecules_core.o
+ar -crv libboltzmann.a alloc3.o
+a - alloc3.o
+ar -crv libboltzmann.a species_init.o
+a - species_init.o
+ar -crv libboltzmann.a set_compartment_ptrs.o
+a - set_compartment_ptrs.o
+ar -crv libboltzmann.a set_count_trans.o
+a - set_count_trans.o
+ar -crv libboltzmann.a translate_regulation_metabolites.o
+a - translate_regulation_metabolites.o
+ar -crv libboltzmann.a molecules_lookup.o
+a - molecules_lookup.o
+ar -crv libboltzmann.a read_compartment_sizes.o
+a - read_compartment_sizes.o
+ar -crv libboltzmann.a read_initial_concentrations.o
+a - read_initial_concentrations.o
+ar -crv libboltzmann.a compartment_lookup.o
+a - compartment_lookup.o
+ar -crv libboltzmann.a check_initial_concentrations.o
+a - check_initial_concentrations.o
+ar -crv libboltzmann.a energy_init.o
+a - energy_init.o
+ar -crv libboltzmann.a compute_standard_energies.o
+a - compute_standard_energies.o
+ar -crv libboltzmann.a size_pseudoisomer_file.o
+a - size_pseudoisomer_file.o
+ar -crv libboltzmann.a alloc5.o
+a - alloc5.o
+ar -crv libboltzmann.a parse_pseudoisomer_dg0f_file.o
+a - parse_pseudoisomer_dg0f_file.o
+ar -crv libboltzmann.a sharp_pos.o
+a - sharp_pos.o
+ar -crv libboltzmann.a blank_to_dash.o
+a - blank_to_dash.o
+ar -crv libboltzmann.a alloc6.o
+a - alloc6.o
+ar -crv libboltzmann.a compute_molecule_dg0tfs.o
+a - compute_molecule_dg0tfs.o
+ar -crv libboltzmann.a compute_molecule_dg0tf.o
+a - compute_molecule_dg0tf.o
+ar -crv libboltzmann.a pseudoisomer_dg0tf.o
+a - pseudoisomer_dg0tf.o
+ar -crv libboltzmann.a compute_molecular_partition_probability.o
+a - compute_molecular_partition_probability.o
+ar -crv libboltzmann.a compute_chemical_potential.o
+a - compute_chemical_potential.o
+ar -crv libboltzmann.a compute_reaction_dg0.o
+a - compute_reaction_dg0.o
+ar -crv libboltzmann.a unalloc6.o
+a - unalloc6.o
+ar -crv libboltzmann.a compute_ke.o
+a - compute_ke.o
+ar -crv libboltzmann.a zero_solvent_coefficients.o
+a - zero_solvent_coefficients.o
+ar -crv libboltzmann.a compute_kss.o
+a - compute_kss.o
+ar -crv libboltzmann.a echo_inputs.o
+a - echo_inputs.o
+ar -crv libboltzmann.a echo_params.o
+a - echo_params.o
+ar -crv libboltzmann.a echo_reactions_file.o
+a - echo_reactions_file.o
+ar -crv libboltzmann.a print_molecules_dictionary.o
+a - print_molecules_dictionary.o
+ar -crv libboltzmann.a print_dg0_ke.o
+a - print_dg0_ke.o
+ar -crv libboltzmann.a recover_solvent_coefficients.o
+a - recover_solvent_coefficients.o
+ar -crv libboltzmann.a run_init.o
+a - run_init.o
+ar -crv libboltzmann.a vgrng_init.o
+a - vgrng_init.o
+ar -crv libboltzmann.a vgrng.o
+a - vgrng.o
+ar -crv libboltzmann.a alloc8.o
+a - alloc8.o
+ar -crv libboltzmann.a alloc9.o
+a - alloc9.o
+ar -crv libboltzmann.a print_reactions_matrix.o
+a - print_reactions_matrix.o
+ar -crv libboltzmann.a print_active_reactions_matrix.o
+a - print_active_reactions_matrix.o
+ar -crv libboltzmann.a print_rxn_likelihoods_header.o
+a - print_rxn_likelihoods_header.o
+ar -crv libboltzmann.a print_free_energy_header.o
+a - print_free_energy_header.o
+ar -crv libboltzmann.a boltzmann_run.o
+a - boltzmann_run.o
+ar -crv libboltzmann.a boltzmann_load_agent_data.o
+a - boltzmann_load_agent_data.o
+ar -crv libboltzmann.a boltzmann_build_agent_data_block.o
+a - boltzmann_build_agent_data_block.o
+ar -crv libboltzmann.a boltzmann_save_agent_data.o
+a - boltzmann_save_agent_data.o
+ar -crv libboltzmann.a boltzmann_flatten_vgrng_state.o
+a - boltzmann_flatten_vgrng_state.o
+ar -crv libboltzmann.a update_rxn_log_likelihoods.o
+a - update_rxn_log_likelihoods.o
+ar -crv libboltzmann.a choose_rxn.o
+a - choose_rxn.o
+ar -crv libboltzmann.a bndry_flux_update.o
+a - bndry_flux_update.o
+ar -crv libboltzmann.a candidate_rxn.o
+a - candidate_rxn.o
+ar -crv libboltzmann.a metropolis.o
+a - metropolis.o
+ar -crv libboltzmann.a rxn_likelihood.o
+a - rxn_likelihood.o
+ar -crv libboltzmann.a rxn_likelihood_postselection.o
+a - rxn_likelihood_postselection.o
+ar -crv libboltzmann.a rxn_log_likelihoods.o
+a - rxn_log_likelihoods.o
+ar -crv libboltzmann.a rxn_likelihoods.o
+a - rxn_likelihoods.o
+ar -crv libboltzmann.a binary_search_l_u_b.o
+a - binary_search_l_u_b.o
+ar -crv libboltzmann.a update_regulations.o
+a - update_regulations.o
+ar -crv libboltzmann.a update_regulation.o
+a - update_regulation.o
+ar -crv libboltzmann.a rxn_count_update.o
+a - rxn_count_update.o
+ar -crv libboltzmann.a compute_delta_g_forward_entropy_free_energy.o
+a - compute_delta_g_forward_entropy_free_energy.o
+ar -crv libboltzmann.a boltzmann_watch.o
+a - boltzmann_watch.o
+ar -crv libboltzmann.a print_rxn_choice.o
+a - print_rxn_choice.o
+ar -crv libboltzmann.a print_counts.o
+a - print_counts.o
+ar -crv libboltzmann.a print_likelihoods.o
+a - print_likelihoods.o
+ar -crv libboltzmann.a save_likelihoods.o
+a - save_likelihoods.o
+ar -crv libboltzmann.a print_free_energy.o
+a - print_free_energy.o
+ar -crv libboltzmann.a check_initial_concentrations.o
+r - check_initial_concentrations.o
+ar -crv libboltzmann.a print_boundary_flux.o
+a - print_boundary_flux.o
+ar -crv libboltzmann.a print_restart_file.o
+a - print_restart_file.o
+ar -crv libboltzmann.a print_reactions_view.o
+a - print_reactions_view.o
+ar -crv libboltzmann.a form_molecules_matrix.o
+a - form_molecules_matrix.o
+ar -crv libboltzmann.a sbml_to_boltzmann.o
+a - sbml_to_boltzmann.o
+ar -crv libboltzmann.a size_ms2js_file.o
+a - size_ms2js_file.o
+ar -crv libboltzmann.a size_kg2js_file.o
+a - size_kg2js_file.o
+ar -crv libboltzmann.a sbml_alloc0.o
+a - sbml_alloc0.o
+ar -crv libboltzmann.a sbml_alloc2.o 
+a - sbml_alloc2.o
+ar -crv libboltzmann.a read_ms2js.o
+a - read_ms2js.o
+ar -crv libboltzmann.a read_kg2js.o
+a - read_kg2js.o
+ar -crv libboltzmann.a sort_json_ids.o
+a - sort_json_ids.o
+ar -crv libboltzmann.a merge_sorted_strings.o
+a - merge_sorted_strings.o
+ar -crv libboltzmann.a sbml_set_file_names.o 
+a - sbml_set_file_names.o
+ar -crv libboltzmann.a sbml_count_cmpts.o 
+a - sbml_count_cmpts.o
+ar -crv libboltzmann.a sbml_count_species.o 
+a - sbml_count_species.o
+ar -crv libboltzmann.a sbml_alloc1.o 
+a - sbml_alloc1.o
+ar -crv libboltzmann.a parse_sbml.o 
+a - parse_sbml.o
+ar -crv libboltzmann.a sbml_find_section.o
+a - sbml_find_section.o
+ar -crv libboltzmann.a sbml_process_list_of_compartments.o 
+a - sbml_process_list_of_compartments.o
+ar -crv libboltzmann.a sbml_read_key_value.o 
+a - sbml_read_key_value.o
+ar -crv libboltzmann.a sbml_lookup_compartment_attribute.o 
+a - sbml_lookup_compartment_attribute.o
+ar -crv libboltzmann.a sbml_volume_units_conversion.o 
+a - sbml_volume_units_conversion.o
+ar -crv libboltzmann.a sbml_process_list_of_species.o 
+a - sbml_process_list_of_species.o
+ar -crv libboltzmann.a sbml_start_species_def.o 
+a - sbml_start_species_def.o
+ar -crv libboltzmann.a sbml_parse_species_key_value.o 
+a - sbml_parse_species_key_value.o
+ar -crv libboltzmann.a sbml_lookup_species_attribute.o
+a - sbml_lookup_species_attribute.o
+ar -crv libboltzmann.a sbml_process_substanceunits.o
+a - sbml_process_substanceunits.o
+ar -crv libboltzmann.a sbml_generate_init_conc_line.o
+a - sbml_generate_init_conc_line.o
+ar -crv libboltzmann.a boltzmannize_string.o
+a - boltzmannize_string.o
+ar -crv libboltzmann.a sbml_find_string.o
+a - sbml_find_string.o
+ar -crv libboltzmann.a sbml_sort_species_trans.o
+a - sbml_sort_species_trans.o
+ar -crv libboltzmann.a sbml_merge_species_trans.o
+a - sbml_merge_species_trans.o
+ar -crv libboltzmann.a sbml_process_list_of_reactions.o
+a - sbml_process_list_of_reactions.o
+ar -crv libboltzmann.a sbml_look_for_in_reaction_tag.o
+a - sbml_look_for_in_reaction_tag.o
+ar -crv libboltzmann.a sbml_process_reaction_tag.o
+a - sbml_process_reaction_tag.o
+ar -crv libboltzmann.a sbml_lookup_reaction_attribute.o
+a - sbml_lookup_reaction_attribute.o
+ar -crv libboltzmann.a sbml_process_list_of_reactants_tag.o
+a - sbml_process_list_of_reactants_tag.o
+ar -crv libboltzmann.a sbml_process_list_of_products_tag.o
+a - sbml_process_list_of_products_tag.o
+ar -crv libboltzmann.a sbml_process_species_reference_tag.o
+a - sbml_process_species_reference_tag.o
+ar -crv libboltzmann.a sbml_lookup_speciesref_attribute.o
+a - sbml_lookup_speciesref_attribute.o
+ar -crv libboltzmann.a count_ntb.o
+a - count_ntb.o
+ar -crv libboltzmann.a count_nlb.o
+a - count_nlb.o
+ar -crv libboltzmann.a count_nor.o
+a - count_nor.o
+ar -crv libboltzmann.a check_for_ws.o
+a - check_for_ws.o
+ar -crv libboltzmann.a deq_run.o
+a - deq_run.o
+ar -crv libboltzmann.a bwarmup_run.o
+a - bwarmup_run.o
+ar -crv libboltzmann.a alloc7.o
+a - alloc7.o
+ar -crv libboltzmann.a ode_print_concs_header.o
+a - ode_print_concs_header.o
+ar -crv libboltzmann.a ode_print_dconcs_header.o
+a - ode_print_dconcs_header.o
+ar -crv libboltzmann.a ode_print_lklhd_header.o
+a - ode_print_lklhd_header.o
+ar -crv libboltzmann.a ode_print_bflux_header.o
+a - ode_print_bflux_header.o
+ar -crv libboltzmann.a ode_solver.o
+a - ode_solver.o
+ar -crv libboltzmann.a ode23tb.o
+a - ode23tb.o
+ar -crv libboltzmann.a ode23tb_normyp_o_wt.o
+a - ode23tb_normyp_o_wt.o
+ar -crv libboltzmann.a ode23tb_limit_h.o
+a - ode23tb_limit_h.o
+ar -crv libboltzmann.a ode23tb_init_wt.o
+a - ode23tb_init_wt.o
+ar -crv libboltzmann.a ode23tb_update_wt.o
+a - ode23tb_update_wt.o
+ar -crv libboltzmann.a vec_set_constant.o
+a - vec_set_constant.o
+ar -crv libboltzmann.a ode23tb_build_factor_miter.o
+a - ode23tb_build_factor_miter.o
+ar -crv libboltzmann.a ode23tb_max_abs_ratio.o
+a - ode23tb_max_abs_ratio.o
+ar -crv libboltzmann.a ode23tb_nonneg_err.o
+a - ode23tb_nonneg_err.o
+ar -crv libboltzmann.a ode23tb_enforce_nonneg.o
+a - ode23tb_enforce_nonneg.o
+ar -crv libboltzmann.a ode_print_concs.o
+a - ode_print_concs.o
+ar -crv libboltzmann.a ode_print_dconcs.o
+a - ode_print_dconcs.o
+ar -crv libboltzmann.a ode_print_lklhds.o
+a - ode_print_lklhds.o
+ar -crv libboltzmann.a get_counts.o
+a - get_counts.o
+ar -crv libboltzmann.a ode_test_steady_state.o
+a - ode_test_steady_state.o
+ar -crv libboltzmann.a boltzmann_monitor_ode.o
+a - boltzmann_monitor_ode.o
+ar -crv libboltzmann.a print_dense_jacobian.o
+a - print_dense_jacobian.o
+ar -crv libboltzmann.a print_sparse_jacobian.o
+a - print_sparse_jacobian.o
+ar -crv libboltzmann.a boltzmann_cvodes.o
+a - boltzmann_cvodes.o
+ar -crv libboltzmann.a boltzmann_size_jacobian.o
+a - boltzmann_size_jacobian.o
+ar -crv libboltzmann.a boltzmann_cvodes_rhs.o
+a - boltzmann_cvodes_rhs.o
+ar -crv libboltzmann.a boltzmann_print_cvodeinit_errors.o
+a - boltzmann_print_cvodeinit_errors.o
+ar -crv libboltzmann.a boltzmann_cvodes_init.o
+a - boltzmann_cvodes_init.o
+ar -crv libboltzmann.a boltzmann_check_cvodeset_errors.o
+a - boltzmann_check_cvodeset_errors.o
+ar -crv libboltzmann.a boltzmann_check_tol_errors.o
+a - boltzmann_check_tol_errors.o
+ar -crv libboltzmann.a boltzmann_set_cvodes_linear_solver.o
+a - boltzmann_set_cvodes_linear_solver.o
+ar -crv libboltzmann.a boltzmann_check_cvdls_errors.o 
+a - boltzmann_check_cvdls_errors.o
+ar -crv libboltzmann.a boltzmann_check_cvspils_errors.o
+a - boltzmann_check_cvspils_errors.o
+ar -crv libboltzmann.a boltzmann_check_cvodesens_errors.o
+a - boltzmann_check_cvodesens_errors.o
+ar -crv libboltzmann.a approximate_ys0.o
+a - approximate_ys0.o
+ar -crv libboltzmann.a lr8_approximate_ys0.o
+a - lr8_approximate_ys0.o
+ar -crv libboltzmann.a boltzmann_cvodes_psetup.o
+a - boltzmann_cvodes_psetup.o
+ar -crv libboltzmann.a approximate_jacobian.o
+a - approximate_jacobian.o
+ar -crv libboltzmann.a boltzmann_sparse_to_dense.o
+a - boltzmann_sparse_to_dense.o
+ar -crv libboltzmann.a boltzmann_dense_to_sparse.o
+a - boltzmann_dense_to_sparse.o
+ar -crv libboltzmann.a lr8_approximate_jacobian.o
+a - lr8_approximate_jacobian.o
+ar -crv libboltzmann.a crs_column_sort_rows.o
+a - crs_column_sort_rows.o
+ar -crv libboltzmann.a build_newton_matrix.o
+a - build_newton_matrix.o
+ar -crv libboltzmann.a precondition_newton_matrix.o
+a - precondition_newton_matrix.o
+ar -crv libboltzmann.a iluvf.o
+a - iluvf.o
+ar -crv libboltzmann.a dcrsng_mag_sort.o
+a - dcrsng_mag_sort.o
+ar -crv libboltzmann.a dcrsng_mag_merge.o
+a - dcrsng_mag_merge.o
+ar -crv libboltzmann.a isort.o
+a - isort.o
+ar -crv libboltzmann.a imerge.o
+a - imerge.o
+ar -crv libboltzmann.a boltzmann_cvodes_psolve.o
+a - boltzmann_cvodes_psolve.o
+ar -crv libboltzmann.a boltzmann_cvodes_bsolve.o
+a - boltzmann_cvodes_bsolve.o
+ar -crv libboltzmann.a boltzmann_cvodes_fsolve.o
+a - boltzmann_cvodes_fsolve.o
+ar -crv libboltzmann.a boltzmann_cvodes_jtimes.o
+a - boltzmann_cvodes_jtimes.o
+ar -crv libboltzmann.a boltzmann_sparse_mvp.o
+a - boltzmann_sparse_mvp.o
+ar -crv libboltzmann.a boltzmann_print_cvode_error.o
+a - boltzmann_print_cvode_error.o
+ar -crv libboltzmann.a init_base_reactants.o
+a - init_base_reactants.o
+ar -crv libboltzmann.a init_relative_rates.o
+a - init_relative_rates.o
+ar -crv libboltzmann.a boltzmann_print_sensitivities.o
+a - boltzmann_print_sensitivities.o
+ar -crv libboltzmann.a blas.o
+a - blas.o
+ar -crv libboltzmann.a lsame.o
+a - lsame.o
+ar -crv libboltzmann.a dtrsm.o
+a - dtrsm.o
+ar -crv libboltzmann.a dlaswp.o
+a - dlaswp.o
+ar -crv libboltzmann.a dgetrf2.o
+a - dgetrf2.o
+ar -crv libboltzmann.a dgetrf.o
+a - dgetrf.o
+ar -crv libboltzmann.a dgetrs.o
+a - dgetrs.o
+ar -crv libboltzmann.a dgemm.o
+a - dgemm.o
+ar -crv libboltzmann.a dgbtrf.o
+a - dgbtrf.o
+ar -crv libboltzmann.a dgbtf2.o
+a - dgbtf2.o
+ar -crv libboltzmann.a dger.o
+a - dger.o
+ar -crv libboltzmann.a dgbtrs.o
+a - dgbtrs.o
+ar -crv libboltzmann.a dswap.o
+a - dswap.o
+ar -crv libboltzmann.a dtbsv.o
+a - dtbsv.o
+ar -crv libboltzmann.a ode_num_jac.o
+a - ode_num_jac.o
+ar -crv libboltzmann.a compute_flux_scaling.o
+a - compute_flux_scaling.o
+ar -crv libboltzmann.a approximate_delta_concs.o
+a - approximate_delta_concs.o
+ar -crv libboltzmann.a vec_abs.o
+a - vec_abs.o
+ar -crv libboltzmann.a vec_div.o
+a - vec_div.o
+ar -crv libboltzmann.a vec_max.o
+a - vec_max.o
+ar -crv libboltzmann.a vec_mul.o
+a - vec_mul.o
+ar -crv libboltzmann.a lr_approximate_delta_concs.o
+a - lr_approximate_delta_concs.o
+ar -crv libboltzmann.a lr1_approximate_delta_concs.o
+a - lr1_approximate_delta_concs.o
+ar -crv libboltzmann.a lr2_approximate_delta_concs.o
+a - lr2_approximate_delta_concs.o
+ar -crv libboltzmann.a lr3_approximate_delta_concs.o
+a - lr3_approximate_delta_concs.o
+ar -crv libboltzmann.a lr4_approximate_delta_concs.o
+a - lr4_approximate_delta_concs.o
+ar -crv libboltzmann.a lr5_approximate_delta_concs.o
+a - lr5_approximate_delta_concs.o
+ar -crv libboltzmann.a lr6_approximate_delta_concs.o
+a - lr6_approximate_delta_concs.o
+ar -crv libboltzmann.a lr7_approximate_delta_concs.o
+a - lr7_approximate_delta_concs.o
+ar -crv libboltzmann.a lr8_approximate_delta_concs.o
+a - lr8_approximate_delta_concs.o
+ar -crv libboltzmann.a lr9_approximate_delta_concs.o
+a - lr9_approximate_delta_concs.o
+ar -crv libboltzmann.a lr10_approximate_delta_concs.o
+a - lr10_approximate_delta_concs.o
+ar -crv libboltzmann.a lr11_approximate_delta_concs.o
+a - lr11_approximate_delta_concs.o
+ar -crv libboltzmann.a lr12_approximate_delta_concs.o
+a - lr12_approximate_delta_concs.o
+ar -crv libboltzmann.a lr13_approximate_delta_concs.o
+a - lr13_approximate_delta_concs.o
+ar -crv libboltzmann.a lr14_approximate_delta_concs.o
+a - lr14_approximate_delta_concs.o
+ar -crv libboltzmann.a stable_add.o
+a - stable_add.o
+ar -crv libboltzmann.a dsort.o
+a - dsort.o
+ar -crv libboltzmann.a dmerge.o
+a - dmerge.o
+ar -crv libboltzmann.a dsort_pairs.o
+a - dsort_pairs.o
+ar -crv libboltzmann.a dsort_pairs_in_place.o
+a - dsort_pairs_in_place.o
+ar -crv libboltzmann.a pairwise_sum.o
+a - pairwise_sum.o
+ar -crv libboltzmann.a dreverse_list.o
+a - dreverse_list.o
+ar -crv libboltzmann.a num_jac_col.o
+a - num_jac_col.o
+ar -crv libboltzmann.a ode_it_solve.o
+a - ode_it_solve.o
+ar -crv libboltzmann.a update_rxn_likelihoods.o
+a - update_rxn_likelihoods.o
+ar -crv libboltzmann.a print_concs_dconcs.o
+a - print_concs_dconcs.o
+ar -crv libboltzmann.a compute_dfdke_dfdmu0.o
+a - compute_dfdke_dfdmu0.o
+ar -crv libboltzmann.a compute_net_likelihoods.o
+a - compute_net_likelihoods.o
+ar -crv libboltzmann.a compute_net_lklhd_bndry_flux.o
+a - compute_net_lklhd_bndry_flux.o
+ar -crv libboltzmann.a print_net_likelihood_header.o
+a - print_net_likelihood_header.o
+ar -crv libboltzmann.a print_net_lklhd_bndry_flux_header.o
+a - print_net_lklhd_bndry_flux_header.o
+ar -crv libboltzmann.a print_net_likelihoods.o
+a - print_net_likelihoods.o
+ar -crv libboltzmann.a print_net_lklhd_bndry_flux.o
+a - print_net_lklhd_bndry_flux.o
+cd /home/dbaxter/boltzmann/git/src/sundials-2.7.0 && make
+make[1]: Entering directory `/home/dbaxter/boltzmann/git/src/sundials-2.7.0'
+cd src/cvodes && make
+make[2]: Entering directory `/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes'
+gcc  -c -g -O2 -fPIC -Wall -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/sundials -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/cvodes -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/cvode -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/nvector -I. -I -I/../include -I/tools -I/ode23tb -I/sbml_interface -I/blas -I/lapack -I/cvodes_interface -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include cvodea.c
+gcc  -c -g -O2 -fPIC -Wall -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/sundials -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/cvodes -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/cvode -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/nvector -I. -I -I/../include -I/tools -I/ode23tb -I/sbml_interface -I/blas -I/lapack -I/cvodes_interface -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include cvodea_io.c
+gcc  -c -g -O2 -fPIC -Wall -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/sundials -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/cvodes -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/cvode -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/nvector -I. -I -I/../include -I/tools -I/ode23tb -I/sbml_interface -I/blas -I/lapack -I/cvodes_interface -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include cvodes.c
+gcc  -c -g -O2 -fPIC -Wall -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/sundials -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/cvodes -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/cvode -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/nvector -I. -I -I/../include -I/tools -I/ode23tb -I/sbml_interface -I/blas -I/lapack -I/cvodes_interface -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include cvodes_band.c
+gcc  -c -g -O2 -fPIC -Wall -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/sundials -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/cvodes -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/cvode -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/nvector -I. -I -I/../include -I/tools -I/ode23tb -I/sbml_interface -I/blas -I/lapack -I/cvodes_interface -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include cvodes_bandpre.c
+gcc  -c -g -O2 -fPIC -Wall -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/sundials -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/cvodes -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/cvode -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/nvector -I. -I -I/../include -I/tools -I/ode23tb -I/sbml_interface -I/blas -I/lapack -I/cvodes_interface -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include cvodes_bbdpre.c
+gcc  -c -g -O2 -fPIC -Wall -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/sundials -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/cvodes -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/cvode -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/nvector -I. -I -I/../include -I/tools -I/ode23tb -I/sbml_interface -I/blas -I/lapack -I/cvodes_interface -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include cvodes_dense.c
+gcc  -c -g -O2 -fPIC -Wall -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/sundials -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/cvodes -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/cvode -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/nvector -I. -I -I/../include -I/tools -I/ode23tb -I/sbml_interface -I/blas -I/lapack -I/cvodes_interface -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include cvodes_diag.c
+gcc  -c -g -O2 -fPIC -Wall -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/sundials -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/cvodes -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/cvode -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/nvector -I. -I -I/../include -I/tools -I/ode23tb -I/sbml_interface -I/blas -I/lapack -I/cvodes_interface -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include cvodes_direct.c
+gcc  -c -g -O2 -fPIC -Wall -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/sundials -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/cvodes -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/cvode -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/nvector -I. -I -I/../include -I/tools -I/ode23tb -I/sbml_interface -I/blas -I/lapack -I/cvodes_interface -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include cvodes_io.c
+gcc  -c -g -O2 -fPIC -Wall -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/sundials -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/cvodes -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/cvode -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/nvector -I. -I -I/../include -I/tools -I/ode23tb -I/sbml_interface -I/blas -I/lapack -I/cvodes_interface -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include cvodes_lapack.c
+gcc  -c -g -O2 -fPIC -Wall -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/sundials -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/cvodes -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/cvode -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/nvector -I. -I -I/../include -I/tools -I/ode23tb -I/sbml_interface -I/blas -I/lapack -I/cvodes_interface -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include cvodes_sparse.c
+gcc  -c -g -O2 -fPIC -Wall -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/sundials -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/cvodes -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/cvode -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/nvector -I. -I -I/../include -I/tools -I/ode23tb -I/sbml_interface -I/blas -I/lapack -I/cvodes_interface -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include cvodes_spbcgs.c
+gcc  -c -g -O2 -fPIC -Wall -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/sundials -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/cvodes -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/cvode -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/nvector -I. -I -I/../include -I/tools -I/ode23tb -I/sbml_interface -I/blas -I/lapack -I/cvodes_interface -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include cvodes_spgmr.c
+gcc  -c -g -O2 -fPIC -Wall -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/sundials -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/cvodes -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/cvode -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/nvector -I. -I -I/../include -I/tools -I/ode23tb -I/sbml_interface -I/blas -I/lapack -I/cvodes_interface -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include cvodes_spils.c
+gcc  -c -g -O2 -fPIC -Wall -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/sundials -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/cvodes -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/cvode -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include/nvector -I. -I -I/../include -I/tools -I/ode23tb -I/sbml_interface -I/blas -I/lapack -I/cvodes_interface -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../include cvodes_sptfqmr.c
+ar -crv /home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../lib/libsundials_cvodes.a cvodea.o
+a - cvodea.o
+ar -crv /home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../lib/libsundials_cvodes.a cvodea_io.o
+a - cvodea_io.o
+ar -crv /home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../lib/libsundials_cvodes.a cvodes.o
+a - cvodes.o
+ar -crv /home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../lib/libsundials_cvodes.a cvodes_band.o
+a - cvodes_band.o
+ar -crv /home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../lib/libsundials_cvodes.a cvodes_bandpre.o
+a - cvodes_bandpre.o
+ar -crv /home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../lib/libsundials_cvodes.a cvodes_bbdpre.o
+a - cvodes_bbdpre.o
+ar -crv /home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../lib/libsundials_cvodes.a cvodes_dense.o
+a - cvodes_dense.o
+ar -crv /home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../lib/libsundials_cvodes.a cvodes_diag.o
+a - cvodes_diag.o
+ar -crv /home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../lib/libsundials_cvodes.a cvodes_direct.o
+a - cvodes_direct.o
+ar -crv /home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../lib/libsundials_cvodes.a cvodes_io.o
+a - cvodes_io.o
+ar -crv /home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../lib/libsundials_cvodes.a cvodes_lapack.o
+a - cvodes_lapack.o
+ar -crv /home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../lib/libsundials_cvodes.a cvodes_sparse.o
+a - cvodes_sparse.o
+ar -crv /home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../lib/libsundials_cvodes.a cvodes_spbcgs.o
+a - cvodes_spbcgs.o
+ar -crv /home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../lib/libsundials_cvodes.a cvodes_spgmr.o
+a - cvodes_spgmr.o
+ar -crv /home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../lib/libsundials_cvodes.a cvodes_spils.o
+a - cvodes_spils.o
+ar -crv /home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes/../../lib/libsundials_cvodes.a cvodes_sptfqmr.o
+a - cvodes_sptfqmr.o
+make[2]: Leaving directory `/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/cvodes'
+cd src/nvec_ser && make
+make[2]: Entering directory `/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/nvec_ser'
+gcc  -c -g -O2 -fPIC -Wall -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/nvec_ser/../../include -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/nvec_ser/../../include/sundials -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/nvec_ser/../../include/cvodes -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/nvec_ser/../../include/cvode -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/nvec_ser/../../include/nvector -I. -I -I/../include -I/tools -I/ode23tb -I/sbml_interface -I/blas -I/lapack -I/cvodes_interface -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/nvec_ser/../../include -I. fnvector_serial.c
+gcc  -c -g -O2 -fPIC -Wall -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/nvec_ser/../../include -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/nvec_ser/../../include/sundials -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/nvec_ser/../../include/cvodes -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/nvec_ser/../../include/cvode -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/nvec_ser/../../include/nvector -I. -I -I/../include -I/tools -I/ode23tb -I/sbml_interface -I/blas -I/lapack -I/cvodes_interface -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/nvec_ser/../../include -I. nvector_serial.c
+ar -crv /home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/nvec_ser/../../lib/libsundials_nvec_ser.a fnvector_serial.o
+a - fnvector_serial.o
+ar -crv /home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/nvec_ser/../../lib/libsundials_nvec_ser.a nvector_serial.o
+a - nvector_serial.o
+make[2]: Leaving directory `/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/nvec_ser'
+cd src/sundials && make
+make[2]: Entering directory `/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials'
+gcc  -c -g -O2 -fPIC -Wall -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include/sundials -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include/cvodes -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include/cvode -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include/nvector -I. -I -I/../include -I/tools -I/ode23tb -I/sbml_interface -I/blas -I/lapack -I/cvodes_interface -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include -I. sundials_band.c
+gcc  -c -g -O2 -fPIC -Wall -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include/sundials -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include/cvodes -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include/cvode -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include/nvector -I. -I -I/../include -I/tools -I/ode23tb -I/sbml_interface -I/blas -I/lapack -I/cvodes_interface -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include -I. sundials_dense.c
+gcc  -c -g -O2 -fPIC -Wall -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include/sundials -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include/cvodes -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include/cvode -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include/nvector -I. -I -I/../include -I/tools -I/ode23tb -I/sbml_interface -I/blas -I/lapack -I/cvodes_interface -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include -I. sundials_direct.c
+gcc  -c -g -O2 -fPIC -Wall -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include/sundials -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include/cvodes -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include/cvode -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include/nvector -I. -I -I/../include -I/tools -I/ode23tb -I/sbml_interface -I/blas -I/lapack -I/cvodes_interface -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include -I. sundials_iterative.c
+gcc  -c -g -O2 -fPIC -Wall -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include/sundials -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include/cvodes -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include/cvode -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include/nvector -I. -I -I/../include -I/tools -I/ode23tb -I/sbml_interface -I/blas -I/lapack -I/cvodes_interface -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include -I. sundials_math.c
+gcc  -c -g -O2 -fPIC -Wall -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include/sundials -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include/cvodes -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include/cvode -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include/nvector -I. -I -I/../include -I/tools -I/ode23tb -I/sbml_interface -I/blas -I/lapack -I/cvodes_interface -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include -I. sundials_nvector.c
+gcc  -c -g -O2 -fPIC -Wall -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include/sundials -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include/cvodes -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include/cvode -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include/nvector -I. -I -I/../include -I/tools -I/ode23tb -I/sbml_interface -I/blas -I/lapack -I/cvodes_interface -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include -I. sundials_pcg.c
+gcc  -c -g -O2 -fPIC -Wall -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include/sundials -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include/cvodes -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include/cvode -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include/nvector -I. -I -I/../include -I/tools -I/ode23tb -I/sbml_interface -I/blas -I/lapack -I/cvodes_interface -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include -I. sundials_sparse.c
+gcc  -c -g -O2 -fPIC -Wall -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include/sundials -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include/cvodes -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include/cvode -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include/nvector -I. -I -I/../include -I/tools -I/ode23tb -I/sbml_interface -I/blas -I/lapack -I/cvodes_interface -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include -I. sundials_spbcgs.c
+gcc  -c -g -O2 -fPIC -Wall -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include/sundials -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include/cvodes -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include/cvode -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include/nvector -I. -I -I/../include -I/tools -I/ode23tb -I/sbml_interface -I/blas -I/lapack -I/cvodes_interface -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include -I. sundials_spfgmr.c
+gcc  -c -g -O2 -fPIC -Wall -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include/sundials -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include/cvodes -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include/cvode -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include/nvector -I. -I -I/../include -I/tools -I/ode23tb -I/sbml_interface -I/blas -I/lapack -I/cvodes_interface -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include -I. sundials_spgmr.c
+gcc  -c -g -O2 -fPIC -Wall -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include/sundials -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include/cvodes -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include/cvode -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include/nvector -I. -I -I/../include -I/tools -I/ode23tb -I/sbml_interface -I/blas -I/lapack -I/cvodes_interface -I/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../include -I. sundials_sptfqmr.c
+ar -crv /home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../lib/libsundials.a sundials_band.o
+a - sundials_band.o
+ar -crv /home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../lib/libsundials.a sundials_dense.o
+a - sundials_dense.o
+ar -crv /home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../lib/libsundials.a sundials_direct.o
+a - sundials_direct.o
+ar -crv /home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../lib/libsundials.a sundials_iterative.o
+a - sundials_iterative.o
+ar -crv /home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../lib/libsundials.a sundials_math.o
+a - sundials_math.o
+ar -crv /home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../lib/libsundials.a sundials_nvector.o
+a - sundials_nvector.o
+ar -crv /home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../lib/libsundials.a sundials_pcg.o
+a - sundials_pcg.o
+ar -crv /home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../lib/libsundials.a sundials_sparse.o
+a - sundials_sparse.o
+ar -crv /home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../lib/libsundials.a sundials_spbcgs.o
+a - sundials_spbcgs.o
+ar -crv /home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../lib/libsundials.a sundials_spfgmr.o
+a - sundials_spfgmr.o
+ar -crv /home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../lib/libsundials.a sundials_spgmr.o
+a - sundials_spgmr.o
+ar -crv /home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials/../../lib/libsundials.a sundials_sptfqmr.o
+a - sundials_sptfqmr.o
+make[2]: Leaving directory `/home/dbaxter/boltzmann/git/src/sundials-2.7.0/src/sundials'
+make[1]: Leaving directory `/home/dbaxter/boltzmann/git/src/sundials-2.7.0'
+gcc -g  -o /home/dbaxter/boltzmann/git/src/../bin/boltzmann boltzmann.o boltzmann_init.o alloc0.o alloc0_a.o boltzmann_set_filename_ptrs.o read_params.o boltzmann_init_core.o io_size_init.o create_output_filenames.o open_output_files.o size_rxns_file.o init_rxn_file_keywords.o parse_rxn_file_keyword.o count_ws.o count_nws.o count_molecules.o is_a_coef.o alloc2.o alloc2_a.o rxns_init.o parse_reactions_file.o upcase.o parse_side_line.o find_colon.o boltzmann_compress_reactions.o sort_compartments.o merge_compartments.o unique_compartments.o unique_compartments_core.o translate_compartments.o sort_molecules.o merge_molecules.o unique_molecules.o unique_molecules_core.o alloc3.o species_init.o set_compartment_ptrs.o set_count_trans.o translate_regulation_metabolites.o molecules_lookup.o read_compartment_sizes.o read_initial_concentrations.o compartment_lookup.o check_initial_concentrations.o form_molecules_matrix.o energy_init.o compute_standard_energies.o size_pseudoisomer_file.o alloc5.o parse_pseudoisomer_dg0f_file.o blank_to_dash.o sharp_pos.o alloc6.o compute_molecule_dg0tfs.o compute_molecule_dg0tf.o pseudoisomer_dg0tf.o compute_molecular_partition_probability.o compute_chemical_potential.o compute_reaction_dg0.o unalloc6.o compute_ke.o zero_solvent_coefficients.o compute_kss.o echo_inputs.o echo_params.o echo_reactions_file.o print_molecules_dictionary.o print_dg0_ke.o recover_solvent_coefficients.o vgrng_init.o vgrng.o print_rxn_likelihoods_header.o print_free_energy_header.o run_init.o alloc8.o alloc9.o print_reactions_matrix.o print_active_reactions_matrix.o boltzmann_build_agent_data_block.o boltzmann_run.o boltzmann_load_agent_data.o update_rxn_log_likelihoods.o rxn_log_likelihoods.o rxn_likelihoods.o rxn_likelihood.o choose_rxn.o candidate_rxn.o binary_search_l_u_b.o update_regulations.o update_regulation.o rxn_count_update.o bndry_flux_update.o metropolis.o rxn_likelihood_postselection.o compute_delta_g_forward_entropy_free_energy.o boltzmann_watch.o print_rxn_choice.o print_counts.o print_likelihoods.o save_likelihoods.o print_free_energy.o print_boundary_flux.o print_restart_file.o print_reactions_view.o boltzmann_save_agent_data.o boltzmann_flatten_vgrng_state.o  sbml_to_boltzmann.o size_ms2js_file.o size_kg2js_file.o sbml_alloc0.o sbml_set_file_names.o sbml_alloc2.o read_ms2js.o read_kg2js.o sort_json_ids.o merge_sorted_strings.o sbml_count_cmpts.o sbml_count_species.o sbml_alloc1.o parse_sbml.o sbml_find_section.o sbml_process_list_of_compartments.o sbml_read_key_value.o sbml_lookup_compartment_attribute.o sbml_volume_units_conversion.o sbml_process_list_of_species.o sbml_start_species_def.o sbml_parse_species_key_value.o sbml_lookup_species_attribute.o sbml_process_substanceunits.o sbml_generate_init_conc_line.o boltzmannize_string.o sbml_find_string.o sbml_sort_species_trans.o sbml_merge_species_trans.o sbml_process_list_of_reactions.o sbml_look_for_in_reaction_tag.o sbml_process_reaction_tag.o sbml_lookup_reaction_attribute.o sbml_process_list_of_reactants_tag.o  sbml_process_list_of_products_tag.o sbml_process_species_reference_tag.o sbml_lookup_speciesref_attribute.o count_ntb.o deq_run.o alloc7.o ode_solver.o ode23tb.o init_base_reactants.o init_relative_rates.o ode_num_jac.o num_jac_col.o blas.o ode_it_solve.o compute_flux_scaling.o approximate_delta_concs.o compute_net_likelihoods.o compute_net_lklhd_bndry_flux.o print_net_likelihood_header.o print_net_likelihoods.o print_net_lklhd_bndry_flux_header.o print_net_lklhd_bndry_flux.o vec_abs.o vec_div.o vec_max.o vec_mul.o lr_approximate_delta_concs.o lr1_approximate_delta_concs.o lr2_approximate_delta_concs.o lr3_approximate_delta_concs.o lr4_approximate_delta_concs.o lr5_approximate_delta_concs.o lr6_approximate_delta_concs.o lr7_approximate_delta_concs.o lr8_approximate_delta_concs.o lr9_approximate_delta_concs.o lr10_approximate_delta_concs.o lr11_approximate_delta_concs.o stable_add.o dsort.o dmerge.o dsort_pairs_in_place.o dsort_pairs.o pairwise_sum.o dreverse_list.o lr12_approximate_delta_concs.o lr13_approximate_delta_concs.o lr14_approximate_delta_concs.o update_rxn_likelihoods.o print_concs_dconcs.o lsame.o dtrsm.o dlaswp.o dgetrf2.o dgetrf.o dgetrs.o dgemm.o ode_print_concs_header.o ode_print_concs.o ode_print_dconcs_header.o ode_print_dconcs.o ode_print_lklhd_header.o ode_print_lklhds.o ode_print_bflux_header.o ode23tb_normyp_o_wt.o ode23tb_limit_h.o ode23tb_init_wt.o ode23tb_update_wt.o vec_set_constant.o ode23tb_build_factor_miter.o ode23tb_max_abs_ratio.o ode23tb_nonneg_err.o ode23tb_enforce_nonneg.o get_counts.o ode_test_steady_state.o boltzmann_monitor_ode.o print_dense_jacobian.o compute_dfdke_dfdmu0.o boltzmann_cvodes.o boltzmann_size_jacobian.o boltzmann_cvodes_rhs.o boltzmann_print_cvodeinit_errors.o boltzmann_cvodes_init.o boltzmann_check_cvodeset_errors.o boltzmann_check_tol_errors.o boltzmann_set_cvodes_linear_solver.o boltzmann_check_cvdls_errors.o boltzmann_check_cvspils_errors.o boltzmann_check_cvodesens_errors.o approximate_ys0.o lr8_approximate_ys0.o boltzmann_cvodes_psetup.o approximate_jacobian.o boltzmann_sparse_to_dense.o boltzmann_dense_to_sparse.o lr8_approximate_jacobian.o crs_column_sort_rows.o build_newton_matrix.o precondition_newton_matrix.o iluvf.o dcrsng_mag_sort.o dcrsng_mag_merge.o isort.o imerge.o boltzmann_cvodes_psolve.o boltzmann_cvodes_bsolve.o boltzmann_cvodes_fsolve.o boltzmann_cvodes_jtimes.o boltzmann_sparse_mvp.o boltzmann_print_cvode_error.o dgbtrf.o dgbtf2.o dger.o dgbtrs.o dswap.o dtbsv.o print_sparse_jacobian.o boltzmann_print_sensitivities.o libboltzmann.a -lm /home/dbaxter/boltzmann/git/src/sundials-2.7.0/lib/libsundials.a /home/dbaxter/boltzmann/git/src/sundials-2.7.0/lib/libsundials_cvodes.a /home/dbaxter/boltzmann/git/src/sundials-2.7.0/lib/libsundials_cvodes.a /home/dbaxter/boltzmann/git/src/sundials-2.7.0/lib/libsundials_nvec_ser.a libboltzmann.a /home/dbaxter/boltzmann/git/src/sundials-2.7.0/lib/libsundials.a /home/dbaxter/boltzmann/git/src/sundials-2.7.0/lib/libsundials_cvodes.a /home/dbaxter/boltzmann/git/src/sundials-2.7.0/lib/libsundials_cvodes.a /home/dbaxter/boltzmann/git/src/sundials-2.7.0/lib/libsundials_nvec_ser.a
+boltzmann_init_core.o: In function `boltzmann_init_core':
+/home/dbaxter/boltzmann/git/src/boltzmann_init_core.c:85: undefined reference to `alloc4'
+collect2: ld returned 1 exit status
+make: *** [/home/dbaxter/boltzmann/git/src/../bin/boltzmann] Error 1

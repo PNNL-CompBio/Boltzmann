@@ -1,0 +1,156 @@
+H2O	C00001|C01328
+NH3	C01342|C00014
+L-Glutamate	C00025|C00302
+D-Glucose	C00267|C00293|C00031
+L-Lysine	C00047|C16440
+L-Aspartate	C00049|C16433
+Carboxylic acid	C00060|C00162
+L-Arginine	C00062|C02385
+L-Serine	C00716|C00065
+L-Methionine	C00073|C01733
+Ornithine	C00077|C01602
+L-Tryptophan	C00078|C00806
+L-Tyrosine	C00082|C01536
+D-fructose-6-phosphate	C05345|C00085
+Catechol	C00090|C15571
+D-glucose-6-phosphate	C00668|C00092
+Glycerol-3-phosphate	C00623|C00093
+Sulfite	C00094|C11481
+D-Fructose	C10906|C01496|C00095|C02336
+Cl-	C00698|C01327
+ribose-5-phosphate	C03736|C00117
+Glyceraldehyde3-phosphate	C00118|C00661
+Cytochrome c3+	C01070|C00125
+Cytochrome c2+	C01071|C00126
+L-Inositol	C00137|C06151
+Phenol	C00146|C15584
+L-Malate	C00711|C00149
+D-Mannose	C00936|C00159
+HCN	C00177|C01326
+Xylose	C01394|C00181
+Glucuronate	C00191|C16245
+3-Phosphoglycerate	C00197|C00597
+Gluconolactone	C00198|C16581|C16830
+DMAPP	C00235|C17627
+Lipoamide	C15972|C00248
+L-Arabinose	C00259|C11476
+H2S	C00297|C00283
+H2CO3	C01353|C00288
+Carnitine	C00318|C00487
+H2S2O3	C05529|C00320
+Undecaprenylphosphate	C17556|C00348
+3-Oxo-2-methylpropanoate	C00349|C06002
+"D-fructose-1,6-bisphosphate"	C00354|C05378
+D-Galactose 1-phosphate	C00446|C03384
+ACTN	C00466|C00810
+Chinone	C00472|C15602
+Cystathionine	C00542|C02291
+Limonene	C06078|C00521
+Quinol	C02389|C15603|C00530
+PACT	C07086|C05613|C15583|C00548
+Dihydrolipoamide	C00579|C15973
+"1,2-Propanediol"	C00583|C02917
+Ureidoglycolate	C00603|C05241
+4-Hydroxyphenylacetate	C13636|C00642
+2-Aceto-2-hydroxybutanoate	C00659|C06006
+3MOP	C03465|C00671
+1-Acyl-sn-glycerol 3-phosphate	C03849|C00681
+F-	C16487|C00742
+(-)-Camphor	C00809|C18369
+Bekanamycin	C18001|C00825
+Tartrate	C00898|C02107
+ALCTT	C06010|C00900
+2-Methylbutyryl-CoA	C01033|C15980
+D-fructose-1-phosphate	C01094|C02976
+4-Hydroxy-2-oxoglutarate	C05946|C01127
+S-Acetyldihydrolipoamide	C16255|C01136
+S-Succinyldihydrolipoamide	C16254|C01169
+3-Hydroxyisobutyrate	C06001|C01188
+Caffeate	C01481|C01197
+5-Hydroxylysine	C01211|C16741
+1-(2-carboxyphenylamino)-1-deoxyribulose 5-phosphate	C01302|C10528
+HBr	C13645|C01324
+Prenol	C17628|C01390
+Borneol	C01411|C01766
+Base Q	C16675|C01449
+Arsenate	C01478|C11215
+Chalcone	C15589|C01484
+Guaiacol	C15572|C01502
+Luteolin	C05903|C01514
+Allantoin	C01551|C02350
+Glyceollin	C15601|C01701
+Nebularine	C15586|C01736
+Carvol	C01767|C11383
+Undecaprenol	C17558|C01968
+TSH	C02090|C18182
+Arylsulfate	C02180|C00850
+Isopiperitenone	C02485|C02289
+Norephedrine	C02343|C16719
+T3	C07639|C02465
+6-Phosphosucrose	C16688|C02591
+N-Hydroxyarylamine	C16685|C02720
+Abrine	C16831|C02983
+maltose-6-phosphate	C05737|C02995
+4-Hydroxy-L-glutamate	C03079|C05947
+N-Phosphotaurocyamine	C03624|C03149
+1-Aminopropan-2-ol	C03194|C05771
+Evodin	C16717|C03514
+Resacetophenone	C13635|C03663
+Linalool	C03985|C11388
+"2,3-Dihydroxy-isovalerate"	C04039|C04272
+"2,3-Dihydroxy-3-methylvalerate"	C04104|C06007
+Muconolactone	C04105|C14610
+N-Acetyl-D-glucosamine1-phosphate	C04501|C04256
+DKDI	C04287|C06891
+S-(2-Methylpropionyl)-dihydrolipoamide	C04424|C15977
+DKHP	C04456|C06893
+all trans Decaprenyl diphosphate	C17432|C04509
+SAICAR	C04823|C04811
+DIMBOA glucoside	C15768|C04831
+Trioxilin A3	C14809|C04843
+Hepoxilin A3	C04849|C14808
+GM2	C04924|C04884
+Homocysteine	C05330|C00155
+6-Hydroxykynurenate	C05663|C08480
+Vitamin K1 oxide	C05849|C16711
+(-)-ABA	C11060|C06082
+Copalyl diphosphate	C11901|C06089
+Hygrine	C11359|C06179
+Anabasine	C11357|C06180
+Camphene	C06305|C06076
+beta-Pinene	C09882|C06307
+alpha-Pinene	C06308|C09880
+Cefalexin	C06895|C08099
+Clofibrate	C06916|C13700
+Vernolic acid	C08368|C19097
+Zeinoxanthin	C15981|C08590
+Quassin	C17013|C08778|C17029|C17012
+THF-L-glutamate	C03541|C09332
+(+)-Iridodial	C09785|C09804
+Pulegone	C17623|C09893
+Flavone	C15608|C10043
+Vestitol	C10540|C16225
+Cobalt-precorrin 5	C11541|C16242
+Cromakalim	C11819|C11697
+Levonordefrin	C11768|C17925
+N-(3-Oxododecanoyl)homoserine lactone	C11840|C11838
+Premithramycin A3	C12386|C12387
+(-)-Catechin	C17590|C14079
+4-Hydroxychalcone	C14232|C14231
+"2,3,3',4',5-Pentachloro-4-biphenylol"	C14729|C14377|C14381
+EDDP	C14436|C16659
+Methallenestrilphenol	C15153|C14719
+2-Chloro-4-biphenylol	C14755|C15202
+"1,2-Diacyl-sn-glycerol"	C00165|C00641
+A	C16722|C00028
+Dermatan	C00426|C01490
+L-Arginyl-protein	C00613|C16739
+RSH	C16736|C01336
+Protein lysine	C16740|C02188
+Protein serine	C02189|C06395
+Rubber	C16689|C02321
+(S)-2-Hydroxyacid	C15565|C02613
+Anthocyanidin-3-O-D-glucoside	C15539|C03940
+Bacterio-chlorophyll c	C11244|C18163|C18162
+3-Hydroxyechinenone	C15965|C15966
+DMI	C16187|C16226
