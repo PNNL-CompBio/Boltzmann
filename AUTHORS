@@ -20,3 +20,10 @@ We use a derivative of the matlab ode23tb for one of our ode solvers.
 The SUNDIALS package from Lawrence Livermore National Laboratory by
 A.C. Nidmarsh and R. Serban provied an alternate ode solver for the
 boltzmann code.
+
+We use compound names from the modelseed database, 
+modelseed_compounds_db.txt, for looking up molecules when parsing 
+SBML files:
+Automated genome annotation and metabolic model reconstruction in the SEED and Model SEED
+Devoid, Scott; Overbeek, Ross; DeJongh, Matthew; Vonstein, Veronika; Best, Aaron A; Henry, Christopher
+Systems Metabolic Engineering 17-45
