@@ -1,7 +1,3 @@
-boltzmann
-
-Pacific Northwest National Laboratory, Richland, WA 99352.
-
 Copyright (c) 2018 Battelle Memorial Institute.
 
 Publications based on work performed using the software should include 
@@ -11,10 +7,28 @@ Cannon, William R., Jeremy Zucker, Douglas Baxter, Neeraj Kumar, Scott Baker, Je
 "Prediction of Metabolite Concentrations, Rate Constants and Post-Translational Regulation using Maximum Entropy-based Simulations with Application to Central Metabolism of Neurospora crassa".
 Processes, (2018).
 
-Licensed under the Educational Community License, Version 2.0 (the "License"); 
-you may not use this file except in compliance with the License. 
-The terms and conditions of the License may be found in 
-ECL-2.0_LICENSE_TERMS.TXT in the directory containing this file.
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.boltzmann
+
+Pacific Northwest National Laboratory, Richland, WA 99352.
         
 This material was prepared as an account of work sponsored by an agency of the
 United States Government.  Neither the United States Government nor the United
@@ -38,3 +52,4 @@ reflect those of the United States Government or any agency thereof.
                                     for the
                        UNITED STATES DEPARTMENT OF ENERGY
                         under Contract DE-AC05-76RL01830
+
