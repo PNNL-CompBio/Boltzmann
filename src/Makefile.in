@@ -1201,7 +1201,7 @@ sbml_alloc1.o: sbml_interface/sbml_alloc1.c sbml_interface/sbml_alloc1.h $(SERIA
 	$(CC) $(DCFLAGS)  -c sbml_interface/sbml_alloc1.c
 
 parse_sbml.o: sbml_interface/parse_sbml.c sbml_interface/parse_sbml.h sbml_interface/sbml_find_section.h sbml_interface/sbml_process_list_of_compartments.h sbml_interface/sbml_process_list_of_species.h sbml_interface/sbml_sort_species_trans.h sbml_interface/sbml_process_list_of_reactions.h $(SERIAL_INCS)
-	$(CC) $(DCFLAGS)  -c sbml_interface/sbml_interface/parse_sbml.c 
+	$(CC) $(DCFLAGS)  -c sbml_interface/parse_sbml.c 
 
 sbml_find_section.o: sbml_interface/sbml_find_section.c sbml_interface/sbml_find_section.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS)  -c sbml_interface/sbml_find_section.c
