@@ -173,10 +173,12 @@ int boltzmann_run(struct state_struct *state, void *agent_data) {
     */
     dcopy_(&number_reactions,dg0s,&incx,free_energy,&incx);
   }
-  if ((print_output >= 1) && lfp) {
-    fprintf(lfp,
-	    "\nWarmup_step rxn_choice forward_likelihood "
-	    "reverse_likelihood\n");
+  if (print_output >=1) {
+    if (lfp) {
+      fprintf(lfp,
+	      "\nWarmup_step rxn_choice forward_likelihood "
+	      "reverse_likelihood\n");
+    }
   }
   if (use_deq != zero_l) {
     /*

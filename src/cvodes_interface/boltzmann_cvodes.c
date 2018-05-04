@@ -311,12 +311,16 @@ int boltzmann_cvodes(struct state_struct *state, double *concs) {
       ode_rxn_view_freq = 0;
       state->ode_rxn_view_freq = 0;
     }
+
     /* 
       If tracking net likelihoods and fluxes, set up to
       print the first iteration, 
     */
     ode_rxn_view_step = one_l;
-
+    if (ode_rxn_view_freq > 0) {
+      t0 = 0.0;
+      boltzmann_monitor(state,t0,concs);
+    }
     cvode_mem = CVodeCreate(lmm,iter);
     if (cvode_mem == NULL) {
       success = 0;

@@ -105,6 +105,7 @@ int deq_run(struct state_struct *state) {
   int number_reactions_t2_p1;
 
   int unique_molecules;
+  int padi;
 
   int print_output;
   int noop_rxn;

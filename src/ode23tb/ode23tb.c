@@ -325,6 +325,9 @@ int ode23tb (struct state_struct *state, double *concs) {
     ode_rxn_view_freq = 0;
     state->ode_rxn_view_freq = 0;
   }
+  if (ode_rxn_view_freq>0) {
+    boltzmann_monitor_ode(state,t0,concs);
+  }
   trans_chars[0] = 'N';
   trans_chars[1] = 'T';
   trans_chars[3] = 'C';
@@ -436,9 +439,11 @@ int ode23tb (struct state_struct *state, double *concs) {
     dcopy_(&ny,concs,&inc1,y,&inc1);
     vec_set_constant(ny,thresh,njthreshold);
     t= t0;
+    /*
     if (print_concs) {
       ode_print_concs(state,t,y);
     }
+    */
   }
   if (success) {
     if (ode_jacobian_choice != 0) {
