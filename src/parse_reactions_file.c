@@ -697,6 +697,7 @@ int parse_reactions_file(struct state_struct *state,
 	  num_products  = reaction->num_products;
 	  if ((num_reactants == 0) || (num_products == 0) ||
 	      (had_a_title == 0) || (had_a_dg0 == 0) || (had_units == 0)) {
+	    success = 0;
 	    /*
 	      Incomplete reaction specification ignore it.
 	    */
@@ -707,7 +708,7 @@ int parse_reactions_file(struct state_struct *state,
 		      " and DGZERO-UNITS lines\n",line_no);
 	      fflush(lfp);
 	    }
-	    
+	    break;
 	  } else {
 	    reaction->self_id = rxns;
 	    activities[rxns]  = reaction->enzyme_level;
