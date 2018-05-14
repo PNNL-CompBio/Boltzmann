@@ -28,7 +28,8 @@ specific language governing permissions and limitations under the License.
 #include "upcase.h"
 #include "parse_rxn_file_keyword.h"
 
-int parse_rxn_file_keyword(char *rxn_buffer,struct state_struct *state){
+int parse_rxn_file_keyword(char *rxn_buffer,int line_no, 
+			   struct state_struct *state){
   /*
     Parse the reaction file keyword theoretically at the start of 
     rxn_buffer.
@@ -78,8 +79,10 @@ int parse_rxn_file_keyword(char *rxn_buffer,struct state_struct *state){
     if (lfp) {
       if (strncmp(rxn_buffer,"COMMENT",7) != 0) {
 	if (rxn_buffer[0] != '#') {
-	  fprintf(lfp,"parse_rxn_file_keyword: Unrecognized keyword\n%s\n",
-	      rxn_buffer);
+	  fprintf(lfp,
+		  "parse_rxn_file_keyword: Unrecognized keyword on "
+		  "line %d\n%s\n",
+		  line_no,rxn_buffer);
 	  fflush(lfp);
 	} 
       }

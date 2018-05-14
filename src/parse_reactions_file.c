@@ -4,21 +4,8 @@ boltzmann
 
 Pacific Northwest National Laboratory, Richland, WA 99352.
 
-Copyright (c) 2010 Battelle Memorial Institute.
+Copyright (c) 2018 Battelle Memorial Institute.
 
-Publications based on work performed using the software should include 
-the following citation as a reference:
-
-
-Licensed under the Educational Community License, Version 2.0 (the "License"); 
-you may not use this file except in compliance with the License. 
-The terms and conditions of the License may be found in 
-ECL-2.0_LICENSE_TERMS.TXT in the directory containing this file.
-        
-Unless required by applicable law or agreed to in writing, software distributed
-under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
-CONDITIONS OF ANY KIND, either express or implied. See the License for the 
-specific language governing permissions and limitations under the License.
 ******************************************************************************/
 #include "boltzmann_structs.h"
 
@@ -191,6 +178,16 @@ int parse_reactions_file(struct state_struct *state,
   int rxn_use;
   int rxn_not_used;
 
+  int num_products;
+  int num_reactants;
+
+  int had_a_title;
+  int had_a_dg0;
+
+  int had_units;
+  int line_no;
+
+
   FILE *rxn_fp;
   FILE *lfp;
   success = 1;
@@ -295,10 +292,14 @@ int parse_reactions_file(struct state_struct *state,
       reg_drctn[reg_base+i]    = 1.0;
       reg_species[reg_base+i]  = (int64_t)(-1);
     }
+    had_a_title                = 0;
+    had_a_dg0                  = 0;
+    had_units                  = 0;
     rxn_use                    = 1;
     reg_count                  = 0;
     rxn_ptrs[rxns]              = molecules;
     fgp = fgets(rxn_buffer,rxn_buff_len,rxn_fp);
+    line_no = 1;
     state->max_molecule_len = (int64_t)0;
     state->min_molecule_len = rxn_buff_len;
     state->max_compartment_len = (int64_t)0;
@@ -338,7 +339,7 @@ int parse_reactions_file(struct state_struct *state,
       	  It requires: LEFT, RIGHT, DGZERO and DGZERO-UNITS lines.
       	  It may have PATHWAY and LEFT_COMPARTMENT, RIGHT_COMPARTMENT  
 	  ACTIVITY/ENZYME_LEVEL, PREGULATION and or NREGULATION lines.
-	  It also may have a USE_RXN 0 line to turn of a particular
+	  It also may have a USE_RXN 0 line to turn off a particular
 	  reaction for the duration of the run.
 
       	  Allow pre REACTION lines in reactions file as a header.
@@ -347,7 +348,7 @@ int parse_reactions_file(struct state_struct *state,
       	  When a // is seen then we hit transfer state 1, where 
       	  we must get a REACTION line next.
       	*/
-	line_type = parse_rxn_file_keyword(rxn_buffer,state);
+	line_type = parse_rxn_file_keyword(rxn_buffer,line_no,state);
 	if (line_type >= 0) {
 	  kl = keyword_lens[line_type];
 	  ws_chars = count_ws((char *)&rxn_buffer[kl]);      
@@ -366,6 +367,7 @@ int parse_reactions_file(struct state_struct *state,
 	    Reaction title line.
 	    Get size of reaction title allow +1 for terminating \0.
           */
+	  had_a_title = 1;
 	  rxn_title_len = (int64_t)(line_len - word1 + 1);
 	  /*
 	    Copy the reaction title.
@@ -421,7 +423,7 @@ int parse_reactions_file(struct state_struct *state,
 	  if ((strcmp(lcompartment,"V") == 0) ||
 	      (strcmp(lcompartment,"C") == 0)) {
 	    if (lfp) {
-	      fprintf(lfp,"parse_reactions_file: Error compartments may not have single character names V or C\n");
+	      fprintf(lfp,"parse_reactions_file: Error line %d: compartments may not have single character names V or C\n",line_no);
 	      fflush(lfp);
 	    }
 	    success = 0;
@@ -537,15 +539,16 @@ int parse_reactions_file(struct state_struct *state,
 	  /* 
 	     A DGZERO line
 	  */
+	  had_a_dg0 = 1;
 	  ns = sscanf ((char*)&rxn_buffer[word1],"%le",
 		       &reaction->delta_g0);
 	  if (ns < 1) {
 	    title  = (char *)&rxn_title_text[reaction->title];
 	    if (lfp) {
 	      fprintf(lfp,
-		      "parse_reactions_file: Error: malformed DGZERO line"
+		      "parse_reactions_file: Error line %d: malformed DGZERO line"
 		      " for reaction %s was\n%s\n",
-		      title,rxn_buffer);
+		      line_no,title,rxn_buffer);
 	      fflush(lfp);
 	    }
 	    success = 0;
@@ -561,14 +564,15 @@ int parse_reactions_file(struct state_struct *state,
 	  /* 
 	     A DGZERO-UNITS line
 	  */
+	  had_units = 1;
 	  sl = word1_len;
 	  if (sl < 1) {
 	    title  = (char *)&rxn_title_text[reaction->title];
 	    if (lfp) {
 	      fprintf(lfp,
-		    "parse_reactions_file: Error: malformed DGZERO-UNITS line,"
+		    "parse_reactions_file: Error line %d: malformed DGZERO-UNITS line,"
 		    " for reaction %s, was %s, using KJ/MOL\n",
-		    title,rxn_buffer);
+		      line_no,title,rxn_buffer);
 	      fflush(lfp);
 	    }
 	    reaction->unit_i = 1;
@@ -591,8 +595,9 @@ int parse_reactions_file(struct state_struct *state,
 	  if (ns < 1) {
 	    if (lfp) {
 	      fprintf(lfp,
-		    "parse_reactions_file: malformed ACTIVITY/ENZYME_LEVEL line was\n%s\n",
-		    rxn_buffer);
+		      "parse_reactions_file: Error line %d: malformed "
+		      "ACTIVITY/ENZYME_LEVEL line was\n%s\n",
+		      line_no,rxn_buffer);
 	      fflush(lfp);
 	    }
 	    success = 0;
@@ -606,8 +611,10 @@ int parse_reactions_file(struct state_struct *state,
 	  if (reg_count >= max_regs_per_rxn - 1) {
 	    success = 0;
 	    if (lfp) {
-	      fprintf(lfp,"parse_reactions_file: Error limit of %d regulations per reaction was exceeded. Increase the MAX_REGS_PER_RXN parameter and rerun.\n",
-		      max_regs_per_rxn);
+	      fprintf(lfp,"parse_reactions_file: Error line %d: limit of %d "
+		      "regulations per reaction was exceeded. Increase the "
+		      "MAX_REGS_PER_RXN parameter and rerun.\n",
+		      line_no,max_regs_per_rxn);
 	      fflush(lfp);
 	    }
 	    break;
@@ -626,9 +633,9 @@ int parse_reactions_file(struct state_struct *state,
 	  if (nr < 2) {
 	    success = 0;
 	    if (lfp) {
-	      fprintf(lfp,"parse_reactions_file: Error PREGULATION LINE, %s\n"
+	      fprintf(lfp,"parse_reactions_file: Error line %d: PREGULATION LINE, %s\n"
 		      "did not have valid constant and exponent.\n",
-		      rxn_buffer);
+		      line_no,rxn_buffer);
 	      fflush(lfp);
 	    }
 	    break;
@@ -644,8 +651,10 @@ int parse_reactions_file(struct state_struct *state,
 	  if (reg_count >= max_regs_per_rxn - 1) {
 	    success = 0;
 	    if (lfp) {
-	      fprintf(lfp,"parse_reactions_file: Error limit of %d regulations per reaction was exceeded. Increase the MAX_REGS_PER_RXN parameter and rerun.\n",
-		      max_regs_per_rxn);
+	      fprintf(lfp,"parse_reactions_file: Error line %d: limit of %d "
+		      "regulations per reaction was exceeded. Increase the "
+		      "MAX_REGS_PER_RXN parameter and rerun.\n",
+		      line_no,max_regs_per_rxn);
 	      fflush(lfp);
 	    }
 	    break;
@@ -664,9 +673,9 @@ int parse_reactions_file(struct state_struct *state,
 	  if (nr < 2) {
 	    success = 0;
 	    if (lfp) {
-	      fprintf(lfp,"parse_reactions_file: Error NREGULATION LINE, %s\n"
-		      "did not have valid constant and exponent.\n",
-		      rxn_buffer);
+	      fprintf(lfp,"parse_reactions_file: Error line %d: NREGULATION "
+		      "LINE, %s\n did not have valid constant and exponent.\n",
+		      line_no,rxn_buffer);
 	      fflush(lfp);
 	    }
 	    break;
@@ -680,51 +689,75 @@ int parse_reactions_file(struct state_struct *state,
 	  /*
 	    // reaction terminator line
 	  */
-	  reaction->self_id = rxns;
-	  activities[rxns]  = reaction->enzyme_level;
-	  enzyme_level[rxns] = reaction->enzyme_level;
-	  forward_rc[rxns]   = reaction->forward_rc;
-	  reverse_rc[rxns]   = reaction->reverse_rc;
 	  /*
-	    Since a compartment line could have come any where in
-	    the reaction input lines, we need to go back
-	    and properly set the compartments for each of the
-	    molecules in the reaction. Reactants get the
-	    reaction->left_compartment value (for c_index) and
-	    products get the reaction->right_compartment value for c_index;
+	    First we should check to see that a left
+	    and a right side and a title line were seen.
 	  */
-	  mol_pos = rxn_ptrs[rxns];
-	  rxn_molecules = (struct molecule_struct *)&state->unsorted_molecules[mol_pos];
-	  mol_pos_lim = mol_pos + reaction->num_reactants +
-	    reaction->num_products;
-	  sum_coeffs = 0;
-	  for (j = mol_pos;j<mol_pos_lim;j++) {
-	    sum_coeffs += coefficients[j];
+	  num_reactants = reaction->num_reactants;
+	  num_products  = reaction->num_products;
+	  if ((num_reactants == 0) || (num_products == 0) ||
+	      (had_a_title == 0) || (had_a_dg0 == 0) || (had_units == 0)) {
 	    /*
-	      Only look to set the compartment index if the molecule did
-	      not have a local compartment (:compartment).
+	      Incomplete reaction specification ignore it.
 	    */
-	    if (rxn_molecules->c_index == 0) {
-	      if (coefficients[j] < 0) {
-		rxn_molecules->c_index = reaction->left_compartment;
-	      } else {
-		rxn_molecules->c_index = reaction->right_compartment;
-	      }
+	    if (lfp) {
+	      fprintf(lfp,"parse_reactions_file: Error: Incomplete reaction on"
+		      " reaction ending on line %d.\n"
+		      "Each reaction must have REACTION, LEFT, RIGHT, DGZER0,"
+		      " and DGZERO-UNITS lines\n",line_no);
+	      fflush(lfp);
 	    }
-	    rxn_molecules += 1; /* Caution address arithmetic */
+	    
+	  } else {
+	    reaction->self_id = rxns;
+	    activities[rxns]  = reaction->enzyme_level;
+	    enzyme_level[rxns] = reaction->enzyme_level;
+	    forward_rc[rxns]   = reaction->forward_rc;
+	    reverse_rc[rxns]   = reaction->reverse_rc;
+	    /*
+	      Since a compartment line could have come any where in
+	      the reaction input lines, we need to go back
+	      and properly set the compartments for each of the
+	      molecules in the reaction. Reactants get the
+	      reaction->left_compartment value (for c_index) and
+	      products get the reaction->right_compartment value for c_index;
+	    */
+	    mol_pos = rxn_ptrs[rxns];
+	    rxn_molecules = (struct molecule_struct *)&state->unsorted_molecules[mol_pos];
+	    mol_pos_lim = mol_pos + reaction->num_reactants +
+	      reaction->num_products;
+	    sum_coeffs = 0;
+	    for (j = mol_pos;j<mol_pos_lim;j++) {
+	      sum_coeffs += coefficients[j];
+	      /*
+		Only look to set the compartment index if the molecule did
+		not have a local compartment (:compartment).
+	      */
+	      if (rxn_molecules->c_index == 0) {
+		if (coefficients[j] < 0) {
+		  rxn_molecules->c_index = reaction->left_compartment;
+		} else {
+		  rxn_molecules->c_index = reaction->right_compartment;
+		}
+	      }
+	      rxn_molecules += 1; /* Caution address arithmetic */
+	    }
+	    reaction->coefficient_sum = sum_coeffs;
+	    coeff_sum[rxns] = sum_coeffs;
+	    use_rxn[rxns]   = rxn_use;
+	    rxns += 1;
+	    /*
+	      Caution address arithmetic follows
+	      reaction = (struct reaction_struct*)&reactions[rxns];
+	    */
+	    reaction += 1;
+	    reg_base  += max_regs_per_rxn;
 	  }
-	  reaction->coefficient_sum = sum_coeffs;
-	  coeff_sum[rxns] = sum_coeffs;
-	  use_rxn[rxns]   = rxn_use;
-	  rxns += 1;
-	  /*
-	    Caution address arithmetic follows
-	    reaction = (struct reaction_struct*)&reactions[rxns];
-	  */
-	  reaction += 1;
-	  reg_base  += max_regs_per_rxn;
 	  reg_pos   =  reg_base;
 	  reg_count = 0;
+	  had_a_title = 0;
+	  had_a_dg0   = 0;
+	  had_units   = 0;
 	  if (rxns < (int)state->number_reactions) {
 	    reaction->lcompartment      = 0;
 	    reaction->rcompartment      = 0;
@@ -767,8 +800,9 @@ int parse_reactions_file(struct state_struct *state,
 	  if (ns < 1) {
 	    if (lfp) {
 	      fprintf(lfp,
-		    "parse_reactions_file: malformed FORWARD_RATE line was\n%s\n",
-		    rxn_buffer);
+		     "parse_reactions_file: Error line %d: malformed "
+		      "FORWARD_RATE line was\n%s\n",
+		      line_no,rxn_buffer);
 	      fflush(lfp);
 	    }
 	    success = 0;
@@ -784,8 +818,9 @@ int parse_reactions_file(struct state_struct *state,
 	  if (ns < 1) {
 	    if (lfp) {
 	      fprintf(lfp,
-		    "parse_reactions_file: malformed REVERSE_RATE line was\n%s\n",
-		    rxn_buffer);
+		      "parse_reactions_file: Error line %d: malformed "
+		      "REVERSE_RATE line was\n%s\n",
+		      line_no,rxn_buffer);
 	      fflush(lfp);
 	    }
 	    success = 0;
@@ -813,6 +848,7 @@ int parse_reactions_file(struct state_struct *state,
 	} /* end switch(line_type) */
       }/* end if (success) */
       fgp = fgets(rxn_buffer,rxn_buff_len,rxn_fp);
+      line_no += 1;
     } /* end while(fgp...) */
     rxn_ptrs[rxns] = molecules;
     /*
@@ -827,7 +863,8 @@ int parse_reactions_file(struct state_struct *state,
       if (line_type != last_line_type) {
 	if (lfp) {
 	  fprintf(lfp,
-		  "parse_reactions_file: Error reactions file did not end in //\n");
+		  "parse_reactions_file: Error line %d: reactions file did "
+		  "not end in //\n",line_no);
 	  fflush(lfp);
 	}
 	success = 0;

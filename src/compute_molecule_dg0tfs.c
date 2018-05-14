@@ -61,11 +61,15 @@ int compute_molecule_dg0tfs(struct state_struct *state,
   int i;
   int nu_molecules;
 
+  int use_dgzero;
+  int padi;
+
   FILE *lfp;
   FILE *efp;
 
   success = 1;
   lfp = state->lfp;
+  use_dgzero= state->use_dgzero;
   
   nu_molecules             = (int)state->nunique_molecules;
   cur_molecules            = state->sorted_molecules;
@@ -112,7 +116,27 @@ int compute_molecule_dg0tfs(struct state_struct *state,
 	}
       }
     } else {
-      break;
+      /*
+	Check to see if use_dgzero is set, if so then reactions involving
+	this molecule will use the read in DGZERO value from the reaction.dat 
+	file. Otherwise it is an error, set success to 0 and print messsage
+	to log file and quit.
+      */
+      if (use_dgzero) {
+	molecule_dg0tfs[i] = 0.0;
+	success = 1;
+	if (lfp) {
+	  fprintf(lfp,"compute_molcule_dg0tfs: %s not found in pseudoisomer file, using specified DGZERO from reactions.dat file for reactions it is involved in\n",molecule);
+	  fflush(lfp);
+	}
+      } else {
+	success = 0;
+	if (lfp) {
+	  fprintf(lfp,"compute_molecule_dg0tfs: %s not found in pseudoisomer file and use_dgzero not specified. Quitting.\n",molecule);
+	  fflush(lfp);
+	}
+	break;
+      }
     }
     cur_molecules += 1; /* Caution address arithmetic. */
   }

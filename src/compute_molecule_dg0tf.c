@@ -170,8 +170,10 @@ int compute_molecule_dg0tf(double ph,
     }
   } else {
     success = 0;
+    /*
     fprintf(stderr,"compute_molecule_dg0tf, molecule %s not found in pseudoisomer list\n",cpd_name);
     fflush(stderr);
+    */
   }
   /*
   min = 0;

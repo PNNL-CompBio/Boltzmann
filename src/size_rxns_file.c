@@ -75,6 +75,9 @@ int size_rxns_file(struct state_struct *state,
   int kl;
   int cmpts;
 
+  int line_no;
+  int padi;
+
   FILE *rxn_fp;
   FILE *lfp;
   success = 1;
@@ -121,6 +124,7 @@ int size_rxns_file(struct state_struct *state,
     }
     rxn_title_len  = (int64_t)0;
     fgp = fgets(rxn_buffer,rxn_buff_len,rxn_fp);
+    line_no = 1;
     while (fgp && (! feof(rxn_fp))) {
       line_len     =  strlen(rxn_buffer);
       total_length += line_len;
@@ -142,7 +146,7 @@ int size_rxns_file(struct state_struct *state,
 	When a // is seen then we hit transfer state 1, where 
 	we must get a REACTION line next.
       */
-      line_type = parse_rxn_file_keyword(rxn_buffer,state);
+      line_type = parse_rxn_file_keyword(rxn_buffer,line_no,state);
       if (line_type >= 0) {
 	kl = keyword_lens[line_type];
 	ws_chars = count_ws((char *)&rxn_buffer[kl]);      
@@ -212,6 +216,7 @@ int size_rxns_file(struct state_struct *state,
 	break;
       }
       fgp = fgets(rxn_buffer,rxn_buff_len,rxn_fp);
+      line_no += 1;
     } /* end while(fgp...) */
     state->reaction_file_length = total_length;
     state->number_reactions = rxns;
