@@ -1,7 +1,7 @@
 # NB SUNDIALS_ROOT here defined instead of in Makefile.head as it gets
 # defined differently in the sundials Makefiles which include Makefile.head
 
-BOLTZMANN_TOP = /home/dbaxter/boltzmann/git/src
+BOLTZMANN_TOP = `pwd`
 SUNDIALS_ROOT = $(BOLTZMANN_TOP)/sundials-2.7.0
 BOLTZMANN_BIN = $(BOLTZMANN_TOP)/../bin
 
