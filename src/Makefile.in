@@ -523,7 +523,7 @@ $(SUNDIALS_LIB_DIR):
 default: $(EXECS) $(SUNDIALS_LIBS) libboltzmann.a
 
 $(BOLTZMANN_BIN):
-	mkdir -p $(BOLTZMANN_TOP)/bin
+	mkdir -p $(BOLTZMANN_TOP)/../bin
 
 $(BOLTZMANN_BIN)/ms2js_ids: $(KPM_OBJS)
 	$(CLINKER) -O0 -o $(BOLTZMANN_BIN)/ms2js_ids $(KPM_OBJS)

@@ -46,7 +46,7 @@ KFM_OBJS  = kegg_from_modelseed.o count_ws.o count_ntb.o count_nor.o check_for_w
 KPM_OBJS = modelseed_2_json.o count_ws.o count_ntb.o count_nws.o 
 
 $(BOLTZMANN_BIN):
-	mkdir -p $(BOLTZMANN_TOP)/bin
+	mkdir -p $(BOLTZMANN_TOP)/../bin
 
 
 $(BOLTZMANN_BIN)/ms2js_ids: $(KPM_OBJS)
