@@ -12,12 +12,12 @@ include Makefile.head
 
 EXECS        = $(BOLTZMANN_BIN)/boltzmann $(BOLTZMANN_BIN)/deq $(BOLTZMANN_BIN)/lapack_test $(BOLTZMANN_BIN)/sbml2bo $(BOLTZMANN_BIN)/kegg_ms_ids $(BOLTZMANN_BIN)/ms2js_ids $(BOLTZMANN_BIN)/kegg_ids $(BOLTZMANN_BIN)/bwarmup 
 
-all:  $(EXECS) $(SUNDIALS_LIB_DIR)/libsundials_cvodes.a $(SUNDIALS_LIB_DIR)/libsundials_nvec_ser.a $(SUNDIALS_LIB_DIR)/libsundials.a
+all:  $(BOLTZMANN_BIN) $(EXECS) $(SUNDIALS_LIB_DIR)/libsundials_cvodes.a $(SUNDIALS_LIB_DIR)/libsundials_nvec_ser.a $(SUNDIALS_LIB_DIR)/libsundials.a
 
 $(SUNDIALS_LIB_DIR)/libsundials_cvodes.a $(SUNDIALS_LIB_DIR)/libsundials_nvec_ser.a $(SUNDIALS_LIB_DIR)/libsundials.a: $(SUNDIALS_LIB_DIR)
 	cd $(SUNDIALS_ROOT) && $(MAKE)
 
-$(SUNDIALS_LIB_DIR): $(SUNDIALS_ROOT)
+$(SUNDIALS_LIB_DIR): 
 	mkdir -p $(SUNDIALS_LIB_DIR)
 
 default: $(EXECS) $(SUNDIALS_LIBS) libboltzmann.a
@@ -44,6 +44,10 @@ KFP_OBJS = kegg_from_pseudoisomer.o count_ws.o count_nlb.o check_for_ws.o boltzm
 KFM_OBJS  = kegg_from_modelseed.o count_ws.o count_ntb.o count_nor.o check_for_ws.o boltzmannize_json_id.o
 
 KPM_OBJS = modelseed_2_json.o count_ws.o count_ntb.o count_nws.o 
+
+$(BOLTZMANN_BIN):
+	mkdir -p $(BOLTZMANN_TOP)/bin
+
 
 $(BOLTZMANN_BIN)/ms2js_ids: $(KPM_OBJS)
 	$(CLINKER) -O0 -o $(BOLTZMANN_BIN)/ms2js_ids $(KPM_OBJS)

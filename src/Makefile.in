@@ -512,15 +512,18 @@ uninstall-am:
 	pdf-am ps ps-am uninstall uninstall-am
 
 
-all:  $(EXECS) $(SUNDIALS_LIB_DIR)/libsundials_cvodes.a $(SUNDIALS_LIB_DIR)/libsundials_nvec_ser.a $(SUNDIALS_LIB_DIR)/libsundials.a
+all:  $(BOLTZMANN_BIN) $(EXECS) $(SUNDIALS_LIB_DIR)/libsundials_cvodes.a $(SUNDIALS_LIB_DIR)/libsundials_nvec_ser.a $(SUNDIALS_LIB_DIR)/libsundials.a
 
 $(SUNDIALS_LIB_DIR)/libsundials_cvodes.a $(SUNDIALS_LIB_DIR)/libsundials_nvec_ser.a $(SUNDIALS_LIB_DIR)/libsundials.a: $(SUNDIALS_LIB_DIR)
 	cd $(SUNDIALS_ROOT) && $(MAKE)
 
-$(SUNDIALS_LIB_DIR): $(SUNDIALS_ROOT)
+$(SUNDIALS_LIB_DIR): 
 	mkdir -p $(SUNDIALS_LIB_DIR)
 
 default: $(EXECS) $(SUNDIALS_LIBS) libboltzmann.a
+
+$(BOLTZMANN_BIN):
+	mkdir -p $(BOLTZMANN_TOP)/bin
 
 $(BOLTZMANN_BIN)/ms2js_ids: $(KPM_OBJS)
 	$(CLINKER) -O0 -o $(BOLTZMANN_BIN)/ms2js_ids $(KPM_OBJS)
