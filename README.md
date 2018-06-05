@@ -1,6 +1,6 @@
 # Boltzmann
 
-This is a beta release of Boltzmann, a simulation for simulating mass action kinetics from both a thermodynamic and kinetic perspective. 
+This is a beta release of Boltzmann, a program for simulating mass action kinetics from both a thermodynamic and kinetic perspective. 
 Boltzmann has the following capabilities: 
 * Allows one to use a maximum entropy assumption to determine rate parameters when they are not otherwise available.
 * Predicts steady state metabolite concentrations.
@@ -17,6 +17,8 @@ Background papers on the methods used are:
 * Cannon, W. R., Simulating metabolism with statistical thermodynamics. PLoS One 2014, 9 (8), e103582.
 * Cannon, W. R.; Baker, S. E., Non-steady state mass action dynamics without rate constants: Dynamics of coupled reactions 
 using chemical potentials. Phys Biol 2017, 14 (5), 055003.
+
+Boltzmann is written in C.
 
 ## To build
 
@@ -140,13 +142,13 @@ struct giving its length.
 struct.
 
 ## Exectuables
-The boltzmann executable runs a simulation for a single reaction file.
+The *boltzmann* executable runs a simulation for a single reaction file.
 
-The boltzmann_boot_test executable tests the execution of the boltzmann_boot
+The *boltzmann_boot_test* executable tests the execution of the boltzmann_boot
 routine for a set of reaction files and their corresponding initial 
 concentrations files.
 
-Both the boltzmann and boltzmann_boot_test executables take a similar parameter
+Both the *boltzmann* and *boltzmann_boot_test executables* take a similar parameter
 input file that specifies the reaction and initial concentration files for
 boltzmann, and a list of such files for boltzmann_boot_test. These input files
 also specify some other parameters which are ultimately stored in each 
@@ -155,7 +157,7 @@ of keyword value pairs. Ordering of the lines within the file is not important.
 
 
 
-## Include Files: 
+## Include Files 
 The header files for all routines are in routine_name.h. For the data structs
 being used including boltzmann_structs.h should suffice.
    
