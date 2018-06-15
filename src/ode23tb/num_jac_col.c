@@ -149,7 +149,7 @@ int num_jac_col(struct state_struct *state,
 	ydelj = 0.0;
       }
       /*
-	evalueate flux at ydelj
+	evaluate derivative at ydelj
       */
       y[j] = ydelj;
       approximate_delta_concs(state,y,fdel,choice);
