@@ -149,7 +149,7 @@ target_alias =
 top_build_prefix = 
 top_builddir = .
 top_srcdir = .
-BOLTZMANN_TOP = /home/dbaxter/boltzmann/git/src
+BOLTZMANN_TOP = `pwd`
 SUNDIALS_ROOT = $(BOLTZMANN_TOP)/sundials-2.7.0
 BOLTZMANN_BIN = $(BOLTZMANN_TOP)/../bin
 CLINKER = gcc
@@ -172,7 +172,7 @@ LFLAGS = -g
 EXECS = $(BOLTZMANN_BIN)/boltzmann $(BOLTZMANN_BIN)/deq $(BOLTZMANN_BIN)/lapack_test $(BOLTZMANN_BIN)/sbml2bo $(BOLTZMANN_BIN)/kegg_ms_ids $(BOLTZMANN_BIN)/ms2js_ids $(BOLTZMANN_BIN)/kegg_ids $(BOLTZMANN_BIN)/bwarmup 
 SERIAL_INCS = boltzmann_structs.h state_struct.h reaction_struct.h reactions_matrix_struct.h molecules_matrix_struct.h molecule_struct.h compartment_struct.h vgrng_state_struct.h pseudoisomer_struct.h stack_level_elem_struct.h tools/sbml2bo_struct.h tools/sbml2bo_structs.h t2js_struct.h cvodes_interface/boltzmann_cvodes_headers.h
 SERIAL_OBJS1 = boltzmann_init.o alloc0.o alloc0_a.o boltzmann_set_filename_ptrs.o read_params.o boltzmann_init_core.o io_size_init.o create_output_filenames.o open_output_files.o size_rxns_file.o init_rxn_file_keywords.o parse_rxn_file_keyword.o count_ws.o count_nws.o count_molecules.o is_a_coef.o alloc2.o alloc2_a.o rxns_init.o parse_reactions_file.o upcase.o parse_side_line.o find_colon.o boltzmann_compress_reactions.o sort_compartments.o merge_compartments.o unique_compartments.o unique_compartments_core.o translate_compartments.o sort_molecules.o merge_molecules.o unique_molecules.o unique_molecules_core.o alloc3.o species_init.o set_compartment_ptrs.o set_count_trans.o translate_regulation_metabolites.o molecules_lookup.o read_compartment_sizes.o read_initial_concentrations.o compartment_lookup.o check_initial_concentrations.o alloc4.o form_molecules_matrix.o
-SERIAL_OBJS2 = energy_init.o compute_standard_energies.o size_pseudoisomer_file.o alloc5.o parse_pseudoisomer_dg0f_file.o blank_to_dash.o sharp_pos.o alloc6.o compute_molecule_dg0tfs.o compute_molecule_dg0tf.o pseudoisomer_dg0tf.o compute_molecular_partition_probability.o compute_chemical_potential.o compute_reaction_dg0.o unalloc6.o compute_ke.o zero_solvent_coefficients.o compute_kss.o echo_inputs.o echo_params.o echo_reactions_file.o print_molecules_dictionary.o print_dg0_ke.o recover_solvent_coefficients.o vgrng_init.o vgrng.o print_rxn_likelihoods_header.o print_free_energy_header.o run_init.o alloc8.o alloc9.o print_reactions_matrix.o print_active_reactions_matrix.o
+SERIAL_OBJS2 = energy_init.o compute_standard_energies.o size_pseudoisomer_file.o alloc5.o parse_pseudoisomer_dg0f_file.o blank_to_dash.o sharp_pos.o alloc6.o compute_molecule_dg0tfs.o compute_molecule_dg0tf.o pseudoisomer_dg0tf.o compute_molecular_partition_probability.o compute_chemical_potential.o compute_reaction_dg0.o unalloc6.o compute_ke.o zero_solvent_coefficients.o compute_kss.o echo_inputs.o echo_params.o echo_reactions_file.o print_molecules_dictionary.o print_dg0_ke.o recover_solvent_coefficients.o vgrng_init.o vgrng.o print_rxn_likelihoods_header.o print_free_energy_header.o run_init.o alloc8.o alloc9.o print_reactions_matrix.o print_active_reactions_matrix.o print_compartments.o
 SERIAL_OBJS3 = boltzmann_build_agent_data_block.o boltzmann_run.o boltzmann_load_agent_data.o update_rxn_log_likelihoods.o rxn_log_likelihoods.o rxn_likelihoods.o rxn_likelihood.o choose_rxn.o candidate_rxn.o binary_search_l_u_b.o update_regulations.o update_regulation.o rxn_count_update.o bndry_flux_update.o metropolis.o rxn_likelihood_postselection.o compute_delta_g_forward_entropy_free_energy.o boltzmann_watch.o print_rxn_choice.o print_counts.o print_likelihoods.o save_likelihoods.o print_free_energy.o print_boundary_flux.o print_restart_file.o print_reactions_view.o boltzmann_save_agent_data.o boltzmann_flatten_vgrng_state.o 
 SERIAL_OBJS7 = deq_run.o alloc7.o ode_solver.o ode23tb.o \
 	init_base_reactants.o init_relative_rates.o ode_num_jac.o \
@@ -512,15 +512,18 @@ uninstall-am:
 	pdf-am ps ps-am uninstall uninstall-am
 
 
-all:  $(EXECS) $(SUNDIALS_LIB_DIR)/libsundials_cvodes.a $(SUNDIALS_LIB_DIR)/libsundials_nvec_ser.a $(SUNDIALS_LIB_DIR)/libsundials.a
+all:  $(BOLTZMANN_BIN) $(EXECS) $(SUNDIALS_LIB_DIR)/libsundials_cvodes.a $(SUNDIALS_LIB_DIR)/libsundials_nvec_ser.a $(SUNDIALS_LIB_DIR)/libsundials.a
 
 $(SUNDIALS_LIB_DIR)/libsundials_cvodes.a $(SUNDIALS_LIB_DIR)/libsundials_nvec_ser.a $(SUNDIALS_LIB_DIR)/libsundials.a: $(SUNDIALS_LIB_DIR)
 	cd $(SUNDIALS_ROOT) && $(MAKE)
 
-$(SUNDIALS_LIB_DIR): $(SUNDIALS_ROOT)
+$(SUNDIALS_LIB_DIR): 
 	mkdir -p $(SUNDIALS_LIB_DIR)
 
 default: $(EXECS) $(SUNDIALS_LIBS) libboltzmann.a
+
+$(BOLTZMANN_BIN):
+	mkdir -p $(BOLTZMANN_TOP)/../bin
 
 $(BOLTZMANN_BIN)/ms2js_ids: $(KPM_OBJS)
 	$(CLINKER) -O0 -o $(BOLTZMANN_BIN)/ms2js_ids $(KPM_OBJS)
@@ -622,6 +625,7 @@ libboltzmann.a: $(SERIAL_OBJS1)  $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SBML_OBJS) $(
 	$(AR) $(ARFLAGS) libboltzmann.a echo_reactions_file.o
 	$(AR) $(ARFLAGS) libboltzmann.a print_molecules_dictionary.o
 	$(AR) $(ARFLAGS) libboltzmann.a print_dg0_ke.o
+	$(AR) $(ARFLAGS) libboltzmann.a print_compartments.o
 	$(AR) $(ARFLAGS) libboltzmann.a recover_solvent_coefficients.o
 	$(AR) $(ARFLAGS) libboltzmann.a run_init.o
 	$(AR) $(ARFLAGS) libboltzmann.a vgrng_init.o
@@ -1023,7 +1027,7 @@ zero_solvent_coefficients.o: $(SERIAL_INCS) zero_solvent_coefficients.c zero_sol
 compute_kss.o: $(SERIAL_INCS) compute_kss.c compute_kss.h
 	$(CC) $(DCFLAGS)  -c compute_kss.c
 
-echo_inputs.o: $(SERIAL_INCS) echo_inputs.c echo_inputs.h echo_params.h echo_reactions_file.h print_molecules_dictionary.h print_dg0_ke.h print_counts.h 
+echo_inputs.o: $(SERIAL_INCS) echo_inputs.c echo_inputs.h echo_params.h echo_reactions_file.h print_molecules_dictionary.h print_dg0_ke.h print_counts.h print_compartments.h
 	$(CC) $(DCFLAGS)  -c echo_inputs.c
 
 echo_params.o: $(SERIAL_INCS) echo_params.c echo_params.h
@@ -1133,6 +1137,9 @@ print_rxn_choice.o: print_rxn_choice.c print_rxn_choice.h $(SERIAL_INCS)
 
 print_counts.o: $(SERIAL_INCS) print_counts.c print_counts.h
 	$(CC) $(DCFLAGS)  -c print_counts.c
+
+print_compartments.o: $(SERIAL_INCS) print_compartments.c print_compartments.h
+	$(CC) $(DCFLAGS)  -c print_compartments.c
 
 print_likelihoods.o: $(SERIAL_INCS) print_likelihoods.c print_likelihoods.h
 	$(CC) $(DCFLAGS)  -c print_likelihoods.c

@@ -29,7 +29,7 @@ void print_counts(struct state_struct *state, int64_t step) {
     if print_concs_or_counts is 1 or 3, the current counts are printed.
     if it is 2 or 3 the concentrations are printed - each to their own file.
 
-    Called by boltzmann_run, deq
+    Called by boltzmann_run, deq, echo_inputs
 
     Arguments:
     

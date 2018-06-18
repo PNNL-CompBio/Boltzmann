@@ -114,6 +114,8 @@ int sort_global_compartments(struct compartment_struct **unsorted_compartments,
 	  s_compartments[j].recip_volume   = u_compartments[j].recip_volume;
 	  s_compartments[j].ntotal_exp     = u_compartments[j].ntotal_exp;
 	  s_compartments[j].ntotal_opt     = u_compartments[j].ntotal_opt;
+	  s_compartments[j].ph             = u_compartments[j].ph;
+	  s_compartments[j].ionic_strength = u_compartments[j].ionic_strength;
 	  s_compartments[j].conc_to_count  = u_compartments[j].conc_to_count;
 	  s_compartments[j].count_to_conc  = u_compartments[j].count_to_conc;
 	  s_compartments[j].string   = u_compartments[j].string;

@@ -133,6 +133,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
     state->ode_dsens_file[0]    = '\0';
     state->dfdke_file[0]        = '\0';
     state->dfdmu0_file[0]       = '\0';
+    state->cmpts_echo_file[0]   = '\0';
     /*
       Following line Added by DGT on 4/18/2013
      */
@@ -152,61 +153,62 @@ int read_params (char *param_file_name, struct state_struct *state) {
     /*
       Following 2 lines added by DGT on 4/15/2013
     */
-    state->ph                  = 7.5;
-    state->ionic_strength      = 0.15;
-    state->joules_per_cal      = 4.184;
-    state->epsilon             = 0.0000001;
-    state->avogadro            = 6.022140857e23;
-    state->recip_avogadro      = 1.0/state->avogadro;
-    state->cals_per_joule      = 1.0/state->joules_per_cal;
-    state->default_volume      = 1.0e-15;
-    state->recip_default_volume = 1.0e15;
-    state->ode_t_final         = 10.0;
+    state->ph                  	 = 7.5;
+    state->ionic_strength      	 = 0.15;
+    state->joules_per_cal      	 = 4.184;
+    state->epsilon             	 = 0.0000001;
+    state->avogadro            	 = 6.022140857e23;
+    state->recip_avogadro      	 = 1.0/state->avogadro;
+    state->cals_per_joule      	 = 1.0/state->joules_per_cal;
+    state->default_volume      	 = 1.0e-15;
+    state->recip_default_volume  = 1.0e15;
+    state->ode_t_final           = 10.0;
     /*
-    state->max_log_g0_sum      = 704.0;
+    state->max_log_g0_sum      	 = 704.0;
     */
-    state->max_log_g0_sum      = 100.0;
-    state->dg0_scale_factor    = .001;
-    state->flux_scaling        = 0.0;
-    state->deriv_thresh        = 1.0e-8;
-    state->ode_stop_thresh     = 1.0e-8;
-    state->nj_thresh           = 1.0e-6;
+    state->max_log_g0_sum      	 = 100.0;
+    state->dg0_scale_factor    	 = .001;
+    state->flux_scaling        	 = 0.0;
+    state->deriv_thresh        	 = 1.0e-8;
+    state->ode_stop_thresh     	 = 1.0e-8;
+    state->nj_thresh           	 = 1.0e-6;
     /*
-    state->min_conc            = 1.0e-52;
+    state->min_conc            	 = 1.0e-52;
     */
-    state->min_conc            = 0.0;
-    state->warmup_steps        = (int64_t)1000;
-    state->record_steps        = (int64_t)1000;
-    state->free_energy_format  = (int64_t)0;
-    state->rxn_view_freq       = (int64_t)0;
-    state->ode_rxn_view_freq   = (int64_t)0;
-    state->count_view_freq     = (int64_t)0;
-    state->lklhd_view_freq     = (int64_t)0;
-    state->fe_view_freq        = (int64_t)0;
-    state->use_activities      = (int64_t)0;
-    state->use_deq             = (int64_t)0;
-    state->no_round_from_deq   = (int64_t)0;
-    state->adjust_steady_state = (int64_t)0;
-    state->print_output        = (int64_t)0;
-    state->use_pseudoisomers   = (int64_t)1;
-    state->use_dgzero          = (int64_t)0;
-    state->use_metropolis      = (int64_t)1;
-    state->use_regulation      = (int64_t)1;
-    state->max_regs_per_rxn    = (int64_t)4;
-    state->base_reaction       = (int64_t)0;
-    state->ode_solver_choice   = (int64_t)0;
-    state->delta_concs_choice  = (int64_t)0;
+    state->min_conc            	 = 0.0;
+    state->warmup_steps        	 = (int64_t)1000;
+    state->record_steps        	 = (int64_t)1000;
+    state->free_energy_format  	 = (int64_t)0;
+    state->rxn_view_freq       	 = (int64_t)0;
+    state->ode_rxn_view_freq   	 = (int64_t)0;
+    state->count_view_freq     	 = (int64_t)0;
+    state->lklhd_view_freq     	 = (int64_t)0;
+    state->fe_view_freq        	 = (int64_t)0;
+    state->use_activities      	 = (int64_t)0;
+    state->use_deq             	 = (int64_t)0;
+    state->use_lsqnonlin       	 = (int64_t)0;
+    state->no_round_from_deq   	 = (int64_t)0;
+    state->adjust_steady_state 	 = (int64_t)0;
+    state->print_output        	 = (int64_t)0;
+    state->use_pseudoisomers   	 = (int64_t)1;
+    state->use_dgzero          	 = (int64_t)0;
+    state->use_metropolis      	 = (int64_t)1;
+    state->use_regulation      	 = (int64_t)1;
+    state->max_regs_per_rxn    	 = (int64_t)4;
+    state->base_reaction       	 = (int64_t)0;
+    state->ode_solver_choice   	 = (int64_t)0;
+    state->delta_concs_choice  	 = (int64_t)0;
     state->print_concs_or_counts = (int64_t)3;
-    state->use_bulk_water      = (int64_t)1;
-    state->cvodes_rhs_choice   = (int64_t)0;
-    state->cvodes_jtimes_choice = (int64_t)2;
-    state->cvodes_prec_choice  = (int64_t)2;
-    state->ode_jacobian_choice = (int64_t)0;
-    state->cvodes_prec_fill    = (int64_t)0;
-    state->ode_stop_norm       = (int64_t)0; /* max norm */
-    state->ode_stop_rel        = (int64_t)0; /* absolute size */
-    state->ode_stop_style      = (int64_t)0; /* none: integrate till t_final */
-    state->print_ode_concs     = (int64_t)0;
+    state->use_bulk_water        = (int64_t)1;
+    state->cvodes_rhs_choice     = (int64_t)0;
+    state->cvodes_jtimes_choice  = (int64_t)2;
+    state->cvodes_prec_choice  	 = (int64_t)2;
+    state->ode_jacobian_choice 	 = (int64_t)0;
+    state->cvodes_prec_fill    	 = (int64_t)0;
+    state->ode_stop_norm       	 = (int64_t)0; /* max norm */
+    state->ode_stop_rel        	 = (int64_t)0; /* absolute size */
+    state->ode_stop_style      	 = (int64_t)0; /* none: integrate till t_final */
+    state->print_ode_concs     	 = (int64_t)0;
     state->compute_sensitivities = (int64_t)0;
 
     state->default_initial_count = (int64_t)0;
@@ -274,6 +276,8 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	sscan_ok = sscanf(value,"%s",state->log_file);
       } else if (strncmp(key,"RXN_ECHO_FILE",13) == 0) {
 	sscan_ok = sscanf(value,"%s",state->rxn_echo_file);
+      } else if (strncmp(key,"CMPTS_ECHO_FILE",15) == 0) {
+	sscan_ok = sscanf(value,"%s",state->cmpts_echo_file);
       } else if (strncmp(key,"RXN_MAT_FILE",12) == 0) {
 	sscan_ok = sscanf(value,"%s",state->rxn_mat_file);
       } else if (strncmp(key,"ARXN_MAT_FILE",13) == 0) {
@@ -539,7 +543,12 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	sscan_ok = sscanf(value,"%ld",&(state->use_deq));
 	if (state->use_deq < 0) {
 	  state->use_deq = 0;
-	}
+	} 
+      } else if (strncmp(key,"USE_LSQNONLIN",13) == 0) {
+	sscan_ok = sscanf(value,"%ld",&(state->use_lsqnonlin));
+	if (state->use_lsqnonlin < 0) {
+	  state->use_lsqnonlin = 0;
+	} 
       } else if (strncmp(key,"NO_ROUND_FROM_DEQ",17) == 0) {
 	sscan_ok = sscanf(value,"%ld",&(state->no_round_from_deq));
       } else if (strncmp(key,"USE_STEADY_STATE",19) == 0) {

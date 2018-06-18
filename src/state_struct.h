@@ -187,6 +187,7 @@ struct state_struct {
   int64_t ode_stop_rel;  /* 0 for absolute  1 for relative */
   int64_t ode_stop_style; /*0 for termination time, 1 for adaptive */
   int64_t compute_sensitivities; 
+  int64_t use_lsqnonlin;
   /* 0 for no, 1 for yes, only when ode_solver_choice == 1 */
   /*
     offsets used to self-describe this state vector.
@@ -378,6 +379,7 @@ struct state_struct {
   char *dfdke_file;        /* max_filename_len */
   char *dfdmu0_file;       /* max_filename_len */
   char *arxn_mat_file;     /* max_filename_len */
+  char *cmpts_echo_file;   /* max_filename_len */
   
   char *solvent_string;    /* Length is 64. Allocated in alloc0 */
 
@@ -480,6 +482,9 @@ struct state_struct {
 
   FILE *dfdke_fp;
   FILE *dfdmu0_fp;
+
+  FILE *cmpts_echo_fp;
+  FILE *efp;
 }
 ;
 #endif

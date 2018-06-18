@@ -22,7 +22,7 @@ specific language governing permissions and limitations under the License.
 #define __COMPARTMENT_STRUCT__
 struct compartment_struct {
   /*
-    An molecule_struct has 8 fields. The first three are initially set by 
+    A molecule_struct has 8 fields. The first three are initially set by 
     the parse_side_line routine called by the parse_reactions_file routine.
     
         volume  - volume of the compartment, must be > 0
@@ -39,20 +39,34 @@ struct compartment_struct {
 		  colon preceded fields of the LEFT and RIGHT lines in 
 		  the reactions.dat input file.
 
-	g_index	  The global index of the compartment, as set 
+	g_index	- The global index of the compartment, as set 
 	          by the global reader.
+
+
+        ionic_strength - The compartment ionic strength.  
+	                 This used to be a per simulation
+			 variable, now is per compartment.
+
+	ph             - The compartment ph.
+	                 This used to be a per simulation
+			 variable, now is per compartment.
+	
 	
      For compartments only the string, c_index and g_index fields are used.
 
   */
   double volume;
   double recip_volume;
-  double ntotal_exp;
-  double ntotal_opt;
+  double ntotal_exp; /* This was for use in kss routines, but not currently used.*/
+
+  double ntotal_opt; /* This was for use in kss routines, but not currently used.*/
   /* 
      min_conc is really just count_to_conc.
   double min_conc;
   */
+  double ph;  /* compartment pH. This used to be a single variable in state. */
+  double ionic_strength; /* compartment ionic strengh. This used to be a single variable in state. */
+
   double conc_to_count;
   double count_to_conc;
 

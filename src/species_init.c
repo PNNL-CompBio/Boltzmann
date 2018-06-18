@@ -43,12 +43,14 @@ int species_init(struct state_struct *state) {
   /*
     If we are going to read in a list of compartment sizes that should
     happen here after the compartments have been set, and before
-    the initinal concentrations are read in.
+    the initinal concentrations are read in. We will modify this file
+    to also read in other compartement characteristics, ph and ionic strength
+    for now.
   */
   if (success) {
     if (state->compartment_file[0] != '\0') {
       success = read_compartment_sizes(state);
-    } 
+    }
   }
   /*
     Read initial concentrations, convert them to counts,

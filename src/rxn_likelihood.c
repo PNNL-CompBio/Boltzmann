@@ -156,6 +156,11 @@ double rxn_likelihood(double *counts,
     coeff = rcoef[j];
     m_index = molecules_indices[j];
     molecule = &molecules[m_index];
+    /*
+      NB we should pul the volume_recip from the compartment struct now.
+      That is pulled from the compartment struct in set_count_trans.
+      and already has avogadros number incorporated.
+    */
     volume_recip = count_to_conc[m_index];
     /*
     */
@@ -166,7 +171,7 @@ double rxn_likelihood(double *counts,
     if (coeff < 0) {
       for (k=0;k<(0-coeff);k++) {
 
-	left_concs = left_concs * ((count-k) * (volume_recip * recip_avogadro));
+	left_concs = left_concs * ((count-k) * volume_recip);
 	left_counts = left_counts * (count-k);
 
       } 
@@ -174,7 +179,7 @@ double rxn_likelihood(double *counts,
       if (coeff > 0) {
 	for (k=1;k<=coeff;k++) {
 
-	  right_concs = right_concs * ((count+k) * (volume_recip * recip_avogadro));
+	  right_concs = right_concs * ((count+k) * volume_recip);
 	  right_counts = right_counts * (count+k);
 	} 
       }

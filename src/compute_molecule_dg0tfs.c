@@ -44,8 +44,10 @@ int compute_molecule_dg0tfs(struct state_struct *state,
 */
 
   struct molecule_struct *cur_molecules;
+  struct compartment_struct *compartments;
+  struct compartment_struct *compartment;
   char *molecules_text;
-  char *molecule;
+  char *molecule_name;
 
   double ph;
   double temp_kelvin;
@@ -62,7 +64,7 @@ int compute_molecule_dg0tfs(struct state_struct *state,
   int nu_molecules;
 
   int use_dgzero;
-  int padi;
+  int c_index;
 
   FILE *lfp;
   FILE *efp;
@@ -73,13 +75,16 @@ int compute_molecule_dg0tfs(struct state_struct *state,
   
   nu_molecules             = (int)state->nunique_molecules;
   cur_molecules            = state->sorted_molecules;
+  compartments             = state->sorted_compartments;
   molecules_text           = state->molecules_text;
 
   molecule_dg0tfs          = state->molecule_dg0tfs;
 
+  /*
   ph                       = state->ph;
-  temp_kelvin              = state->temp_kelvin;
   ionic_strength           = state->ionic_strength;
+  */
+  temp_kelvin              = state->temp_kelvin;
   m_rt                     = state->m_rt;
   m_r_rt                   = state->m_r_rt;
   print_output             = (int)state->print_output;
@@ -93,13 +98,16 @@ int compute_molecule_dg0tfs(struct state_struct *state,
   }
   for (i=0;((i<nu_molecules) && success);i++) {
 
-    molecule    = (char *)&molecules_text[cur_molecules->string];
-
+    molecule_name   = (char *)&molecules_text[cur_molecules->string];
+    c_index         = cur_molecules->c_index;
+    compartment     = (struct compartment_struct *)&compartments[c_index];
+    ionic_strength  = compartment->ionic_strength;
+    ph              = compartment->ph;
     success = compute_molecule_dg0tf(ph,
 				     m_rt,
 				     m_r_rt,
 				     ionic_strength,
-				     molecule,
+				     molecule_name,
 				     pseudoisomers,
 				     pseudoisomer_strings,
 				     num_cpds,
@@ -111,7 +119,7 @@ int compute_molecule_dg0tfs(struct state_struct *state,
       }
       if (print_output) {
 	if (lfp) {
-	  fprintf(lfp,"%i \t %s \t %f \n",i,molecule,
+	  fprintf(lfp,"%i \t %s \t %f \n",i,molecule_name,
 		  molecule_dg0tfs[i]);
 	}
       }
@@ -126,13 +134,13 @@ int compute_molecule_dg0tfs(struct state_struct *state,
 	molecule_dg0tfs[i] = 0.0;
 	success = 1;
 	if (lfp) {
-	  fprintf(lfp,"compute_molcule_dg0tfs: %s not found in pseudoisomer file, using specified DGZERO from reactions.dat file for reactions it is involved in\n",molecule);
+	  fprintf(lfp,"compute_molcule_dg0tfs: %s not found in pseudoisomer file, using specified DGZERO from reactions.dat file for reactions it is involved in\n",molecule_name);
 	  fflush(lfp);
 	}
       } else {
 	success = 0;
 	if (lfp) {
-	  fprintf(lfp,"compute_molecule_dg0tfs: %s not found in pseudoisomer file and use_dgzero not specified. Quitting.\n",molecule);
+	  fprintf(lfp,"compute_molecule_dg0tfs: %s not found in pseudoisomer file and use_dgzero not specified. Quitting.\n",molecule_name);
 	  fflush(lfp);
 	}
 	break;

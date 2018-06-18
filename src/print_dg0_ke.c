@@ -57,17 +57,22 @@ int print_dg0_ke(struct state_struct *state) {
   int padi;
 
   FILE *dg0_ke_fp;
+  FILE *lfp;
 
   success = 1;
+  lfp              = state->lfp;
   molecules_text   = state->molecules_text;
   rxn_title_text   = state->rxn_title_text;
 
   dg0_ke_fp = fopen(state->dg0ke_file,"w+");
   if (dg0_ke_fp == NULL) {
-    fprintf(stderr,
-	    "print_dg0_ke.c: Error could not open %s file.\n",
-	    state->dg0ke_file);
-    success = 0;
+    if (lfp) {
+      fprintf(lfp,
+	      "print_dg0_ke.c: Error could not open %s file.\n",
+	      state->dg0ke_file);
+      fflush(lfp);
+      success = 0;
+    }
   }
   if (success) {
     reaction       	 = state->reactions;

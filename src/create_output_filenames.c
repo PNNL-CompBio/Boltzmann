@@ -37,6 +37,7 @@ int create_output_filenames(struct state_struct *state) {
   char *dfdke_filename;
   char *dfdmu0_filename;
   char *arxn_mat_filename;
+  char *cmpts_echo_filename;
   int64_t output_filename_base_length;
   int output_filename_length;
   int success;
@@ -73,8 +74,7 @@ int create_output_filenames(struct state_struct *state) {
   dfdmu0_filename      = state->dfdmu0_file;
   dictionary_filename  = state->dictionary_file;
   arxn_mat_filename    = state->arxn_mat_file;
-
-
+  cmpts_echo_filename  = state->cmpts_echo_file;
   output_filename_empty = 0;
   output_filename_length = strlen(output_filename);
   if (output_filename_length == 0) {
@@ -186,6 +186,10 @@ int create_output_filenames(struct state_struct *state) {
     if (rxn_echo_filename[0] == '\0') {
       strncpy(rxn_echo_filename,output_filename,output_filename_base_length);
       strcpy((char*)&rxn_echo_filename[output_filename_base_length],".echo");
+    }
+    if (cmpts_echo_filename[0] == '\0') {
+      strncpy(cmpts_echo_filename,output_filename,output_filename_base_length);
+      strcpy((char*)&cmpts_echo_filename[output_filename_base_length],".cmpts_echo");
     }
     if (rxn_mat_filename[0] == '\0') {
       strncpy(rxn_mat_filename,output_filename,output_filename_base_length);

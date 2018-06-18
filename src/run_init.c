@@ -80,7 +80,7 @@ int run_init(struct state_struct *state) {
     Allocate work space vectors, 
   */
   if (success) {
-    if (state->use_deq) {
+    if (state->use_deq || state->use_lsqnonlin) {
       direction = 0;
       dummy_addr = NULL;
       success = alloc7(state);

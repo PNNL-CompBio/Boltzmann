@@ -22,7 +22,11 @@ int parse_reactions_file(struct state_struct *state,
   /*
 
     This routine fills the unsorted_molecules and unsorted_cmpts
-    molecule structures. 
+    molecule structures. For the compartments it sets the volumes
+    to be 0 - to indicate they have not been set.
+    Then the volume, recip_volume, ph and ionic_strength fields of
+    the compartment are set in species init in read_compartment_sizes,
+    and read_initial_concentrations.
     It fills the reactions structure, and builds the reactions matrix.
     It also sets the molecules_indices, coefficients,
     and text fields of the reactions matrix.
@@ -309,6 +313,7 @@ int parse_reactions_file(struct state_struct *state,
     */
     unsorted_cmpts->string   = compartment_pos;
     unsorted_cmpts->c_index  = 0;
+    unsorted_cmpts->volume   = 0.0;
     unsorted_cmpts           += 1; /* Caution address arithmetic */
     compartment_text[0]      = '\0';
     regulation_text[0]       = '\0';

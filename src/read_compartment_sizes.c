@@ -30,8 +30,8 @@ specific language governing permissions and limitations under the License.
 
 int read_compartment_sizes(struct state_struct *state) {
   /*
-    Read in the sizes of compartments.
-    Called by: species_init
+    Read in the sizes of compartments, their ph and ionic strength.
+    Called by: species_init before read_initial_concentrations.
     Calls:     compartment_lookup, count_ws, count_nws, 
                fopen, fprintf, fflush, fgets, fclose
   */
@@ -46,6 +46,10 @@ int read_compartment_sizes(struct state_struct *state) {
   double volume;
   double units_avo;
   double multiplier;
+  double ph;
+  double ionic_strength;
+
+
   int success;
   int padi;
 
@@ -94,14 +98,35 @@ int read_compartment_sizes(struct state_struct *state) {
       */
       nb = count_ws(vol_string);
       vol_string += nb; /* Caution address arithmetic */
-      ns = sscanf(vol_string,"%le",&volume);
+      ns = sscanf(vol_string,"%le %le %le",&volume,&ph,&ionic_strength);
       if ((ns < 1) || (volume <= 0.0)) {
 	volume = state->default_volume;
-	fprintf(error_fp,
-		"read_compartment_sizes: Warning invalid volume for "
-		"compartment %s, using %le\n",
-		compartment_name,volume);
-	fflush(error_fp);
+	if (error_fp) {
+	  fprintf(error_fp,
+		  "read_compartment_sizes: Warning invalid volume for "
+		  "compartment %s, using %le\n",
+		  compartment_name,volume);
+	  fflush(error_fp);
+	}
+      }
+      if (ns < 2) {
+	ph = state->ph;
+	if (error_fp) {
+	  fprintf(error_fp,
+		  "read_compartment_sizes: Warning invalid or unspecified ph "
+		  "for compartment %s, using %el\n",compartment_name,ph);
+	  fflush(lfp);
+	}
+      }
+      if (ns < 3) {
+	ionic_strength = state->ionic_strength;
+	if (error_fp) {
+	  fprintf(error_fp,
+		  "read_compartment_sizes: Warning invalid or unspecified "
+		  "ionic_strength for compartment %s, using %el\n",
+		  compartment_name,ionic_strength);
+	  fflush(lfp);
+	}
       }
       ci = compartment_lookup(compartment_name,state);
       if (ci < 0) {
@@ -110,11 +135,13 @@ int read_compartment_sizes(struct state_struct *state) {
 	fflush(error_fp);
       } else {
 	compartment = (struct compartment_struct *)&compartments[ci];
-	compartment->volume = volume;
-	compartment->recip_volume = 1.0/volume;
-	multiplier = units_avo * volume;
-	compartment->conc_to_count = multiplier;
-	compartment->count_to_conc = 1.0/multiplier;
+	compartment->volume         = volume;
+	compartment->recip_volume   = 1.0/volume;
+	compartment->ph             = ph;
+	compartment->ionic_strength = ionic_strength;
+	multiplier                  = units_avo * volume;
+	compartment->conc_to_count  = multiplier;
+	compartment->count_to_conc  = 1.0/multiplier; 
       }
     }
     fclose(cmpt_fp);

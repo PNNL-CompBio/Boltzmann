@@ -4,6 +4,7 @@
 #include "print_molecules_dictionary.h"
 #include "print_dg0_ke.h"
 #include "print_counts.h"
+#include "print_compartments.h"
 
 #include "echo_inputs.h"
 int echo_inputs(struct state_struct *state) {
@@ -58,6 +59,16 @@ int echo_inputs(struct state_struct *state) {
     success = print_reactions_matrix(state);
     */
   }
+  if (success) {
+    /*
+      We should print out the compartment volume, ph, and ionic strength
+      information from the read_compartment_sizes routine (or defaults
+      if that was not supplied).
+      Create the cmpts.echo file.
+    */
+    success = print_compartments(state);
+  }
+
   return(success);
 }
 

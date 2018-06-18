@@ -53,6 +53,8 @@ int read_initial_concentrations(struct state_struct *state) {
   double  avogadro;
   double  units_avo;
   double  recip_avogadro;
+  double  ph;
+  double  ionic_strength;
   /*
   double  half;
   */
@@ -102,6 +104,8 @@ int read_initial_concentrations(struct state_struct *state) {
   
   FILE *conc_fp;
   FILE *efp;
+  ph                  = state->ph;
+  ionic_strength      = state->ionic_strength;
   avogadro            = state->avogadro;
   recip_avogadro      = state->recip_avogadro;
   /*
@@ -209,16 +213,24 @@ int read_initial_concentrations(struct state_struct *state) {
   if (success) {
     /*
       Initialize compartment volume, recip_volume if unset and 
+      and also ph and ionic_strength. If volume is 0, the assumpition
+      is that these fields were not set in read_comparment_sizes
+      (called in species_init before this routine).
       ntotal_exp, ntotal_opt, conc_to_count, and count_to_conc fields.
     */
     units_avo = conc_units * avogadro;
     compartment = (struct compartment_struct *)&sorted_compartments[0];
     for (i=0;i<nu_compartments;i++) {
       if (compartment->volume <= 0.0) {
-	compartment->volume = volume;
-	compartment->recip_volume = recip_volume;
+	compartment->volume         = volume;
+	compartment->recip_volume   = recip_volume;
+	compartment->ph             = ph;
+	compartment->ionic_strength = ionic_strength;
       } else {
+	volume = compartment->volume;
+	/*
 	compartment->recip_volume = 1.0/compartment->volume;
+	*/
       }
       compartment->ntotal_exp   = 0.0;
       compartment->ntotal_opt   = 0.0;
@@ -308,10 +320,10 @@ int read_initial_concentrations(struct state_struct *state) {
 	}
 	compartment = (struct compartment_struct *)&sorted_compartments[ci];
 	/*
+	*/
 	volume       = compartment->volume;
 	recip_volume = compartment->recip_volume;
 	min_conc     = compartment->count_to_conc;
-	*/
 	multiplier   = compartment->conc_to_count;
 	if (e_val <= 0.0) {
 	  /*
