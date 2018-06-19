@@ -288,6 +288,8 @@ int parse_reactions_file(struct state_struct *state,
     reaction->ionic_strength    = state->ionic_strength;
     reaction->forward_rc        = -1.0;
     reaction->reverse_rc        = -1.0;
+    reaction->unit_i            = 1;
+    reaction->delta_g0          = 0.0;
     forward_rc[0]               = -1.0;
     reverse_rc[0]               = -1.0;
     for (i=0;i<max_regs_per_rxn;i++) {
@@ -701,7 +703,7 @@ int parse_reactions_file(struct state_struct *state,
 	  num_reactants = reaction->num_reactants;
 	  num_products  = reaction->num_products;
 	  if ((num_reactants == 0) || (num_products == 0) ||
-	      (had_a_title == 0) || (had_a_dg0 == 0) || (had_units == 0)) {
+	      (had_a_title == 0)) {
 	    success = 0;
 	    /*
 	      Incomplete reaction specification ignore it.
@@ -776,6 +778,8 @@ int parse_reactions_file(struct state_struct *state,
 	    reaction->enzyme_level      = 1.0;
 	    reaction->forward_rc        = -1.0;
 	    reaction->reverse_rc        = -1.0;
+	    reaction->unit_i            = 1;
+	    reaction->delta_g0          = 0.0;
 	    forward_rc[rxns]            = -1.0;
 	    reverse_rc[rxns]            = -1.0;
 	    /*
