@@ -29,7 +29,8 @@ int zero_solvent_coefficients (struct state_struct *state) {
   /*
     Zero the coefficients in the reaction matrix corresponding to
     solvent molecules, but save them in the solvent_coefficients vector.
-    Called by energy_init. print_rxns_matrix
+    Called by energy_init. print_reactions_matrix, echo_reactions_matrix,
+              print_dg0_ke
     Calls:
   */
   struct reactions_matrix_struct *rxns_matrix;

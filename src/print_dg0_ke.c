@@ -22,7 +22,8 @@ specific language governing permissions and limitations under the License.
 ******************************************************************************/
 
 #include "boltzmann_structs.h"
-
+#include "recover_solvent_coefficients.h"
+#include "zero_solvent_coefficients.h"
 #include "print_dg0_ke.h"
 int print_dg0_ke(struct state_struct *state) {
   /*
@@ -33,16 +34,21 @@ int print_dg0_ke(struct state_struct *state) {
   */
   struct reaction_struct *reaction;
   struct reactions_matrix_struct *rxns_matrix;
+  struct compartment_struct *compartments;
+  struct compartment_struct *compartment;
   int64_t *rxn_ptrs;
   int64_t *coefficients;
   int64_t *matrix_text;
+  int64_t *compartment_indices;
   double *dg0s;
   double *ke;
 
   char *molecules_text;
+  char *compartment_text;
   char *rxn_title_text;
   char *title;
-  char *molecule;
+  char *molecule_name;
+  char *compartment_name;
 
   int success;
   int rxns;
@@ -54,7 +60,7 @@ int print_dg0_ke(struct state_struct *state) {
   int coeff;
 
   int j;
-  int padi;
+  int cmpt;
 
   FILE *dg0_ke_fp;
   FILE *lfp;
@@ -63,6 +69,7 @@ int print_dg0_ke(struct state_struct *state) {
   lfp              = state->lfp;
   molecules_text   = state->molecules_text;
   rxn_title_text   = state->rxn_title_text;
+  compartment_text = state->compartment_text;
 
   dg0_ke_fp = fopen(state->dg0ke_file,"w+");
   if (dg0_ke_fp == NULL) {
@@ -75,10 +82,18 @@ int print_dg0_ke(struct state_struct *state) {
     }
   }
   if (success) {
+    /*
+      Recover the solvent coefficients.
+    */
+    success = recover_solvent_coefficients(state);
+  }
+  if (success) {
     reaction       	 = state->reactions;
     rxns_matrix    	 = state->reactions_matrix;
+    compartments         = state->sorted_compartments;
     rxn_ptrs       	 = rxns_matrix->rxn_ptrs;
     coefficients   	 = rxns_matrix->coefficients;
+    compartment_indices  = rxns_matrix->compartment_indices;
     matrix_text    	 = rxns_matrix->text;
     nrxns                = (int)state->number_reactions;
     ke                   = state->ke;
@@ -93,13 +108,20 @@ int print_dg0_ke(struct state_struct *state) {
       nr = 0;
       for (j=rxn_ptrs[rxns];j<rxn_ptrs[rxns+1];j++) {
 	coeff = coefficients[j];
+	cmpt  = (int)compartment_indices[j];
+	compartment = (struct compartment_struct *)&compartments[cmpt];
+	compartment_name = (char*)&compartment_text[compartment->string];
 	if (coeff < 0) {
 	  if (coeff < -1) {
 	    coeff = -coeff;
 	    fprintf(dg0_ke_fp,"%d ",coeff);
 	  }
-	  molecule = (char*)&molecules_text[matrix_text[j]];
-	  fprintf(dg0_ke_fp,"%s",molecule);
+	  molecule_name = (char*)&molecules_text[matrix_text[j]];
+	  if (cmpt > 0) {
+	    fprintf(dg0_ke_fp,"%s:%s",molecule_name,compartment_name);
+	  } else {
+	    fprintf(dg0_ke_fp,"%s",molecule_name);
+	  }
 	  nr += 1;
 	  if (nr < reaction->num_reactants) {
 	    fprintf(dg0_ke_fp," + ");
@@ -112,12 +134,19 @@ int print_dg0_ke(struct state_struct *state) {
       np = 0;
       for (j=rxn_ptrs[rxns];j<rxn_ptrs[rxns+1];j++) {
 	coeff = coefficients[j];
+	cmpt  = (int)compartment_indices[j];
+	compartment = (struct compartment_struct *)&compartments[cmpt];
+	compartment_name = (char*)&compartment_text[compartment->string];
 	if (coeff > 0) {
 	  if (coeff > 1) {
 	    fprintf(dg0_ke_fp,"%d ",coeff);
 	  }
-	  molecule = (char*)&molecules_text[matrix_text[j]];
-	  fprintf(dg0_ke_fp,"%s",molecule);
+	  molecule_name = (char*)&molecules_text[matrix_text[j]];
+	  if (cmpt > 0) {
+	    fprintf(dg0_ke_fp,"%s:%s",molecule_name,compartment_name);
+	  } else {
+	    fprintf(dg0_ke_fp,"%s",molecule_name);
+	  }
 	  np += 1;
 	  if (np < reaction->num_products) {
 	    fprintf(dg0_ke_fp," + ");
@@ -131,6 +160,12 @@ int print_dg0_ke(struct state_struct *state) {
       reaction += 1; /* Caution address arithmetic */
     }
     fclose(dg0_ke_fp);
+    /*
+      Now we need to rezero the solvent coefficents.
+    */
+    if (success) {
+      success = zero_solvent_coefficients(state);
+    }
   }
   return(success);
 }

@@ -29,7 +29,7 @@ int recover_solvent_coefficients (struct state_struct *state) {
   /*
     Recover the coefficients in the reaction matrix corresponding to
     solvent molecules, that have been zeroed out.
-    Called by print_rxns_matrix.
+    Called by print_reactions_matrix, echo_reactions_file, print_dg0_ke
     Calls:
   */
   struct reactions_matrix_struct *rxns_matrix;

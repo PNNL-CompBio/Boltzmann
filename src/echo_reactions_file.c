@@ -21,7 +21,8 @@ CONDITIONS OF ANY KIND, either express or implied. See the License for the
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
 #include "boltzmann_structs.h"
-
+#include "recover_solvent_coefficients.h"
+#include "zero_solvent_coefficients.h"
 #include "echo_reactions_file.h"
 int echo_reactions_file(struct state_struct *state) {
   /*
@@ -87,6 +88,12 @@ int echo_reactions_file(struct state_struct *state) {
     success = 0;
   }
   if (success) {
+    /*
+      Recover the solvent coefficients.
+    */
+    success = recover_solvent_coefficients(state);
+  }
+  if (success) {
     molecules         = state->sorted_molecules;
     rxn_title_text    = state->rxn_title_text;
     pathway_text      = state->pathway_text;
@@ -142,11 +149,11 @@ int echo_reactions_file(struct state_struct *state) {
 	  if (nr < reaction->num_reactants) {
 	    fprintf(rxn_echo_fp," + ");
 	  } else {
-	    fprintf(rxn_echo_fp,"\n");
 	    break;
 	  }
 	}
       }
+      fprintf(rxn_echo_fp,"\n");
       fprintf(rxn_echo_fp,"RIGHT\t");
       np = 0;
       for (j=rxn_ptrs[rxns];j<rxn_ptrs[rxns+1];j++) {
@@ -212,6 +219,12 @@ int echo_reactions_file(struct state_struct *state) {
       reaction += 1; /* Caution address arithmetic. */
     }
     fclose(rxn_echo_fp);
+    /*
+      Now we need to rezero the solvent coefficents.
+    */
+    if (success) {
+      success = zero_solvent_coefficients(state);
+    }
   }
   return(success);
 }

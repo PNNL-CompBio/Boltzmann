@@ -1033,13 +1033,13 @@ echo_inputs.o: $(SERIAL_INCS) echo_inputs.c echo_inputs.h echo_params.h echo_rea
 echo_params.o: $(SERIAL_INCS) echo_params.c echo_params.h
 	$(CC) $(DCFLAGS)  -c echo_params.c
 
-echo_reactions_file.o: $(SERIAL_INCS) echo_reactions_file.h echo_reactions_file.c
+echo_reactions_file.o: $(SERIAL_INCS) echo_reactions_file.h echo_reactions_file.c recover_solvent_coefficients.h zero_solvent_coefficients.h
 	$(CC) $(DCFLAGS)  -c echo_reactions_file.c
 
 print_molecules_dictionary.o: $(SERIAL_INCS) print_molecules_dictionary.c print_molecules_dictionary.h
 	$(CC) $(DCFLAGS)  -c print_molecules_dictionary.c
 
-print_dg0_ke.o: $(SERIAL_INCS) print_dg0_ke.c print_dg0_ke.h
+print_dg0_ke.o: $(SERIAL_INCS) print_dg0_ke.c print_dg0_ke.h recover_solvent_coefficients.h zero_solvent_coefficients.h
 	$(CC) $(DCFLAGS)  -c print_dg0_ke.c
 
 recover_solvent_coefficients.o: $(SERIAL_INCS) recover_solvent_coefficients.c recover_solvent_coefficients.h
