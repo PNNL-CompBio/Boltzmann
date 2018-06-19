@@ -48,6 +48,8 @@ int compute_molecule_dg0tfs(struct state_struct *state,
   struct compartment_struct *compartment;
   char *molecules_text;
   char *molecule_name;
+  char *compartment_text;
+  char *compartment_name;
 
   double ph;
   double temp_kelvin;
@@ -77,9 +79,9 @@ int compute_molecule_dg0tfs(struct state_struct *state,
   cur_molecules            = state->sorted_molecules;
   compartments             = state->sorted_compartments;
   molecules_text           = state->molecules_text;
+  compartment_text         = state->compartment_text;
 
   molecule_dg0tfs          = state->molecule_dg0tfs;
-
   /*
   ph                       = state->ph;
   ionic_strength           = state->ionic_strength;
@@ -93,16 +95,17 @@ int compute_molecule_dg0tfs(struct state_struct *state,
     if (lfp) {
       fprintf(lfp,"\nOutput from compute_molecule_dg0tfs.c:\n\n");
       fprintf(lfp, "index of molecule in sorted_molecules \t"
-	      "molecule name\t deltaG0_tf(kJ/mol)\n");
+	      "molecule name:compartment\t deltaG0_tf(kJ/mol)\n");
     }
   }
   for (i=0;((i<nu_molecules) && success);i++) {
 
-    molecule_name   = (char *)&molecules_text[cur_molecules->string];
-    c_index         = cur_molecules->c_index;
-    compartment     = (struct compartment_struct *)&compartments[c_index];
-    ionic_strength  = compartment->ionic_strength;
-    ph              = compartment->ph;
+    molecule_name    = (char *)&molecules_text[cur_molecules->string];
+    c_index          = cur_molecules->c_index;
+    compartment      = (struct compartment_struct *)&compartments[c_index];
+    compartment_name = (char *)&compartment_text[compartment->string];
+    ionic_strength   = compartment->ionic_strength;
+    ph               = compartment->ph;
     success = compute_molecule_dg0tf(ph,
 				     m_rt,
 				     m_r_rt,
@@ -119,8 +122,13 @@ int compute_molecule_dg0tfs(struct state_struct *state,
       }
       if (print_output) {
 	if (lfp) {
-	  fprintf(lfp,"%i \t %s \t %f \n",i,molecule_name,
-		  molecule_dg0tfs[i]);
+	  if (c_index > 0) {
+	    fprintf(lfp,"%i \t %s:%s \t %f \n",i,molecule_name,
+		    compartment_name,molecule_dg0tfs[i]);
+	  } else {
+	    fprintf(lfp,"%i \t %s \t %f \n",i,molecule_name,
+		    molecule_dg0tfs[i]);
+	  }
 	}
       }
     } else {
