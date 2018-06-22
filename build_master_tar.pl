@@ -12,6 +12,7 @@ if (-f $vf) {
 `echo $version > ./version`;
 `git add ./version`;
 `git commit -m "version change $version"`;
-`git archive --format=tar -o ../boltzmann_$version.tar master`;
+#`git archive --format=tar -o ../boltzmann_$version.tar master`;
+`git archive --format=tar -o ../boltzmann_$version.tar HEAD`;
 `gzip ../boltzmann_$version.tar`;
 exit(0);
