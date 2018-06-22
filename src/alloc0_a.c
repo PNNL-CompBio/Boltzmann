@@ -53,7 +53,7 @@ int alloc0_a(struct state_struct *state) {
        rxn_view_file,
        bndry_flux_file,
        pseudoisomer_file,
-       compartment_file,
+       compartments_file,
        sbml_file,
        ms2js_file,
        kg2js_file,

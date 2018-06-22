@@ -37,7 +37,7 @@ int read_compartment_sizes(struct state_struct *state) {
   */
   struct compartment_struct *compartments;
   struct compartment_struct *compartment;
-  char *compartment_file;
+  char *compartments_file;
   char *cmpts_buffer;
   char *compartment_name;
   char *fgp;
@@ -63,21 +63,21 @@ int read_compartment_sizes(struct state_struct *state) {
   FILE *lfp;
   FILE *error_fp;
   success = 1;
-  compartment_file = state->compartment_file;
-  cmpts_buff_len   = (int)state->max_param_line_len;
-  cmpts_buffer     = state->param_buffer;
-  lfp              = state->lfp;
-  compartments     = state->sorted_compartments;
-  units_avo        = state->conc_units * state->avogadro;
+  compartments_file = state->compartments_file;
+  cmpts_buff_len    = (int)state->max_param_line_len;
+  cmpts_buffer      = state->param_buffer;
+  lfp               = state->lfp;
+  compartments      = state->sorted_compartments;
+  units_avo         = state->conc_units * state->avogadro;
   if (lfp) {
     error_fp = lfp;
   } else {
     error_fp = stderr;
   }
-  cmpt_fp = fopen(compartment_file,"r");
+  cmpt_fp = fopen(compartments_file,"r");
   if (cmpt_fp == NULL) {
    fprintf(error_fp,"read_compartment_sizes: Error, unable to open file %s\n",
-	    compartment_file);
+	    compartments_file);
     fflush(error_fp);
     success = 0;
   }

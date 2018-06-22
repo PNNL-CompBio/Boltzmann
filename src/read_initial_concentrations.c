@@ -99,11 +99,16 @@ int read_initial_concentrations(struct state_struct *state) {
   int success;
   int use_bulk_water;
 
+  int line_count;
+  int padi;
+
   char vc[2];
   char cc[2];
   
   FILE *conc_fp;
-  FILE *efp;
+  FILE *lfp;
+
+  lfp                 = state->lfp;
   ph                  = state->ph;
   ionic_strength      = state->ionic_strength;
   avogadro            = state->avogadro;
@@ -145,20 +150,25 @@ int read_initial_concentrations(struct state_struct *state) {
       Read the required volume line.
     */
     fgp = fgets(molecules_buffer,molecules_buff_len,conc_fp);
+    line_count = 1;
     if (fgp) {
       if (strncmp(molecules_buffer,"VOLUME",6) != 0) {
-	fprintf(stderr,
-		"read_intial_concentrations Error: Concentrations input file "
-		"does not start with a VOLUME line.\n");
-	fflush(stderr);
 	success = 0;
+	if (lfp) {
+	  fprintf(lfp,
+		  "read_intial_concentrations Error: Concentrations input file "
+		  "does not start with a VOLUME line.\n");
+	  fflush(lfp);
+	}
       } else {
 	nscan = sscanf((char*)&molecules_buffer[6],"%le",&volume);
 	if (nscan != 1) {
-	  fprintf(stderr,
-		  "read_intial_concentrations Error: invalid volume spec.\n");
-	  fflush(stderr);
 	  success = 0;
+	  if (lfp) {
+	    fprintf(lfp,
+		  "read_intial_concentrations Error: invalid volume spec.\n");
+	    fflush(lfp);
+	  }
 	} else {
 	  if (volume <= 0.0) {
 	    volume = default_volume;
@@ -169,45 +179,56 @@ int read_initial_concentrations(struct state_struct *state) {
 	}
       }
     } else {
-      fprintf(stderr,
+      success = 0;
+      if (lfp) {
+	fprintf(lfp,
 	      "read_initial_concentrations Error: Empty concentrations "
 	      "file.\n");
-      fflush(stderr);
-      success = 0;
+	fflush(lfp);
+      }
     }
   } else {
-    fprintf(stderr,
+    success = 0;
+    if (lfp) {
+      fprintf(lfp,
 	    "read_intial_concentrations Error: Unable to open inital "
 	    "concentrations file, %s\n",state->init_conc_file);
-    fflush(stderr);
-    success = 0;
+      fflush(lfp);
+    }
   }
   if (success) {
     fgp = fgets(molecules_buffer,molecules_buff_len,conc_fp);
+    line_count += 1;
     if (fgp) {
       if (strncmp(molecules_buffer,"CONC_UNITS",10) != 0) {
-	fprintf(stderr,
+	success = 0;
+	if (lfp) {
+	  fprintf(lfp,
 		"read_intial_concentrations Error: Concentratiosn input file "
 		"does not have a second line with CONC_UNITS setting.\n");
-	fflush(stderr);
-	success = 0;
+	  fflush(lfp);
+	}
       } else {
 	nscan = sscanf((char*)&molecules_buffer[10],"%le",&conc_units);
 	if (nscan != 1) {
-	  fprintf(stderr,
-	  "read_intial_concentrations Error: invalid conc_units spec.\n");
-	  fflush(stderr);
 	  success = 0;
+	  if (lfp) {
+	    fprintf(lfp,
+		    "read_intial_concentrations Error: invalid conc_units spec.\n");
+	    fflush(lfp);
+	  }
 	} else {
 	  state->conc_units = conc_units;
 	}
       }
     } else {
-      fprintf(stderr,
+      success = 0;
+      if (lfp) {
+	fprintf(lfp,
 	      "read_initial_concentrations Error: No CONC_UNITS line in "
 	      "concentrations file.\n");
-      fflush(stderr);
-      success = 0;
+	fflush(lfp);
+      }
     }
   }
   if (success) {
@@ -226,6 +247,7 @@ int read_initial_concentrations(struct state_struct *state) {
 	compartment->recip_volume   = recip_volume;
 	compartment->ph             = ph;
 	compartment->ionic_strength = ionic_strength;
+	volume                      = default_volume;
       } else {
 	volume = compartment->volume;
 	/*
@@ -240,6 +262,10 @@ int read_initial_concentrations(struct state_struct *state) {
 	compartment->count_to_conc   = 1.0/multiplier;
       } else {
 	success = 0;
+	if (lfp) {
+	  fprintf(lfp,"read_intial_conecntrations: Error 0 or negative volume for compartment %d\n",i);
+	  fflush(lfp);
+	}
       }
       /*
 	Because of the way we use u_val and e_val below I think
@@ -255,6 +281,7 @@ int read_initial_concentrations(struct state_struct *state) {
     compartment->recip_volume = recip_volume;
     while (!feof(conc_fp)) {
       fgp = fgets(molecules_buffer,molecules_buff_len,conc_fp);
+      line_count += 1;
       if (fgp) {
 	e_val = 0.0;
 	u_val = 0.0;
@@ -317,6 +344,13 @@ int read_initial_concentrations(struct state_struct *state) {
 	} else {
 	  upcase(cmpt_len,compartment_name);
 	  ci = compartment_lookup(compartment_name,state);
+	  if (ci < 0) {
+	    success = 0;
+	    if (lfp) {
+	      fprintf(lfp,"read_initial_concentrations: Error, line %d, %s was not a compartment found in the reactions file\n",line_count,compartment_name);
+	      fflush(lfp);
+	    }
+	  }
 	}
 	compartment = (struct compartment_struct *)&sorted_compartments[ci];
 	/*
@@ -387,28 +421,41 @@ int read_initial_concentrations(struct state_struct *state) {
 	    molecule->compute_init_conc = compute_conc;
 	    molecule->solvent           = solvent;
 	  } else {
-	    fprintf(stderr,"read_initial_concentrations: Error "
-		    "unrecognized molecule in %s was %s\n",
-		    state->init_conc_file,molecule_name);
-	    fflush(stderr);
 	    success = 0;
+	    if (lfp) {
+	      if (ci == 0) {
+		fprintf(lfp,"read_initial_concentrations: Error "
+			"unrecognized molecule in %s line %d was %s\n",
+			state->init_conc_file,line_count,molecule_name);
+	      } else {
+		fprintf(lfp,"read_initial_concentrations: Error "
+			"unrecognized molecule in %s line %d was %s:%s\n",
+			state->init_conc_file,line_count,
+			molecule_name,compartment_name);
+	      }
+	      fflush(lfp);
+	    }
 	    break;
 	  }
 	} else {
-	  fprintf(stderr,"read_initial_concentrations: Error "
-		  "poorly formated line was\n%s\n",molecules_buffer);
-	  fflush(stderr);
 	  success = 0;
+	  if (lfp) {
+	    fprintf(lfp,"read_initial_concentrations: Error "
+		  "poorly formated line was\n%s\n",molecules_buffer);
+	    fflush(lfp);
+	  }
 	}
       } /* end if (fgp) */
     } /* end while (!feof(conc_fp)) */
     fclose(conc_fp);
   } else {
-    fprintf(stderr,
+    success = 0;
+    if (lfp) {
+      fprintf(lfp,
 	    "read_initial_concentrations: Warning unable to open %s\n",
 	    state->init_conc_file);
-    fflush(stderr);
-    success = 0;
+      fflush(lfp);
+    }
   }
   if (success) {
     count = state->default_initial_count;

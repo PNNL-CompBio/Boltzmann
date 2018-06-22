@@ -24,9 +24,9 @@ default: $(EXECS) $(SUNDIALS_LIBS) libboltzmann.a
 
 SERIAL_INCS = boltzmann_structs.h state_struct.h reaction_struct.h reactions_matrix_struct.h molecules_matrix_struct.h molecule_struct.h compartment_struct.h vgrng_state_struct.h pseudoisomer_struct.h stack_level_elem_struct.h tools/sbml2bo_struct.h tools/sbml2bo_structs.h t2js_struct.h cvodes_interface/boltzmann_cvodes_headers.h
 
-SERIAL_OBJS1 = boltzmann_init.o alloc0.o alloc0_a.o boltzmann_set_filename_ptrs.o read_params.o boltzmann_init_core.o io_size_init.o create_output_filenames.o open_output_files.o size_rxns_file.o init_rxn_file_keywords.o parse_rxn_file_keyword.o count_ws.o count_nws.o count_molecules.o is_a_coef.o alloc2.o alloc2_a.o rxns_init.o parse_reactions_file.o upcase.o parse_side_line.o find_colon.o boltzmann_compress_reactions.o sort_compartments.o merge_compartments.o unique_compartments.o unique_compartments_core.o translate_compartments.o sort_molecules.o merge_molecules.o unique_molecules.o unique_molecules_core.o alloc3.o species_init.o set_compartment_ptrs.o set_count_trans.o translate_regulation_metabolites.o molecules_lookup.o read_compartment_sizes.o read_initial_concentrations.o compartment_lookup.o check_initial_concentrations.o alloc4.o form_molecules_matrix.o
+SERIAL_OBJS1 = boltzmann_init.o alloc0.o alloc0_a.o boltzmann_set_filename_ptrs.o read_params.o boltzmann_init_core.o io_size_init.o create_output_filenames.o open_output_files.o size_rxns_file.o init_rxn_file_keywords.o parse_rxn_file_keyword.o count_ws.o count_nws.o count_molecules_and_cmpts.o is_a_coef.o alloc2.o alloc2_a.o rxns_init.o parse_reactions_file.o upcase.o parse_side_line.o find_colon.o boltzmann_compress_reactions.o sort_compartments.o merge_compartments.o unique_compartments.o unique_compartments_core.o translate_compartments.o sort_molecules.o merge_molecules.o unique_molecules.o unique_molecules_core.o alloc3.o species_init.o set_compartment_ptrs.o set_count_trans.o translate_regulation_metabolites.o molecules_lookup.o read_compartment_sizes.o read_initial_concentrations.o compartment_lookup.o check_initial_concentrations.o alloc4.o form_molecules_matrix.o
 
-SERIAL_OBJS2 = energy_init.o compute_standard_energies.o size_pseudoisomer_file.o alloc5.o parse_pseudoisomer_dg0f_file.o blank_to_dash.o sharp_pos.o alloc6.o compute_molecule_dg0tfs.o compute_molecule_dg0tf.o pseudoisomer_dg0tf.o compute_molecular_partition_probability.o compute_chemical_potential.o compute_reaction_dg0.o unalloc6.o compute_ke.o zero_solvent_coefficients.o compute_kss.o echo_inputs.o echo_params.o echo_reactions_file.o print_molecules_dictionary.o print_dg0_ke.o recover_solvent_coefficients.o vgrng_init.o vgrng.o print_rxn_likelihoods_header.o print_free_energy_header.o run_init.o alloc8.o alloc9.o print_reactions_matrix.o print_active_reactions_matrix.o print_compartments.o
+SERIAL_OBJS2 = energy_init.o compute_standard_energies.o size_pseudoisomer_file.o alloc5.o parse_pseudoisomer_dg0f_file.o blank_to_dash.o sharp_pos.o alloc6.o compute_molecule_dg0tfs.o compute_molecule_dg0tf.o pseudoisomer_dg0tf.o compute_reaction_dg0.o unalloc6.o compute_ke.o zero_solvent_coefficients.o compute_kss.o echo_inputs.o echo_params.o echo_reactions_file.o print_molecules_dictionary.o print_dg0_ke.o recover_solvent_coefficients.o vgrng_init.o vgrng.o print_rxn_likelihoods_header.o print_free_energy_header.o run_init.o alloc8.o alloc9.o print_reactions_matrix.o print_active_reactions_matrix.o print_compartments.o
 
 
 SERIAL_OBJS3 = boltzmann_build_agent_data_block.o boltzmann_run.o boltzmann_load_agent_data.o update_rxn_log_likelihoods.o rxn_log_likelihoods.o rxn_likelihoods.o rxn_likelihood.o choose_rxn.o candidate_rxn.o binary_search_l_u_b.o update_regulations.o update_regulation.o rxn_count_update.o bndry_flux_update.o metropolis.o rxn_likelihood_postselection.o compute_delta_g_forward_entropy_free_energy.o boltzmann_watch.o print_rxn_choice.o print_counts.o print_likelihoods.o save_likelihoods.o print_free_energy.o print_boundary_flux.o print_restart_file.o print_reactions_view.o boltzmann_save_agent_data.o boltzmann_flatten_vgrng_state.o 
@@ -97,7 +97,7 @@ libboltzmann.a: $(SERIAL_OBJS1)  $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SBML_OBJS) $(
 	$(AR) $(ARFLAGS) libboltzmann.a size_rxns_file.o
 	$(AR) $(ARFLAGS) libboltzmann.a init_rxn_file_keywords.o
 	$(AR) $(ARFLAGS) libboltzmann.a parse_rxn_file_keyword.o
-	$(AR) $(ARFLAGS) libboltzmann.a count_molecules.o
+	$(AR) $(ARFLAGS) libboltzmann.a count_molecules_and_cmpts.o
 	$(AR) $(ARFLAGS) libboltzmann.a count_ws.o
 	$(AR) $(ARFLAGS) libboltzmann.a count_nws.o
 	$(AR) $(ARFLAGS) libboltzmann.a is_a_coef.o
@@ -139,8 +139,6 @@ libboltzmann.a: $(SERIAL_OBJS1)  $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SBML_OBJS) $(
 	$(AR) $(ARFLAGS) libboltzmann.a compute_molecule_dg0tfs.o
 	$(AR) $(ARFLAGS) libboltzmann.a compute_molecule_dg0tf.o
 	$(AR) $(ARFLAGS) libboltzmann.a pseudoisomer_dg0tf.o
-	$(AR) $(ARFLAGS) libboltzmann.a compute_molecular_partition_probability.o
-	$(AR) $(ARFLAGS) libboltzmann.a compute_chemical_potential.o
 	$(AR) $(ARFLAGS) libboltzmann.a compute_reaction_dg0.o
 	$(AR) $(ARFLAGS) libboltzmann.a unalloc6.o
 	$(AR) $(ARFLAGS) libboltzmann.a compute_ke.o
@@ -349,6 +347,8 @@ libboltzmann.a: $(SERIAL_OBJS1)  $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SBML_OBJS) $(
 	$(AR) $(ARFLAGS) libboltzmann.a print_net_lklhd_bndry_flux_header.o
 	$(AR) $(ARFLAGS) libboltzmann.a print_net_likelihoods.o
 	$(AR) $(ARFLAGS) libboltzmann.a print_net_lklhd_bndry_flux.o
+#	$(AR) $(ARFLAGS) libboltzmann.a compute_molecular_partition_probability.o
+#	$(AR) $(ARFLAGS) libboltzmann.a compute_chemical_potential.o
 
 $(BOLTZMANN_BIN)/boltzmann: boltzmann.o libboltzmann.a $(SUNDIALS_LIBS)
 	$(CLINKER) $(LFLAGS) -o $(BOLTZMANN_BIN)/boltzmann boltzmann.o $(SERIAL_OBJS1) $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SBML_OBJS) $(SERIAL_OBJS7) $(SERIAL_OBJS8) $(LIBS)
@@ -396,7 +396,7 @@ create_output_filenames.o: $(SERIAL_INCS) create_output_filenames.c create_outpu
 open_output_files.o: $(SERIAL_INCS) open_output_files.c open_output_files.h
 	$(CC) $(DCFLAGS)  -c open_output_files.c
 
-size_rxns_file.o: $(SERIAL_INCS) size_rxns_file.c size_rxns_file.h init_rxn_file_keywords.h parse_rxn_file_keyword.h count_molecules.h count_ws.h count_nws.h
+size_rxns_file.o: $(SERIAL_INCS) size_rxns_file.c size_rxns_file.h init_rxn_file_keywords.h parse_rxn_file_keyword.h count_molecules_and_cmpts.h count_ws.h count_nws.h
 	$(CC) $(DCFLAGS)  -c size_rxns_file.c
 	
 init_rxn_file_keywords.o: $(SERIAL_INCS) init_rxn_file_keywords.c init_rxn_file_keywords.h
@@ -405,8 +405,8 @@ init_rxn_file_keywords.o: $(SERIAL_INCS) init_rxn_file_keywords.c init_rxn_file_
 parse_rxn_file_keyword.o: $(SERIAL_INCS) parse_rxn_file_keyword.c parse_rxn_file_keyword.h
 	$(CC) $(DCFLAGS)  -c parse_rxn_file_keyword.c
 
-count_molecules.o: $(SERIAL_INCS) count_molecules.c count_molecules.h count_ws.h count_nws.h is_a_coef.h
-	$(CC) $(DCFLAGS)  -c count_molecules.c
+count_molecules_and_cmpts.o: $(SERIAL_INCS) count_molecules_and_cmpts.c count_molecules_and_cmpts.h count_ws.h count_nws.h is_a_coef.h find_colon.h
+	$(CC) $(DCFLAGS)  -c count_molecules_and_cmpts.c
 
 count_ws.o: $(SERIAL_INCS) count_ws.c count_ws.h
 	$(CC) $(DCFLAGS)  -c count_ws.c
@@ -503,7 +503,7 @@ check_initial_concentrations.o: $(SERIAL_INCS) check_initial_concentrations.c ch
 energy_init.o: $(SERIAL_INCS) energy_init.c energy_init.h compute_standard_energies.h compute_ke.h zero_solvent_coefficients.h compute_kss.h
 	$(CC) $(DCFLAGS)  -c energy_init.c
 
-compute_standard_energies.o: $(SERIAL_INCS) compute_standard_energies.c compute_standard_energies.h size_pseudoisomer_file.h alloc5.h parse_pseudoisomer_dg0f_file.h alloc6.h compute_molecule_dg0tfs.h compute_molecular_partition_probability.h compute_chemical_potential.h compute_reaction_dg0.h unalloc6.h
+compute_standard_energies.o: $(SERIAL_INCS) compute_standard_energies.c compute_standard_energies.h size_pseudoisomer_file.h alloc5.h parse_pseudoisomer_dg0f_file.h alloc6.h compute_molecule_dg0tfs.h compute_reaction_dg0.h unalloc6.h
 	$(CC) $(DCFLAGS)  -c compute_standard_energies.c
 
 size_pseudoisomer_file.o: $(SERIAL_INCS) size_pseudoisomer_file.c size_pseudoisomer_file.h

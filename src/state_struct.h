@@ -293,8 +293,10 @@ struct state_struct {
   double  *kss_e_val; /* len = unique_molecules  */
   double  *kss_u_val; /* len = unique_molecules  */
   double  *molecule_dg0tfs; /* len = unique_molecules */
-  double  *molecule_probabilities; /* len = unique_molecules */
-  double  *molecule_chemical_potentials; /* len = unique_molecules */
+  /*
+  double  *molecule_probabilities; // len = unique_molecules 
+  double  *molecule_chemical_potentials; // len = unique_molecules 
+  */
   double  *count_to_conc; /* len = unique_molecules */
   double  *conc_to_count; /* len = unique_molecules */
   double  *activities;   /* len = number_reactions */
@@ -312,6 +314,7 @@ struct state_struct {
 			   reaction .dat file for each reaction to be
 			   turned off.
 		         */
+  int     *dg0tfs_set;   /* len = number_reactions + (number_reactions & 1) */
   /* 
      sizeof(reaction_struct) * number of reactions. 
      Allocated in alloc2 
@@ -360,7 +363,7 @@ struct state_struct {
   char *rxn_view_file;     /* max_filename_len */
   char *bndry_flux_file;   /* max_filename_len */
   char *pseudoisomer_file; /* max_filename_len */
-  char *compartment_file;  /* max_filename_len */
+  char *compartments_file; /* max_filename_len */
   char *sbml_file;         /* max_filename_len */
   char *ms2js_file;        /* max_filename_len */
   char *kg2js_file;        /* max_filename_len */

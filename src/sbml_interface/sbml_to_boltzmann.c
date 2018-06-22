@@ -192,7 +192,7 @@ int sbml_to_boltzmann(struct state_struct *state) {
   if (success) {
     strcpy(state->init_conc_file,sbml_state->concs_in_file);
     strcpy(state->reaction_file,sbml_state->rxns_dat_file);
-    strcpy(state->compartment_file,sbml_state->cmpts_dat_file);          
+    strcpy(state->compartments_file,sbml_state->cmpts_dat_file);          
   }
   return(success);
 }  

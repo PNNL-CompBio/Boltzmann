@@ -37,7 +37,18 @@ void boltzmann_set_state_ptrs(struct state_struct *state,
   int64_t align_mask;
 
   int64_t per_molecule_double_size;
+  int64_t per_molecule_data_pad;
+  int64_t padded_per_molecule_size;
+  int64_t per_molecule_int_pad;
+  int64_t per_molecule_int_size;
+  int64_t padded_per_molecule_int_size;
   int64_t per_reaction_double_size;
+  int64_t per_reaction_data_pad;
+  int64_t padded_per_reaction_size;
+  int64_t per_reg_size;
+  int64_t per_reg_data_pad;
+  int64_t padded_per_reg_size;
+
   int64_t per_compartment_double_size;
   int64_t vgrng_state_size;
   int64_t reaction_data_size;
@@ -82,8 +93,10 @@ void boltzmann_set_state_ptrs(struct state_struct *state,
   int64_t kss_e_val_offset;
   int64_t kss_u_val_offset;
   int64_t molecule_dg0tfs_offset;
+  /*
   int64_t molecule_probabilities_offset;
   int64_t molecule_chemical_potentials_offset;
+  */
   int64_t count_to_conc_offset;
   int64_t conc_to_count_offset;
   int64_t activites_offset;
@@ -91,6 +104,9 @@ void boltzmann_set_state_ptrs(struct state_struct *state,
   int64_t reg_exponent_offset;
   int64_t reg_direction_offset;
   int64_t reg_species_offset;
+  int64_t coeff_sum_offset;
+  int64_t use_rxn_offset;
+  int64_t dg0tfs_set_offset;
   
   int64_t reactions_offset;
   int64_t sorted_molecules_offset;
@@ -121,10 +137,6 @@ void boltzmann_set_state_ptrs(struct state_struct *state,
   int64_t keyword_lengths_offset;
   int64_t keywords_offset;
 
-  int64_t per_molecule_double_pad;
-  int64_t per_reaction_double_pad;
-  int64_t padded_per_molecule_size;
-  int64_t padded_per_reaction_size;
   int64_t rxn_has_flux_length;
   int64_t workspace_end;
 
@@ -152,11 +164,11 @@ void boltzmann_set_state_ptrs(struct state_struct *state,
   state->vgrng_state_size = vgrng_state_size;
 
   reaction_data_size    = number_reactions * sizeof(rs);
-  molecule_data_size    = unique_molecles  * sizeof(ies);
+  molecule_data_size    = unique_molecules  * sizeof(ies);
   compartment_data_size = unique_compartments * sizeof(ces);
 
   reactions_matrix_size = sizeof(rms);
-  moleclues_matrix_size = sizeof(mms);
+  molecules_matrix_size = sizeof(mms);
 
   reactions_ptrs_size   = (number_reactions + 1) * sizeof(int64_t);
 
@@ -182,10 +194,19 @@ void boltzmann_set_state_ptrs(struct state_struct *state,
   per_molecule_double_size = unique_molecules * sizeof(double);
   state->per_molecule_double_size = per_molecule_double_size;
 
+
+  
+
   per_molecule_data_pad = (align_len -
 		   (per_molecule_double_size & align_mask)) & align_mask;
 
   padded_per_molecule_size = per_molecule_double_size + per_molecule_data_pad;
+
+
+  per_molecule_int_size = (unique_molecules + (unique_molecules & 1))*sizeof(int);
+  state->per_molecule_int_size = per_molecule_int_size;
+  per_molecule_int_pad = (align_len - (per_molecule_int_size & align_mask)) & align_mask;
+  padded_per_molecule_int_size = per_molecule_int_size + per_molecule_int_pad;
 
   per_reaction_double_size = number_reactions * sizeof(double);
   state->per_reaction_double_size = per_reaction_double_size;
@@ -195,6 +216,11 @@ void boltzmann_set_state_ptrs(struct state_struct *state,
 
   padded_per_reaction_size = per_reaction_double_size + per_reaction_data_pad;
 
+
+  per_reg_size = number_reactions * max_regs_per_rxn * sizeof(double);
+  per_reg_data_pad = (align_len = (per_reg_size & align_mask)) & align_mask;
+  padded_per_reg_size = per_reg_size + per_reg_data_pad;
+    
   per_compartment_double_size = number_compartments * sizeof(double);
 
 
@@ -280,11 +306,11 @@ void boltzmann_set_state_ptrs(struct state_struct *state,
   state->molecule_dg0tfs_offset = molecule_dg0tfs_offset;
   state->molecule_dg0tfs        = 
     (double *)((void*)state + molecule_dg0tfs_offset);
-
+  /*
   molecule_probabilities_offset = molecule_dg0tfs_offset + 
     padded_per_molecule_size;
   state->molecule_probabilities_offset = molecule_probabilities_offset;
-  state->moleclue_probabilities = 
+  state->molecule_probabilities = 
     (double *)((void*)state + molecule_probabilities_offset);
 
   molecule_chemical_potentials_offset = molecule_probabilities_offset +
@@ -296,6 +322,10 @@ void boltzmann_set_state_ptrs(struct state_struct *state,
 
   count_to_conc_offset = molecule_chemical_potentials_offset + 
     padded_per_molecule_size;
+  */
+  count_to_conc_offset = molecule_dg0tfs_offset + 
+    padded_per_molecule_size;
+
   state->count_to_conc_offset = count_to_conc_offset;
   state->count_to_conc  = (double *)((void*)state + count_to_conc_offset);
   
@@ -307,23 +337,37 @@ void boltzmann_set_state_ptrs(struct state_struct *state,
   state->activities_offset  = activities_offset;
   state->activities         = (double*)((void*)state + activities_offset);
 
+  
   reg_constant_offset        = activities_offset + padded_per_reaction_size;
   state->reg_constant_offset = reg_constant_offset;
   state->reg_constant        = (double*)((void*)state + reg_constant_offset);
 
-  reg_exponent_offset        = reg_constant_offset + padded_per_reaction_size;
+  reg_exponent_offset        = reg_constant_offset + padded_per_reg_size;
   state->reg_exponent_offset = reg_exponent_offset;
   state->reg_exponent        = (double*)((void*)state + reg_exponent_offset);
 
-  reg_direction_offset        = reg_exponent_offset + padded_per_reaction_size;
+  reg_direction_offset        = reg_exponent_offset + padded_per_reg_size;
   state->reg_direction_offset = reg_direction_offset;
   state->reg_direction        = (double*)((void*)state + reg_direction_offset);
 
-  reg_species_offset          = reg_direction_offset + padded_per_reaction_size;
+  reg_species_offset          = reg_direction_offset + padded_per_reg_size;
   state->reg_species_offset   = reg_species_offset;
   state->reg_species          = (double*)((void*)state + reg_species_offset);
 
-  reactions_offset            = reg_species_offset + padded_per_reaction_size;
+  coeff_sum_offset            = reg_species_offset + padded_per_reg_size;
+  state->coeff_sum_offset     = coeff_sum_offset;
+  state->coeff_sum            = (int*)((void*)state + coeff_sum_offset);
+  
+  
+  use_rxn_offset              = coeff_sum_offset + padded_per_molecule_int_size;
+  state->use_rxn_offset       = use_rxn_offset;
+  state->use_rxn              = (int*)((void*)state + use_rxn_offset);
+
+  dg0tfs_set_offset           = use_rxn_offset + padded_per_molecule_int_size;
+  state->dg0tfs_set_offset    = dg0tfs_set_offset;
+  state->dg0tfs               = (int*)((void*)state + dg0tfs_set_offset);
+    
+  reactions_offset            = dg0tfs_set_offset + padded_per_molecule_int_size;
   state->reactions_offset     = reactions_offset;
   state->reactions            = (struct reaction_struct *) ((void*)state + reactions_offset);
   
@@ -334,7 +378,7 @@ void boltzmann_set_state_ptrs(struct state_struct *state,
   state->sorted_molecules = (struct molecule_struct *)((void*)state + sorted_molecules_offset);
 
   data_pad = (align_len - (molecule_data_size & align_mask)) & align_mask;
-  sorted_compartments_offset = sort_moleclues_offset + molecule_data_size + data_pad;
+  sorted_compartments_offset = sort_molecules_offset + molecule_data_size + data_pad;
   state->sorted_compartments_offset = sorted_compartments_offset;
   state->sorted_compartments = (struct compartment_struct *)((void*)state + sorted_compartments_offset);
   
@@ -344,9 +388,9 @@ void boltzmann_set_state_ptrs(struct state_struct *state,
   state->reactions_matrix = (struct reactions_matrix_struct *)((void*)state+reactions_matrix_offset);
 
   data_pad = (align_len - (reactions_matrix_size & align_mask)) & align_mask;
-  moleclues_matrix_offset = reactions_matrix_offset + reactions_matrix_size  + data_pad;
+  molecules_matrix_offset = reactions_matrix_offset + reactions_matrix_size  + data_pad;
   state->molecules_matrix_offset = molecules_matrix_offset;
-  state->molecules_matrix        = (struct moleclues_matrix_struct *)((void*state) + molecules_matrix_offset);
+  state->molecules_matrix        = (struct molecules_matrix_struct *)((void*state) + molecules_matrix_offset);
   
   /* 
     Fields of the reaction matrix.
@@ -386,7 +430,7 @@ void boltzmann_set_state_ptrs(struct state_struct *state,
   /*
     Molecules_matrix_fields.
   */
-  molecules_matrix      = state->moleclues_matrix;
+  molecules_matrix      = state->molecules_matrix;
   molecules_ptrs_offset = solvent_coefficients_offset + padded_per_reaction_size;
   state->molecules_ptrs_offset = molecules_ptrs_offset;
   molecules_matrix->molecules_ptrs = (int64_t*)((void*)state + molecules_ptrs_offset);
@@ -579,7 +623,7 @@ void boltzmann_set_state_ptrs(struct state_struct *state,
   state->ode_concs_offset = ode_concs_offset;
   state->ode_concs = (double*)((void*)state + ode_concs_offset);
 
-  ode_forward_lklhds_offset = ode_concs_offset + padded_per_moleclue_size;
+  ode_forward_lklhds_offset = ode_concs_offset + padded_per_molecule_size;
   state->ode_forward_lklhds_offset = ode_forward_lklhds_offset;
   state->ode_forward_lklhds = (double*)((void*)state + ode_forward_lklhds_offset);
 

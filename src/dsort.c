@@ -34,8 +34,8 @@ void dsort(int n,double *list, double *scratch) {
   
   /*
     We want to avoid the last copy if possible.
-    in_place_pairwise = 0;
   */
+  in_place_pairwise = 0;
   if (n > 1) {
     for (step = 1;step < n; step += step) {
       in_place_pairwise = 1 - in_place_pairwise;

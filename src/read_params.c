@@ -49,17 +49,26 @@ int read_params (char *param_file_name, struct state_struct *state) {
   char *key;
   char *value;
   char *rtp;
+
   int success;
   int sscan_ok;
+
   int kl;
   int ode_stop_norm;
+
   int ode_stop_rel;
   int ode_stop_style;
+
+  int line_count;
+  int padi;
+
   FILE *in_fp;
+  FILE *lfp;
   success = 1;
   vgrng_state  = state->vgrng_state;
   vgrng2_state = state->vgrng2_state;
   cvodes_params = state->cvodes_params;
+  lfp           = state->lfp;
   if (param_file_name == NULL) {
     fprintf(stdout,"read_params: Warning no param_file_name given, looking for ./boltzmann.in input file.\n");
     fflush(stdout);
@@ -115,7 +124,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
     state->restart_file[0]     	= '\0';
     state->rxn_view_file[0]    	= '\0';
     state->bndry_flux_file[0]  	= '\0';
-    state->compartment_file[0] 	= '\0';
+    state->compartments_file[0] = '\0';
     state->sbml_file[0]        	= '\0';
     state->rxn_echo_file[0]    	= '\0';
     state->rxn_mat_file[0]     	= '\0';
@@ -252,6 +261,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
     if (rtp) {
       sscan_ok = sscanf(param_buffer,"%s %s",key,value);
     }
+    line_count = 1;
     while ((!feof(in_fp)) && (sscan_ok == 2)) {
       kl = count_nws(key);
       upcase(kl,key);
@@ -323,8 +333,8 @@ int read_params (char *param_file_name, struct state_struct *state) {
       */	
       } else if (strncmp(key,"PSEUDOISOMER_FILE",17) == 0) {
 	sscan_ok = sscanf(value,"%s",state->pseudoisomer_file);
-      } else if (strncmp(key,"COMPARTMENT_FILE",16) == 0) {
-	sscan_ok = sscanf(value,"%s",state->compartment_file);
+      } else if (strncmp(key,"COMPARTMENTS_FILE",17) == 0) {
+	sscan_ok = sscanf(value,"%s",state->compartments_file);
       } else if (strncmp(key,"SBML_FILE",9) == 0) {
 	sscan_ok = sscanf(value,"%s",state->sbml_file);
       } else if (strncmp(key,"MS2JS_FILE",9) == 0) {
@@ -656,9 +666,16 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	}
       } else if (strncmp(key,"CVODES_NUM_STEPS",16) == 0) {
 	sscan_ok = sscanf(value,"%d",&cvodes_params->num_cvode_steps);
+      } else {
+	if (lfp) {
+	  fprintf(lfp,"read_params: Warning unrecoginzed key was %s in "
+		  "line %d\n",key,line_count);
+	  fflush(lfp);
+	}
       }
       sscan_ok = 0;
       rtp = fgets(param_buffer,max_param_line_len,in_fp);
+      line_count += 1;
       if (rtp) {
 	sscan_ok = sscanf(param_buffer,"%s %s",key,value);
       }

@@ -218,6 +218,7 @@ int lr9_approximate_delta_concs(struct state_struct *state,
       rt = 1.0;
       tr = 1.0;
       tp = 1.0;
+      multiplier = 1.0;
       for (j=rxn_ptrs[i];j<rxn_ptrs[i+1];j++) {
 	mi = molecule_indices[j];
 	molecule = (struct molecule_struct *)&molecules[mi];
@@ -232,30 +233,18 @@ int lr9_approximate_delta_concs(struct state_struct *state,
 	if (klim < 0) {
 	  for (k=0;k<(-klim);k++) {
 	    rt = rt * conc_mi;
+	    multiplier *= volume;
 	  }
 	} else {
 	  if (klim > 0) {
 	    for (k=0;k<klim;k++) {
 	      pt = pt * conc_mi;
+	      multiplier *= recip_volume;
 	    }
 	  }
 	}
       } /* end for (j ... ) */
-      keq_adj = 1.0;
-      rkeq_adj = 1.0;
-      multiplier = 1.0;
-      sum_coeff = coeff_sum[i];
-      if (sum_coeff > 0) {
-	multiplier = recip_volume;
-      } else {
-	if (sum_coeff < 0) {
-	  multiplier = volume;
-	  sum_coeff = - sum_coeff;
-	} 
-      }
-      for (k=0;k < sum_coeff; k++) {
-	keq_adj *= multiplier;
-      }
+      keq_adj = multiplier;
       rkeq_adj = 1.0/keq_adj;
       /*
 	Save likelihoods for printing.

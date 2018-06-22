@@ -24,7 +24,7 @@ int energy_init(struct state_struct *state) {
     Compute the reaction energies of formation if called for.
   */
   success = 1;
-  if (state->use_pseudoisomers) {
+  if (state->use_pseudoisomers > 0) {
     success = compute_standard_energies(state);
   }
   /*

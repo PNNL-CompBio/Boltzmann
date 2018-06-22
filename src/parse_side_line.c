@@ -108,7 +108,7 @@ int parse_side_line(char *species_p,
   char    *compartment;
   char    *solvent_string;
 
-  int     sl;
+  int     token_length;
   int     colon_loc;
 
   int     skip;
@@ -121,7 +121,8 @@ int parse_side_line(char *species_p,
   int     molecules;
 
   int     success;
-  int     padi;
+  int     molecule_name_length;
+
   success            = 1;
   molecules_pos      = *molecules_pos_p;
   compartment_pos    = *compartment_pos_p;
@@ -147,12 +148,15 @@ int parse_side_line(char *species_p,
   pos = 0;
   len = strlen(rctnts);
   while (pos < len) {
-    sl = count_nws(rctnts);
-    if (sl > 0) {
+    token_length = count_nws(rctnts);
+    if (token_length > 0) {
       molecules_indices[molecules] = molecules;
-      if (is_a_coef(sl,rctnts)) {
-	rctnts[sl] = '\0';
-	if (sl == 1) {
+      if (is_a_coef(token_length,rctnts)) {
+	/*
+	  Null terminate the token.
+	*/
+	rctnts[token_length] = '\0';
+	if (token_length == 1) {
 	  if (rctnts[0] == '-') {
 	    coeff = -1.0;
 	  } else {
@@ -166,17 +170,22 @@ int parse_side_line(char *species_p,
 	} 
 	coefficients[molecules] = coeff;
 	recip_coeffs[molecules] = 1.0/((double)coeff);
-	rctnts[sl] = ' ';
+	/*
+	  Replace the null with  a space.
+	*/
+	rctnts[token_length] = ' ';
 
-	pos += (int64_t)sl;
-	rctnts += sl; /* Caution address arithmetic. */
-
+	pos += (int64_t)token_length;
+	rctnts += token_length; /* Caution address arithmetic. */
+	/*
+	  Skip over the next block of white space.
+	*/
 	skip   =  count_ws(rctnts);
 
 	pos += skip;
 	rctnts += skip; /* Caution address arithmetic. */
 
-	sl = count_nws(rctnts);
+	token_length = count_nws(rctnts);
       } else {
 	coefficients[molecules] = (int64_t)side;
 	recip_coeffs[molecules] = (double)side;
@@ -187,9 +196,14 @@ int parse_side_line(char *species_p,
 	:compartment trailing the molecule name. We do not
 	allow spaces on either side of the semicolon.
       */
-      ci = 0;
-      rctnts[sl] = '\0';
+      ci = -1;
+      /*
+	Null terminate the token.
+      */
+      rctnts[token_length] = '\0';
+      molecule_name_length = token_length;
       colon_loc = find_colon(rctnts);
+      compartment_len = 0;
       if (colon_loc >= 0) {
 	/* 
 	   We had a local :compartment attached.
@@ -197,9 +211,13 @@ int parse_side_line(char *species_p,
 	   length for the molecule - do not forget to 
 	   allow for the terminating null.
 	*/
-	compartment_len = sl - colon_loc;
-	sl = colon_loc;
-	rctnts[sl] = '\0';
+	compartment_len = token_length - colon_loc - 1;
+	molecule_name_length = colon_loc;
+	/*
+	  Null terminate the molecle name length replacing the
+	  : with a null.
+	*/
+	rctnts[molecule_name_length] = '\0';
 	if (compartment_len > state->max_compartment_len) {
 	  state->max_compartment_len = compartment_len;
 	} else {
@@ -221,22 +239,22 @@ int parse_side_line(char *species_p,
 	upcase(compartment_len,compartment);
 	padding = (align_len - (compartment_len & align_mask)) & align_mask;
 	compartment_pos += compartment_len + padding;
-      }
-      if (sl > state->max_molecule_len) {
-	state->max_molecule_len = sl;
+      } 
+      if (molecule_name_length > state->max_molecule_len) {
+	state->max_molecule_len = molecule_name_length;
       } else {
-	if (sl < state->min_molecule_len) {
-	  state->min_molecule_len = sl;
+	if (molecule_name_length < state->min_molecule_len) {
+	  state->min_molecule_len = molecule_name_length;
 	}
       }
       /*
       matrix_text[molecules] = (char*)&raw_molecules_text[molecules_pos];
       */
       matrix_text[molecules] = molecules_pos;
-      sll = (int64_t)sl + (int64_t)1;
+      sll = (int64_t)molecule_name_length + (int64_t)1;
       padding = (align_len - (sll & align_mask)) & align_mask;
       strcpy((char *)&molecules_text[molecules_pos],rctnts);
-      upcase(sl,(char *)&molecules_text[molecules_pos]);
+      upcase(molecule_name_length,(char *)&molecules_text[molecules_pos]);
       
       /*
       unsorted_molecules->string = (char *)&molecules_text[molecules_pos];
@@ -257,11 +275,14 @@ int parse_side_line(char *species_p,
       unsorted_molecules += 1; /* Caution address arithmetic. */
 
       molecules_pos += (int64_t)(sll + padding);
-      rctnts[sl] = ' ';
+      if (compartment_len > 0) {
+	rctnts[molecule_name_length] = ':';
+      }
+      rctnts[token_length] = ' ';
 
-      pos += sl; /* Caution address arithmetic. */
-      rctnts += sl;
-      molecules += 1;
+      pos += token_length; 
+      rctnts += token_length; /* Caution address arithmetic. */
+      molecules += 1; /* Caution address arithmetic. */
       if (side < 0) {
 	reaction->num_reactants += 1;
       } else {
@@ -269,8 +290,8 @@ int parse_side_line(char *species_p,
       }
       skip = count_ws(rctnts);
       
-      pos += skip; /* Caution address arithmetic. */
-      rctnts += skip;
+      pos += skip; 
+      rctnts += skip; /* Caution address arithmetic. */
 
       if (pos < len) {
 	/*
@@ -301,7 +322,7 @@ int parse_side_line(char *species_p,
 	}
 	
       }
-    } /* end if (sl > 0)  - a reactant was found . */
+    } /* end if (token_length > 0)  - a reactant was found . */
   } /* end while (pos > len) */
   *molecules_pos_p   =  molecules_pos;
   *compartment_pos_p =  compartment_pos;

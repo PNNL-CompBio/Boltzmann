@@ -283,13 +283,21 @@ int parse_reactions_file(struct state_struct *state,
     reaction->activity          = 1.0;
     reaction->enzyme_level      = 1.0;
     reaction->temp_kelvin       = state->temp_kelvin;
-    reaction->deltag0_computed  = 0;
     reaction->ph                = state->ph;
     reaction->ionic_strength    = state->ionic_strength;
     reaction->forward_rc        = -1.0;
     reaction->reverse_rc        = -1.0;
     reaction->unit_i            = 1;
     reaction->delta_g0          = 0.0;
+    /*
+      We will change semantics here. reaction->deltag0_computed 
+      will be initialized to -1. 
+      If a reaction has a DGZERO line, then reaction->delta_g0 is set 
+      set to the value on that line, and reaction->deltag0_computed is 
+      set to 0. If later compute_reaction_dg0 computes a delta_g0 for the 
+      reaction, reaction->deltag0_computed is set to 1.
+    */
+    reaction->deltag0_computed  = -1;
     forward_rc[0]               = -1.0;
     reverse_rc[0]               = -1.0;
     for (i=0;i<max_regs_per_rxn;i++) {
@@ -562,10 +570,10 @@ int parse_reactions_file(struct state_struct *state,
 	    break;
 	  }
 	  /*
-	    Set the reaction deltag0_computed flag to -1 to show that 
+	    Set the reaction deltag0_computed flag to 0 to show that 
 	    a dgzero line was supplied for the reaction in the .dat file.
 	  */
-	  reaction->deltag0_computed = -1;
+	  reaction->deltag0_computed = 0;
 	  break;
 	case 8:
 	  /* 
@@ -741,7 +749,7 @@ int parse_reactions_file(struct state_struct *state,
 		Only look to set the compartment index if the molecule did
 		not have a local compartment (:compartment).
 	      */
-	      if (rxn_molecules->c_index == 0) {
+	      if (rxn_molecules->c_index == -1) {
 		if (coefficients[j] < 0) {
 		  rxn_molecules->c_index = reaction->left_compartment;
 		} else {
@@ -789,7 +797,7 @@ int parse_reactions_file(struct state_struct *state,
 	    reaction->ph                = state->ph;
 	    reaction->ionic_strength    = state->ionic_strength;
 
-	    reaction->deltag0_computed  = 0;
+	    reaction->deltag0_computed  = -1;
 	    
 	    rxn_ptrs[rxns]              = molecules;
 	    rxn_use                     = 1;

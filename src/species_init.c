@@ -48,7 +48,7 @@ int species_init(struct state_struct *state) {
     for now.
   */
   if (success) {
-    if (state->compartment_file[0] != '\0') {
+    if (state->compartments_file[0] != '\0') {
       success = read_compartment_sizes(state);
     }
   }

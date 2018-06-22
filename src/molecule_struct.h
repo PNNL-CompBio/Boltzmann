@@ -65,6 +65,7 @@ struct molecule_struct {
 
 
   */
+  double potential; /* for future use to store the molecule chemical potential */
   int64_t string;
   int  m_index;
   int  c_index;
@@ -74,6 +75,9 @@ struct molecule_struct {
 
   int  compute_init_conc;
   int  solvent;
+
+  int  potential_set;
+  int  padi;
 }
 ;
 #endif

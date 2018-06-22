@@ -188,6 +188,7 @@ int lr14_approximate_delta_concs(struct state_struct *state,
     rt = 1.0;
     tr = 1.0;
     tp = 1.0;
+    multiplier = 1.0;
     for (j=rxn_ptrs[i];j<rxn_ptrs[i+1];j++) {
       mi = molecule_indices[j];
       molecule = (struct molecule_struct *)&molecules[mi];
@@ -202,6 +203,7 @@ int lr14_approximate_delta_concs(struct state_struct *state,
       if (klim < 0) {
 	for (k=0;k<(-klim);k++) {
 	  rt = rt * conc_mi;
+	  multiplier *= volume;
 	  /*
 	  tr = tr * (count_mi - klim);
 	  */
@@ -210,6 +212,7 @@ int lr14_approximate_delta_concs(struct state_struct *state,
 	if (klim > 0) {
 	  for (k=0;k<klim;k++) {
 	    pt = pt * conc_mi;
+	    multiplier *= recip_volume;
 	    /*
 	    tp = tp * (count_mi + klim);
 	    */
@@ -217,22 +220,24 @@ int lr14_approximate_delta_concs(struct state_struct *state,
 	}
       }
     } /* end for (j...) */
-    keq_adj = 1.0;
+    keq_adj = multiplier;
     rkeq_adj = 1.0;
-    multiplier = 1.0;
     sum_coeff = coeff_sum[i];
     if (sum_coeff > 0) {
-      multiplier = recip_volume * recip_avogadro;
+      for (k=0;k < sum_coeff; k++) {
+	keq_adj *= recip_avogadro;
+      }
     } else {
       if (sum_coeff < 0) {
-	multiplier = volume * avogadro;
 	sum_coeff = - sum_coeff;
-      } 
+	for (k=0;k < sum_coeff; k++) {
+	  keq_adj *= avogadro;
+	}
+      }
     }
-    for (k=0;k < sum_coeff; k++) {
-      keq_adj *= multiplier;
+    if (keq_adj != 0.0) {
+      rkeq_adj = 1.0/keq_adj;
     }
-    rkeq_adj = 1.0/keq_adj;
     /*
       NB. tp and tr will always be > 0 as |klim| > 0 and concs_mi >= 0;
       but now the reaction contribution is in counts per time, if we

@@ -146,6 +146,7 @@ int boltzmann_cvodes(struct state_struct *state, double *concs) {
   ode_rxn_view_freq = state->ode_rxn_view_freq;
   print_output  = state->print_output;
   cvodes_params = (struct cvodes_params_struct *)state->cvodes_params;
+  ode23tb_params = NULL;
   if (jacobian_choice == 0) {
     ode23tb_params = (struct ode23tb_params_struct *)state->ode23tb_params;
   }

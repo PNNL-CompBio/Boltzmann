@@ -359,11 +359,13 @@ void dtbsv_(char *uplop, char *transp, char *diagp, int *np, int *kp,
           KX = 1
       END IF
       */
+      kx = 1;
       if (incx <= 0) {
 	kx = 1 - ((n-1)*incx);
       } else if (incx != 1) {
 	kx = 1;
       }
+      ix = kx;
       /*
 *
 *     Start the operations. In this version the elements of A are

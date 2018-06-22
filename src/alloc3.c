@@ -44,9 +44,7 @@ int alloc3(struct state_struct *state, int setup) {
     kssr                   	     (number_reactions)
     kss_eval               	     (nunique_molecules)
     kss_uval               	     (nunique_molecules)
-    dg0tfs                 	     (nunique_molecules)
-    molecule_probabilities 	     (nunique_molecules)
-    molecule_chemical_potentials     (nunique_molecules)
+    molecule_dg0tfs            	     (nunique_molecules)
     Called by: boltzmann_init_core
     Calls:     calloc, fprintf, fflush (intrinsic)
   */
@@ -276,7 +274,9 @@ int alloc3(struct state_struct *state, int setup) {
   }
   /*
     Allocate space for molecule_probabilities
+    These do not get used any more commenting out.
   */
+  /*
   if (success) {
     ask_for = ((int64_t)nu_molecules) * ((int64_t)sizeof(double));
     usage += ask_for;
@@ -288,9 +288,11 @@ int alloc3(struct state_struct *state, int setup) {
       success = 0;
     } 
   }
+  */
   /*
     Allocate space for molecule_chemical_potentials
   */
+  /*
   if (success) {
     ask_for = ((int64_t)nu_molecules) * ((int64_t)sizeof(double));
     usage += ask_for;
@@ -302,6 +304,7 @@ int alloc3(struct state_struct *state, int setup) {
       success = 0;
     } 
   }
+  */
   state->usage = usage;
   return(success);
 }

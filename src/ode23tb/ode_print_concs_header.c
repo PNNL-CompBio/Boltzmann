@@ -60,7 +60,8 @@ void ode_print_concs_header(struct state_struct *state) {
   lfp              = state->lfp;
   concs_opened = 0;
   counts_opened = 0;
-
+  ode_concs_fp = NULL;
+  ode_counts_fp = NULL;
   if (print_concs_or_counts & 2) {
     ode_concs_fp = fopen(ode_concs_file,"w+");
     state->ode_concs_fp  = ode_concs_fp;

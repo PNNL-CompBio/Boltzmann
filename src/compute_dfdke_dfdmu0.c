@@ -110,6 +110,7 @@ int compute_dfdke_dfdmu0(struct state_struct *state, double *concs) {
       fflush(lfp);
     }
   }
+  dfdmu0_fp = NULL;
   if (success) {
     state->dfdke_fp = dfdke_fp;
     dfdmu0_fp = fopen(dfdmu0_file,"w");

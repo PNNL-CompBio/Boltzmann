@@ -52,8 +52,8 @@ void boltzmann_set_filename_ptrs(struct state_struct *statep) {
   statep->rxn_view_file      = statep->restart_file + max_file_name_len;
   statep->bndry_flux_file    = statep->rxn_view_file + max_file_name_len;
   statep->pseudoisomer_file  = statep->bndry_flux_file + max_file_name_len;
-  statep->compartment_file   = statep->pseudoisomer_file + max_file_name_len;
-  statep->sbml_file          = statep->compartment_file + max_file_name_len;
+  statep->compartments_file  = statep->pseudoisomer_file + max_file_name_len;
+  statep->sbml_file          = statep->compartments_file + max_file_name_len;
   statep->ms2js_file         = statep->sbml_file + max_file_name_len;
   statep->kg2js_file         = statep->ms2js_file + max_file_name_len;
   statep->rxn_echo_file      = statep->kg2js_file + max_file_name_len;

@@ -25,7 +25,7 @@ specific language governing permissions and limitations under the License.
 
 #include "init_rxn_file_keywords.h"
 #include "parse_rxn_file_keyword.h"
-#include "count_molecules.h"
+#include "count_molecules_and_cmpts.h"
 #include "count_ws.h"
 #include "count_nws.h"
 
@@ -43,7 +43,7 @@ int size_rxns_file(struct state_struct *state,
                parse_rxn_file_keyword
                count_ws,
 	       count_nws,
-               count_molecules,
+               count_molecules_and_cmpts,
                fopen, fgets, fprintf, fflush (intrinsic)
   */
   int64_t rxn_buff_len;
@@ -187,14 +187,24 @@ int size_rxns_file(struct state_struct *state,
 	    A left line, count molecules.
 	  */
    	  rctnts = (char *)&rxn_buffer[kl];
-	  molecules += count_molecules(rctnts,&molecules_len);
+	  count_molecules_and_cmpts(rctnts,&molecules,&cmpts,&molecules_len,
+				    &compartment_len);
+	  /*
+	    Here we also need to count the number of compartments
+	    (number of : on the line.
+	  */
 	  break;
       case 6: /* RIGHT */
 	  /*
 	    A right line, count molecules.
 	  */
 	  prdcts = (char *)&rxn_buffer[kl];
-	  molecules += count_molecules(prdcts,&molecules_len);
+	  count_molecules_and_cmpts(prdcts,&molecules,&cmpts,&molecules_len,
+				    &compartment_len);
+	  /*
+	    Here we also need to count the number of compartments
+	    (number of : on the line.
+	  */
 	  break;
       case 7: /* DGZERO */
       case 8: /* DGZERO-UNITS */
@@ -231,7 +241,7 @@ int size_rxns_file(struct state_struct *state,
     align_len = state->align_len;
     max_regs_per_rxn = state->max_regs_per_rxn;
     molecules_len += molecules * align_len;
-    compartment_len += 2* rxns * align_len;
+    compartment_len += cmpts * align_len;
     pathway_len += rxns*align_len;
     rxn_title_len += rxns * align_len;
     regulation_len += rxns * max_regs_per_rxn * align_len;

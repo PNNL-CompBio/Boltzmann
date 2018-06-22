@@ -59,7 +59,7 @@ int alloc0(struct state_struct **statep, int setup) {
        	rxn_view_file,
        	bndry_flux_file,
        	pseudoisomer_file,
-       	compartment_file,
+       	compartments_file,
        	sbml_file,
        	ms2js_file,
        	kg2js_file,
@@ -136,7 +136,7 @@ int alloc0(struct state_struct **statep, int setup) {
     usage = state->usage;
   }
   if (success && setup) {
-    state->version_no = 5095; /* Checked in revision of state_struct.h */
+    state->version_no = 5096; /* Checked in revision of state_struct.h */
     /*
       Allocate_space for reading the parameter file.
     */

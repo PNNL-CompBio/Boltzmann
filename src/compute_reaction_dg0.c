@@ -36,19 +36,14 @@ int compute_reaction_dg0(struct state_struct *state){
     Called by: compute_standard_energies
     Calls:     fprintf, fflush
   */
-  int success;
-  int64_t sum;
-
-
-  double rxn_dg0_tf;
-  double m_dg0_tf;
-
   /*
   struct pseudoisomer_struct *pseudoisomers;
   */
   struct reaction_struct *reactions;
   struct reaction_struct *reaction;
   struct reactions_matrix_struct *rxns_matrix;
+  double rxn_dg0_tf;
+  double m_dg0_tf;
   int64_t *rxn_ptrs;
   int64_t *molecules_indices;
   int64_t *coefficients;
@@ -56,10 +51,8 @@ int compute_reaction_dg0(struct state_struct *state){
 
   double *molecule_dg0tfs;
   int64_t print_output;
-  int64_t mto;
 
-  char   *molecule;
-  char   *molecules_text;
+  int    *dg0tfs_set;
 
   int nrxns;
   int rxns;
@@ -70,7 +63,10 @@ int compute_reaction_dg0(struct state_struct *state){
   int coeff;
   int use_dgzero;
 
-  int try_pseudoisomer;
+  int use_pseudoisomers;
+  int computable;
+
+  int success;
   int padi;
 
   FILE* lfp;
@@ -87,10 +83,10 @@ int compute_reaction_dg0(struct state_struct *state){
   coefficients   	   = rxns_matrix->coefficients;
   matrix_text    	   = rxns_matrix->text;
   nrxns                    = (int)state->number_reactions;
-  molecules_text           = state->molecules_text;
-  use_dgzero              = state->use_dgzero;
-  
+  use_dgzero               = state->use_dgzero;
+  use_pseudoisomers        = state->use_pseudoisomers;
   molecule_dg0tfs          = state->molecule_dg0tfs;
+  dg0tfs_set               = state->dg0tfs_set;
 
   lfp                  = state->lfp;
   print_output         = print_output && lfp;
@@ -105,55 +101,90 @@ int compute_reaction_dg0(struct state_struct *state){
       fprintf(lfp,"Number of reactants = %i\n",reaction->num_reactants);
       fprintf(lfp,"Number of products = %i\n",reaction->num_products);
     }
-    
-    try_pseudoisomer = (use_dgzero == 0) || ((use_dgzero == 1) && (reaction->deltag0_computed != -1)) ;
-    if (try_pseudoisomer) {
+    if (use_pseudoisomers == 0) {
       /*
-	Set the free energy units to KJ/mol.
+	User has requested to only use read in dgzero's for reaction
+	delta_g0 values. If one was not specified it is an error.
+	If reaction->deltag0_computed is 0, one was read in and 
+	is already in reaction->deltag0;
       */
-      sum = 0;
-      rxn_dg0_tf = (double)0.0;
-      for (j=rxn_ptrs[rxns];j<rxn_ptrs[rxns+1];j++) {
-	k = molecules_indices[j];
-	coeff = coefficients[j];
-	m_dg0_tf = molecule_dg0tfs[k];
-	mto = matrix_text[j];
-	molecule = (char*)&molecules_text[mto];
-	if (m_dg0_tf != 0.0) {
-	  if (print_output) {
-	    fprintf(lfp,"coefficient of molecule %s = %i and dg0_tf = %f kJ/mol.\n",
-		    molecule,coeff,m_dg0_tf);
-	  }
-	  rxn_dg0_tf += (coeff * m_dg0_tf);
-	} else {
-	  sum += 1;
-	  rxn_dg0_tf = (double)0.0;
-	  if (print_output) {
-	    fprintf(lfp,"molecule %s reaction %d, did not have a "
-		    "formation energy.\n",molecule,rxns);
-	    fflush(lfp);
-	  }
+      if (reaction->deltag0_computed < 0) {
+	success = 0;
+	if (lfp) {
+	  fprintf(lfp,"compute_reaction_dg0: You specified USE_PSEUDOISOMERS 0,"
+		  " and reaction %d did not have a valid DGZERO line.\n",rxns);
+	  fflush(lfp);
 	}
-      } /* end for(j...) */
-      if (sum == 0) {
-	reaction->unit_i = 1;
-	reaction->delta_g0 = rxn_dg0_tf;
-	reaction->deltag0_computed = 1;
-	if (print_output) {
-	  fprintf(lfp,"Computed reaction delta_g0 = %le\n",rxn_dg0_tf);
+	break;
+      } 
+    } else {
+      /*
+	If the user has specified USE_DGZERO = 1, then let a 
+	read in DGZERO supercede the computed value.
+      if ((use_dgzero == 1)  && (reaction->deltag0_computed == 0)) {
+	do nothing here as reaction->deltag0 has been set in
+	parse_reactions_file.
+	}
+      */
+      if ((use_dgzero == 0) || (reaction->deltag0_computed < 0)) {
+	/*
+	  Either or use_dgzero is not set or it was set, but no
+	  DGZERO line was present for this reaction, So try to
+	  compute one.
+	*/
+	computable = 1;
+	rxn_dg0_tf = (double)0.0;
+	for (j=rxn_ptrs[rxns];j<rxn_ptrs[rxns+1];j++) {
+	  k = molecules_indices[j];
+	  coeff = coefficients[j];
+	  if (dg0tfs_set[k]) {
+	    m_dg0_tf = molecule_dg0tfs[k];
+	    rxn_dg0_tf += (coeff * m_dg0_tf);
+	  } else {
+	    computable = 0;
+	    break;
+	  }
+	} /* end for(j...) */
+	if (computable) {
+	  /*
+	    Set the free energy units to KJ/mol.
+	  */
+	  reaction->unit_i = 1;
+	  reaction->delta_g0 = rxn_dg0_tf;
+	  reaction->deltag0_computed = 1;
+	  if (print_output) {
+	    if (lfp) {
+	      fprintf(lfp,"Computed reaction %d delta_g0 = %le\n",rxns,rxn_dg0_tf);
+	    }
+	  }
+	} else {
+	  /*
+	    This is an error condition, as use_deltag0 was 0, or
+	    it was 1 but no DGZERO line existed in the reactions file for
+	    this reaction.
+	  */
+	  success = 0;
+	  if (lfp) {
+	    fprintf(lfp,"compute_reaction_dg0: For reaction %d, delta_g0 was not computable.\n",rxns);
+	    if (use_dgzero == 1) {
+	      fprintf(lfp,"And this reaction did not have a DGZERO line in the reactions file\n");
+	    }   
+	  }
+	  break;
 	}
       } else {
-	reaction->deltag0_computed = 0;
 	if (print_output) {
-	  fprintf(lfp,"Using input reaction delta_g0 = %le\n",
-		  reaction->delta_g0);
+	  fprintf(lfp,"Read in reaction %d delta_g0 = %le\n",
+		  rxns,reaction->delta_g0);
 	}
-      }
-    } /*end if try_pseudoisomer */
+      } /* end else if not read in */
+    } /* end else use_pseudoisomers > 0 */
     reaction += 1; /* Caution address arithmetic */
   } /* end for (rxns...) */
   if (print_output) {
-    fprintf(lfp,"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n");
+    if (lfp) {
+      fprintf(lfp,"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n");
+    }
   }
   return (success);
 }

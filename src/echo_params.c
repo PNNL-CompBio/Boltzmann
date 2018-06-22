@@ -54,7 +54,7 @@ int echo_params (FILE *lfp, struct state_struct *state) {
     fprintf(lfp,"state->rxn_view_file          = %s\n",state->rxn_view_file);
     fprintf(lfp,"state->bndry_flux_file        = %s\n",state->bndry_flux_file);
     fprintf(lfp,"state->pseudoisomer_file      = %s\n",state->pseudoisomer_file);
-    fprintf(lfp,"state->compartment_file       = %s\n",state->compartment_file);
+    fprintf(lfp,"state->compartments_file      = %s\n",state->compartments_file);
     fprintf(lfp,"state->sbml_file              = %s\n",state->sbml_file);
     fprintf(lfp,"state->ms2js_file             = %s\n",state->ms2js_file);
     fprintf(lfp,"state->kg2js_file             = %s\n",state->kg2js_file);

@@ -27,6 +27,7 @@ int boltzmann_cvodes_psolve(double t,
   int prec_choice;
   int ny;
 
+  success     = 1;
   state       = (struct state_struct *)user_data;
   ny          = state->nunique_molecules;
   prec_choice = state->cvodes_prec_choice;

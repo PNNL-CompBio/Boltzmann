@@ -69,6 +69,9 @@ int alloc2(struct state_struct *state, int setup) {
       reg_exponent,
       reg_drctn,
       reg_species,
+      coeff_sum,
+      use_rxn,
+      dg0tfs_set,
       vgrng_state,
       vgnrg2_state
       
@@ -373,6 +376,16 @@ int alloc2(struct state_struct *state, int setup) {
     if (state->use_rxn == NULL) {
       fprintf(stderr,"alloc2: Error unable to allocate %ld bytes for "
 	      "state->use_rxn field.\n",ask_for);
+      fflush(stderr);
+      success = 0;
+    }
+  }
+  if (success) {
+    usage += ask_for;
+    state->dg0tfs_set = (int *)calloc(one_l,ask_for);
+    if (state->dg0tfs_set == NULL) {
+      fprintf(stderr,"alloc2: Error unable to allocate %ld bytes for "
+	      "state->dg0tfs_set field.\n",ask_for);
       fflush(stderr);
       success = 0;
     }

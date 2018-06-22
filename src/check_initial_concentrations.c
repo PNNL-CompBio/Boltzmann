@@ -77,11 +77,11 @@ int check_initial_concentrations(struct state_struct *state) {
 	*/
 	if (lfp) {
 	  if (ci > 0) {
-	    fprintf(lfp,"Error molecule %d %s:%s did not have an intial "
+	    fprintf(lfp,"Error molecule %d %s:%s did not have an initial "
 		    "concentration.\n",i,molecule_string,cmpt_string);
 	    fflush(lfp);
 	  } else {
-	    fprintf(lfp,"Error molecule %d %s did not have an intial "
+	    fprintf(lfp,"Error molecule %d %s did not have an initial "
 		    "concentration.\n",i,molecule_string);
 	    fflush(lfp);
 	  }
