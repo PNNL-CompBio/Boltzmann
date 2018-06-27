@@ -587,10 +587,10 @@ D-Galactose#C00124#2#Group Contribution#9#-3#-698.050788184894#
 D-Galactose#C00124#2#Group Contribution#10#-2#-775.523952758731#ChemAxon
 D-Galactose#C00124#2#Group Contribution#11#-1#-847.919715530601#ChemAxon
 D-Galactose#C00124#2#Group Contribution#12#0#-912.38560357805#ChemAxon
-Ferricytochrome c#C00125#1#Alberty (2006)#0#3#0#Alberty 2006
-Ferricytochrome c#C00125#2#CRC biochemistry (2010)#0#3#0#CRC biochemistry (2010)
-Ferrocytochrome c#C00126#1#Alberty (2006)#0#2#-24.51#Alberty 2006
-Ferrocytochrome c#C00126#2#CRC biochemistry (2010)#0#2#-28.944#CRC biochemistry (2010)
+Ferricytochrome_c#C00125#1#Alberty (2006)#0#3#0#Alberty 2006
+Ferricytochrome_c#C00125#2#CRC biochemistry (2010)#0#3#0#CRC biochemistry (2010)
+Ferrocytochrome_c#C00126#1#Alberty (2006)#0#2#-24.51#Alberty 2006
+Ferrocytochrome_c#C00126#2#CRC biochemistry (2010)#0#2#-28.944#CRC biochemistry (2010)
 Glutathione disulfide#C00127#1#Alberty (2006)#30#-2#0#Alberty 2006
 Glutathione disulfide#C00127#2#Group Contribution#28#-4#-1313.08664381742#
 Glutathione disulfide#C00127#2#Group Contribution#29#-3#-1392.89883618767#ChemAxon
@@ -37722,9 +37722,10 @@ Zizybeoside II#C17565#2#Group Contribution#36#-2#-1902.81912263939#ChemAxon
 Zizybeoside II#C17565#2#Group Contribution#37#-1#-1973.38930274088#ChemAxon
 Zizybeoside II#C17565#2#Group Contribution#38#0#-2041.16405937838#ChemAxon
 Coixenolide#C17566#2#Group Contribution#70#0#-270.331292656746#
-Ubiquinone-6#C17568#2#Group Contribution#56#-2#480.312234596033#
-Ubiquinone-6#C17568#2#Group Contribution#57#-1#411.624686623352#ChemAxon
-Ubiquinone-6#C17568#2#Group Contribution#58#0#353.605387380648#ChemAxon
+Ubiquinone-6#C17568#2#Group Contribution#58#0#128.9#ComponentContribution
+Ubiquinol-6#C17568#2#Group Contribution#58#-2#120.8#ComponentContribution
+Ubiquinol-6#C17568#2#Group Contribution#58#-1#51.5#ComponentContribution
+Ubiquinol-6#C17568#2#Group Contribution#58#0#-7.1#ComponentContribution
 Ubiquinone-8#C17569#2#Group Contribution#72#-2#692.621130399148#
 Ubiquinone-8#C17569#2#Group Contribution#73#-1#623.933582426468#ChemAxon
 Ubiquinone-8#C17569#2#Group Contribution#74#0#565.914283183763#ChemAxon

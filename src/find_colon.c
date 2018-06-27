@@ -24,7 +24,7 @@ specific language governing permissions and limitations under the License.
 #include "find_colon.h"
 int find_colon(char *rctnts) {
   /*
-    Called by: parse_reactions_file
+    Called by: parse_side_line, translate_regulation_metabolites
     Return the position of a the leftmost colon in a string.
     Returns -1 if no colon was found.
   */

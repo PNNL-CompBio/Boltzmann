@@ -76,7 +76,7 @@ int print_molecules_dictionary(struct state_struct *state) {
     if (counts_fp) {
       fprintf(counts_fp,"iter");
     }
-    fprintf(dict_fp,"number name free_energy_of_formation\n");
+    fprintf(dict_fp,"number\tname\tfree_energy_of_formation\n");
     for (i=0;i<nu_molecules;i++) {
       ci = cur_molecule->c_index;
       molecule    = (char *)&molecules_text[cur_molecule->string];
@@ -88,7 +88,7 @@ int print_molecules_dictionary(struct state_struct *state) {
 	}
       }
       if (ci > 0) {
-	fprintf(dict_fp,"%d %s %s %le\n",i,molecule,cmpt_string,molecule_dg0tfs[i]);
+	fprintf(dict_fp,"%d\t%s:%s\t%le\n",i,molecule,cmpt_string,molecule_dg0tfs[i]);
 	if ((cur_molecule->solvent == 0) || (cur_molecule->variable == 1)) {
 	  if (counts_fp) {
 	    fprintf(counts_fp,"\t%s:%s",molecule,cmpt_string);
@@ -98,7 +98,7 @@ int print_molecules_dictionary(struct state_struct *state) {
 	  }
 	}
       } else {
-	fprintf(dict_fp,"%d %s %le\n",i,molecule,molecule_dg0tfs[i]);
+	fprintf(dict_fp,"%d\t%s\t%le\n",i,molecule,molecule_dg0tfs[i]);
 	if ((cur_molecule->solvent == 0) || (cur_molecule->variable == 1)) {
 	  if (counts_fp) {
 	    fprintf(counts_fp,"\t%s",molecule);

@@ -33,7 +33,7 @@ int translate_compartments(struct state_struct *state) {
   */
   struct reactions_matrix_struct *rxns_matrix;
   struct molecule_struct *molecule;
-  int64_t *compartment_indices;
+  int  *cmpt_tracking;
   int nzr;
   int i;
   int success;
@@ -42,12 +42,12 @@ int translate_compartments(struct state_struct *state) {
   nzr         = state->number_molecules;
   molecule    = state->unsorted_molecules;
   rxns_matrix = state->reactions_matrix;
-  compartment_indices = rxns_matrix->compartment_indices;
+  cmpt_tracking = state->cmpt_tracking;
   /* loop over unsorted molecules. */
   for (i=0;i<nzr;i++) {
     c_indx = molecule->c_index;
     if (c_indx > 0) {
-      molecule->c_index = compartment_indices[c_indx];
+      molecule->c_index = cmpt_tracking[c_indx];
     } 
     molecule += 1; /* Caution Address arithmetic */
   }

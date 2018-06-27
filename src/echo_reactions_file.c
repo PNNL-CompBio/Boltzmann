@@ -33,16 +33,19 @@ int echo_reactions_file(struct state_struct *state) {
   struct reaction_struct *reaction;
   struct reactions_matrix_struct *rxns_matrix;
   struct molecule_struct *molecules;  
-  struct molecule_struct *moleculex;  
-  
+  struct molecule_struct *molecule;  
+  struct compartment_struct *compartments;
+  struct compartment_struct *compartment;
+
   double  *reg_constant;
   double  *reg_exponent;
   double  *reg_drctn;
   int64_t *reg_species;
   int64_t *rxn_ptrs;
   int64_t *molecules_indices;
+  int64_t *compartment_indices;
   int64_t *coefficients;
-  int64_t *matrix_text;
+  int64_t *molecule_name_ptr;
   int64_t metabolite;
   int64_t reg_base;
 
@@ -54,9 +57,8 @@ int echo_reactions_file(struct state_struct *state) {
 
   char *title;
   char *pathway;
-  char *compartment;
-  char *molecule;
-
+  char *compartment_name;
+  char *molecule_name;
 
   int success;
   int rxns;
@@ -71,7 +73,7 @@ int echo_reactions_file(struct state_struct *state) {
   int use_regulation;
 
   int i;
-  int padi;
+  int ci;
 
   char tab;
   char padc[7];
@@ -94,25 +96,27 @@ int echo_reactions_file(struct state_struct *state) {
     success = recover_solvent_coefficients(state);
   }
   if (success) {
-    molecules         = state->sorted_molecules;
-    rxn_title_text    = state->rxn_title_text;
-    pathway_text      = state->pathway_text;
-    compartment_text  = state->compartment_text; 
-    molecules_text    = state->molecules_text;
-    regulation_text   = state->regulation_text;
-    use_regulation    = (int)state->use_regulation;
-    reg_species       = state->reg_species;
-    reg_drctn         = state->reg_drctn;
-    reg_constant      = state->reg_constant;
-    reg_exponent      = state->reg_exponent;
-    reaction          = state->reactions;
-    rxns_matrix       = state->reactions_matrix;
-    max_regs_per_rxn  = state->max_regs_per_rxn;
-    rxn_ptrs          = rxns_matrix->rxn_ptrs;
-    molecules_indices = rxns_matrix->molecules_indices;
-    coefficients      = rxns_matrix->coefficients;
-    matrix_text       = rxns_matrix->text;
-    reg_base          = 0;
+    molecules         	= state->sorted_molecules;
+    rxn_title_text    	= state->rxn_title_text;
+    pathway_text      	= state->pathway_text;
+    compartments        = state->sorted_compartments;
+    compartment_text  	= state->compartment_text; 
+    molecules_text    	= state->molecules_text;
+    regulation_text   	= state->regulation_text;
+    use_regulation    	= (int)state->use_regulation;
+    reg_species       	= state->reg_species;
+    reg_drctn         	= state->reg_drctn;
+    reg_constant      	= state->reg_constant;
+    reg_exponent      	= state->reg_exponent;
+    reaction          	= state->reactions;
+    rxns_matrix       	= state->reactions_matrix;
+    max_regs_per_rxn  	= state->max_regs_per_rxn;
+    rxn_ptrs          	= rxns_matrix->rxn_ptrs;
+    molecules_indices 	= rxns_matrix->molecules_indices;
+    compartment_indices = rxns_matrix->compartment_indices;
+    coefficients      	= rxns_matrix->coefficients;
+    molecule_name_ptr  	= rxns_matrix->text;
+    reg_base          	= 0;
     for (rxns=0;rxns < (int)state->number_reactions;rxns++) {
       if (reaction->title>=0) {
 	title = (char *)&rxn_title_text[reaction->title];
@@ -124,27 +128,34 @@ int echo_reactions_file(struct state_struct *state) {
       }
       if (reaction->lcompartment>=0) {
 	if (reaction->rcompartment>=0) {
-	  compartment = (char *)&compartment_text[reaction->lcompartment];
-	  fprintf(rxn_echo_fp,"LEFT_COMPARTMENT\t%s\n",compartment);
-	  compartment = (char *)&compartment_text[reaction->rcompartment];
+	  compartment_name = (char *)&compartment_text[reaction->lcompartment];
+	  fprintf(rxn_echo_fp,"LEFT_COMPARTMENT\t%s\n",compartment_name);
+	  compartment_name = (char *)&compartment_text[reaction->rcompartment];
 	  fprintf(rxn_echo_fp,
-		  "RIGHT_COMPARTMENT\t%s\n",compartment);
+		  "RIGHT_COMPARTMENT\t%s\n",compartment_name);
 	} else {
-	  compartment = (char *)&compartment_text[reaction->lcompartment];
-	  fprintf(rxn_echo_fp,"COMPARTMENT\t%s\n",compartment);
+	  compartment_name = (char *)&compartment_text[reaction->lcompartment];
+	  fprintf(rxn_echo_fp,"COMPARTMENT\t%s\n",compartment_name);
 	}
       }
       fprintf(rxn_echo_fp,"LEFT\t");
       nr = 0;
       for (j=rxn_ptrs[rxns];j<rxn_ptrs[rxns+1];j++) {
 	coeff = coefficients[j];
+	ci    = compartment_indices[j];
 	if (coeff < 0) {
 	  if (coeff < -1) {
 	    coeff = -coeff;
 	    fprintf(rxn_echo_fp,"%d ",coeff);
 	  }
-	  molecule = (char*)&molecules_text[matrix_text[j]];
-	  fprintf(rxn_echo_fp,"%s",molecule);
+	  molecule_name = (char*)&molecules_text[molecule_name_ptr[j]];
+	  if (ci > 0) {
+	    compartment = (struct compartment_struct *)&compartments[ci];
+	    compartment_name = (char*)&compartment_text[compartment->string];
+	    fprintf(rxn_echo_fp,"%s:%s",molecule_name,compartment_name);
+	  } else {
+	    fprintf(rxn_echo_fp,"%s",molecule_name);
+	  }
 	  nr += 1;
 	  if (nr < reaction->num_reactants) {
 	    fprintf(rxn_echo_fp," + ");
@@ -158,12 +169,19 @@ int echo_reactions_file(struct state_struct *state) {
       np = 0;
       for (j=rxn_ptrs[rxns];j<rxn_ptrs[rxns+1];j++) {
 	coeff = coefficients[j];
+	ci    = compartment_indices[j];
 	if (coeff > 0) {
 	  if (coeff > 1) {
 	    fprintf(rxn_echo_fp,"%d ",coeff);
 	  }
-	  molecule = (char*)&molecules_text[matrix_text[j]];
-	  fprintf(rxn_echo_fp,"%s",molecule);
+	  molecule_name = (char*)&molecules_text[molecule_name_ptr[j]];
+	  if (ci > 0) {
+	    compartment = (struct compartment_struct *)&compartments[ci];
+	    compartment_name = (char*)&compartment_text[compartment->string];
+	    fprintf(rxn_echo_fp,"%s:%s",molecule_name,compartment_name);
+	  } else {
+	    fprintf(rxn_echo_fp,"%s",molecule_name);
+	  }
 	  np += 1;
 	  if (np < reaction->num_products) {
 	    fprintf(rxn_echo_fp," + ");
@@ -196,18 +214,38 @@ int echo_reactions_file(struct state_struct *state) {
 	    translate_regulation_metabolites.
 	  */
 	  if (metabolite >= 0) {
-	    moleculex = (struct molecule_struct *)&molecules[metabolite];
-	    molecule  = (char *)&molecules_text[moleculex->string];
+	    molecule = (struct molecule_struct *)&molecules[metabolite];
+	    molecule_name  = (char *)&molecules_text[molecule->string];
+	    ci = molecule->c_index;
+	    compartment_name = NULL;
+	    if (ci > 0) {
+	      compartment = (struct compartment_struct *)&compartments[ci];
+	      compartment_name = (char*)&compartment_text[compartment->string];
+	    }
 	    if (reg_drctn[reg_base+i] > 0.0) {
-	      fprintf(rxn_echo_fp,"PREGULATION\t%s\t%le\t%le\n",
-		      molecule,
-		      reg_constant[reg_base+i],
-		      reg_exponent[reg_base+i]);
+	      if (ci == 0) {
+		fprintf(rxn_echo_fp,"PREGULATION\t%s\t%le\t%le\n",
+			molecule_name,
+			reg_constant[reg_base+i],
+			reg_exponent[reg_base+i]);
+	      } else {
+		fprintf(rxn_echo_fp,"PREGULATION\t%s:%s\t%le\t%le\n",
+			molecule_name,compartment_name,
+			reg_constant[reg_base+i],
+			reg_exponent[reg_base+i]);
+	      }
 	    } else {
-	      fprintf(rxn_echo_fp,"NREGULATION\t%s\t%le\t%le\n",
-		      molecule,
-		      reg_constant[reg_base+i],
-		      reg_exponent[reg_base+i]);
+	      if (ci == 0) {
+		fprintf(rxn_echo_fp,"NREGULATION\t%s\t%le\t%le\n",
+			molecule_name,
+			reg_constant[reg_base+i],
+			reg_exponent[reg_base+i]);
+	      } else {
+		fprintf(rxn_echo_fp,"NREGULATION\t%s:%s\t%le\t%le\n",
+			molecule_name,compartment_name,
+			reg_constant[reg_base+i],
+			reg_exponent[reg_base+i]);
+	      }
 	    }
 	  } else {
 	    break;

@@ -1,6 +1,8 @@
 #include "boltzmann_structs.h"
 
 #include "molecules_lookup.h"
+#include "find_colon.h"
+
 
 #include "translate_regulation_metabolites.h"
 int translate_regulation_metabolites(struct state_struct *state) {
@@ -18,24 +20,25 @@ int translate_regulation_metabolites(struct state_struct *state) {
   int64_t *compartment_indices;
   char    *regulation_text;
   char    *metabolite;
-  
-  int success;
-  int max_regs_per_rxn;
+  char    *compartment_name;
 
   int num_rxns;
-  int reg_pos;
+  int max_regs_per_rxn;
 
+  int reg_pos;
   int reg_base;
-  int rmet_num;
 
   int i;
   int j;
 
-  int lc;
-  int rc;
-
   int met_pos;
   int met_num;
+
+  int colon_loc;
+  int ci;
+
+  int success;
+  int padi;
 
   FILE *lfp;
   FILE *efp;
@@ -54,10 +57,6 @@ int translate_regulation_metabolites(struct state_struct *state) {
     reg_base         = 0;
     reaction         = reactions;
     for (i=0;i<num_rxns;i++) {
-      lc = reaction->left_compartment;
-      rc = reaction->right_compartment;
-      lc = compartment_indices[lc];
-      rc = compartment_indices[rc];
       for (j=0; ((j<max_regs_per_rxn) && success); j++) {
 	reg_pos = reg_base + j;
 	met_pos = reg_species[reg_pos];
@@ -66,32 +65,28 @@ int translate_regulation_metabolites(struct state_struct *state) {
 	    This regulation exists.
 	  */
 	  metabolite = (char*)&regulation_text[met_pos];
-	  met_num = molecules_lookup(metabolite,lc,state);
-	  if (lc != rc) {
-	    /*
-	      Left and Right compartments are different.
-	    */
-	    rmet_num = molecules_lookup(metabolite,rc,state);
-	    if (met_num < 0) {
-	      /*
-		Left compartment did not have metabolite.
-	      */
-	      met_num = rmet_num;
-	    } else {
-	      /*
-		Left compartment had metabolite. 
-	      */
-	      if (rmet_num >= 0) {
-		if (lfp) {
-		  fprintf(lfp,"translate_regulation_metabolites: WARNING: "
-			  "metabolite %s is in two different compartments "
-			  "for reaction %d using the left compartment value\n",
-			  metabolite,i);
-		  fflush(lfp);
-		} /* end if (lfp) */
-	      } /* end if both compartments had metabolite. */
-	    } /* end else left compartment had metabolite. */
-	  } /* end if left and right compartments differ. */
+	  /*
+	    In storing the metabolite if it had a compartment that
+	    compartment is still attached via a :compartment_name.
+	    Extract that compartment name, look it up, and use that
+	    for the compartment instead of inheriting it from
+	    the reaction characteristics (left or right compartment).
+	  */
+	  colon_loc = find_colon(metabolite);
+	  ci = 0;
+	  if (colon_loc >=0) {
+	    compartment_name = (char*)&metabolite[colon_loc+1];
+	    ci = compartment_lookup(compartment_name);
+	    metabolite[colon_loc] = '\0';
+	    if (ci < 0) {
+	      ci = 0;
+	      if (lfp) {
+		fprintf(lfp,"translate_regulation_metabolites: Warning: compartment %s not found, using default global compartment.\n",compartment_name);
+		fflush(lfp);
+	      }
+	    }
+	  }
+	  met_num = molecules_lookup(metabolite,ci,state);
 	  if (met_num >= 0) {
 	    /*
 	      Metabolite found.
@@ -103,7 +98,7 @@ int translate_regulation_metabolites(struct state_struct *state) {
 	    */
 	    success = 0;
 	    if (lfp) {
-	      fprintf(lfp,"translate_regulation_metabolites: Error, metabolite %s, not found in compartment %d\n",metabolite,lc);
+	      fprintf(lfp,"translate_regulation_metabolites: Error, metabolite %s, not found in compartment %d\n",metabolite,ci);
 	      fflush(lfp);
 	    }
 	  } /* end else metabolite not found. */

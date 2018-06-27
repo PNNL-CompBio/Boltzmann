@@ -34,6 +34,10 @@ int boltzmann_init_core(struct state_struct *state) {
   int padi;
 
   print_output = state->print_output;
+  /*
+    The following routine opens the output files including the log file,
+    setting state->lfp;
+  */
   success = io_size_init(state);
   setup   = 1;
   /*
@@ -43,7 +47,7 @@ int boltzmann_init_core(struct state_struct *state) {
     We want an uppercase version of the molecules, so we need two 
     molecules copies. Also we have an upperbound of the number of molecules,
     state->number_molecules, and we can allocate space for the molecules 
-    sorting.
+    sorting, and the reactions matrix.
   */
   if (success) {
     success = alloc2(state,setup);

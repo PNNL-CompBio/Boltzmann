@@ -87,9 +87,11 @@ int size_rxns_file(struct state_struct *state,
   rxn_fp       = fopen(reaction_file,"r");
   if (rxn_fp == NULL) {
     success = 0;
-    fprintf(stderr,"size_rxn_file: unable to open reaction file, %s\n",
+    if (lfp) {
+      fprintf(lfp,"size_rxn_file: unable to open reaction file, %s\n",
 	    reaction_file);
-    fflush(stderr);
+      fflush(lfp);
+    }
   }
   if (success) {
     /*
@@ -109,7 +111,6 @@ int size_rxns_file(struct state_struct *state,
       This is not quite accurate,as some reactions may not
       have a pathway line, and Bill wants to also add an additional
       compartment, left_compartment, right_compartement  lines.
-      
     */
     total_length = (int64_t)0;
     molecules_len  = (int64_t)0;
@@ -188,7 +189,7 @@ int size_rxns_file(struct state_struct *state,
 	  */
    	  rctnts = (char *)&rxn_buffer[kl];
 	  count_molecules_and_cmpts(rctnts,&molecules,&cmpts,&molecules_len,
-				    &compartment_len);
+				    &compartment_len,lfp);
 	  /*
 	    Here we also need to count the number of compartments
 	    (number of : on the line.
@@ -200,7 +201,7 @@ int size_rxns_file(struct state_struct *state,
 	  */
 	  prdcts = (char *)&rxn_buffer[kl];
 	  count_molecules_and_cmpts(prdcts,&molecules,&cmpts,&molecules_len,
-				    &compartment_len);
+				    &compartment_len,lfp);
 	  /*
 	    Here we also need to count the number of compartments
 	    (number of : on the line.
@@ -236,7 +237,7 @@ int size_rxns_file(struct state_struct *state,
     */
     cmpts += 1;
     /*
-      We need to add space for padding done in parse_rxns
+      We need to add space for padding done in parse_reactions_file
     */
     align_len = state->align_len;
     max_regs_per_rxn = state->max_regs_per_rxn;

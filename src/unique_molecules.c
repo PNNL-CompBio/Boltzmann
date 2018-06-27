@@ -34,8 +34,9 @@ int unique_molecules(struct state_struct *state) {
     Calls:     strcmp (intrinsic)
   */
   struct reactions_matrix_struct *rxns_matrix;
-  int64_t *molecules_indices;
   struct molecule_struct *sorted_molecules;
+  int64_t *molecules_indices;
+  int64_t *compartment_indices;
   char *molecules_text;
   char *solvent_string;
   int64_t sum_molecule_len;
@@ -62,6 +63,7 @@ int unique_molecules(struct state_struct *state) {
   solvent_string      = state->solvent_string;
   rxns_matrix         = state->reactions_matrix;
   molecules_indices   = rxns_matrix->molecules_indices;
+  compartment_indices = rxns_matrix->compartment_indices;
   align_len           = state->align_len;
   align_mask          = state->align_mask;
   success = unique_molecules_core(nzr,
@@ -69,6 +71,7 @@ int unique_molecules(struct state_struct *state) {
 				  molecules_text,
 				  solvent_string,
 				  molecules_indices,
+				  compartment_indices,
 				  &nunique_molecules,
 				  &sum_molecule_len,
 				  &solvent_pos,

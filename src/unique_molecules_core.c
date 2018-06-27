@@ -24,11 +24,12 @@ specific language governing permissions and limitations under the License.
 #include "boltzmann_structs.h"
 
 #include "unique_molecules_core.h"
-int unique_molecules_core(int nzr,
+int unique_molecules_core(int number_molecules,
 			  struct molecule_struct *sorted_molecules,
 			  char *molecules_text,
 			  char *solvent_string,
-			  int64_t *molecules_map,
+			  int64_t *molecules_indices,
+			  int64_t *compartment_indices,
 			  int64_t *nunique_molecules,
 			  int64_t *sum_molecule_len,
 			  int     *solvent_pos,
@@ -38,13 +39,23 @@ int unique_molecules_core(int nzr,
     Remove duplicates from the sorted_molecules list
     and set the column_indices fields in the
     reactions_matrix appropriately.
+
+    The m_index field of the sorted molecules structure contains its
+    original position in the reactions_file of each molecule.
+    This is used to put the new molecule number and compartment number
+    into the molecules_indices and compartment_indices vectors of
+    the reactions matrix.
+    The compartment number, c_index field, in the sorted molecules 
+    has already been translated to the its reduces range in the
+    sorted unique compartments by the previous call to translate_compartments.
+
     Called by: unique_molecules, global_merge_molecules
     Calls:     strcmp (intrinsic)
   */
-  struct molecule_struct *cur_molecule;
+  struct molecule_struct *molecule;
   struct molecule_struct *umolecules_next;
-  char *cstring;
-  char *sstring;
+  char *prev_molecule_name;
+  char *curr_molecule_name;
   int64_t molecule_len;
   int64_t m_size;
   int64_t pad_size;
@@ -53,71 +64,84 @@ int unique_molecules_core(int nzr,
   int success;
 
   int nu_molecules;
-  int padi;
+  int molecule_index;
 
-  int ni;
-  int cni;
+  int curr_cmpt_index;
+  int prev_cmpt_index;
 
   success = 1;
   molecule_len = (int64_t)0;
   /* loop over sorted molecules. */
   nu_molecules = 0;
   *solvent_pos  = -1;
-  molecules_map[sorted_molecules->m_index] = nu_molecules;
-  cur_molecule = sorted_molecules;
-  cstring = NULL;
-  if (cur_molecule->string >= 0) {
-    cstring = (char *)&molecules_text[cur_molecule->string];
-    m_size = strlen(cstring);
+
+  molecule = sorted_molecules;
+  
+  molecule_index = molecule->m_index;
+  prev_cmpt_index = molecule->c_index;
+  molecules_indices[molecule_index] = nu_molecules;
+  compartment_indices[molecule_index] = prev_cmpt_index;
+  prev_molecule_name = NULL;
+  if (molecule->string >= 0) {
+    prev_molecule_name = (char *)&molecules_text[molecule->string];
+    m_size = strlen(prev_molecule_name);
     pad_size = (align_len - (m_size & align_mask)) & align_mask;
     molecule_len += (m_size + pad_size);
-    if (strcmp(cstring,solvent_string) == 0) {
-      cur_molecule->solvent = 1;
+    if (strcmp(prev_molecule_name,solvent_string) == 0) {
+      molecule->solvent = 1;
       *solvent_pos          = 0;
     }
   }
   /*
     This translation has already been done in translate_compartments.
-  cur_molecule->c_index = compartment_indices[cur_molecule->c_index];
+  molecule->c_index = cmpt_tracking[molecule->c_index];
   */
-  cni = sorted_molecules->c_index;
-  sorted_molecules += 1; /* Caution address arithmetic. */
-  umolecules_next  = sorted_molecules;
-  for (i=1;i<nzr;i++) {
-    ni = sorted_molecules->c_index;
-    sstring = NULL;
-    if (sorted_molecules->string >= 0) {
-      sstring = (char *)&molecules_text[sorted_molecules->string];
+  /*
+    Advance the molecule pointer down the sorted_molecule array.
+  */
+  molecule += 1; /* Caution address arithmetic. */
+  umolecules_next  = molecule;
+  for (i=1;i<number_molecules;i++) {
+    curr_cmpt_index = molecule->c_index;
+    molecule_index =  molecule->m_index;
+    curr_molecule_name = NULL;
+    if (molecule->string >= 0) {
+      curr_molecule_name = (char *)&molecules_text[molecule->string];
     }
-    if ((ni != cni)  ||
-	(strcmp(sstring,cstring) != 0)) {
-      cstring = sstring;
-      m_size = strlen(cstring) + 1;
+    if ((curr_cmpt_index != prev_cmpt_index)  ||
+	(strcmp(curr_molecule_name,prev_molecule_name) != 0)) {
+      prev_molecule_name = curr_molecule_name;
+      prev_cmpt_index    = curr_cmpt_index;
+      m_size = strlen(curr_molecule_name) + 1;
       pad_size = (align_len - (m_size & align_mask)) & align_mask;
       molecule_len += (int64_t)(m_size + pad_size);
       nu_molecules += 1;
-      cur_molecule = sorted_molecules;
-      molecules_map[sorted_molecules->m_index] = nu_molecules;
-      umolecules_next->string = cur_molecule->string;
+
+      umolecules_next->string = molecule->string;
       umolecules_next->m_index = nu_molecules;
-      umolecules_next->c_index = ni;
-      if (strcmp(solvent_string,sstring) == 0) {
+      umolecules_next->c_index = curr_cmpt_index;
+      if (strcmp(solvent_string,curr_molecule_name) == 0) {
 	umolecules_next->solvent = 1;
-	if (ni == 0) {
+	if (curr_cmpt_index == 0) {
 	  *solvent_pos = nu_molecules;
 	}
       } else {
 	umolecules_next->solvent = 0;
       }
-      cni = ni;
       umolecules_next += 1; /* Caution address arithmetic. */
-    } else {
-      molecules_map[sorted_molecules->m_index] = nu_molecules;
-    }
-    sorted_molecules += 1; /* Caution address arithmetic. */
+    } 
+    /*
+      Set the position dependent molecules_indices and 
+      compartment_indices fields of the reaction matrix.
+    */
+    molecules_indices[molecule_index] = nu_molecules;
+    compartment_indices[molecule_index] = curr_cmpt_index;
+    /*
+      Advance the molecule pointer down the sorted_molecule array.
+    */
+    molecule += 1; /* Caution address arithmetic. */
   }
   *nunique_molecules = nu_molecules + 1;
   *sum_molecule_len = molecule_len;
-
   return(success);
 }

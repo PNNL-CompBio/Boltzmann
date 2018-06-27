@@ -447,6 +447,7 @@ struct state_struct {
   /* rxn_view_hist_length * number_reactions */
   double  *rev_rxn_view_likelihoods; 
   int64_t *rxn_fire;                  /* (number_reactions * 2) + 2*/
+  int  *cmpt_tracking;             /* number_compartments */
   int  *rxn_mat_row;               /* (nunique_molecules) */
 
 

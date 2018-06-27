@@ -37,31 +37,29 @@ int unique_compartments(struct state_struct *state) {
   int64_t *compartment_indices;
   struct compartment_struct *sorted_cmpts;
   char *compartment_text;
+  int  *cmpt_tracking;
   int64_t sum_compartment_len;
   int64_t nunique_compartments;
   int64_t align_len;
-  int64_t align_mask;
 
   int nzr;
   int success;
 
   success = 1;
   align_len     = state->align_len;
-  align_mask     = state->align_mask;
   nzr            = state->number_compartments;
   sorted_cmpts   = state->sorted_compartments;
   rxns_matrix    = state->reactions_matrix;
   compartment_text = state->compartment_text;
-  compartment_indices = rxns_matrix->compartment_indices;
+  cmpt_tracking    = state->cmpt_tracking;
   
   success = unique_compartments_core(nzr,
 				     sorted_cmpts,
 				     compartment_text,
-				     compartment_indices,
+				     cmpt_tracking,
 				     &nunique_compartments,
 				     &sum_compartment_len,
-				     align_len,
-				     align_mask);
+				     align_len);
   state->nunique_compartments = nunique_compartments;
   state->sum_compartment_len  = sum_compartment_len;
   return(success);

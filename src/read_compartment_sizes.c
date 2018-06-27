@@ -92,7 +92,7 @@ int read_compartment_sizes(struct state_struct *state) {
       compartment_name = cmpts_buffer + nb; /* Caution address arithmetic */
       nc = count_nws(compartment_name);
       compartment_name[nc] = '\0';
-      vol_string = (char*)(&compartment_name[nb+1]);
+      vol_string = (char*)(&compartment_name[nc+1]);
       /*
 	remove leading white space.
       */

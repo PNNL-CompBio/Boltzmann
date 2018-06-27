@@ -29,17 +29,17 @@ specific language governing permissions and limitations under the License.
 #include "find_colon.h"
 #include "count_molecules_and_cmpts.h"
 
-void count_molecules_and_cmpts(char* molecules_line, int *num_molecules_p, int *num_compartments_p, int64_t *molecules_len_p, int64_t *compartment_len_p) {
+void count_molecules_and_cmpts(char* molecules_line, int *num_molecules_p, int *num_compartments_p, int64_t *molecules_len_p, int64_t *compartment_len_p, FILE *lfp) {
 
   /*
     Count the number of molecules and compartments 
     occuring in a reactants (LEFT) or
     products (RIGHT) line, assumes LEFT or RIGHT prefix has already
-    been remove from molecules_line. Also count their lengths.
+    been removed from molecules_line. Also count their lengths.
     the contents of the num_molecules_p, num_compartments_p, and
     molecules_len_p and compartment_lenp are incremented by the counts and
     lengths computed here.
-    Called by size_rxns_file
+    Called by: size_rxns_file
   */
   char *line;
   int64_t molecules_len;
@@ -88,10 +88,8 @@ void count_molecules_and_cmpts(char* molecules_line, int *num_molecules_p, int *
 	  pos += wsl;
 	  line += wsl; /* Caution address arithmetic here. */
 	  token_length   = count_nws(line);
+	  pos += token_length;
 	}
-      }
-      if (token_length > 0) {
-	molecules += 1;
 	/*
 	  Set the first white_space after the token to null so it becomes a 
 	  string to pass to find_colon.
@@ -108,7 +106,6 @@ void count_molecules_and_cmpts(char* molecules_line, int *num_molecules_p, int *
 	line[token_length] = ' ';
 	molecules_len += molecule_name_length;
       }
-      pos += token_length;
       line += token_length; /* Caution address arithmetic here. */
       /*
 	chew up white space after molecule.
@@ -122,9 +119,11 @@ void count_molecules_and_cmpts(char* molecules_line, int *num_molecules_p, int *
 	  the next character needs to be a '+'
 	*/
 	if ((line[0] != '+') && (line[0] != '-')) {
-	  fprintf(stderr,"count_molecules: Error - malformed line\n"
-		  "expecting a + or -, got a %c\n",line[0]);
-	  fflush(stderr);
+	  if (lfp) {
+	    fprintf(lfp,"count_molecules_and_cmpts: Error - malformed line\n"
+		    "expecting a + or -, got a %c\n",line[0]);
+	    fflush(lfp);
+	  }
 	}
 	pos += 1;
 	line += 1; /* Caution address arithmetic here. */

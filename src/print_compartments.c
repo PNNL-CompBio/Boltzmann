@@ -83,17 +83,24 @@ int  print_compartments(struct state_struct *state) {
       First print and header and then 
       the default compartment values.
     */
-    volume               = compartment->volume;
-    ph                   = compartment->ph;
-    ionic_strength       = compartment->ionic_strength;
-    fprintf(cmpts_echo_fp,"Compartment\tVolume\tpH\tIonic_strength\n"
-	    "default\t%le\t%le\t%le\n",volume,ph,ionic_strength);
+    fprintf(cmpts_echo_fp,"%32s\t%12s\t%12s\t%14s\n",
+	    "Compartment","   Volume   ","     pH     ","Ionic_strength");
+
   
-    for (i=1;i<nunique_compartments;i++) {
+    for (i=0;i<nunique_compartments;i++) {
       string = compartment->string;
       name   = (char *)&compartment_text[string];
-      fprintf(cmpts_echo_fp,"%s\t%le\t%le\t%le\n",
-	      name,volume,ph,ionic_strength);
+      volume               = compartment->volume;
+      ph                   = compartment->ph;
+      ionic_strength       = compartment->ionic_strength;
+      if (string > 0) {
+	fprintf(cmpts_echo_fp,"%32s\t%le\t%le\t%le\n",
+		name,volume,ph,ionic_strength);
+      } else {
+	fprintf(cmpts_echo_fp,"%32s\t%le\t%le\t%le\n",
+		"default",volume,ph,ionic_strength);
+      }
+
       compartment += 1; /* Caution address arithmetic here. */
     }
     fclose(cmpts_echo_fp);

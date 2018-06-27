@@ -62,7 +62,8 @@ int parse_reactions_file(struct state_struct *state,
 	       count_nws,
                parse_side_line
 	       upcase,
-	       fseek, feof, fgets, fprintf, fflush, sscanf (intrinsic)
+	       fseek, feof, fgets, fprintf, fflush, sscanf, strncpy,
+	       strcmp, strncmp
 	       
     Uses the following fields in state
       lfp,
@@ -97,6 +98,7 @@ int parse_reactions_file(struct state_struct *state,
   struct molecule_struct *unsorted_molecules;
   struct molecule_struct *rxn_molecules;
   struct compartment_struct *unsorted_cmpts;
+  struct compartment_struct *compartment;
   double *activities;
   double *enzyme_level;
   double *reg_constant;
@@ -125,6 +127,10 @@ int parse_reactions_file(struct state_struct *state,
   int64_t align_mask; 
   int64_t reg_base;
   int64_t nr;
+  int64_t max_rxn_title_pos;
+  int64_t max_pathway_pos;
+  int64_t max_compartment_pos;
+  int64_t max_regulation_pos;
   char *rxn_buffer;
   char *fgp;
   char **keywords;
@@ -191,7 +197,15 @@ int parse_reactions_file(struct state_struct *state,
   int had_units;
   int line_no;
 
+  int max_cmpt;
+  int rtpd;
 
+  int ppd;
+  int cpd;
+
+  int rgpd;
+  int padi;
+  
   FILE *rxn_fp;
   FILE *lfp;
   success = 1;
@@ -206,14 +220,17 @@ int parse_reactions_file(struct state_struct *state,
   reg_drctn    	   = state->reg_drctn;
   coeff_sum        = state->coeff_sum;
   use_rxn          = state->use_rxn;
+  max_cmpt         = state->number_compartments - 1;
+  max_rxn_title_pos = state->reaction_titles_length;
+  max_pathway_pos   = state->pathway_text_length;
+  max_compartment_pos = state->compartment_text_length;
+  max_regulation_pos  = state->regulation_text_length;
   max_regs_per_rxn = (int)state->max_regs_per_rxn;
   reg_base         = (int64_t)0;
   reg_pos          = reg_base;
   line_type        = 0;
   rxn_not_used     = 0;
-  /*
-  strcpy(state->reaction_file,reaction_file);
-  */
+
   rxn_fp           = fopen(reaction_file,"r");
   if (rxn_fp == NULL) {
     success = 0;
@@ -321,10 +338,10 @@ int parse_reactions_file(struct state_struct *state,
     /*
       Build in the empty compartment.
     */
-    unsorted_cmpts->string   = compartment_pos;
-    unsorted_cmpts->c_index  = 0;
-    unsorted_cmpts->volume   = 0.0;
-    unsorted_cmpts           += 1; /* Caution address arithmetic */
+    compartment           = (struct compartment_struct *)&unsorted_cmpts[0];
+    compartment->string   = compartment_pos;
+    compartment->c_index  = 0;
+    compartment->volume   = 0.0;
     compartment_text[0]      = '\0';
     regulation_text[0]       = '\0';
     compartment_pos          = align_len;
@@ -390,30 +407,57 @@ int parse_reactions_file(struct state_struct *state,
 	  */
 	  reaction->title = rxn_title_pos;
 	  title  = (char *)&rxn_title_text[rxn_title_pos];
-	  strncpy(title,(char*)&rxn_buffer[word1],word1_len);
-	  title[word1_len] = '\0';
+	  padding = (align_len - (rxn_title_len & align_mask)) & align_mask;
+	  /*
+	    Here we should check that rxn_title_pos + 
+	    rxn_title_len + padding < max_rxn_title_pos;
+	  */
+	  rtpd = rxn_title_len + padding;
+	  if (rxn_title_pos + rtpd > max_rxn_title_pos) {
+	    success = 0;
+	    if (lfp) {
+	      fprintf(lfp,"parse_reaction_file: Error length of reaction "
+		      "titles plus padding > than that measured in "
+		      "size_rxns_file.c = %ld\n",
+		      max_rxn_title_pos);
+	      fflush(lfp);
+	    }
+	  } else {
+	    strncpy(title,(char*)&rxn_buffer[word1],rxn_title_len-1);
+	    title[rxn_title_len-1] = '\0';
+	  }
 	  /*
 	    caution bit twiddle follows: 
 	    padding = (align_len - (rxn_titl_len % align_len)) % align_len
 	    Thou shalt not use %.
 	  */
-	  padding = (align_len - (rxn_title_len & align_mask)) & align_mask;
-	  rxn_title_pos += rxn_title_len + padding;
+	  rxn_title_pos += rtpd;
 	  break;
 	case 1:
 	  /*
 	    Pathway line.
 	  */
 	  pathway_len = line_len - word1 + 1;
+	  padding = (align_len - (pathway_len & align_mask)) & align_mask;
 	  /*
 	  reaction->pathway = (char *)&pathway_text[pathway_pos];
 	  */
 	  reaction->pathway = pathway_pos;
 	  pathway = (char *)&pathway_text[pathway_pos];
-	  strncpy(pathway,(char*)&rxn_buffer[word1],word1_len);
-	  pathway[word1_len] = '\0';
-	  padding = (align_len - (pathway_len & align_mask)) & align_mask;
-	  pathway_pos += pathway_len + padding;
+	  ppd = pathway_len + padding;
+	  if (pathway_pos + ppd > max_pathway_pos) {
+	    success = 0;
+	    if (lfp) {
+	      fprintf(lfp,"parse_reactions_file: Error pathway text + padding "
+		      "length is > than measured by size_rxns_file.c = %ld\n",
+		      max_pathway_pos);
+	      fflush(lfp);
+	    }
+	  } else {
+	    strncpy(pathway,(char*)&rxn_buffer[word1],word1_len);
+	    pathway[word1_len] = '\0';
+	  }
+	  pathway_pos += (int64_t)ppd;
 	  break;
 	case 2: 
 	  /*
@@ -431,31 +475,54 @@ int parse_reactions_file(struct state_struct *state,
 	  reaction->lcompartment = (char *)&compartment_text[compartment_pos];
 	  */
 	  reaction->lcompartment = compartment_pos;
-	  lcompartment = (char *)&compartment_text[compartment_pos];
-	  strncpy(lcompartment,(char*)&rxn_buffer[word1],word1_len);
-	  lcompartment[word1_len] = '\0';
-	  upcase(compartment_len,lcompartment);
-	  if ((strcmp(lcompartment,"V") == 0) ||
-	      (strcmp(lcompartment,"C") == 0)) {
-	    if (lfp) {
-	      fprintf(lfp,"parse_reactions_file: Error line %d: compartments may not have single character names V or C\n",line_no);
-	      fflush(lfp);
-	    }
-	    success = 0;
-	    break;
-	  }
 	  reaction->rcompartment = 0;
-	  padding = (align_len - (compartment_len & align_mask)) & align_mask;
 	  reaction->left_compartment = cmpts;
 	  reaction->right_compartment = cmpts;
-	  /*
-	  unsorted_cmpts->string = lcompartment;
-	  */
-	  unsorted_cmpts->string = compartment_pos;
-	  unsorted_cmpts->volume = 0.0;
-	  unsorted_cmpts->c_index  = cmpts;
-	  unsorted_cmpts += 1; /* Caution address arithmetic */
-	  compartment_pos += compartment_len + padding;
+	  lcompartment = (char *)&compartment_text[compartment_pos];
+	  padding = (align_len - ((compartment_len+1) & align_mask)) & align_mask;
+	  cpd = compartment_len + 1 + padding;
+	  if ((compartment_pos + cpd) > max_compartment_pos) {
+	    success = 0;
+	    if (lfp) {
+	      fprintf(lfp,"parse_reactions_file: Error compartment name "
+		      "lengths + padding > that measured in size_rxns_file.c "
+		      " = %ld\n",max_compartment_pos);
+	      fflush(lfp);
+	    }
+	  } else {
+	    strncpy(lcompartment,(char*)&rxn_buffer[word1],word1_len);
+	    lcompartment[word1_len] = '\0';
+	    upcase(compartment_len,lcompartment);
+	    if ((strcmp(lcompartment,"V") == 0) ||
+		(strcmp(lcompartment,"C") == 0)) {
+	      if (lfp) {
+		fprintf(lfp,"parse_reactions_file: Error line %d: compartments may not have single character names V or C\n",line_no);
+		fflush(lfp);
+	      }
+	      success = 0;
+	    }
+	  }
+	  if (success) {
+	    /*
+	      unsorted_cmpts->string = lcompartment;
+	    */
+	    if (cmpts > max_cmpt) {
+	      success = 0;
+	      if (lfp) {
+		fprintf(lfp,"parse_reaction_file: Error parse_reaction parsed"
+			" more compartments than size_rxns_file saw, "
+			"max_cmpt = %d at line %d\n",max_cmpt,line_no);
+		fflush(lfp);
+	      }
+	    } else {
+	      compartment = (struct compartment_struct *)&unsorted_cmpts[cmpts];
+	      
+	      compartment->string = compartment_pos;
+	      compartment->volume = 0.0;
+	      compartment->c_index  = cmpts;
+	    }
+	  }
+	  compartment_pos += (int64_t)cpd;
 	  cmpts += 1;
 	  break;
 	case 3: 
@@ -470,24 +537,55 @@ int parse_reactions_file(struct state_struct *state,
 	      state->min_compartment_len = (int64_t)compartment_len;
 	    }
 	  }
+	  padding = (align_len - ((compartment_len+1) & align_mask)) & align_mask;
+	  cpd = compartment_len + 1 + padding;
 	  /*
 	  reaction->lcompartment = (char *)&compartment_text[compartment_pos];
 	  */
 	  reaction->lcompartment = compartment_pos;
-	  lcompartment = (char *)&compartment_text[compartment_pos];
-	  strncpy(lcompartment,(char*)&rxn_buffer[word1],word1_len);
-	  lcompartment[word1_len] = '\0';
-	  upcase(compartment_len,lcompartment);
-	  padding = (align_len - (compartment_len & align_mask)) & align_mask;
 	  reaction->left_compartment = cmpts;
+	  lcompartment = (char *)&compartment_text[compartment_pos];
+	  if ((compartment_pos + cpd) > max_compartment_pos) {
+	    success = 0;
+	    if (lfp) {
+	      fprintf(lfp,"parse_reactions_file: Error compartment name "
+		      "lengths + padding > that measured in size_rxns_file.c "
+		      " = %ld\n",max_compartment_pos);
+	      fflush(lfp);
+	    }
+	  } else {
+	    strncpy(lcompartment,(char*)&rxn_buffer[word1],word1_len);
+	    lcompartment[word1_len] = '\0';
+	    upcase(compartment_len,lcompartment);
+	    if ((strcmp(lcompartment,"V") == 0) ||
+		(strcmp(lcompartment,"C") == 0)) {
+	      if (lfp) {
+		fprintf(lfp,"parse_reactions_file: Error line %d: compartments may not have single character names V or C\n",line_no);
+		fflush(lfp);
+	      }
+	      success = 0;
+	    }
+	  }
 	  /*
 	  unsorted_cmpts->string = lcompartment;
 	  */
-	  unsorted_cmpts->string = compartment_pos;
-	  unsorted_cmpts->volume = 0.0;
-	  unsorted_cmpts->c_index  = cmpts;
-	  unsorted_cmpts += 1; /* Caution address arithmetic */
-	  compartment_pos += compartment_len + padding;
+	  if (success) {
+	    if (cmpts > max_cmpt) {
+	      success = 0;
+	      if (lfp) {
+		fprintf(lfp,"parse_reaction_file: Error parse_reaction parsed"
+			" more compartments than size_rxns_file saw, "
+			"max_cmpt = %d at line %d\n",max_cmpt,line_no);
+		fflush(lfp);
+	      }
+	    } else {
+	      compartment = (struct compartment_struct *)&unsorted_cmpts[cmpts];
+	      compartment->string = compartment_pos;
+	      compartment->volume = 0.0;
+	      compartment->c_index  = cmpts;
+	    }
+	  }
+	  compartment_pos += (int64_t)cpd;
 	  cmpts += 1;
 	  break;
 	case 4: 
@@ -502,24 +600,55 @@ int parse_reactions_file(struct state_struct *state,
 	      state->min_compartment_len = (int64_t)compartment_len;
 	    }
 	  }
+	  padding = (align_len - ((compartment_len+1) & align_mask)) & align_mask;
+	  cpd = compartment_len + 1 + padding;
 	  /*
 	  reaction->rcompartment = (char *)&compartment_text[compartment_pos];
 	  */
 	  reaction->rcompartment = compartment_pos;
-	  rcompartment = (char *)&compartment_text[compartment_pos];
-	  strncpy(rcompartment,(char*)&rxn_buffer[word1],word1_len);
-	  rcompartment[word1_len] = '\0';
-	  upcase(compartment_len,rcompartment);
-	  padding = (align_len - (compartment_len & align_mask)) & align_mask;
 	  reaction->right_compartment = cmpts;
+	  rcompartment = (char *)&compartment_text[compartment_pos];
+	  if (compartment_pos + cpd > max_compartment_pos) {
+	    success = 0;
+	    if (lfp) {
+	      fprintf(lfp,"parse_reactions_file: Error compartment name "
+		      "lengths + padding > that measured in size_rxns_file.c "
+		      " = %ld\n",max_compartment_pos);
+	      fflush(lfp);
+	    }
+	  } else {
+	    strncpy(rcompartment,(char*)&rxn_buffer[word1],word1_len);
+	    rcompartment[word1_len] = '\0';
+	    upcase(compartment_len,rcompartment);
+	    if ((strcmp(lcompartment,"V") == 0) ||
+		(strcmp(lcompartment,"C") == 0)) {
+	      if (lfp) {
+		fprintf(lfp,"parse_reactions_file: Error line %d: compartments may not have single character names V or C\n",line_no);
+		fflush(lfp);
+	      }
+	      success = 0;
+	    }
+	  }
 	  /*
 	  unsorted_cmpts->string = rcompartment;
 	  */
-	  unsorted_cmpts->string = compartment_pos;
-	  unsorted_cmpts->volume = 0.0;
-	  unsorted_cmpts->c_index  = cmpts;
-	  unsorted_cmpts += 1; /* Caution address arithmetic */
-	  compartment_pos += compartment_len + padding;
+	  if (success) {
+	    if (cmpts > max_cmpt) {
+	      success = 0;
+	      if (lfp) {
+		fprintf(lfp,"parse_reaction_file: Error parse_reaction parsed"
+			" more compartments than size_rxns_file saw, "
+			"max_cmpt = %d at line %d\n",max_cmpt,line_no);
+		fflush(lfp);
+	      }
+	    } else {
+	      compartment = (struct compartment_struct *)&unsorted_cmpts[cmpts];
+	      compartment->string = compartment_pos;
+	      compartment->volume = 0.0;
+	      compartment->c_index  = cmpts;
+	    }
+	  }
+	  compartment_pos += (int64_t)cpd;
 	  cmpts += 1;
 	  break;
 	case 5:
@@ -635,27 +764,38 @@ int parse_reactions_file(struct state_struct *state,
 	    break;
 	  }
 	  metabolite = (char *)&regulation_text[regulation_pos];
-	  strncpy(metabolite,(char*)&rxn_buffer[word1],word1_len);
-	  metabolite[word1_len] = '\0';
-	  upcase(word1_len,metabolite);
-	  padding = (align_len - (word1_len & align_mask)) & align_mask;
-	  /*
-	    reg_pos = reg_base + reg_count;
-	  */
-	  reg_species[reg_pos] = regulation_pos;
-	  reg_drctn[reg_pos]   = 1.0;
-	  nr = sscanf((char*)&rxn_buffer[word1+word1_len],"%le %le",&reg_constant[reg_pos],&reg_exponent[reg_pos]);
-	  if (nr < 2) {
+	  padding = (align_len - ((word1_len+1) & align_mask)) & align_mask;
+
+	  rgpd = word1_len + 1 + padding;
+	  if ((regulation_pos + rgpd) > max_regulation_pos) {
 	    success = 0;
 	    if (lfp) {
-	      fprintf(lfp,"parse_reactions_file: Error line %d: PREGULATION LINE, %s\n"
-		      "did not have valid constant and exponent.\n",
-		      line_no,rxn_buffer);
+	      fprintf(lfp,"parse_reactions_file: Error regulation text "
+		      "lengths + padding > that measured in size_rxns_file.c "
+		      " = %ld\n",max_regulation_pos);
 	      fflush(lfp);
 	    }
-	    break;
+	  } else {
+	    strncpy(metabolite,(char*)&rxn_buffer[word1],word1_len);
+	    metabolite[word1_len] = '\0';
+	    upcase(word1_len,metabolite);
+	    /*
+	      reg_pos = reg_base + reg_count;
+	    */
+	    reg_species[reg_pos] = regulation_pos;
+	    reg_drctn[reg_pos]   = 1.0;
+	    nr = sscanf((char*)&rxn_buffer[word1+word1_len],"%le %le",&reg_constant[reg_pos],&reg_exponent[reg_pos]);
+	    if (nr < 2) {
+	      success = 0;
+	      if (lfp) {
+		fprintf(lfp,"parse_reactions_file: Error line %d: PREGULATION LINE, %s\n"
+		      "did not have valid constant and exponent.\n",
+			line_no,rxn_buffer);
+		fflush(lfp);
+	      }
+	    }
 	  }
-	  regulation_pos += (word1_len + padding);
+	  regulation_pos += rgpd;
 	  reg_count += 1;
 	  reg_pos += 1;		 
 	  break;
@@ -675,30 +815,40 @@ int parse_reactions_file(struct state_struct *state,
 	    break;
 	  }
 	  metabolite = (char *)&regulation_text[regulation_pos];
-	  strncpy(metabolite,(char*)&rxn_buffer[word1],word1_len);
-	  metabolite[word1_len] = '\0';
-	  upcase(word1_len,metabolite);
-	  padding = (align_len - (word1_len & align_mask)) & align_mask;
-	  /*
-	    reg_pos = reg_base + reg_count;
-	  */
-	  reg_species[reg_pos] = regulation_pos;
-	  reg_drctn[reg_pos]   = 0.0;
-	  nr = sscanf((char*)&rxn_buffer[word1+word1_len],"%le %le",&reg_constant[reg_pos],&reg_exponent[reg_pos]);
-	  if (nr < 2) {
+	  padding = (align_len - ((word1_len+1) & align_mask)) & align_mask;
+
+	  rgpd = word1_len + 1 + padding;
+	  if ((regulation_pos + rgpd) > max_regulation_pos) {
 	    success = 0;
 	    if (lfp) {
-	      fprintf(lfp,"parse_reactions_file: Error line %d: NREGULATION "
-		      "LINE, %s\n did not have valid constant and exponent.\n",
-		      line_no,rxn_buffer);
+	      fprintf(lfp,"parse_reactions_file: Error regulation text "
+		      "lengths + padding > that measured in size_rxns_file.c "
+		      " = %ld\n",max_regulation_pos);
 	      fflush(lfp);
 	    }
-	    break;
+	  } else {
+	    strncpy(metabolite,(char*)&rxn_buffer[word1],word1_len);
+	    metabolite[word1_len] = '\0';
+	    upcase(word1_len,metabolite);
+	    /*
+	      reg_pos = reg_base + reg_count;
+	    */
+	    reg_species[reg_pos] = regulation_pos;
+	    reg_drctn[reg_pos]   = 0.0;
+	    nr = sscanf((char*)&rxn_buffer[word1+word1_len],"%le %le",&reg_constant[reg_pos],&reg_exponent[reg_pos]);
+	    if (nr < 2) {
+	      success = 0;
+	      if (lfp) {
+		fprintf(lfp,"parse_reactions_file: Error line %d: NREGULATION "
+			"LINE, %s\n did not have valid constant and exponent.\n",
+			line_no,rxn_buffer);
+		fflush(lfp);
+	      }
+	    }
 	  }
-	  regulation_pos += (word1_len + padding);
+	  regulation_pos += rgpd;
 	  reg_count += 1;
 	  reg_pos += 1;		 
-
 	  break;
 	case 13:
 	  /*
@@ -903,8 +1053,14 @@ int parse_reactions_file(struct state_struct *state,
     and from the reactions matrix and adjust the num_reactions
     field.
   */
-  if (rxn_not_used) {
-    success = boltzmann_compress_reactions(state);
+  if (success) {
+    if (rxn_not_used) {
+      success = boltzmann_compress_reactions(state);
+    }
+  }
+  if (success) {
+    state->number_compartments = cmpts;
+    state->number_molecules    = molecules;
   }
   return(success);
 }
