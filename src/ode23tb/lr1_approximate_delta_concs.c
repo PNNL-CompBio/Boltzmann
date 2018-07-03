@@ -49,12 +49,12 @@ int lr1_approximate_delta_concs(struct state_struct *state,
   double backward;
   double frl;
   double rrl;
+  double  *coefficients;
+  double  *rcoefficients;
   int64_t *molecules_ptrs;
   int64_t *rxn_indices;
-  int64_t *coefficients;
   int64_t *rxn_ptrs;
   int64_t *molecule_indices;
-  int64_t *rcoefficients;
   int num_species;
   int num_rxns;
 
@@ -137,11 +137,11 @@ int lr1_approximate_delta_concs(struct state_struct *state,
 	  rxn = rxn_indices[j];
 	  frl = forward_rxn_likelihoods[rxn];
 	  rrl = reverse_rxn_likelihoods[rxn];
-	  if (coefficients[j] < 0) {
+	  if (coefficients[j] < 0.0) {
 	    forward += -frl;
 	    backward += (frl * rrl);
 	  } else {
-	    if (coefficients[j] > 0) {
+	    if (coefficients[j] > 0.0) {
 	      forward += frl;
 	      backward -= (frl*rrl);
 	    }

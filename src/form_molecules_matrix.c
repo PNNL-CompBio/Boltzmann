@@ -39,8 +39,8 @@ int form_molecules_matrix(struct state_struct *state) {
   double *rrcoeffs;
   int64_t *rxn_ptrs;
   int64_t *molecules_ptrs;
-  int64_t *rcoef;
-  int64_t *scoef;
+  double  *rcoef;
+  double  *scoef;
   int64_t *molecules_indices;
   int64_t *rxn_indices;
   int64_t *transpose_rp;

@@ -41,6 +41,7 @@ void count_molecules_and_cmpts(char* molecules_line, int *num_molecules_p, int *
     lengths computed here.
     Called by: size_rxns_file
   */
+  double coef;
   char *line;
   int64_t molecules_len;
   int64_t compartment_len;
@@ -77,7 +78,7 @@ void count_molecules_and_cmpts(char* molecules_line, int *num_molecules_p, int *
       if (token_length > 0) {
 	molecules += 1;
 	pos += token_length;
-	if (is_a_coef(token_length,line)) {
+	if (is_a_coef(token_length,line,&coef)) {
 	  /* now it may be that a molecule is preceded by a
 	     coefficient
 	     if that is the case then we need to skip the coefficient

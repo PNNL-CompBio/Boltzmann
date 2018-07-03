@@ -40,7 +40,7 @@ void sbml_process_species_reference_tag(struct sbml2bo_struct *state,
 					char *comp, 
 					int not_in_tag, 
 					int *species_count_p,
-					int *coefficient_p,
+					double *coefficient_p,
 					int *enclosing_tag_p,
 					FILE *rxns_fp,
 					FILE *error_fp) {
@@ -56,11 +56,12 @@ void sbml_process_species_reference_tag(struct sbml2bo_struct *state,
   char **spec_ids;
   char **translations;
   char *line;
+  double coefficient;
   int nb;
   int ns;
 
   int species_count;
-  int coefficient;
+  int num_species;
 
   int enclosing_tag;
   int tl;
@@ -68,8 +69,6 @@ void sbml_process_species_reference_tag(struct sbml2bo_struct *state,
   int tag;
   int trans_index;
 
-  int num_species;
-  int padi;
 
   num_species   = state->num_species;
   spec_ids     = state->spec_ids;
@@ -92,15 +91,17 @@ void sbml_process_species_reference_tag(struct sbml2bo_struct *state,
       if (species_count > 0) {
 	fprintf(rxns_fp,"\t+\t");
       }
-      if (coefficient > 1) {
-	fprintf(rxns_fp,"%d ",coefficient);
+      if (coefficient != 1.0) {
+	fprintf(rxns_fp,"%le ",coefficient);
       }
       fprintf(rxns_fp,"%s",species);
       if (comp[0] != '\0') {
 	fprintf(rxns_fp,":%s",comp);
 	comp[0] = '\0';
       }
-      coefficient = 1;
+      /*
+      coefficient = 1.0;
+      */
       species_count += 1;
       enclosing_tag = not_in_tag;
       ns = 0;
@@ -145,7 +146,7 @@ void sbml_process_species_reference_tag(struct sbml2bo_struct *state,
 	    /*
 	      stoichiometry.
 	    */
-	    sscanf(value,"%d",&coefficient);
+	    sscanf(value,"%le",&coefficient);
 	    break;
 	  } /* end switch */  
 	} else {

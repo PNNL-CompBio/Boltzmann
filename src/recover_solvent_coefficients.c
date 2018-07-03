@@ -35,9 +35,10 @@ int recover_solvent_coefficients (struct state_struct *state) {
   struct reactions_matrix_struct *rxns_matrix;
   struct molecule_struct *sorted_molecules;
   struct molecule_struct *molecule;
+  double *rcoef;
+  double *recip_rcoef;
+  double *scoef;
   int64_t num_molecules;
-  int64_t *rcoef;
-  int64_t *scoef;
   int64_t *rxn_ptrs;
   int64_t *molecules_indices;
   int64_t nrxns;
@@ -57,6 +58,7 @@ int recover_solvent_coefficients (struct state_struct *state) {
   rxn_ptrs          = rxns_matrix->rxn_ptrs;
   num_molecules     = rxn_ptrs[nrxns];
   rcoef             = rxns_matrix->coefficients;
+  recip_rcoef       = rxns_matrix->recip_coeffs;
   scoef             = rxns_matrix->solvent_coefficients;
   molecules_indices = rxns_matrix->molecules_indices;
   solvent_coef_count = 0;
@@ -65,10 +67,12 @@ int recover_solvent_coefficients (struct state_struct *state) {
     if (index == solvent_pos) {
       rcoef[j] = scoef[solvent_coef_count];
       solvent_coef_count += 1;
+      recip_rcoef[j] = 1.0/rcoef[j];
     } else {
       molecule = (struct molecule_struct *)&sorted_molecules[index];
       if (molecule->solvent && (use_bulk_water || (molecule->variable == 0))) {
 	rcoef[j] = scoef[solvent_coef_count];
+	recip_rcoef[j] = 1.0/rcoef[j];
 	solvent_coef_count += 1;
       }
     }

@@ -32,7 +32,7 @@ struct molecules_matrix_struct {
   /*
     coefficients are negative for reactants, positive for products.
   */
-  int64_t *coefficients;
+  double  *coefficients;
   double  *recip_coeffs;
 }
 ;

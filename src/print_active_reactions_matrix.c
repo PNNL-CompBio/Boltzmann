@@ -43,9 +43,10 @@ int print_active_reactions_matrix(struct state_struct *state) {
   struct compartment_struct *compartments;
   struct compartment_struct *cur_cmpt;
   double *activities;
+  double *coefficients;
+  double *mat_row;
   int64_t *rxn_ptrs;
   int64_t *molecules_indices;
-  int64_t *coefficients;
   int64_t *matrix_text;
 
   char *molecules_text;
@@ -55,7 +56,7 @@ int print_active_reactions_matrix(struct state_struct *state) {
   char *molecule;
   char *cmpt_string;
 
-  int  *mat_row;
+  double coeff;
 
   int success;
   int rxns;
@@ -63,7 +64,7 @@ int print_active_reactions_matrix(struct state_struct *state) {
   int np;
   int nr;
   
-  int coeff;
+
   int j;
 
   int nrxns;
@@ -142,11 +143,11 @@ int print_active_reactions_matrix(struct state_struct *state) {
       nr = 0;
       for (j=rxn_ptrs[rxns];j<rxn_ptrs[rxns+1];j++) {
 	coeff = coefficients[j];
-	if (coeff < 0) {
+	if (coeff < 0.0) {
 	  mat_row[molecules_indices[j]] = coeff;
-	  if (coeff < -1) {
-	    coeff = -coeff;
-	    fprintf(arxn_mat_fp,"%d ",coeff);
+	  if (coeff != -1.0) {
+	    coeff = 0.0 - coeff;
+	    fprintf(arxn_mat_fp,"%le ",coeff);
 	  }
 	  molecule = (char*)&molecules_text[matrix_text[j]];
 	  fprintf(arxn_mat_fp,"%s",molecule);
@@ -162,10 +163,10 @@ int print_active_reactions_matrix(struct state_struct *state) {
       np = 0;
       for (j=rxn_ptrs[rxns];j<rxn_ptrs[rxns+1];j++) {
 	coeff = coefficients[j];
-	if (coeff > 0) {
+	if (coeff > 0.0) {
 	  mat_row[molecules_indices[j]] = coeff;
-	  if (coeff > 1) {
-	    fprintf(arxn_mat_fp,"%d ",coeff);
+	  if (coeff != 1.0) {
+	    fprintf(arxn_mat_fp,"%le ",coeff);
 	  }
 	  molecule = (char*)&molecules_text[matrix_text[j]];
 	  fprintf(arxn_mat_fp,"%s",molecule);
@@ -179,14 +180,14 @@ int print_active_reactions_matrix(struct state_struct *state) {
       } /* end for j ... */
       if (activities[rxns] == 0.0) {
 	for (j=0;j<nmols;j++) {
-	  mat_row[j] = 0;
+	  mat_row[j] = 0.0;
 	}
       }
       /*
 	Now print out the coefficients (including 0's for the matrix row)
       */
       for (j=0;j<nmols;j++) {
-	fprintf(arxn_mat_fp,"\t%d",mat_row[j]);
+	fprintf(arxn_mat_fp,"\t%le",mat_row[j]);
       }
       fprintf(arxn_mat_fp,"\n");
       reaction += 1; /* Caution address arithmetic here.*/

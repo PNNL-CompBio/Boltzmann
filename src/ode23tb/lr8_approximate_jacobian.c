@@ -2,6 +2,7 @@
 #include "boltzmann_cvodes_headers.h"
 #include "cvodes_params_struct.h"
 #include "get_counts.h"
+#include "conc_to_pow.h"
 #include "update_regulations.h"
 #include "vec_set_constant.h"
 #include "crs_column_sort_rows.h"
@@ -94,7 +95,7 @@ int lr8_approximate_jacobian(struct state_struct *state,
   /*
   double  recip_coefficient;
   */
-  double  coeff;
+  double  coef;
   /*
   double  conc_mi;
   double  thermo_adj;
@@ -103,15 +104,17 @@ int lr8_approximate_jacobian(struct state_struct *state,
   */
   double  fluxi;
   double  count_mi;
+  double  count_mi_plus;
+  double  telescoping;
   double  conc_mi;
   double  activityi;
   double  dzero;
+  double  *coefficients;
+  double  *rcoefficients;
   int64_t *molecules_ptrs;
   int64_t *rxn_indices;
-  int64_t *coefficients;
   int64_t *rxn_ptrs;
   int64_t *molecule_indices;
-  int64_t *rcoefficients;
   int     *dfdy_ja;
   int     *dfdy_ia;
   int     *dfdy_jat;
@@ -130,7 +133,6 @@ int lr8_approximate_jacobian(struct state_struct *state,
   int dfdy_pos;
 
   int k;
-  int coef;
 
   int use_regulation;
   int count_or_conc;
@@ -177,6 +179,7 @@ int lr8_approximate_jacobian(struct state_struct *state,
   use_regulation   = state->use_regulation;
   ode_solver_choice = state->ode_solver_choice;
   compute_sensitivities = state->compute_sensitivities;
+  telescoping           = 0.0;
   /*
     The following vectors are allocated in boltzmann_cvodes 
   */
@@ -241,19 +244,30 @@ int lr8_approximate_jacobian(struct state_struct *state,
     activityi = activities[i];
     for (j=rxn_ptrs[i];j<rxn_ptrs[i+1];j++) {
       mi = molecule_indices[j];
-      coef = (int)rcoefficients[j];
+      coef = rcoefficients[j];
       count_mi = counts[mi];
-      if (coef < 0) {
+      if (coef < 0.0) {
+	coef = 0.0 - coef;
+	rt = rt * conc_to_pow(count_mi,coef,telescoping);
+	count_mi_plus = count_mi + coef;
+	tr = tr * conc_to_pow(count_mi_plus,coef,telescoping);
+	/*
 	for (k=0;k<(-coef);k++) {
 	  rt = rt * count_mi;
 	  tr = tr * (count_mi - coef);
 	}
+	*/
       } else {
-	if (coef > 0) {
+	if (coef > 0.0) {
+	  pt = pt * conc_to_pow(count_mi,coef,telescoping);
+	  count_mi_plus = count_mi + coef;
+	  tp = tp * conc_to_pow(count_mi_plus,coef,telescoping);
+	  /*
 	  for (k=0;k<coef;k++) {
 	    pt = pt * count_mi;
 	    tp = tp * (count_mi + coef);
 	  }
+	  */
 	}
       }
     } /*end for (j...) */
@@ -277,11 +291,11 @@ int lr8_approximate_jacobian(struct state_struct *state,
 	/*
 	  d/dy_mi for reaction i
 	*/
-	coef = (int)rcoefficients[j];
+	coef = rcoefficients[j];
 	count_mi = counts[mi];
 	conc_mi  = concs[mi];
-	if (coef < 0) {
-	  if (count_mi > 0) {
+	if (coef < 0.0) {
+	  if (count_mi > 0.0) {
    	    drfc[j] =  0.0 -coef * ((flklhd/conc_mi) + (rlklhd/(conc_mi - (coef*count_to_conc[mi])))) * activityi;	
 	    /*
 	    drfc[j] =  0.0 -coef * ((flklhd/count_mi) + (rlklhd/(count_mi - coef))) * activityi;	
@@ -329,8 +343,8 @@ int lr8_approximate_jacobian(struct state_struct *state,
     if (molecule->variable == 1) {
       for (j=molecules_ptrs[i];j<molecules_ptrs[i+1];j++) {
 	rxn = rxn_indices[j];
-	coeff = coefficients[j];
-	if (coeff  != 0) {
+	coef = coefficients[j];
+	if (coef != 0.0) {
 	  /*
 	  recip_coefficient = recip_coeffs[j];
 	  */
@@ -344,7 +358,7 @@ int lr8_approximate_jacobian(struct state_struct *state,
 	      dfdy_ja[dfdy_pos] = mk;
 	      dfdy_pos += 1;
 	    }
-	    dfdy_row[mk] += drfc[k] * coeff;
+	    dfdy_row[mk] += drfc[k] * coef;
 	  }
 	}
       }

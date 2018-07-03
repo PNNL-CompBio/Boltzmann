@@ -173,7 +173,7 @@ EXECS = $(BOLTZMANN_BIN)/boltzmann $(BOLTZMANN_BIN)/deq $(BOLTZMANN_BIN)/lapack_
 SERIAL_INCS = boltzmann_structs.h state_struct.h reaction_struct.h reactions_matrix_struct.h molecules_matrix_struct.h molecule_struct.h compartment_struct.h vgrng_state_struct.h pseudoisomer_struct.h stack_level_elem_struct.h tools/sbml2bo_struct.h tools/sbml2bo_structs.h t2js_struct.h cvodes_interface/boltzmann_cvodes_headers.h
 SERIAL_OBJS1 = boltzmann_init.o alloc0.o alloc0_a.o boltzmann_set_filename_ptrs.o read_params.o boltzmann_init_core.o io_size_init.o create_output_filenames.o open_output_files.o size_rxns_file.o init_rxn_file_keywords.o parse_rxn_file_keyword.o count_ws.o count_nws.o count_molecules_and_cmpts.o is_a_coef.o alloc2.o alloc2_a.o rxns_init.o parse_reactions_file.o upcase.o parse_side_line.o find_colon.o boltzmann_compress_reactions.o sort_compartments.o merge_compartments.o unique_compartments.o unique_compartments_core.o translate_compartments.o sort_molecules.o merge_molecules.o unique_molecules.o unique_molecules_core.o alloc3.o species_init.o set_compartment_ptrs.o set_count_trans.o translate_regulation_metabolites.o molecules_lookup.o read_compartment_sizes.o read_initial_concentrations.o compartment_lookup.o check_initial_concentrations.o alloc4.o form_molecules_matrix.o
 SERIAL_OBJS2 = energy_init.o compute_standard_energies.o size_pseudoisomer_file.o alloc5.o parse_pseudoisomer_dg0f_file.o blank_to_dash.o sharp_pos.o alloc6.o compute_molecule_dg0tfs.o compute_molecule_dg0tf.o pseudoisomer_dg0tf.o compute_reaction_dg0.o unalloc6.o compute_ke.o zero_solvent_coefficients.o compute_kss.o echo_inputs.o echo_params.o echo_reactions_file.o print_molecules_dictionary.o print_dg0_ke.o recover_solvent_coefficients.o vgrng_init.o vgrng.o print_rxn_likelihoods_header.o print_free_energy_header.o run_init.o alloc8.o alloc9.o print_reactions_matrix.o print_active_reactions_matrix.o print_compartments.o
-SERIAL_OBJS3 = boltzmann_build_agent_data_block.o boltzmann_run.o boltzmann_load_agent_data.o update_rxn_log_likelihoods.o rxn_log_likelihoods.o rxn_likelihoods.o rxn_likelihood.o choose_rxn.o candidate_rxn.o binary_search_l_u_b.o update_regulations.o update_regulation.o rxn_count_update.o bndry_flux_update.o metropolis.o rxn_likelihood_postselection.o compute_delta_g_forward_entropy_free_energy.o boltzmann_watch.o print_rxn_choice.o print_counts.o print_likelihoods.o save_likelihoods.o print_free_energy.o print_boundary_flux.o print_restart_file.o print_reactions_view.o boltzmann_save_agent_data.o boltzmann_flatten_vgrng_state.o 
+SERIAL_OBJS3 = boltzmann_build_agent_data_block.o boltzmann_run.o boltzmann_load_agent_data.o update_rxn_log_likelihoods.o rxn_log_likelihoods.o rxn_likelihoods.o rxn_likelihood.o conc_to_pow.o choose_rxn.o candidate_rxn.o binary_search_l_u_b.o update_regulations.o update_regulation.o rxn_count_update.o bndry_flux_update.o metropolis.o rxn_likelihood_postselection.o compute_delta_g_forward_entropy_free_energy.o boltzmann_watch.o print_rxn_choice.o print_counts.o print_likelihoods.o save_likelihoods.o print_free_energy.o print_boundary_flux.o print_restart_file.o print_reactions_view.o boltzmann_save_agent_data.o boltzmann_flatten_vgrng_state.o 
 SERIAL_OBJS7 = deq_run.o alloc7.o ode_solver.o ode23tb.o \
 	init_base_reactants.o init_relative_rates.o ode_num_jac.o \
 	num_jac_col.o blas.o ode_it_solve.o compute_flux_scaling.o \
@@ -645,6 +645,7 @@ libboltzmann.a: $(SERIAL_OBJS1)  $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SBML_OBJS) $(
 	$(AR) $(ARFLAGS) libboltzmann.a candidate_rxn.o
 	$(AR) $(ARFLAGS) libboltzmann.a metropolis.o
 	$(AR) $(ARFLAGS) libboltzmann.a rxn_likelihood.o
+	$(AR) $(ARFLAGS) libboltzmann.a conc_to_pow.o
 	$(AR) $(ARFLAGS) libboltzmann.a rxn_likelihood_postselection.o
 	$(AR) $(ARFLAGS) libboltzmann.a rxn_log_likelihoods.o
 	$(AR) $(ARFLAGS) libboltzmann.a rxn_likelihoods.o
@@ -956,7 +957,7 @@ set_compartment_ptrs.o: $(SERIAL_INCS) set_compartment_ptrs.c set_compartment_pt
 set_count_trans.o: $(SERIAL_INCS) set_count_trans.c set_count_trans.h
 	$(CC) $(DCFLAGS)  -c set_count_trans.c
 
-translate_regulation_metabolites.o: $(SERIAL_INCS) translate_regulation_metabolites.c translate_regulation_metabolites.h molecules_lookup.h
+translate_regulation_metabolites.o: $(SERIAL_INCS) translate_regulation_metabolites.c translate_regulation_metabolites.h molecules_lookup.h compartment_lookup.h
 
 molecules_lookup.o: $(SERIAL_INCS) molecules_lookup.c molecules_lookup.h
 	$(CC) $(DCFLAGS)  -c molecules_lookup.c
@@ -1024,7 +1025,7 @@ compute_ke.o: $(SERIAL_INCS) compute_ke.c compute_ke.h
 zero_solvent_coefficients.o: $(SERIAL_INCS) zero_solvent_coefficients.c zero_solvent_coefficients.h
 	$(CC) $(DCFLAGS)  -c zero_solvent_coefficients.c
 
-compute_kss.o: $(SERIAL_INCS) compute_kss.c compute_kss.h
+compute_kss.o: $(SERIAL_INCS) compute_kss.c compute_kss.h conc_to_pow.h
 	$(CC) $(DCFLAGS)  -c compute_kss.c
 
 echo_inputs.o: $(SERIAL_INCS) echo_inputs.c echo_inputs.h echo_params.h echo_reactions_file.h print_molecules_dictionary.h print_dg0_ke.h print_counts.h print_compartments.h
@@ -1099,8 +1100,11 @@ candidate_rxn.o: $(SERIAL_INCS) candidate_rxn.c candidate_rxn.h vgrng.h binary_s
 metropolis.o: $(SERIAL_INCS) metropolis.c metropolis.h rxn_likelihood_postselection.h bndry_flux_update.h vgrng.h
 	$(CC) $(DCFLAGS)  -c metropolis.c
 
-rxn_likelihood.o: $(SERIAL_INCS) rxn_likelihood.c rxn_likelihood.h
+rxn_likelihood.o: $(SERIAL_INCS) rxn_likelihood.c rxn_likelihood.h conc_to_pow.h
 	$(CC) $(DCFLAGS)  -c rxn_likelihood.c
+
+conc_to_pow.o: $(SERIAL_INCS) conc_to_pow.c conc_to_pow.h
+	$(CC) $(DCFLAGS)  -c conc_to_pow.c
 
 rxn_log_likelihoods.o: $(SERIAL_INCS) rxn_log_likelihoods.c rxn_log_likelihoods.h rxn_likelihoods.h
 	$(CC) $(DCFLAGS)  -c rxn_log_likelihoods.c
@@ -1108,7 +1112,7 @@ rxn_log_likelihoods.o: $(SERIAL_INCS) rxn_log_likelihoods.c rxn_log_likelihoods.
 rxn_likelihoods.o: $(SERIAL_INCS) rxn_likelihoods.c rxn_likelihoods.h rxn_likelihood.h
 	$(CC) $(DCFLAGS)  -c rxn_likelihoods.c
 
-rxn_likelihood_postselection.o: $(SERIAL_INCS) rxn_likelihood_postselection.c rxn_likelihood_postselection.h
+rxn_likelihood_postselection.o: $(SERIAL_INCS) rxn_likelihood_postselection.c rxn_likelihood_postselection.h conc_to_pow.h
 	$(CC) $(DCFLAGS)  -c rxn_likelihood_postselection.c
 
 binary_search_l_u_b.o: $(SERIAL_INCS) binary_search_l_u_b.c binary_search_l_u_b.h
@@ -1300,7 +1304,7 @@ ode_print_lklhd_header.o: ode23tb/ode_print_lklhd_header.c ode23tb/ode_print_lkl
 ode_solver.o: ode_solver.c ode_solver.h ode23tb/ode23tb.h $(SERIAL_INCS) cvodes_interface/boltzmann_cvodes.h compute_dfdke_dfdmu0.h
 	$(CC) $(DCFLAGS)  -c ode_solver.c
 
-compute_dfdke_dfdmu0.o: compute_dfdke_dfdmu0.c compute_dfdke_dfdmu0.h $(SERIAL_INCS) vec_set_constant.h
+compute_dfdke_dfdmu0.o: compute_dfdke_dfdmu0.c compute_dfdke_dfdmu0.h $(SERIAL_INCS) vec_set_constant.h conc_to_pow.h
 	$(CC) $(DCFLAGS)  -c compute_dfdke_dfdmu0.c
 
 ode23tb.o: ode23tb/ode23tb.c ode23tb/ode23tb.h $(SERIAL_INCS) ode23tb/compute_flux_scaling.h ode23tb/approximate_delta_concs.h ode23tb/ode_num_jac.h ode23tb/ode_it_solve.h print_concs_fluxes.h blas/blas.h ode23tb/ode_print_concs.h ode23tb/ode_print_lklhds.h compute_net_likelihoods.h compute_net_lklhd_bndry_flux.h print_net_likelihood_header.h print_net_lklhd_bndry_flux_header.h print_net_likelihoods.h print_net_lklhd_bndry_flux.h ode23tb/ode23tb_normyp_o_wt.h ode23tb/ode23tb_limit_h.h ode23tb/ode23tb_init_wt.h ode23tb/ode23tb_update_wt.h vec_set_constant.h ode23tb/ode23tb_build_factor_miter.h ode23tb/ode23tb_max_abs_ratio.h ode23tb/ode23tb_nonneg_err.h ode23tb/ode23tb_enforce_nonneg.h ode23tb/boltzmann_monitor_ode.h ode23tb/print_dense_jacobian.h ode23tb/approximate_jacobian.h ode23tb/ode_test_steady_state.h
@@ -1411,7 +1415,7 @@ lr2_approximate_delta_concs.o: ode23tb/lr2_approximate_delta_concs.c ode23tb/lr2
 lr3_approximate_delta_concs.o: ode23tb/lr3_approximate_delta_concs.c ode23tb/lr3_approximate_delta_concs.h ode23tb/compute_flux_scaling.h update_rxn_likelihoods.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS)  -c ode23tb/lr3_approximate_delta_concs.c
 
-lr4_approximate_delta_concs.o: ode23tb/lr4_approximate_delta_concs.c ode23tb/lr4_approximate_delta_concs.h ode23tb/compute_flux_scaling.h update_rxn_likelihoods.h $(SERIAL_INCS)
+lr4_approximate_delta_concs.o: ode23tb/lr4_approximate_delta_concs.c ode23tb/lr4_approximate_delta_concs.h ode23tb/compute_flux_scaling.h update_rxn_likelihoods.h $(SERIAL_INCS) conc_to_pow.h
 	$(CC) $(DCFLAGS)  -c ode23tb/lr4_approximate_delta_concs.c
 
 lr5_approximate_delta_concs.o: ode23tb/lr5_approximate_delta_concs.c ode23tb/lr5_approximate_delta_concs.h ode23tb/compute_flux_scaling.h update_rxn_likelihoods.h $(SERIAL_INCS)
@@ -1420,19 +1424,19 @@ lr5_approximate_delta_concs.o: ode23tb/lr5_approximate_delta_concs.c ode23tb/lr5
 lr6_approximate_delta_concs.o: ode23tb/lr6_approximate_delta_concs.c ode23tb/lr6_approximate_delta_concs.h update_rxn_likelihoods.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS)  -c ode23tb/lr6_approximate_delta_concs.c
 
-lr7_approximate_delta_concs.o: ode23tb/lr7_approximate_delta_concs.c ode23tb/lr7_approximate_delta_concs.h $(SERIAL_INCS)
+lr7_approximate_delta_concs.o: ode23tb/lr7_approximate_delta_concs.c ode23tb/lr7_approximate_delta_concs.h $(SERIAL_INCS) conc_to_pow.h
 	$(CC) $(DCFLAGS)  -c ode23tb/lr7_approximate_delta_concs.c
 
-lr8_approximate_delta_concs.o: ode23tb/lr8_approximate_delta_concs.c ode23tb/lr8_approximate_delta_concs.h get_counts.h update_regulations.h $(SERIAL_INCS) 
+lr8_approximate_delta_concs.o: ode23tb/lr8_approximate_delta_concs.c ode23tb/lr8_approximate_delta_concs.h get_counts.h update_regulations.h $(SERIAL_INCS) conc_to_pow.h
 	$(CC) $(DCFLAGS)  -c ode23tb/lr8_approximate_delta_concs.c
 
-lr9_approximate_delta_concs.o: ode23tb/lr9_approximate_delta_concs.c ode23tb/lr9_approximate_delta_concs.h get_counts.h update_regulations.h $(SERIAL_INCS)
+lr9_approximate_delta_concs.o: ode23tb/lr9_approximate_delta_concs.c ode23tb/lr9_approximate_delta_concs.h get_counts.h update_regulations.h $(SERIAL_INCS) conc_to_pow.h
 	$(CC) $(DCFLAGS)  -c ode23tb/lr9_approximate_delta_concs.c
 
-lr10_approximate_delta_concs.o: ode23tb/lr10_approximate_delta_concs.c ode23tb/lr10_approximate_delta_concs.h get_counts.h update_regulations.h $(SERIAL_INCS)
-	$(CC) $(DCFLAGS)  -c ode23tb/lr10_approximate_delta_concs.c
+lr10_approximate_delta_concs.o: ode23tb/lr10_approximate_delta_concs.c ode23tb/lr10_approximate_delta_concs.h get_counts.h update_regulations.h $(SERIAL_INCS) conc_to_pow.h
+	$(CC) $(DCFLAGS)  -c ode23tb/lr10_approximate_delta_concs.c 
 
-lr11_approximate_delta_concs.o: ode23tb/lr11_approximate_delta_concs.c ode23tb/lr11_approximate_delta_concs.h get_counts.h update_regulations.h stable_add.h $(SERIAL_INCS)
+lr11_approximate_delta_concs.o: ode23tb/lr11_approximate_delta_concs.c ode23tb/lr11_approximate_delta_concs.h get_counts.h update_regulations.h stable_add.h $(SERIAL_INCS) conc_to_pow.h
 	$(CC) $(DCFLAGS)  -c ode23tb/lr11_approximate_delta_concs.c
 
 stable_add.o: stable_add.c stable_add.h dsort.h pairwise_sum.h dreverse_list.h $(SERIAL_INCS)
@@ -1456,13 +1460,13 @@ pairwise_sum.o: pairwise_sum.c pairwise_sum.h $(SERIAL_INCS)
 dreverse_list.o: dreverse_list.c dreverse_list.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS)  -c dreverse_list.c
 
-lr12_approximate_delta_concs.o: ode23tb/lr12_approximate_delta_concs.c ode23tb/lr12_approximate_delta_concs.h get_counts.h update_regulations.h stable_add.h $(SERIAL_INCS)
+lr12_approximate_delta_concs.o: ode23tb/lr12_approximate_delta_concs.c ode23tb/lr12_approximate_delta_concs.h get_counts.h update_regulations.h stable_add.h $(SERIAL_INCS) conc_to_pow.h
 	$(CC) $(DCFLAGS)  -c ode23tb/lr12_approximate_delta_concs.c
 
-lr13_approximate_delta_concs.o: ode23tb/lr13_approximate_delta_concs.c ode23tb/lr13_approximate_delta_concs.h get_counts.h update_regulations.h $(SERIAL_INCS)
+lr13_approximate_delta_concs.o: ode23tb/lr13_approximate_delta_concs.c ode23tb/lr13_approximate_delta_concs.h get_counts.h update_regulations.h $(SERIAL_INCS)  conc_to_pow.h
 	$(CC) $(DCFLAGS)  -c ode23tb/lr13_approximate_delta_concs.c
 
-lr14_approximate_delta_concs.o: ode23tb/lr14_approximate_delta_concs.c ode23tb/lr14_approximate_delta_concs.h get_counts.h update_regulations.h $(SERIAL_INCS)
+lr14_approximate_delta_concs.o: ode23tb/lr14_approximate_delta_concs.c ode23tb/lr14_approximate_delta_concs.h get_counts.h update_regulations.h $(SERIAL_INCS) conc_to_pow.h
 	$(CC) $(DCFLAGS)  -c ode23tb/lr14_approximate_delta_concs.c
 
 ode_num_jac.o: ode23tb/ode_num_jac.c ode23tb/ode_num_jac.h $(SERIAL_INCS) ode23tb/num_jac_col.h blas/blas.h
@@ -1522,7 +1526,7 @@ boltzmann_check_cvodesens_errors.o: cvodes_interface/boltzmann_check_cvodesens_e
 approximate_ys0.o: cvodes_interface/approximate_ys0.c cvodes_interface/approximate_ys0.h cvodes_interface/lr8_approximate_ys0.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS)  -c cvodes_interface/approximate_ys0.c
 
-lr8_approximate_ys0.o: cvodes_interface/lr8_approximate_ys0.c cvodes_interface/lr8_approximate_ys0.h $(SERIAL_INCS)
+lr8_approximate_ys0.o: cvodes_interface/lr8_approximate_ys0.c cvodes_interface/lr8_approximate_ys0.h $(SERIAL_INCS) conc_to_pow.h
 	$(CC) $(DCFLAGS)  -c cvodes_interface/lr8_approximate_ys0.c
 
 boltzmann_cvodes_psetup.o: cvodes_interface/boltzmann_cvodes_psetup.c cvodes_interface/boltzmann_cvodes_psetup.h $(SERIAL_INCS) ode23tb/approximate_jacobian.h build_newton_matrix.h precondition_newton_matrix.h 
@@ -1537,7 +1541,7 @@ boltzmann_sparse_to_dense.o: boltzmann_sparse_to_dense.c boltzmann_sparse_to_den
 boltzmann_dense_to_sparse.o: boltzmann_dense_to_sparse.c boltzmann_dense_to_sparse.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS)  -c boltzmann_dense_to_sparse.c
 
-lr8_approximate_jacobian.o: ode23tb/lr8_approximate_jacobian.c ode23tb/lr8_approximate_jacobian.h $(SERIAL_INCS) get_counts.h update_regulations.h vec_set_constant.h crs_column_sort_rows.h
+lr8_approximate_jacobian.o: ode23tb/lr8_approximate_jacobian.c ode23tb/lr8_approximate_jacobian.h $(SERIAL_INCS) get_counts.h update_regulations.h vec_set_constant.h crs_column_sort_rows.h conc_to_pow.h
 	$(CC) $(DCFLAGS)  -c ode23tb/lr8_approximate_jacobian.c
 
 crs_column_sort_rows.o: crs_column_sort_rows.c crs_column_sort_rows.h $(SERIAL_INCS)

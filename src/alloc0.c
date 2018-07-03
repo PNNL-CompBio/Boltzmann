@@ -136,7 +136,7 @@ int alloc0(struct state_struct **statep, int setup) {
     usage = state->usage;
   }
   if (success && setup) {
-    state->version_no = 5097; /* Checked in revision of state_struct.h */
+    state->version_no = 5098; /* Checked in revision of state_struct.h */
     /*
       Allocate_space for reading the parameter file.
     */

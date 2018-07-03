@@ -26,7 +26,7 @@ struct reactions_matrix_struct {
   /*
     This structure is laid out in the form a row-compressed
     sparse matrix structure, but with 4 sets of "column numbers"
-    One could also view it as each entry has three components,
+    One could also view it as each entry has four components,
     a molecule index, a compartment index, a coefficient,  and a text pointer.
     The rxn_prtrs vector is of length (number_reactions + 1).
     rxn_ptrs[i] points to the first "element" position for reaction
@@ -59,7 +59,7 @@ struct reactions_matrix_struct {
   /*
     coefficients are negative for reactants, positive for products.
   */
-  int64_t *coefficients;
+  double  *coefficients;
   double  *recip_coeffs;
   /*
     Offsets into the molecules_text for the molecules name,
@@ -69,10 +69,10 @@ struct reactions_matrix_struct {
   /*
     Since the coefficients for the solvent molecule are 
     zeroed out to run the simulation we need to be
-    able to recover them. Sinced we only allow one solvemt molecule
+    able to recover them. Since we only allow one solvemt molecule
     there will be at most num_rxns solvent coefficients.
   */
-  int64_t *solvent_coefficients;
+  double *solvent_coefficients;
 }
 ;
 #endif

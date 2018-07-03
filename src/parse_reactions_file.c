@@ -107,10 +107,12 @@ int parse_reactions_file(struct state_struct *state,
   double *forward_rc;
   double *reverse_rc;
   double *recip_coeffs;
+  double *coefficients;
+  double *coeff_sum;
+  double sum_coeffs;
   int64_t *keyword_lens;
   int64_t *rxn_ptrs;
   int64_t *molecules_indices;
-  int64_t *coefficients;
   int64_t *reg_species;
   int64_t rxn_buff_len;
   int64_t rxn_title_len;
@@ -147,7 +149,6 @@ int parse_reactions_file(struct state_struct *state,
   char *rcompartment;
   char *pathway;
   char *metabolite;
-  int  *coeff_sum;
   int  *use_rxn;
 
   size_t word1_len;
@@ -183,7 +184,7 @@ int parse_reactions_file(struct state_struct *state,
   int reg_pos;
 
   int last_line_type;
-  int sum_coeffs;
+
 
   int rxn_use;
   int rxn_not_used;
@@ -620,8 +621,8 @@ int parse_reactions_file(struct state_struct *state,
 	    strncpy(rcompartment,(char*)&rxn_buffer[word1],word1_len);
 	    rcompartment[word1_len] = '\0';
 	    upcase(compartment_len,rcompartment);
-	    if ((strcmp(lcompartment,"V") == 0) ||
-		(strcmp(lcompartment,"C") == 0)) {
+	    if ((strcmp(rcompartment,"V") == 0) ||
+		(strcmp(rcompartment,"C") == 0)) {
 	      if (lfp) {
 		fprintf(lfp,"parse_reactions_file: Error line %d: compartments may not have single character names V or C\n",line_no);
 		fflush(lfp);
@@ -892,7 +893,7 @@ int parse_reactions_file(struct state_struct *state,
 	    rxn_molecules = (struct molecule_struct *)&state->unsorted_molecules[mol_pos];
 	    mol_pos_lim = mol_pos + reaction->num_reactants +
 	      reaction->num_products;
-	    sum_coeffs = 0;
+	    sum_coeffs = 0.0;
 	    for (j = mol_pos;j<mol_pos_lim;j++) {
 	      sum_coeffs += coefficients[j];
 	      /*
@@ -900,7 +901,7 @@ int parse_reactions_file(struct state_struct *state,
 		not have a local compartment (:compartment).
 	      */
 	      if (rxn_molecules->c_index == -1) {
-		if (coefficients[j] < 0) {
+		if (coefficients[j] < 0.0) {
 		  rxn_molecules->c_index = reaction->left_compartment;
 		} else {
 		  rxn_molecules->c_index = reaction->right_compartment;

@@ -1,11 +1,13 @@
 #include "boltzmann_structs.h"
 #include "get_counts.h"
+#include "conc_to_pow.h"
 #include "lr8_approximate_ys0.h"
 int lr8_approximate_ys0(struct state_struct *state, double *ys0v,
 			double *concs) {
   /*
     Approximate df/dke
     Called by: approximate_ys0
+    Calls:     get_counts, conc_to_pow
   */
   struct  molecules_matrix_struct *molecules_matrix;
   struct  reactions_matrix_struct *rxn_matrix;
@@ -22,10 +24,15 @@ int lr8_approximate_ys0(struct state_struct *state, double *ys0v,
   double  drfc;
   int64_t *rxn_ptrs;
   int64_t *molecules_indices;
-  int64_t *rcoefficients;
+  double  *rcoefficients;
   int64_t *molecules_ptrs;
   int64_t *rxn_indices;
-  int64_t *mcoefficients;
+  double  *mcoefficients;
+  double  count_mi;
+  double  count_plus;
+  double  klim;
+  double  telescoping;
+
   int ny;
   int ns;
 
@@ -34,12 +41,6 @@ int lr8_approximate_ys0(struct state_struct *state, double *ys0v,
 
   int success;
   int mi;
-
-  int klim;
-  int k;
-
-  int count_mi;
-  int padi;
 
   success           = 1;
   ke  		    = state->ke;
@@ -57,6 +58,7 @@ int lr8_approximate_ys0(struct state_struct *state, double *ys0v,
   molecules_ptrs    = molecules_matrix->molecules_ptrs;
   rxn_indices       = molecules_matrix->reaction_indices;
   mcoefficients     = molecules_matrix->coefficients;
+  telescoping = 0.0;
   get_counts(ny,concs,conc_to_count,counts);
   ys0vi = ys0v;
   for (i=0;i<ns;i++) {
@@ -74,17 +76,28 @@ int lr8_approximate_ys0(struct state_struct *state, double *ys0v,
       */
       klim = rcoefficients[j];
       count_mi = counts[mi];
-      if (klim < 0) {
+      if (klim < 0.0) {
+	klim = 0.0 - klim;
+	rt   = rt * conc_to_pow(count_mi,klim,telescoping);
+	count_plus = count_mi + klim;
+	tr   = tr * conc_to_pow(count_plus,klim,telescoping);
+	/*
 	for (k=0;k<(-klim);k++) {
 	  rt = rt * count_mi;
 	  tr = tr * (count_mi - klim);
 	}
+	*/
       } else {
 	if (klim > 0) {
+	  pt = pt * conc_to_pow(count_mi,klim,telescoping);
+	  count_plus = count_mi + klim;
+	  tp = tp * conc_to_pow(count_plus,klim,telescoping);
+	  /*
 	  for (k=0;k<klim;k++) {
 	    pt = pt * count_mi;
 	    tp = tp * (count_mi + klim);
 	  }
+	  */
 	}
       }
     }

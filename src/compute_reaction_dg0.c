@@ -46,7 +46,7 @@ int compute_reaction_dg0(struct state_struct *state){
   double m_dg0_tf;
   int64_t *rxn_ptrs;
   int64_t *molecules_indices;
-  int64_t *coefficients;
+  double *coefficients;
   int64_t *matrix_text;
 
   double *molecule_dg0tfs;
@@ -54,20 +54,19 @@ int compute_reaction_dg0(struct state_struct *state){
 
   int    *dg0tfs_set;
 
+  double coeff;
+
   int nrxns;
   int rxns;
 
   int j;
   int k;
 
-  int coeff;
   int use_dgzero;
+  int success;
 
   int use_pseudoisomers;
   int computable;
-
-  int success;
-  int padi;
 
   FILE* lfp;
   FILE* efp;

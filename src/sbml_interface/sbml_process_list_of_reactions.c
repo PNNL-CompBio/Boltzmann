@@ -83,6 +83,7 @@ int sbml_process_list_of_reactions(FILE *sbml_fp,
   char *line;
   
   double delta_g0;
+  double coefficient;
 
   int in_reaction_tag;
   int in_list_of_reactions;
@@ -100,7 +101,7 @@ int sbml_process_list_of_reactions(FILE *sbml_fp,
   int end_list_of_products_tag;
 
   int in_species_reference_tag;
-  int coefficient;
+  int padi;
 
   int in_kinetic_law_tag;
   int end_reaction_tag;
@@ -158,7 +159,7 @@ int sbml_process_list_of_reactions(FILE *sbml_fp,
   in_kinetic_law_tag        = 128;
   end_reaction_tag          = 256;
   in_list_of_reactions      = 1;
-  coefficient               = 1;
+  coefficient               = 1.0;
 
   enclosing_tag = not_in_tag;
   species_count = 0;
@@ -267,6 +268,7 @@ int sbml_process_list_of_reactions(FILE *sbml_fp,
 	  its compartment if specified and a constant field ignored
 	  here.
 	*/
+	coefficient = 1.0;
 	sbml_process_species_reference_tag(state,
 					   max_key_len,
 					   max_val_len,

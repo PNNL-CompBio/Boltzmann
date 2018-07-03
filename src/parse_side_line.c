@@ -90,10 +90,10 @@ int parse_side_line(char *species_p,
   struct compartment_struct *compartment;
   struct reactions_matrix_struct *rxns_matrix;
   double *recip_coeffs;
+  double *coefficients;
   double dside;
-  int64_t coeff;
+  double coeff;
   int64_t *molecules_indices;
-  int64_t *coefficients;
   int64_t *matrix_text;
   int64_t molecules_pos;
   int64_t compartment_pos;
@@ -144,6 +144,7 @@ int parse_side_line(char *species_p,
   cmpts              = *cmpts_p;
   unsorted_molecules = state->unsorted_molecules;
   unsorted_cmpts     = state->unsorted_cmpts;
+  lfp                = state->lfp;
   rctnts             = species_p;
   dside              = (double)side;
   rxns_matrix        = state->reactions_matrix;
@@ -186,10 +187,11 @@ int parse_side_line(char *species_p,
 	   Not too many molecules.
 	*/
 	molecules_indices[molecules] = molecules;
-	if (is_a_coef(token_length,rctnts)) {
+	if (is_a_coef(token_length,rctnts,&coeff)) {
 	  /*
 	    Null terminate the token.
 	  */
+	  /*
 	  rctnts[token_length] = '\0';
 	  if (token_length == 1) {
 	    if (rctnts[0] == '-') {
@@ -200,11 +202,12 @@ int parse_side_line(char *species_p,
 	  } else {
 	    coeff = atoi(rctnts);
 	  }
+	  */
 	  if (side < 0) {
-	    coeff = - coeff;
+	    coeff = 0.0 - coeff;
 	  } 
 	  coefficients[molecules] = coeff;
-	  recip_coeffs[molecules] = 1.0/((double)coeff);
+	  recip_coeffs[molecules] = 1.0/coeff;
 	  /*
 	    Replace the null with  a space.
 	  */
@@ -222,7 +225,7 @@ int parse_side_line(char *species_p,
 	  
 	  token_length = count_nws(rctnts);
 	} else {
-	  coefficients[molecules] = (int64_t)side;
+	  coefficients[molecules] = (double)side;
 	  recip_coeffs[molecules] = (double)side;
 	}
 	/*

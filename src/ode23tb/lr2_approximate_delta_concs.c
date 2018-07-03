@@ -53,12 +53,12 @@ int lr2_approximate_delta_concs(struct state_struct *state,
   double  backward;
   double  pt;
   double  rt;
+  double  *coefficients;
+  double  *rcoefficients;
   int64_t *molecules_ptrs;
   int64_t *rxn_indices;
-  int64_t *coefficients;
   int64_t *rxn_ptrs;
   int64_t *molecule_indices;
-  int64_t *rcoefficients;
   int num_species;
   int num_rxns;
   int rxn;
@@ -126,10 +126,10 @@ int lr2_approximate_delta_concs(struct state_struct *state,
     rt = 1.0;
     for (j=rxn_ptrs[i];j<rxn_ptrs[i+1];j++) {
       mi = molecule_indices[j];
-      if (rcoefficients[j] < 0) {
+      if (rcoefficients[j] < 0.0) {
 	rt = rt * counts[mi];
       } else {
-	if (rcoefficients[j] > 0) {
+	if (rcoefficients[j] > 0.0) {
 	  pt = pt * counts[mi];
 	}
       }
@@ -158,7 +158,7 @@ int lr2_approximate_delta_concs(struct state_struct *state,
       if (molecule->variable == 1) {
 	for (j=molecules_ptrs[i];j<molecules_ptrs[i+1];j++) {
 	  rxn = rxn_indices[j];
-	  if (coefficients[j] < 0) {
+	  if (coefficients[j] < 0.0) {
 	    if (reactant_term[rxn] > 0.0) {
 	      forward -= forward_rxn_likelihoods[rxn];
 	    }
@@ -166,7 +166,7 @@ int lr2_approximate_delta_concs(struct state_struct *state,
 	      backward += reverse_rxn_likelihoods[rxn];
 	    }
 	  } else {
-	    if (coefficients[j] > 0) {
+	    if (coefficients[j] > 0.0) {
 	      if (reactant_term[rxn] > 0.0) {
 		forward += forward_rxn_likelihoods[rxn];
 	      }

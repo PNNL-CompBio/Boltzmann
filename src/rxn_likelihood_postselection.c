@@ -24,7 +24,7 @@ specific language governing permissions and limitations under the License.
 #include "boltzmann_structs.h"
 #include "boltzmann_cvodes_headers.h"
 #include "cvodes_params_struct.h"
-
+#include "conc_to_pow.h"
 #include "rxn_likelihood_postselection.h"
 
 double rxn_likelihood_postselection(double *counts, 
@@ -59,6 +59,7 @@ double rxn_likelihood_postselection(double *counts,
   double rxn_likelihood;
   double *ke;
   double *kss;
+  double *rcoef;
   /*
   double *kssr;
   */
@@ -66,8 +67,8 @@ double rxn_likelihood_postselection(double *counts,
   double  left_counts;
   double  right_counts;
   double  eq_k;
-  int64_t coeff;
-  int64_t *rcoef;
+  double  coeff;
+  double  telescoping;
   int64_t *rxn_ptrs;
   int64_t *molecules_indices;
   int success;
@@ -76,8 +77,8 @@ double rxn_likelihood_postselection(double *counts,
   int i;
   int j;
 
-  int k;
   int use_deq;
+  int padi;
 
   int compute_sensitivities;
   int ode_solver_choice;
@@ -117,21 +118,30 @@ double rxn_likelihood_postselection(double *counts,
     coeff = rcoef[j];
     count  = counts[molecules_indices[j]];
     if (rxn_direction < 0) {
-      coeff = -coeff;
+      coeff = 0.0 -coeff;
     }
-    if (coeff < 0) {
+    if (coeff < 0.0) {
+      coeff = 0.0 - coeff;
+      telescoping = -1.0;
+      left_counts = left_counts * conc_to_pow(count,coeff,telescoping);
+      /*
       for (k=0;k<(0-coeff);k++) {
 	left_counts = left_counts * (count-k);	
       } 
+      */
     } else {
       /*
 	NB if the coeff is == 0 then this molecule was a solvent and
 	is not to be used in computing likelihoods.
       */
-      if (coeff > 0) {
+      if (coeff > 0.0) {
+	telescoping = 1.0;
+	right_counts = right_counts * conc_to_pow(count,coeff,telescoping);
+	/*
 	for (k=1;k<=coeff;k++) {
 	  right_counts = right_counts * (count+k);
 	} 
+	*/
       }
     }
   }

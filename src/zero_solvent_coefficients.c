@@ -37,8 +37,9 @@ int zero_solvent_coefficients (struct state_struct *state) {
   struct molecule_struct *sorted_molecules;
   struct molecule_struct *molecule;
   int64_t num_molecules;
-  int64_t *rcoef;
-  int64_t *scoef;
+  double *rcoef;
+  double *scoef;
+  double *recip_rcoef;
   int64_t *rxn_ptrs;
   int64_t *molecules_indices;
   int64_t nrxns;
@@ -58,6 +59,7 @@ int zero_solvent_coefficients (struct state_struct *state) {
   rxn_ptrs          = rxns_matrix->rxn_ptrs;
   num_molecules     = rxn_ptrs[nrxns];
   rcoef             = rxns_matrix->coefficients;
+  recip_rcoef       = rxns_matrix->recip_coeffs;
   scoef             = rxns_matrix->solvent_coefficients;
   molecules_indices = rxns_matrix->molecules_indices;
   solvent_coef_count = 0;
@@ -67,12 +69,14 @@ int zero_solvent_coefficients (struct state_struct *state) {
       scoef[solvent_coef_count] = rcoef[j];
       solvent_coef_count += 1;
       rcoef[j] = 0.0;
+      recip_rcoef[j] = 0.0;
     } else {
       molecule = (struct molecule_struct*)&sorted_molecules[index];
       if (molecule->solvent && (use_bulk_water || (molecule->variable == 0))) {
 	scoef[solvent_coef_count] = rcoef[j];
 	solvent_coef_count += 1;
 	rcoef[j] = 0.0;
+	recip_rcoef[j] = 0.0;
       }
     }
   }

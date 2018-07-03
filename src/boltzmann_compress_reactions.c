@@ -49,11 +49,11 @@ int boltzmann_compress_reactions(struct state_struct *state) {
   double *forward_rc;
   double *reverse_rc;
   double *recip_coeffs;
+  double  *coefficients;
+  double  *coeff_sum;
   int64_t *rxn_ptrs;
   int64_t *molecules_indices;
-  int64_t *coefficients;
   int64_t *reg_species;
-  int  *coeff_sum;
   int  *use_rxn;
 
   int success;

@@ -23,11 +23,22 @@ specific language governing permissions and limitations under the License.
 #include "boltzmann_structs.h"
 #include "is_a_coef.h"
 
-int is_a_coef(int sl, char *line) {
+int is_a_coef(int sl, char *line, double *coeff_p) {
   /*
     Determine whether the first sl characters of line are all digits
-    Called by: count_molecules
+    As we move into the realm of floating point coefficients this routine
+    becomes, determine whether the first token in line is a floating point
+    coefficient.
+    "abc" needs to fail
+    "-3" needs to succeed
+    "4" needs to succeed.
+    "1.2" needs to succeed.
+    "1.2e2" needs to succeed.
+    "2-hdroyxy-quinone" needs to fail.
+    
+    Called by: count_molecules, count_molecules_and_cmpts, parse_side_line.
   */
+  /*
   int i;
   int result;
   int c;
@@ -47,5 +58,22 @@ int is_a_coef(int sl, char *line) {
       } 
     }
   }
+  */
+  double coeff;
+  int ns;
+  int result;
+  char c;
+  char c_sl;
+  c_sl = line[sl];
+  line[sl] = '\0';
+  ns = sscanf(line,"%le%c",&coeff,&c);
+  result = 0;
+  if (ns == 1) {
+    result = 1;
+    *coeff_p = coeff;
+  } else {
+    *coeff_p = 0.0;
+  }
+  line[sl] = c_sl;
   return(result);
 }

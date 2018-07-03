@@ -1,6 +1,7 @@
 #include "boltzmann_structs.h"
 
 #include "molecules_lookup.h"
+#include "compartment_lookup.h"
 #include "find_colon.h"
 
 
@@ -76,7 +77,7 @@ int translate_regulation_metabolites(struct state_struct *state) {
 	  ci = 0;
 	  if (colon_loc >=0) {
 	    compartment_name = (char*)&metabolite[colon_loc+1];
-	    ci = compartment_lookup(compartment_name);
+	    ci = compartment_lookup(compartment_name,state);
 	    metabolite[colon_loc] = '\0';
 	    if (ci < 0) {
 	      ci = 0;

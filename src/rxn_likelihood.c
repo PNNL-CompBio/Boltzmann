@@ -24,6 +24,7 @@ specific language governing permissions and limitations under the License.
 #include "boltzmann_structs.h"
 #include "boltzmann_cvodes_headers.h"
 #include "cvodes_params_struct.h"
+#include "conc_to_pow.h"
 
 #include "rxn_likelihood.h"
 double rxn_likelihood(double *counts, 
@@ -87,6 +88,7 @@ double rxn_likelihood(double *counts,
   double  *ke;
   double  *kss;
   double  *count_to_conc;
+  double  *rcoef;
   /*
   double *kssr;
   */
@@ -99,9 +101,10 @@ double rxn_likelihood(double *counts,
   double  eq_k;
   double  volume_recip;
   double  recip_avogadro;
+  double  coeff;
+  double  conc;
+  double  telescoping;
   int64_t m_index;
-  int64_t coeff;
-  int64_t *rcoef;
   int64_t *rxn_ptrs;
   int64_t *molecules_indices;
   int success;
@@ -166,22 +169,37 @@ double rxn_likelihood(double *counts,
     */
     count = counts[m_index];
     if (rxn_direction < 0) {
-      coeff = -coeff;
+      coeff = 0.0-coeff;
     }
-    if (coeff < 0) {
+    if (coeff < 0.0) {
+      coeff = 0.0 - coeff;
+      conc = count * volume_recip;
+      telescoping = - volume_recip;
+      left_concs = left_concs * conc_to_pow(conc,coeff,telescoping);
+      telescoping = -1.0;
+      left_counts = left_counts * conc_to_pow(count,coeff,telescoping);
+      /*
       for (k=0;k<(0-coeff);k++) {
 
 	left_concs = left_concs * ((count-k) * volume_recip);
 	left_counts = left_counts * (count-k);
 
       } 
+      */
     } else {
-      if (coeff > 0) {
+      if (coeff > 0.0) {
+	conc = count*volume_recip;
+	telescoping = volume_recip;
+	right_concs = right_concs * conc_to_pow(conc,coeff,telescoping);
+	telescoping = 1.0;
+	right_counts = right_counts * conc_to_pow(count,coeff,telescoping);
+	/*
 	for (k=1;k<=coeff;k++) {
 
 	  right_concs = right_concs * ((count+k) * volume_recip);
 	  right_counts = right_counts * (count+k);
 	} 
+	*/
       }
       /*
 	NB if the coeff is == 0 then this molecule was a solvent and
@@ -196,7 +214,7 @@ double rxn_likelihood(double *counts,
     left_concs = 0.0;
   }
   if (left_counts < 0.0) {
-    left_counts = 0;
+    left_counts = 0.0;
   }
   /*
   likelihood = eq_k * (left_concs/right_concs);

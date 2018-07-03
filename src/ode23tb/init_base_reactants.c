@@ -12,7 +12,7 @@ int init_base_reactants(struct state_struct *state) {
   struct reaction_struct *reaction; 
   struct reactions_matrix_struct *reactions_matrix; 
   int64_t *molecules_indices;
-  int64_t *coefficients;
+  double  *coefficients;
   int64_t *rxn_ptrs;
   int *base_reactant_indicator;
   int *base_reactants;
@@ -71,7 +71,7 @@ int init_base_reactants(struct state_struct *state) {
     }
     r_count = 0;
     for (i=rxn_ptrs[base_rxn];i<rxn_ptrs[base_rxn+1];i++) {
-      if (coefficients[i] < 0) {
+      if (coefficients[i] < 0.0) {
 	moleculei = molecules_indices[i];
 	base_reactant_indicator[moleculei] = 1;
 	base_reactants[r_count] = moleculei;

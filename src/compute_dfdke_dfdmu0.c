@@ -1,5 +1,6 @@
 #include "boltzmann_structs.h"
 #include "vec_set_constant.h"
+#include "conc_to_pow.h"
 #include "compute_dfdke_dfdmu0.h"
 int compute_dfdke_dfdmu0(struct state_struct *state, double *concs) {
   /*
@@ -9,7 +10,7 @@ int compute_dfdke_dfdmu0(struct state_struct *state, double *concs) {
     scratch needs to be a vectro of length at least 3*nunique_molecules
 
     Called by ode_solver.c
-    Calls     vec_set_constant, fopen, fprintf, fclose
+    Calls     vec_set_constant, conc_to_pow, fopen, fprintf, fclose
   */
   /*
     Open the .dfdke and dfdmu0 files.
@@ -34,8 +35,8 @@ int compute_dfdke_dfdmu0(struct state_struct *state, double *concs) {
   int64_t *molecule_indices;
   int64_t *rxn_ptrs;
   int64_t *rxn_indices;
-  int64_t *rcoefficients;
-  int64_t *mcoefficients;
+  double  *rcoefficients;
+  double  *mcoefficients;
   char    *dfdke_file;
   char    *dfdmu0_file;
 
@@ -50,6 +51,8 @@ int compute_dfdke_dfdmu0(struct state_struct *state, double *concs) {
   double  gamma_im;
   double  gamma_ik;
   double  dfdke;
+  double  count_plus;
+  double  telescoping;
 
   int num_species;
   int num_rxns;
@@ -61,13 +64,12 @@ int compute_dfdke_dfdmu0(struct state_struct *state, double *concs) {
   int mi;
 
   int rj;
-  int gamma;
+  int delta_concs_choice;
 
   int k;
   int mk;
 
-  int delta_concs_choice;
-  int padi;
+
 
   FILE *dfdke_fp;
   FILE *dfdmu0_fp;
@@ -146,6 +148,7 @@ int compute_dfdke_dfdmu0(struct state_struct *state, double *concs) {
                   i
 
     */
+    telescoping = 0.0;
     forward_piece = dfdke_dfdmu0_work;
     reverse_piece = &forward_piece[num_species];
     mu0_partials  = &reverse_piece[num_species];
@@ -162,19 +165,29 @@ int compute_dfdke_dfdmu0(struct state_struct *state, double *concs) {
         compartment = (struct compartment_struct *)&compartments[ci];
         recip_volume       = compartment->recip_volume;
         */
-        gamma = rcoefficients[j];
+        gamma_im = rcoefficients[j];
         count_mi = counts[mi];
-        if (gamma < 0) {
+        if (gamma_im < 0.0) {
+	  rt = rt * conc_to_pow(count_mi,-gamma_im,telescoping);
+	  count_plus = count_mi - gamma_im;
+	  tr = tr * conc_to_pow(count_plus,-gamma_im,telescoping);
+	  /*
       	  for (k=0;k<(-gamma);k++) {
       	    rt = rt * count_mi;
       	    tr = tr * (count_mi - gamma);
       	  } 
+	  */
         } else {
-	  if (gamma > 0) {
+	  if (gamma_im > 0.0) {
+	    pt = pt * conc_to_pow(count_mi,gamma_im,telescoping);
+	    count_plus = count_mi + gamma_im;
+	    tp = tp * conc_to_pow(count_plus,gamma_im,telescoping);
+	    /*
 	    for (k=0;k<gamma;k++) {
 	      pt = pt * count_mi;
 	      tp = tp * (count_mi + gamma);
 	    }
+	    */
 	  }
 	} 
 	forward_piece[i] = (rt/tp);

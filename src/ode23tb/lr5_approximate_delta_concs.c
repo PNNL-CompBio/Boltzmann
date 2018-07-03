@@ -46,12 +46,12 @@ int lr5_approximate_delta_concs(struct state_struct *state,
   double  flux_scaling;
   double  lr_total;
   double  recip_lr_total;
+  double  *coefficients;
+  double  *rcoefficients;
   int64_t *molecules_ptrs;
   int64_t *rxn_indices;
-  int64_t *coefficients;
   int64_t *rxn_ptrs;
   int64_t *molecule_indices;
-  int64_t *rcoefficients;
   int num_species;
   int num_rxns;
   int rxn;

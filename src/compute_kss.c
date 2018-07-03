@@ -25,7 +25,7 @@ specific language governing permissions and limitations under the License.
  *      Author:  Doug Baxter
 */
 #include "boltzmann_structs.h"
-
+#include "conc_to_pow.h"
 #include "compute_kss.h"
 
 int compute_kss(struct state_struct *state) {
@@ -33,7 +33,7 @@ int compute_kss(struct state_struct *state) {
     Set the delta_g0 field for all of the reactions
     based on energies of formation.
     Called by: energy_init
-    Calls:     fprintf, fflush
+    Calls:     conc_to_pow, fprintf, fflush
   */
   struct reaction_struct *reactions;
   struct reaction_struct *reaction;
@@ -47,11 +47,14 @@ int compute_kss(struct state_struct *state) {
   double *kss;
   double *kssr;
   double *ke;
+  double *coefficients;
+
+  double coeff;
+  double telescoping;
 
   int64_t *rxn_ptrs;
   int64_t *molecules_indices;
   int64_t *compartment_indices;
-  int64_t *coefficients;
   int64_t *matrix_text;
 
   double  rrxn_kss;
@@ -70,9 +73,6 @@ int compute_kss(struct state_struct *state) {
 
   int j;
   int k;
-
-  int coeff;
-  int i;
 
   int ci;
   int success;
@@ -130,17 +130,24 @@ int compute_kss(struct state_struct *state) {
         if (coeff < 0) {
 	  coeff = -coeff;
 	  kss_r_mod = kss_e_val[k] * conc_to_count;
-	  
+	  telescoping = 0.0;
+	  rrxn_kss = rrxn_kss * conc_to_pow(kss_r_mod,coeff,telescoping);
+	  /*
 	  for (i=0;i<coeff;i++) {
 	    rrxn_kss = rrxn_kss * kss_r_mod;
 	  }
+	  */
         } else {
 	  if (coeff > 0) {
 	    if (kss_e_val[k] > 0.0) {
 	      kss_p_mod = count_to_conc/kss_e_val[k];
+	      telescoping = 0.0;
+	      rrxn_kss = rrxn_kss * conc_to_pow(kss_p_mod,coeff,telescoping);
+	      /*
 	      for (i=0;i<coeff;i++) {
 		rrxn_kss = rrxn_kss * kss_p_mod;
 	      }
+	      */
 	    } else {
 	      /*
 		Question here is should we set rxn_kss to 1, or 0,

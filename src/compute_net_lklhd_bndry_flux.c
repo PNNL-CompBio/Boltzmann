@@ -46,8 +46,8 @@ void compute_net_lklhd_bndry_flux(struct state_struct *state,
   double  bndry_flux;
   int64_t *molecules_ptrs;
   int64_t *rxn_indices;
-  int64_t *coefficients;
-  int64_t coef;
+  double  *coefficients;
+  double  coef;
   int64_t rxn;
   int j;
   int i;
@@ -74,11 +74,11 @@ void compute_net_lklhd_bndry_flux(struct state_struct *state,
       for (j=molecules_ptrs[i];j<molecules_ptrs[i+1];j++) {
 	coef = coefficients[j];
 	rxn  = rxn_indices[j];
-	if (coef > 0) {
+	if (coef > 0.0) {
 	  bndry_flux += net_likelihood[rxn];
 	} 
 	else {
-	  if (coef < 0) {
+	  if (coef < 0.0) {
 	    bndry_flux -= net_likelihood[rxn];
 	  }
         }

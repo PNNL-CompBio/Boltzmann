@@ -37,9 +37,9 @@ int rxn_count_update(int rxn_no, int direction,
   struct molecule_struct *molecule;
   double *current_counts;
   double *future_counts;
+  double *coefficients;
   int64_t *rxn_ptrs;
   int64_t *molecules_indices;
-  int64_t *coefficients;
   /*
   int64_t *compartment_indices;
   double min_count;
@@ -99,7 +99,7 @@ int rxn_count_update(int rxn_no, int direction,
       */
       molecule = (struct molecule_struct *) &sorted_molecules[k];
       if (molecule->variable) {
-        future_counts[k] += (double)coefficients[j];
+        future_counts[k] += coefficients[j];
       }
       /*
       if (future_counts[k] < min_count) {
@@ -119,7 +119,7 @@ int rxn_count_update(int rxn_no, int direction,
       */
       molecule = (struct molecule_struct *) &sorted_molecules[k];
       if (molecule->variable) {
-        future_counts[k] -= (double)coefficients[j];
+        future_counts[k] -= coefficients[j];
       }
       /*
       if (future_counts[k] < min_count) {

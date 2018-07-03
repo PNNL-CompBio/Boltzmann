@@ -356,10 +356,10 @@ void boltzmann_set_state_ptrs(struct state_struct *state,
 
   coeff_sum_offset            = reg_species_offset + padded_per_reg_size;
   state->coeff_sum_offset     = coeff_sum_offset;
-  state->coeff_sum            = (int*)((void*)state + coeff_sum_offset);
+  state->coeff_sum            = (double*)((void*)state + coeff_sum_offset);
   
   
-  use_rxn_offset              = coeff_sum_offset + padded_per_molecule_int_size;
+  use_rxn_offset              = coeff_sum_offset + padded_per_molecule_size;
   state->use_rxn_offset       = use_rxn_offset;
   state->use_rxn              = (int*)((void*)state + use_rxn_offset);
 
@@ -416,7 +416,7 @@ void boltzmann_set_state_ptrs(struct state_struct *state,
 
   reactions_coefficients_offset = compartment_indices_offset + reactions_matrix_field_size + data_pad;
   state->reactions_coefficients_offset = reactions_coefficients_offset;
-  reactions_matrix->coefficients = (int64_t*)((void*)state + reactions_coefficients_offset);
+  reactions_matrix->coefficients = (double*)((void*)state + reactions_coefficients_offset);
   
 
   text_indices_offset = reactions_coefficients_offset + reactions_matrix_field_size + data_pad;
@@ -426,7 +426,7 @@ void boltzmann_set_state_ptrs(struct state_struct *state,
   solvent_coefficients_offset = 
     reactions_text_offset + reactions_matrix_field_size + data_pad;
   state->solvent_coefficients_offset = solvent_coefficients_offset;
-  reactions_matrix->solvent_coefficients = (int64_t*)((void*)state + solvent_coefficients_offset);
+  reactions_matrix->solvent_coefficients = (double*)((void*)state + solvent_coefficients_offset);
   /*
     Molecules_matrix_fields.
   */
@@ -443,7 +443,7 @@ void boltzmann_set_state_ptrs(struct state_struct *state,
   data_pad = (align_len - (molecules_matrix_field_size & align_mask)) & align_mask;
   molecules_coefficients_offset = reaction_indices_offset + moleucles_matrix_field_size + data_pad;
   state->molecules_coefficients_offset = molecules_coefficients_offset;
-  molecules_matrix->coefficients = (int64_t*)((void*)state + molecules_coefficients_offset);
+  molecules_matrix->coefficients = (double*)((void*)state + molecules_coefficients_offset);
 
   auxiliary_data_offset = molecules_coefficients_offset + molecules_matrix_field_size + data_pad;
   if (auxiliary_data_offset != state->auxiliary_data_offset) {

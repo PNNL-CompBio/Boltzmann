@@ -204,8 +204,9 @@ int alloc2(struct state_struct *state, int setup) {
   }
   
   if (success) {
+    ask_for = nze * double_size;
     usage += ask_for;
-    reactions_matrix->coefficients = (int64_t*)calloc(one_l,ask_for);
+    reactions_matrix->coefficients = (double *)calloc(one_l,ask_for);
     if (reactions_matrix->coefficients == NULL) {
       success = 0;
       if (lfp) {
@@ -229,9 +230,9 @@ int alloc2(struct state_struct *state, int setup) {
     }
   }
   if (success) {
-    ask_for = 2 * num_rxns * int64_t_size;
+    ask_for = 2 * num_rxns * double_size;
     usage += ask_for;
-    reactions_matrix->solvent_coefficients = (int64_t*)calloc(one_l,ask_for);
+    reactions_matrix->solvent_coefficients = (double*)calloc(one_l,ask_for);
     if (reactions_matrix->solvent_coefficients == NULL) {
       success = 0;
       if (lfp) {
@@ -420,9 +421,9 @@ int alloc2(struct state_struct *state, int setup) {
     }
   }
   if (success) {
-    ask_for = (num_rxns + (num_rxns & 1)) * int_size;
+    ask_for = num_rxns * double_size;
     usage+=ask_for;
-    state->coeff_sum = (int *)calloc(one_l,ask_for);
+    state->coeff_sum = (double*)calloc(one_l,ask_for);
     if (state->coeff_sum == NULL) {
       success = 0;
       if (lfp) {

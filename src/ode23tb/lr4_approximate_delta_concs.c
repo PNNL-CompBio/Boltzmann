@@ -2,6 +2,7 @@
 
 #include "compute_flux_scaling.h"
 #include "update_rxn_likelihoods.h"
+#include "conc_to_pow.h"
 
 #include "lr4_approximate_delta_concs.h"
 
@@ -15,7 +16,9 @@ int lr4_approximate_delta_concs(struct state_struct *state,
     reverse reaction likelihoods are the same as the base reaction.
     Get reference from Bill Cannon
     Called by: approximate_delta_concs
-    Calls:     update_rxn_likelihoods
+    Calls:     update_rxn_likelihoods,
+               compute_flux_scaling,
+	       conc_to_pow
 
                                 TMF
     state                       *SI   Boltzmant state structure.
@@ -53,12 +56,15 @@ int lr4_approximate_delta_concs(struct state_struct *state,
   double  backward;
   double  pt;
   double  rt;
+  double  klim;
+  double  count_mi;
+  double  telescoping;
+  double  *coefficients;
+  double  *rcoefficients;
   int64_t *molecules_ptrs;
   int64_t *rxn_indices;
-  int64_t *coefficients;
   int64_t *rxn_ptrs;
   int64_t *molecule_indices;
-  int64_t *rcoefficients;
   int num_species;
   int num_rxns;
   int rxn;
@@ -70,8 +76,6 @@ int lr4_approximate_delta_concs(struct state_struct *state,
   int mi;
   int success;
 
-  int klim;
-  int k;
 
   FILE *lfp;
   FILE *efp;
@@ -100,8 +104,8 @@ int lr4_approximate_delta_concs(struct state_struct *state,
   conc_to_count    = state->conc_to_count;
   forward_rxn_likelihoods = state->ode_forward_lklhds;
   reverse_rxn_likelihoods = state->ode_reverse_lklhds;
+  telescoping      = 0.0;
   flux_scaling     = compute_flux_scaling(state,concs);
-
   lfp      = state->lfp;
   if ((base_rxn < 0)  || (base_rxn >= num_rxns)) {
     success = 0;
@@ -130,15 +134,23 @@ int lr4_approximate_delta_concs(struct state_struct *state,
     for (j=rxn_ptrs[i];j<rxn_ptrs[i+1];j++) {
       mi = molecule_indices[j];
       klim = rcoefficients[j];
-      if (klim < 0) {
+      count_mi = counts[mi];
+      if (klim < 0.0) {
+	klim = 0.0 - klim;
+	rt = rt * conc_to_pow(count_mi,klim,telescoping);
+	/*
 	for (k=0;k<(-klim);k++) {
 	  rt = rt * counts[mi];
 	}
+	*/
       } else {
-	if (klim > 0) {
+	if (klim > 0.0) {
+	  pt = pt * conc_to_pow(count_mi,klim,telescoping);
+	  /*
 	  for (k=0;k<klim;k++) {
 	    pt = pt * counts[mi];
 	  }
+	  */
 	}
       }
     }
@@ -166,7 +178,7 @@ int lr4_approximate_delta_concs(struct state_struct *state,
       if (molecule->variable == 1) {
 	for (j=molecules_ptrs[i];j<molecules_ptrs[i+1];j++) {
 	  rxn = rxn_indices[j];
-	  if (coefficients[j] < 0) {
+	  if (coefficients[j] < 0.0) {
 	    if (reactant_term[rxn] > 0.0) {
 	      forward -= forward_rxn_likelihoods[rxn];
 	    }
@@ -174,7 +186,7 @@ int lr4_approximate_delta_concs(struct state_struct *state,
 	      backward += reverse_rxn_likelihoods[rxn];
 	    }
 	  } else {
-	    if (coefficients[j] > 0) {
+	    if (coefficients[j] > 0.0) {
 	      if (reactant_term[rxn] > 0.0) {
 		forward += forward_rxn_likelihoods[rxn];
 	      }

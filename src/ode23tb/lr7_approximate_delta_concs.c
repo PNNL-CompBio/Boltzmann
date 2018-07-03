@@ -1,7 +1,7 @@
 #include "boltzmann_structs.h"
 #include "boltzmann_cvodes_headers.h"
 #include "cvodes_params_struct.h"
-
+#include "conc_to_pow.h"
 #include "update_regulations.h"
 #include "lr7_approximate_delta_concs.h"
 
@@ -15,7 +15,7 @@ int lr7_approximate_delta_concs(struct state_struct *state,
 
     Get reference from Bill Cannon
     Called by: approximate_delta_concs
-    Calls:     update_regulations, fprintf, fflush
+    Calls:     update_regulations, conc_to_pow, fprintf, fflush
 
                                 TMF
     state                       *SI   Boltzmant state structure.
@@ -50,13 +50,24 @@ int lr7_approximate_delta_concs(struct state_struct *state,
   double  *rfc;
   double  *ke;
   double  *rke;
+  double  *coefficients;
+  double  *rcoefficients;
+  double  *coeff_sum;
+
+  int64_t *molecules_ptrs;
+  int64_t *rxn_indices;
+  int64_t *rxn_ptrs;
+  int64_t *molecule_indices;
+
   double  flux_scaling;
   double  pt;
   double  rt;
   double  tr;
   double  tp;
   double  conc_mi;
+  /*
   double  thermo_adj;
+  */
   double  volume;
   double  recip_volume;
   double  avogadro;
@@ -65,14 +76,14 @@ int lr7_approximate_delta_concs(struct state_struct *state,
   double  keq_adj;
   double  rkeq_adj;
   double  multiplier;
-  int64_t *molecules_ptrs;
-  int64_t *rxn_indices;
-  int64_t *coefficients;
-  int64_t *rxn_ptrs;
-  int64_t *molecule_indices;
-  int64_t *rcoefficients;
-
-  int *coeff_sum;
+  double  klim;
+  double  telescoping;
+  double  volume_avo;
+  double  recip_volume_avo;
+  double  conc_mi_plus;
+  /*
+  double  sum_coeff;
+  */
 
   int num_species;
   int num_rxns;
@@ -86,17 +97,11 @@ int lr7_approximate_delta_concs(struct state_struct *state,
   int mi;
   int ci;
 
-  int k;
-  int klim;
-
   int compute_sensitivities;
   int ode_solver_choice;
 
-  int sum_coeff;
   int use_regulation;
-
   int count_or_conc;
-  int padi;
 
   FILE *lfp;
   FILE *efp;
@@ -127,6 +132,7 @@ int lr7_approximate_delta_concs(struct state_struct *state,
   avogadro         = state->avogadro;
   recip_avogadro   = state->recip_avogadro;
   use_regulation   = state->use_regulation;
+  telescoping      = 0.0;
   /*
     If we are using cvodes and computing sensitivites the 
     call may be made with perturbed equilibrium constants (the sensitivity
@@ -180,7 +186,10 @@ int lr7_approximate_delta_concs(struct state_struct *state,
     rt = 1.0;
     tr = 1.0;
     tp = 1.0;
-    sum_coeff = 0;
+    multiplier = 1.0;
+    /*
+    sum_coeff = 0.0;
+    */
     for (j=rxn_ptrs[i];j<rxn_ptrs[i+1];j++) {
       mi = molecule_indices[j];
       molecule = (struct molecule_struct *)&molecules[mi];
@@ -188,30 +197,49 @@ int lr7_approximate_delta_concs(struct state_struct *state,
       compartment = (struct compartment_struct *)&compartments[ci];
       recip_volume = compartment->recip_volume;
       volume       = compartment->volume;
+      volume_avo   = volume * avogadro;
+      recip_volume_avo = recip_volume * recip_avogadro;
       klim = rcoefficients[j];
+      /*
       sum_coeff += klim;
-      thermo_adj = abs(klim) * recip_volume * recip_avogadro;
+      thermo_adj = abs(klim) * recip_volume_avo;
+      */
       conc_mi = concs[mi];
-      if (klim < 0) {
+      if (klim < 0.0) {
+	klim = 0.0 - klim;
+	conc_mi_plus = conc_mi + (klim * recip_volume_avo);
+	rt = rt * conc_to_pow(conc_mi,klim,telescoping);
+	tr = tr * conc_to_pow(conc_mi_plus,klim,telescoping);
+	multiplier = multiplier * conc_to_pow(volume_avo,klim,telescoping);
+	/*
 	for (k=0;k<(-klim);k++) {
 	  rt = rt * conc_mi;
 	  tr = tr * (conc_mi + thermo_adj);
 	}
+	*/
       } else {
-	if (klim > 0) {
+	if (klim > 0.0) {
+	  conc_mi_plus = conc_mi + (klim * recip_volume_avo);
+	  pt = pt * conc_to_pow(conc_mi,klim,telescoping);
+	  tp = tp * conc_to_pow(conc_mi_plus,klim,telescoping);
+	  multiplier = multiplier * conc_to_pow(recip_volume_avo,klim,
+						telescoping);
+	  /*
 	  for (k=0;k<klim;k++) {
 	    pt = pt * conc_mi;
 	    tp = tp * (conc_mi + thermo_adj);
 	  }
+	  */
 	}
       }
     } /*  end for (j... ) */
+    keq_adj = multiplier;
+    rkeq_adj = 1.0/multiplier;
+    /*
     keq_adj = 1.0;
     rkeq_adj = 1.0;
     multiplier = 1.0;
-    /*
     sum_coeff = coeff_sum[i];
-    */
     if (sum_coeff > 0) {
       multiplier = recip_volume * recip_avogadro;
     } else {
@@ -224,6 +252,7 @@ int lr7_approximate_delta_concs(struct state_struct *state,
       keq_adj *= multiplier;
     }
     rkeq_adj = 1.0/keq_adj;
+    */
     /*
     fprintf(stderr,"for reaction %d keq_adj = %le", i,keq_adj);
     */
@@ -245,7 +274,7 @@ int lr7_approximate_delta_concs(struct state_struct *state,
       if (molecule->variable == 1) {
 	for (j=molecules_ptrs[i];j<molecules_ptrs[i+1];j++) {
 	  rxn = rxn_indices[j];
-	  if (coefficients[j] != 0) {
+	  if (coefficients[j] != 0.0) {
 	    fluxi += (rfc[rxn]*((double)coefficients[j]));
 	  }
 	} /* end for(j...) */

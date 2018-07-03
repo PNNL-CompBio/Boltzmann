@@ -36,12 +36,12 @@ int print_dg0_ke(struct state_struct *state) {
   struct reactions_matrix_struct *rxns_matrix;
   struct compartment_struct *compartments;
   struct compartment_struct *compartment;
-  int64_t *rxn_ptrs;
-  int64_t *coefficients;
-  int64_t *matrix_text;
-  int64_t *compartment_indices;
+  double *coefficients;
   double *dg0s;
   double *ke;
+  int64_t *rxn_ptrs;
+  int64_t *matrix_text;
+  int64_t *compartment_indices;
 
   char *molecules_text;
   char *compartment_text;
@@ -50,6 +50,8 @@ int print_dg0_ke(struct state_struct *state) {
   char *molecule_name;
   char *compartment_name;
 
+  double coeff;
+
   int success;
   int rxns;
 
@@ -57,7 +59,7 @@ int print_dg0_ke(struct state_struct *state) {
   int np;
 
   int nr;
-  int coeff;
+  int padi;
 
   int j;
   int cmpt;
@@ -111,10 +113,10 @@ int print_dg0_ke(struct state_struct *state) {
 	cmpt  = (int)compartment_indices[j];
 	compartment = (struct compartment_struct *)&compartments[cmpt];
 	compartment_name = (char*)&compartment_text[compartment->string];
-	if (coeff < 0) {
-	  if (coeff < -1) {
+	if (coeff < 0.0) {
+	  if (coeff != -1.0) {
 	    coeff = -coeff;
-	    fprintf(dg0_ke_fp,"%d ",coeff);
+	    fprintf(dg0_ke_fp,"%le ",coeff);
 	  }
 	  molecule_name = (char*)&molecules_text[matrix_text[j]];
 	  if (cmpt > 0) {
@@ -137,9 +139,9 @@ int print_dg0_ke(struct state_struct *state) {
 	cmpt  = (int)compartment_indices[j];
 	compartment = (struct compartment_struct *)&compartments[cmpt];
 	compartment_name = (char*)&compartment_text[compartment->string];
-	if (coeff > 0) {
-	  if (coeff > 1) {
-	    fprintf(dg0_ke_fp,"%d ",coeff);
+	if (coeff > 0.0) {
+	  if (coeff != 1.0) {
+	    fprintf(dg0_ke_fp,"%le ",coeff);
 	  }
 	  molecule_name = (char*)&molecules_text[matrix_text[j]];
 	  if (cmpt > 0) {

@@ -53,6 +53,7 @@ struct reaction_struct {
   double ph;
   double temp_kelvin;
   double ionic_strength;
+  double coefficient_sum;
 
   int  num_reactants;
   int  num_products;
@@ -75,10 +76,6 @@ struct reaction_struct {
   */
   int deltag0_computed;
   int num_regulators;
-
-  int coefficient_sum;
-  int padi;
-  
 }
 ;
 #endif

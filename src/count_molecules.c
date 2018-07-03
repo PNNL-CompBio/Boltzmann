@@ -36,6 +36,7 @@ int count_molecules(char* molecules_line, int64_t *molecules_len) {
     been remove from molecules_line.
     Called by size_rxns_file
   */
+  double coef;
   char *line;
   int line_len;
   int pos;
@@ -64,7 +65,7 @@ int count_molecules(char* molecules_line, int64_t *molecules_len) {
       if (sl > 0) {
 	molecules += 1;
 	pos += sl;
-	if (is_a_coef(sl,line)) {
+	if (is_a_coef(sl,line,&coef)) {
 	  /* now it may be that a molecule is preceded by a
 	     coefficient
 	     if that is the case then we need to skip the coefficient

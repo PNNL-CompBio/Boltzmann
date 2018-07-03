@@ -44,10 +44,11 @@ int echo_reactions_file(struct state_struct *state) {
   int64_t *rxn_ptrs;
   int64_t *molecules_indices;
   int64_t *compartment_indices;
-  int64_t *coefficients;
+  double  *coefficients;
   int64_t *molecule_name_ptr;
   int64_t metabolite;
   int64_t reg_base;
+  double  coeff;
 
   char *rxn_title_text;
   char *pathway_text;
@@ -66,14 +67,14 @@ int echo_reactions_file(struct state_struct *state) {
   int np;
   int nr;
   
-  int coeff;
   int j;
+  int i;
 
   int max_regs_per_rxn;
   int use_regulation;
 
-  int i;
   int ci;
+  int padi;
 
   char tab;
   char padc[7];
@@ -143,10 +144,10 @@ int echo_reactions_file(struct state_struct *state) {
       for (j=rxn_ptrs[rxns];j<rxn_ptrs[rxns+1];j++) {
 	coeff = coefficients[j];
 	ci    = compartment_indices[j];
-	if (coeff < 0) {
-	  if (coeff < -1) {
+	if (coeff < 0.0) {
+	  if (coeff != -1.0) {
 	    coeff = -coeff;
-	    fprintf(rxn_echo_fp,"%d ",coeff);
+	    fprintf(rxn_echo_fp,"%le ",coeff);
 	  }
 	  molecule_name = (char*)&molecules_text[molecule_name_ptr[j]];
 	  if (ci > 0) {
@@ -170,9 +171,9 @@ int echo_reactions_file(struct state_struct *state) {
       for (j=rxn_ptrs[rxns];j<rxn_ptrs[rxns+1];j++) {
 	coeff = coefficients[j];
 	ci    = compartment_indices[j];
-	if (coeff > 0) {
-	  if (coeff > 1) {
-	    fprintf(rxn_echo_fp,"%d ",coeff);
+	if (coeff > 0.0) {
+	  if (coeff != 1.0) {
+	    fprintf(rxn_echo_fp,"%le ",coeff);
 	  }
 	  molecule_name = (char*)&molecules_text[molecule_name_ptr[j]];
 	  if (ci > 0) {

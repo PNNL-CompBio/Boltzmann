@@ -30,7 +30,7 @@ extern void sbml_process_species_reference_tag(struct sbml2bo_struct *state,
 					       char *comp, 
 					       int not_in_tag, 
 					       int *species_count_p,
-					       int *coefficient_p,
+					       double *coefficient_p,
 					       int *enclosing_tag_p,
 					       FILE *rxns_fp,
 					       FILE *error_fp);

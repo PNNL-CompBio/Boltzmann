@@ -2,6 +2,7 @@
 #include "boltzmann_cvodes_headers.h"
 #include "cvodes_params_struct.h"
 #include "get_counts.h"
+#include "conc_to_pow.h"
 #include "update_regulations.h"
 #include "stable_add.h"
 #include "lr12_approximate_delta_concs.h"
@@ -19,6 +20,7 @@ int lr12_approximate_delta_concs(struct state_struct *state,
     Get reference from Bill Cannon
     Called by: approximate_delta_concs
     Calls:     get_counts,
+               conc_to_pow,
                update_regulations,
 
                                 TMF
@@ -78,12 +80,15 @@ int lr12_approximate_delta_concs(struct state_struct *state,
   */
   double  fluxi;
   double  count_mi;
+  double  klim;
+  double  count_plus;
+  double  telescoping;
   int64_t *molecules_ptrs;
   int64_t *rxn_indices;
-  int64_t *coefficients;
+  double  *coefficients;
   int64_t *rxn_ptrs;
   int64_t *molecule_indices;
-  int64_t *rcoefficients;
+  double  *rcoefficients;
   int num_species;
   int num_rxns;
 
@@ -95,9 +100,6 @@ int lr12_approximate_delta_concs(struct state_struct *state,
 
   int mi;
   int irfc;
-
-  int k;
-  int klim;
 
   int use_regulation;
   int count_or_conc;
@@ -146,6 +148,7 @@ int lr12_approximate_delta_concs(struct state_struct *state,
   counts           = state->ode_counts;
   conc_to_count    = state->conc_to_count;
   use_regulation   = state->use_regulation;
+  telescoping      = 0.0;
   ode_solver_choice = state->ode_solver_choice;
   compute_sensitivities = state->compute_sensitivities;
   if ((ode_solver_choice == 1) && compute_sensitivities) {
@@ -229,17 +232,28 @@ int lr12_approximate_delta_concs(struct state_struct *state,
       */
       klim = coefficients[j];
       count_mi = counts[mi];
-      if (klim < 0) {
+      if (klim < 0.0) {
+	klim = 0.0 - klim;
+	count_plus = count_mi + klim;
+	rt = rt * conc_to_pow(count_mi,klim,telescoping);
+	tr = tr * conc_to_pow(count_plus,klim,telescoping);
+	/*
 	for (k=0;k<(-klim);k++) {
 	  rt = rt * count_mi;
 	  tr = tr * (count_mi - klim);
 	}
+	*/
       } else {
-	if (klim > 0) {
+	if (klim > 0.0) {
+	  count_plus = count_mi + klim;
+	  pt = pt * conc_to_pow(count_mi,klim,telescoping);
+	  tp = tp * conc_to_pow(count_plus,klim,telescoping);
+	  /*
 	  for (k=0;k<klim;k++) {
 	    pt = pt * count_mi;
 	    tp = tp * (count_mi + klim);
 	  }
+	  */
 	}
       }
     }
@@ -274,7 +288,7 @@ int lr12_approximate_delta_concs(struct state_struct *state,
 	  rxn = rxn_indices[j];
 	  irfc = rxn + rxn;
 	  coeff = coefficients[j];
-	  if (coeff != 0) {
+	  if (coeff != 0.0) {
 	    deriv_acc[jj]   = rfc[irfc]*coeff;
 	    deriv_acc[jj+1] = rfc[irfc+1]*coeff;
 	    jj += 2;

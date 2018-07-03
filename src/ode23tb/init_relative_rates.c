@@ -13,7 +13,7 @@ int init_relative_rates(struct state_struct *state) {
   */
   struct reactions_matrix_struct *reactions_matrix; 
   int64_t *molecules_indices;
-  int64_t *coefficients;
+  double  *coefficients;
   int64_t *rxn_ptrs;
   double *log_kf_rel;
   double *log_kr_rel;
@@ -23,6 +23,7 @@ int init_relative_rates(struct state_struct *state) {
   double m_recip_rt;
   double scaled_fg0s;
   double scaled_rg0s;
+  double  coefficientj;
   /*
   double g0_sum_min;
   double g0_sum_max;
@@ -31,7 +32,6 @@ int init_relative_rates(struct state_struct *state) {
   double adj_r_g0;
   */
   int64_t j;
-  int64_t coefficientj;
   int64_t moleculej;
   int nrxns;
   int success;
@@ -57,10 +57,10 @@ int init_relative_rates(struct state_struct *state) {
     for (j=rxn_ptrs[i];j<rxn_ptrs[i+1];j++) {
       moleculej = molecules_indices[j];
       coefficientj = coefficients[j];
-      if (coefficientj < 0) {
+      if (coefficientj < 0.0) {
 	forward_g0_sum += (coefficientj * delta_g0_tfs[moleculej]);
       } else {
-	if (coefficientj > 0) {
+	if (coefficientj > 0.0) {
 	  reverse_g0_sum -= (coefficientj * delta_g0_tfs[moleculej]);
 	}
       }

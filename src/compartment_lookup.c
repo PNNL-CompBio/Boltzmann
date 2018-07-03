@@ -28,7 +28,7 @@ int compartment_lookup(char *compartment_name, struct state_struct *state) {
   /*
     Return the index of the compartment_name in the unique_compartments 
     sorted list or -1 if not found.
-    Called by: read_initial_concentrations.
+    Called by: read_initial_concentrations,translate_regulation_metabolites
   */
   struct compartment_struct *sorted_compartments;
   char *compartment_text;

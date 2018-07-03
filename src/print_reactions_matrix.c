@@ -41,9 +41,10 @@ int print_reactions_matrix(struct state_struct *state) {
   struct molecule_struct *molecules;
   struct compartment_struct *compartments;
   struct compartment_struct *cur_cmpt;
+  double *mat_row;
+  double *coefficients;
   int64_t *rxn_ptrs;
   int64_t *molecules_indices;
-  int64_t *coefficients;
   int64_t *matrix_text;
 
   char *molecules_text;
@@ -53,7 +54,7 @@ int print_reactions_matrix(struct state_struct *state) {
   char *molecule;
   char *cmpt_string;
 
-  int  *mat_row;
+  double coeff;
 
   int success;
   int rxns;
@@ -61,14 +62,11 @@ int print_reactions_matrix(struct state_struct *state) {
   int np;
   int nr;
   
-  int coeff;
   int j;
+  int ci;
 
   int nrxns;
   int nmols;
-
-  int ci;
-  int padi;
 
   FILE *rxn_mat_fp;
   FILE *lfp;
@@ -128,7 +126,7 @@ int print_reactions_matrix(struct state_struct *state) {
 	Initialize the matrix_row to be all zeros;
       */
       for (j=0;j<nmols;j++) {
-	mat_row[j] = 0;
+	mat_row[j] = 0.0;
       }
       if (reaction->title>=0) {
 	title = (char *)&rxn_title_text[reaction->title];
@@ -139,11 +137,11 @@ int print_reactions_matrix(struct state_struct *state) {
       nr = 0;
       for (j=rxn_ptrs[rxns];j<rxn_ptrs[rxns+1];j++) {
 	coeff = coefficients[j];
-	if (coeff < 0) {
+	if (coeff < 0.0) {
 	  mat_row[molecules_indices[j]] = coeff;
-	  if (coeff < -1) {
-	    coeff = -coeff;
-	    fprintf(rxn_mat_fp,"%d ",coeff);
+	  if (coeff != -1.0) {
+	    coeff = 0.0 - coeff;
+	    fprintf(rxn_mat_fp,"%le ",coeff);
 	  }
 	  molecule = (char*)&molecules_text[matrix_text[j]];
 	  fprintf(rxn_mat_fp,"%s",molecule);
@@ -159,10 +157,10 @@ int print_reactions_matrix(struct state_struct *state) {
       np = 0;
       for (j=rxn_ptrs[rxns];j<rxn_ptrs[rxns+1];j++) {
 	coeff = coefficients[j];
-	if (coeff > 0) {
+	if (coeff > 0.0) {
 	  mat_row[molecules_indices[j]] = coeff;
-	  if (coeff > 1) {
-	    fprintf(rxn_mat_fp,"%d ",coeff);
+	  if (coeff != 1.0) {
+	    fprintf(rxn_mat_fp,"%le ",coeff);
 	  }
 	  molecule = (char*)&molecules_text[matrix_text[j]];
 	  fprintf(rxn_mat_fp,"%s",molecule);
@@ -178,7 +176,7 @@ int print_reactions_matrix(struct state_struct *state) {
 	Now print out the coefficients (including 0's for the matrix row)
       */
       for (j=0;j<nmols;j++) {
-	fprintf(rxn_mat_fp,"\t%d",mat_row[j]);
+	fprintf(rxn_mat_fp,"\t%le",mat_row[j]);
       }
       fprintf(rxn_mat_fp,"\n");
       reaction += 1; /* Caution address arithmetic here.*/

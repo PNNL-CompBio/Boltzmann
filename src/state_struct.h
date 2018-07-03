@@ -305,8 +305,8 @@ struct state_struct {
   double  *reg_exponent; /* len = number_reactions * max_regs_per_rxn */
   double  *reg_drctn;    /* len = number_reactions * max_regs_per_rxn */
   double  *dfdke_dfdmu0_work; /* len = 3*unique_molecules */
+  double  *coeff_sum;    /* len = number_reactions */
   int64_t *reg_species;  /* len = number_reactions * max_regs_per_rxn */
-  int     *coeff_sum;    /* len = number_reactions + (number_reactions & 1) */
   int     *use_rxn;      /* Vector of flags of length number_reactions
 	 		   indicating whether the reaction is to be included
 			   1 for use, 0 for ignore, default value is 1.
@@ -446,9 +446,9 @@ struct state_struct {
   double  *rxn_view_likelihoods;    
   /* rxn_view_hist_length * number_reactions */
   double  *rev_rxn_view_likelihoods; 
+  double  *rxn_mat_row;               /* (nunique_molecules) */
   int64_t *rxn_fire;                  /* (number_reactions * 2) + 2*/
   int  *cmpt_tracking;             /* number_compartments */
-  int  *rxn_mat_row;               /* (nunique_molecules) */
 
 
   FILE *rxn_fp;

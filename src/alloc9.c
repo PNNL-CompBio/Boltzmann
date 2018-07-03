@@ -27,9 +27,9 @@ int alloc9(struct state_struct *state) {
   double  *no_op_likelihood;
   double  *rxn_view_likelihoods;
   double  *rev_rxn_view_likelihoods;
+  double  *rxn_mat_row;
   int64_t *rxn_fire;
   int64_t usage;
-  int     *rxn_mat_row;
   int64_t rxn_view_hist_length;
   int64_t number_reactions;
   int64_t number_species;
@@ -165,7 +165,7 @@ int alloc9(struct state_struct *state) {
     */
   }
   if (success) {
-    ask_for = number_species * sizeof(int);
+    ask_for = number_species * sizeof(double);
     data_pad = (align_len - (ask_for & align_mask)) & align_mask;
     ask_for += data_pad;
     usage += ask_for;
@@ -173,7 +173,7 @@ int alloc9(struct state_struct *state) {
     /*
     if (direction == 0) {
     */
-      rxn_mat_row = (int*)calloc(one_l,ask_for);
+      rxn_mat_row = (double*)calloc(one_l,ask_for);
       if (rxn_mat_row == NULL) {
 	success = 0;
 	if (lfp) {

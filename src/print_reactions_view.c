@@ -33,14 +33,14 @@ int print_reactions_view(struct state_struct *state) {
   */
   struct reaction_struct *reaction;
   struct reactions_matrix_struct *rxns_matrix;
-  int64_t *rxn_ptrs;
-  int64_t *molecules_indices;
-  int64_t *coefficients;
-  int64_t *matrix_text;
+  double *coefficients;
   double *rxn_view_data;
   double *rev_rxn_view_data;
   double *activities;
   double *no_op_likelihood;
+  int64_t *rxn_ptrs;
+  int64_t *molecules_indices;
+  int64_t *matrix_text;
   int64_t *rxn_fire;
   int64_t net_fire;
 
@@ -49,20 +49,20 @@ int print_reactions_view(struct state_struct *state) {
   char *title;
   char *molecule;
 
+  double coeff;
+
   int success;
   int rxns;
 
   int np;
   int nr;
   
-  int coeff;
   int j;
-
   int k;
-  int rxn_view_hist_length;
 
+  int rxn_view_hist_length;
   int nrxns;
-  int padi;
+
 
   FILE *rxn_view_fp;
   FILE *lfp;
@@ -113,7 +113,7 @@ int print_reactions_view(struct state_struct *state) {
       nr = 0;
       for (j=rxn_ptrs[rxns];j<rxn_ptrs[rxns+1];j++) {
 	coeff = coefficients[j];
-	if (coeff < 0) {
+	if (coeff < 0.0) {
 	  if (nr > 0) {
 	    /*
 	      If this is not the first reactant printed out
@@ -121,9 +121,9 @@ int print_reactions_view(struct state_struct *state) {
 	    */
 	    fprintf(rxn_view_fp," + ");
 	  }
-	  if (coeff < -1) {
+	  if (coeff != -1.0) {
 	    coeff = -coeff;
-	    fprintf(rxn_view_fp,"%d ",coeff);
+	    fprintf(rxn_view_fp,"%le ",coeff);
 	  }
 	  molecule = (char*)&molecules_text[matrix_text[j]];
 	  fprintf(rxn_view_fp,"%s",molecule);
@@ -134,7 +134,7 @@ int print_reactions_view(struct state_struct *state) {
       np = 0;
       for (j=rxn_ptrs[rxns];j<rxn_ptrs[rxns+1];j++) {
 	coeff = coefficients[j];
-	if (coeff > 0) {
+	if (coeff > 0.0) {
 	  if (np > 0) {
 	    /*
 	      If this is not the first product  printed out
@@ -142,8 +142,8 @@ int print_reactions_view(struct state_struct *state) {
 	    */
 	    fprintf(rxn_view_fp," + ");
 	  }
-	  if (coeff > 1) {
-	    fprintf(rxn_view_fp,"%d ",coeff);
+	  if (coeff != 1.0) {
+	    fprintf(rxn_view_fp,"%le ",coeff);
 	  }
 	  molecule = (char*)&molecules_text[matrix_text[j]];
 	  fprintf(rxn_view_fp,"%s",molecule);
@@ -177,13 +177,13 @@ int print_reactions_view(struct state_struct *state) {
       nr = 0;
       for (j=rxn_ptrs[rxns];j<rxn_ptrs[rxns+1];j++) {
 	coeff = coefficients[j];
-	if (coeff < 0) {
+	if (coeff < 0.0) {
 	  if (nr > 0) {
 	    fprintf(rxn_view_fp," + ");
 	  }
-	  if (coeff < -1) {
+	  if (coeff != -1.0) {
 	    coeff = -coeff;
-	    fprintf(rxn_view_fp,"%d ",coeff);
+	    fprintf(rxn_view_fp,"%le ",coeff);
 	  }
 	  molecule = (char*)&molecules_text[matrix_text[j]];
 	  fprintf(rxn_view_fp,"%s",molecule);
@@ -194,12 +194,12 @@ int print_reactions_view(struct state_struct *state) {
       np = 0;
       for (j=rxn_ptrs[rxns];j<rxn_ptrs[rxns+1];j++) {
 	coeff = coefficients[j];
-	if (coeff > 0) {
+	if (coeff > 0.0) {
 	  if (np > 0) {
 	    fprintf(rxn_view_fp," + ");
 	  }
-	  if (coeff > 1) {
-	    fprintf(rxn_view_fp,"%d ",coeff);
+	  if (coeff != 1.0) {
+	    fprintf(rxn_view_fp,"%le ",coeff);
 	  }
 	  molecule = (char*)&molecules_text[matrix_text[j]];
 	  fprintf(rxn_view_fp,"%s",molecule);
