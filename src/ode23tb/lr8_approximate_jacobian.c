@@ -105,7 +105,7 @@ int lr8_approximate_jacobian(struct state_struct *state,
   double  fluxi;
   double  count_mi;
   double  count_mi_plus;
-  double  telescoping;
+  double  factorial;
   double  conc_mi;
   double  activityi;
   double  dzero;
@@ -179,7 +179,7 @@ int lr8_approximate_jacobian(struct state_struct *state,
   use_regulation   = state->use_regulation;
   ode_solver_choice = state->ode_solver_choice;
   compute_sensitivities = state->compute_sensitivities;
-  telescoping           = 0.0;
+  factorial           = 0.0;
   /*
     The following vectors are allocated in boltzmann_cvodes 
   */
@@ -248,9 +248,9 @@ int lr8_approximate_jacobian(struct state_struct *state,
       count_mi = counts[mi];
       if (coef < 0.0) {
 	coef = 0.0 - coef;
-	rt = rt * conc_to_pow(count_mi,coef,telescoping);
+	rt = rt * conc_to_pow(count_mi,coef,factorial);
 	count_mi_plus = count_mi + coef;
-	tr = tr * conc_to_pow(count_mi_plus,coef,telescoping);
+	tr = tr * conc_to_pow(count_mi_plus,coef,factorial);
 	/*
 	for (k=0;k<(-coef);k++) {
 	  rt = rt * count_mi;
@@ -259,9 +259,9 @@ int lr8_approximate_jacobian(struct state_struct *state,
 	*/
       } else {
 	if (coef > 0.0) {
-	  pt = pt * conc_to_pow(count_mi,coef,telescoping);
+	  pt = pt * conc_to_pow(count_mi,coef,factorial);
 	  count_mi_plus = count_mi + coef;
-	  tp = tp * conc_to_pow(count_mi_plus,coef,telescoping);
+	  tp = tp * conc_to_pow(count_mi_plus,coef,factorial);
 	  /*
 	  for (k=0;k<coef;k++) {
 	    pt = pt * count_mi;
