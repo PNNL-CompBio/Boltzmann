@@ -620,7 +620,7 @@ void dtbsv_(char *uplop, char *transp, char *diagp, int *np, int *kp,
 	    j_lda = lda;
 	    for (j=1;j<=n;j++) {
 	      temp = x[jx];
-	      ix = ix;
+	      ix = kx;
 	      l = kplus1 - j;
 	      max_1_jmk = j-k;
 	      if (1 > max_1_jmk) {

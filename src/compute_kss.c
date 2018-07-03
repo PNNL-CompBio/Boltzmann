@@ -50,7 +50,7 @@ int compute_kss(struct state_struct *state) {
   double *coefficients;
 
   double coeff;
-  double telescoping;
+  double factorial;
 
   int64_t *rxn_ptrs;
   int64_t *molecules_indices;
@@ -130,8 +130,8 @@ int compute_kss(struct state_struct *state) {
         if (coeff < 0) {
 	  coeff = -coeff;
 	  kss_r_mod = kss_e_val[k] * conc_to_count;
-	  telescoping = 0.0;
-	  rrxn_kss = rrxn_kss * conc_to_pow(kss_r_mod,coeff,telescoping);
+	  factorial = 0.0;
+	  rrxn_kss = rrxn_kss * conc_to_pow(kss_r_mod,coeff,factorial);
 	  /*
 	  for (i=0;i<coeff;i++) {
 	    rrxn_kss = rrxn_kss * kss_r_mod;
@@ -141,8 +141,8 @@ int compute_kss(struct state_struct *state) {
 	  if (coeff > 0) {
 	    if (kss_e_val[k] > 0.0) {
 	      kss_p_mod = count_to_conc/kss_e_val[k];
-	      telescoping = 0.0;
-	      rrxn_kss = rrxn_kss * conc_to_pow(kss_p_mod,coeff,telescoping);
+	      factorial = 0.0;
+	      rrxn_kss = rrxn_kss * conc_to_pow(kss_p_mod,coeff,factorial);
 	      /*
 	      for (i=0;i<coeff;i++) {
 		rrxn_kss = rrxn_kss * kss_p_mod;

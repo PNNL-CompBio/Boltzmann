@@ -58,7 +58,7 @@ int lr4_approximate_delta_concs(struct state_struct *state,
   double  rt;
   double  klim;
   double  count_mi;
-  double  telescoping;
+  double  factorial;
   double  *coefficients;
   double  *rcoefficients;
   int64_t *molecules_ptrs;
@@ -104,7 +104,7 @@ int lr4_approximate_delta_concs(struct state_struct *state,
   conc_to_count    = state->conc_to_count;
   forward_rxn_likelihoods = state->ode_forward_lklhds;
   reverse_rxn_likelihoods = state->ode_reverse_lklhds;
-  telescoping      = 0.0;
+  factorial      = 0.0;
   flux_scaling     = compute_flux_scaling(state,concs);
   lfp      = state->lfp;
   if ((base_rxn < 0)  || (base_rxn >= num_rxns)) {
@@ -137,7 +137,7 @@ int lr4_approximate_delta_concs(struct state_struct *state,
       count_mi = counts[mi];
       if (klim < 0.0) {
 	klim = 0.0 - klim;
-	rt = rt * conc_to_pow(count_mi,klim,telescoping);
+	rt = rt * conc_to_pow(count_mi,klim,factorial);
 	/*
 	for (k=0;k<(-klim);k++) {
 	  rt = rt * counts[mi];
@@ -145,7 +145,7 @@ int lr4_approximate_delta_concs(struct state_struct *state,
 	*/
       } else {
 	if (klim > 0.0) {
-	  pt = pt * conc_to_pow(count_mi,klim,telescoping);
+	  pt = pt * conc_to_pow(count_mi,klim,factorial);
 	  /*
 	  for (k=0;k<klim;k++) {
 	    pt = pt * counts[mi];

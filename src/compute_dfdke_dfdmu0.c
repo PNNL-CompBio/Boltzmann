@@ -52,7 +52,7 @@ int compute_dfdke_dfdmu0(struct state_struct *state, double *concs) {
   double  gamma_ik;
   double  dfdke;
   double  count_plus;
-  double  telescoping;
+  double  factorial;
 
   int num_species;
   int num_rxns;
@@ -148,7 +148,7 @@ int compute_dfdke_dfdmu0(struct state_struct *state, double *concs) {
                   i
 
     */
-    telescoping = 0.0;
+    factorial = 0.0;
     forward_piece = dfdke_dfdmu0_work;
     reverse_piece = &forward_piece[num_species];
     mu0_partials  = &reverse_piece[num_species];
@@ -168,9 +168,9 @@ int compute_dfdke_dfdmu0(struct state_struct *state, double *concs) {
         gamma_im = rcoefficients[j];
         count_mi = counts[mi];
         if (gamma_im < 0.0) {
-	  rt = rt * conc_to_pow(count_mi,-gamma_im,telescoping);
+	  rt = rt * conc_to_pow(count_mi,-gamma_im,factorial);
 	  count_plus = count_mi - gamma_im;
-	  tr = tr * conc_to_pow(count_plus,-gamma_im,telescoping);
+	  tr = tr * conc_to_pow(count_plus,-gamma_im,factorial);
 	  /*
       	  for (k=0;k<(-gamma);k++) {
       	    rt = rt * count_mi;
@@ -179,9 +179,9 @@ int compute_dfdke_dfdmu0(struct state_struct *state, double *concs) {
 	  */
         } else {
 	  if (gamma_im > 0.0) {
-	    pt = pt * conc_to_pow(count_mi,gamma_im,telescoping);
+	    pt = pt * conc_to_pow(count_mi,gamma_im,factorial);
 	    count_plus = count_mi + gamma_im;
-	    tp = tp * conc_to_pow(count_plus,gamma_im,telescoping);
+	    tp = tp * conc_to_pow(count_plus,gamma_im,factorial);
 	    /*
 	    for (k=0;k<gamma;k++) {
 	      pt = pt * count_mi;

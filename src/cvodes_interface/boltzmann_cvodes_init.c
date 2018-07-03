@@ -390,11 +390,11 @@ int boltzmann_cvodes_init(void *cvode_mem,struct state_struct *state, double *co
 	  plist[i] = i;
 	}
 	/*
-	  Set pbar[i] = abs(ke[i]).
+	  Set pbar[i] = fabs(ke[i]).
 	*/
 	pbar = cvodes_params->pbar;
 	for (i=0;i<ns;i++) {
-	  pbar[i] = abs(ke[i]);
+	  pbar[i] = fabs(ke[i]);
 	}
 	/*
 	  Set the P used by cvodes sensitivity analyses to be state->ke.

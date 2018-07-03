@@ -1,9 +1,12 @@
 #include "system_includes.h"
 #include "conc_to_pow.h"
-double conc_to_pow(double conc, double pow, double telescoping) {
+double conc_to_pow(double conc, double pow, double factorial) {
   /*
     raise conc a double representing a concentration or a count to
-    a possibly non integer power, and use telescoping.
+    a possibly non integer power, and use factorial rising if factorial > 0 or factorial falling if factorial < 0 in computing the power.
+    Factorial  = 0.0 just computes conc^pow.
+    Note that for factorial_falling the first term is just conc, while for factorial rising the first term is 
+    (conc + factorial).
     Called by: compute_dfdke_dfdmu0,
                compute_kss,
 	       rxn_likelihood,
@@ -36,12 +39,12 @@ double conc_to_pow(double conc, double pow, double telescoping) {
   result = 1.0;
   term = conc;
   fract_pow = (double)int_part - abs_pow;
-  if (telescoping > 0.0) {
-    term += telescoping;
+  if (factorial > 0.0) {
+    term += factorial;
   }
   for (i=0;i<int_part;i++) {
     result = result*term;
-    term += telescoping;
+    term += factorial;
   }
   if (fract_pow > 0.0) {
     /*

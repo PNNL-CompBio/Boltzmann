@@ -73,7 +73,7 @@ int lr8_approximate_delta_concs(struct state_struct *state,
   double  fluxi;
   double  count_mi;
   double  klim;
-  double  telescoping;
+  double  factorial;
   double  count_mi_plus;
 
   double  *coefficients;
@@ -135,7 +135,7 @@ int lr8_approximate_delta_concs(struct state_struct *state,
   use_regulation   = state->use_regulation;
   ode_solver_choice = state->ode_solver_choice;
   compute_sensitivities = state->compute_sensitivities;
-  telescoping           = 0.0;
+  factorial           = 0.0;
   /*
     If we are using cvodes and computing sensitivites the 
     call may be made with perturbed equilibrium constants (the sensitivity
@@ -204,8 +204,8 @@ int lr8_approximate_delta_concs(struct state_struct *state,
       if (klim < 0.0) {
 	klim = 0.0 - klim;
 	count_mi_plus = count_mi + klim;
-	rt = rt * conc_to_pow(count_mi,klim,telescoping);
-	tr = tr * conc_to_pow(count_mi_plus,klim,telescoping);
+	rt = rt * conc_to_pow(count_mi,klim,factorial);
+	tr = tr * conc_to_pow(count_mi_plus,klim,factorial);
 	/*
 	for (k=0;k<(-klim);k++) {
 	  rt = rt * count_mi;
@@ -215,8 +215,8 @@ int lr8_approximate_delta_concs(struct state_struct *state,
       } else {
 	if (klim > 0.0) {
 	  count_mi_plus = count_mi + klim;
-	  pt = pt * conc_to_pow(count_mi,klim,telescoping);
-	  tp = tp * conc_to_pow(count_mi_plus,klim,telescoping);
+	  pt = pt * conc_to_pow(count_mi,klim,factorial);
+	  tp = tp * conc_to_pow(count_mi_plus,klim,factorial);
 	  /*
 	  for (k=0;k<klim;k++) {
 	    pt = pt * count_mi;

@@ -78,7 +78,7 @@ int lr9_approximate_delta_concs(struct state_struct *state,
   */
   double  fluxi;
   double  klim;
-  double  telescoping;
+  double  factorial;
   double  *coefficients;
   double  *rcoefficients;
   double  *coeff_sum;
@@ -147,7 +147,7 @@ int lr9_approximate_delta_concs(struct state_struct *state,
   use_regulation   = state->use_regulation;
   ode_solver_choice = state->ode_solver_choice;
   compute_sensitivities = state->compute_sensitivities;
-  telescoping           = 0.0;
+  factorial           = 0.0;
   if ((ode_solver_choice == 1) && compute_sensitivities) {
     cvodes_params = state->cvodes_params;
     ke = cvodes_params->p;
@@ -233,8 +233,8 @@ int lr9_approximate_delta_concs(struct state_struct *state,
 	conc_mi = concs[mi];
 	if (klim < 0.0) {
 	  klim = 0.0 - klim;
-	  rt = rt * conc_to_pow(conc_mi,klim,telescoping);
-	  multiplier = multiplier * conc_to_pow(volume,klim,telescoping);
+	  rt = rt * conc_to_pow(conc_mi,klim,factorial);
+	  multiplier = multiplier * conc_to_pow(volume,klim,factorial);
 	  /*
 	  for (k=0;k<(-klim);k++) {
 	    rt = rt * conc_mi;
@@ -243,9 +243,9 @@ int lr9_approximate_delta_concs(struct state_struct *state,
 	  */
 	} else {
 	  if (klim > 0.0) {
-	    pt = pt * conc_to_pow(conc_mi,klim,telescoping);
+	    pt = pt * conc_to_pow(conc_mi,klim,factorial);
 	    multiplier = multiplier * conc_to_pow(recip_volume,klim,
-						  telescoping);
+						  factorial);
 	    /*
 	    for (k=0;k<klim;k++) {
 	      pt = pt * conc_mi;

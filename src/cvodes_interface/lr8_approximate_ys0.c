@@ -31,7 +31,7 @@ int lr8_approximate_ys0(struct state_struct *state, double *ys0v,
   double  count_mi;
   double  count_plus;
   double  klim;
-  double  telescoping;
+  double  factorial;
 
   int ny;
   int ns;
@@ -58,7 +58,7 @@ int lr8_approximate_ys0(struct state_struct *state, double *ys0v,
   molecules_ptrs    = molecules_matrix->molecules_ptrs;
   rxn_indices       = molecules_matrix->reaction_indices;
   mcoefficients     = molecules_matrix->coefficients;
-  telescoping = 0.0;
+  factorial = 0.0;
   get_counts(ny,concs,conc_to_count,counts);
   ys0vi = ys0v;
   for (i=0;i<ns;i++) {
@@ -78,9 +78,9 @@ int lr8_approximate_ys0(struct state_struct *state, double *ys0v,
       count_mi = counts[mi];
       if (klim < 0.0) {
 	klim = 0.0 - klim;
-	rt   = rt * conc_to_pow(count_mi,klim,telescoping);
+	rt   = rt * conc_to_pow(count_mi,klim,factorial);
 	count_plus = count_mi + klim;
-	tr   = tr * conc_to_pow(count_plus,klim,telescoping);
+	tr   = tr * conc_to_pow(count_plus,klim,factorial);
 	/*
 	for (k=0;k<(-klim);k++) {
 	  rt = rt * count_mi;
@@ -89,9 +89,9 @@ int lr8_approximate_ys0(struct state_struct *state, double *ys0v,
 	*/
       } else {
 	if (klim > 0) {
-	  pt = pt * conc_to_pow(count_mi,klim,telescoping);
+	  pt = pt * conc_to_pow(count_mi,klim,factorial);
 	  count_plus = count_mi + klim;
-	  tp = tp * conc_to_pow(count_plus,klim,telescoping);
+	  tp = tp * conc_to_pow(count_plus,klim,factorial);
 	  /*
 	  for (k=0;k<klim;k++) {
 	    pt = pt * count_mi;

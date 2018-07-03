@@ -68,7 +68,7 @@ double rxn_likelihood_postselection(double *counts,
   double  right_counts;
   double  eq_k;
   double  coeff;
-  double  telescoping;
+  double  factorial;
   int64_t *rxn_ptrs;
   int64_t *molecules_indices;
   int success;
@@ -122,8 +122,8 @@ double rxn_likelihood_postselection(double *counts,
     }
     if (coeff < 0.0) {
       coeff = 0.0 - coeff;
-      telescoping = -1.0;
-      left_counts = left_counts * conc_to_pow(count,coeff,telescoping);
+      factorial = -1.0;
+      left_counts = left_counts * conc_to_pow(count,coeff,factorial);
       /*
       for (k=0;k<(0-coeff);k++) {
 	left_counts = left_counts * (count-k);	
@@ -135,8 +135,8 @@ double rxn_likelihood_postselection(double *counts,
 	is not to be used in computing likelihoods.
       */
       if (coeff > 0.0) {
-	telescoping = 1.0;
-	right_counts = right_counts * conc_to_pow(count,coeff,telescoping);
+	factorial = 1.0;
+	right_counts = right_counts * conc_to_pow(count,coeff,factorial);
 	/*
 	for (k=1;k<=coeff;k++) {
 	  right_counts = right_counts * (count+k);

@@ -77,7 +77,7 @@ int lr7_approximate_delta_concs(struct state_struct *state,
   double  rkeq_adj;
   double  multiplier;
   double  klim;
-  double  telescoping;
+  double  factorial;
   double  volume_avo;
   double  recip_volume_avo;
   double  conc_mi_plus;
@@ -132,7 +132,7 @@ int lr7_approximate_delta_concs(struct state_struct *state,
   avogadro         = state->avogadro;
   recip_avogadro   = state->recip_avogadro;
   use_regulation   = state->use_regulation;
-  telescoping      = 0.0;
+  factorial      = 0.0;
   /*
     If we are using cvodes and computing sensitivites the 
     call may be made with perturbed equilibrium constants (the sensitivity
@@ -208,9 +208,9 @@ int lr7_approximate_delta_concs(struct state_struct *state,
       if (klim < 0.0) {
 	klim = 0.0 - klim;
 	conc_mi_plus = conc_mi + (klim * recip_volume_avo);
-	rt = rt * conc_to_pow(conc_mi,klim,telescoping);
-	tr = tr * conc_to_pow(conc_mi_plus,klim,telescoping);
-	multiplier = multiplier * conc_to_pow(volume_avo,klim,telescoping);
+	rt = rt * conc_to_pow(conc_mi,klim,factorial);
+	tr = tr * conc_to_pow(conc_mi_plus,klim,factorial);
+	multiplier = multiplier * conc_to_pow(volume_avo,klim,factorial);
 	/*
 	for (k=0;k<(-klim);k++) {
 	  rt = rt * conc_mi;
@@ -220,10 +220,10 @@ int lr7_approximate_delta_concs(struct state_struct *state,
       } else {
 	if (klim > 0.0) {
 	  conc_mi_plus = conc_mi + (klim * recip_volume_avo);
-	  pt = pt * conc_to_pow(conc_mi,klim,telescoping);
-	  tp = tp * conc_to_pow(conc_mi_plus,klim,telescoping);
+	  pt = pt * conc_to_pow(conc_mi,klim,factorial);
+	  tp = tp * conc_to_pow(conc_mi_plus,klim,factorial);
 	  multiplier = multiplier * conc_to_pow(recip_volume_avo,klim,
-						telescoping);
+						factorial);
 	  /*
 	  for (k=0;k<klim;k++) {
 	    pt = pt * conc_mi;

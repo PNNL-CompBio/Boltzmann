@@ -103,7 +103,7 @@ double rxn_likelihood(double *counts,
   double  recip_avogadro;
   double  coeff;
   double  conc;
-  double  telescoping;
+  double  factorial;
   int64_t m_index;
   int64_t *rxn_ptrs;
   int64_t *molecules_indices;
@@ -174,10 +174,10 @@ double rxn_likelihood(double *counts,
     if (coeff < 0.0) {
       coeff = 0.0 - coeff;
       conc = count * volume_recip;
-      telescoping = - volume_recip;
-      left_concs = left_concs * conc_to_pow(conc,coeff,telescoping);
-      telescoping = -1.0;
-      left_counts = left_counts * conc_to_pow(count,coeff,telescoping);
+      factorial = - volume_recip;
+      left_concs = left_concs * conc_to_pow(conc,coeff,factorial);
+      factorial = -1.0;
+      left_counts = left_counts * conc_to_pow(count,coeff,factorial);
       /*
       for (k=0;k<(0-coeff);k++) {
 
@@ -189,10 +189,10 @@ double rxn_likelihood(double *counts,
     } else {
       if (coeff > 0.0) {
 	conc = count*volume_recip;
-	telescoping = volume_recip;
-	right_concs = right_concs * conc_to_pow(conc,coeff,telescoping);
-	telescoping = 1.0;
-	right_counts = right_counts * conc_to_pow(count,coeff,telescoping);
+	factorial = volume_recip;
+	right_concs = right_concs * conc_to_pow(conc,coeff,factorial);
+	factorial = 1.0;
+	right_counts = right_counts * conc_to_pow(count,coeff,factorial);
 	/*
 	for (k=1;k<=coeff;k++) {
 

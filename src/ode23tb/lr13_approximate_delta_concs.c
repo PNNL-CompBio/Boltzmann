@@ -89,7 +89,7 @@ int lr13_approximate_delta_concs(struct state_struct *state,
   double  count_mi;
   double  count_plus;
   double  klim;
-  double  telescoping;
+  double  factorial;
   double  *coefficients;
   double  *rcoefficients;
   int64_t *molecules_ptrs;
@@ -150,7 +150,7 @@ int lr13_approximate_delta_concs(struct state_struct *state,
   m_r_rt           = state->m_r_rt;
   ode_solver_choice = state->ode_solver_choice;
   compute_sensitivities = state->compute_sensitivities;
-  telescoping           = 0.0;
+  factorial           = 0.0;
   if ((ode_solver_choice == 1) && compute_sensitivities) {
     cvodes_params = state->cvodes_params;
     ke = cvodes_params->p;
@@ -192,8 +192,8 @@ int lr13_approximate_delta_concs(struct state_struct *state,
       if (klim < 0.0) {
 	klim = 0.0 - klim;
 	count_plus = count_mi + klim;
-	rt = rt * conc_to_pow(count_mi,klim,telescoping);
-	tr = tr * conc_to_pow(count_plus,klim,telescoping);
+	rt = rt * conc_to_pow(count_mi,klim,factorial);
+	tr = tr * conc_to_pow(count_plus,klim,factorial);
 	/*
 	for (k=0;k<(-klim);k++) {
 	  rt = rt * count_mi;
@@ -203,8 +203,8 @@ int lr13_approximate_delta_concs(struct state_struct *state,
       } else {
 	if (klim > 0.0) {
 	  count_plus = count_mi + klim;
-	  pt = pt * conc_to_pow(count_mi,klim,telescoping);
-	  tp = tp * conc_to_pow(count_plus,klim,telescoping);
+	  pt = pt * conc_to_pow(count_mi,klim,factorial);
+	  tp = tp * conc_to_pow(count_plus,klim,factorial);
 	  /*
 	  for (k=0;k<klim;k++) {
 	    pt = pt * count_mi;

@@ -258,7 +258,7 @@ int lr6_approximate_delta_concs(struct state_struct *state,
 	  }
 	}
       } /* end for j */
-      if (abs(log_kf_rel[i]) < abs(log_kr_rel[i])) {
+      if (fabs(log_kf_rel[i]) < fabs(log_kr_rel[i])) {
 	b = rt - (rke[i] * pt);
 	base = log_kf_rel[i] * dg0_scale_factor;
       } else {
