@@ -1,6 +1,6 @@
 #include "boltzmann_structs.h"
 #include "blas.h"
-#include "approximate_delta_concs.h"
+#include "gradient.h"
 #include "ode_test_steady_state.h"
 int ode_test_steady_state(struct state_struct *state,
 			  int ny,
@@ -10,7 +10,7 @@ int ode_test_steady_state(struct state_struct *state,
     Test whethter or not steady state has been reached by testing the
     sized of the derivative vector f agains the concentration vector, y,
     size or against a set threshold. Compute f from y with 
-    approximate_delta_concs routine.
+    gradient routine.
     Returns 1 if steady state has been reached according to the
     criteria, 0 if not.
 
@@ -33,12 +33,12 @@ int ode_test_steady_state(struct state_struct *state,
       ode_stop_norm = 0,1, or 2.
    
     Called by ode23tb, boltzmann_cvodes
-    Calls: approximate_delta_concs, idamax_, dnrm2_, fabs
+    Calls: gradient, idamax_, dnrm2_, fabs
   */
   double ode_stop_thresh;
   double fnorm;
   double ynorm;
-  int delta_concs_choice;
+  int gradient_choice;
   int ode_stop_rel;
 
   int ode_stop_norm;
@@ -51,7 +51,7 @@ int ode_test_steady_state(struct state_struct *state,
   int padi;
 
   ny                 = state->nunique_molecules;
-  delta_concs_choice = state->delta_concs_choice;
+  gradient_choice    = state->gradient_choice;
   ode_stop_thresh    = state->ode_stop_thresh;
   ode_stop_rel       = state->ode_stop_rel;
   ode_stop_norm      = state->ode_stop_norm;
@@ -60,7 +60,7 @@ int ode_test_steady_state(struct state_struct *state,
 
   done = 0;
   if (ode_stop_style) {
-    approximate_delta_concs(state,y,f,delta_concs_choice);
+    gradient(state,y,f,gradient_choice);
     if (ode_stop_norm == 1) {
       /*
 	Use the 1 norm.

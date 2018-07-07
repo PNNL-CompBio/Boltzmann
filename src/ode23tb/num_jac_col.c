@@ -1,11 +1,11 @@
 #include "boltzmann_structs.h"
 
-#include "approximate_delta_concs.h"
+#include "gradient.h"
 /*
 #define DBG 1 
 */
 #ifdef DBG
-#include "print_concs_dconcs.h"
+#include "print_concs_grad.h"
 #endif
 
 #include "num_jac_col.h"
@@ -32,7 +32,7 @@ int num_jac_col(struct state_struct *state,
     two scractch
 
     Called by: ode_num_jac
-    Calls:     approximate_delta_concs, fabs
+    Calls:     gradient, fabs
 
     Arguments          TMF    Descriptin
     state              G*I    Boltzmann state for passing to approxmate_fluxes(f)
@@ -110,7 +110,7 @@ int num_jac_col(struct state_struct *state,
   conc_to_count = state->conc_to_count;
   lfp           = state->lfp;
   molecules     = state->sorted_molecules;
-  choice        = (int)state->delta_concs_choice;
+  choice        = (int)state->gradient_choice;
   delj          = *delj_p;
   moleculej     = (struct molecule_struct *)&molecules[j];
   variable      = moleculej->variable;
@@ -152,14 +152,14 @@ int num_jac_col(struct state_struct *state,
 	evaluate derivative at ydelj
       */
       y[j] = ydelj;
-      approximate_delta_concs(state,y,fdel,choice);
+      gradient(state,y,fdel,choice);
 #ifdef DBG
       if (lfp) {
 	origin = 1000+j; 
 	t0 = 0.0;
 	h  = 0.0;
 	nsteps = 0;
-	print_concs_dconcs(state,ny,fdel,y,t0,h,nsteps,origin);
+	print_concs_grad(state,ny,fdel,y,t0,h,nsteps,origin);
       }
 #endif
       /*

@@ -28,8 +28,10 @@ void ode_print_lklhds(struct state_struct *state,
 		      double *forward_rxn_likelihoods,
 		      double *reverse_rxn_likelihoods) {
   /*
-    Print last likelilhoods used by approximate_delta_concs
+    Print last likelilhoods used by gradient
     scaled by activities.
+    Called by: boltzmann_monitor_ode
+    Calls:     fprintf, fflush
   */
   double *activities;
   double forward;

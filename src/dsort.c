@@ -7,7 +7,7 @@ void dsort(int n,double *list, double *scratch) {
   /*
     Sort a list of n doubles using scratch space of length n, and
     overwriting the input list with the sorted result.
-    Called by: lr11_approximate_delta_concs, lr12_approximate_delta_concs
+    Called by: lr11_gradient, lr12_gradient
     Calls:     dmerge, memcpy, dsort_pairs, dsort_pairs_in_place
   */
   int64_t move_size;

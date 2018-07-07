@@ -2,11 +2,11 @@
 #include "boltzmann_cvodes_headers.h"
 #include "cvodes_params_struct.h"
 
-#include "approximate_delta_concs.h"
+#include "gradient.h"
 #include "ode_num_jac.h"
 #include "ode_it_solve.h"
 #include "ode_print_concs.h"
-#include "ode_print_dconcs.h"
+#include "ode_print_grad.h"
 #include "non_cvode_blas.h"
 /*#include  "blas.h"*/
 /*#include "lapack.h"*/
@@ -25,23 +25,11 @@
 #include "approximate_jacobian.h"
 #include "print_dense_jacobian.h"
 /*
-#include "update_rxn_likelihoods.h"
-#include "get_counts.h"
-#include "ode_print_lklhds.h"
-#include "ode_print_bflux.h"
-#include "compute_net_likelihoods.h"
-#include "compute_net_lklhd_bndry_flux.h"
-#include "print_net_likelihood_header.h"
-#include "print_net_lklhd_bndry_flux_header.h"
-#include "print_net_likelihoods.h"
-#include "print_net_lklhd_bndry_flux.h"
-*/
-/*
 #define DBG 1
 */
 
 #ifdef DBG 
-#include "print_concs_dconcs.h"
+#include "print_concs_grad.h"
 #endif
 
 #include "ode23tb.h"
@@ -60,7 +48,7 @@ int ode23tb (struct state_struct *state, double *concs) {
     
 
     Called by: ode_solver
-    Calls:     approximate_delta_concs, ode_num_jac, ode_it_solve,
+    Calls:     gradient, ode_num_jac, ode_it_solve,
                ode_print_concs, ode_norm_yp_o_wt, ode23tb_limit_h,
 	       ode23tb_init_wt, od23tb_update_wt, vec_set_constant,
 	       ode23tb_build_factor_miter, ode23tb_max_abs_ration,
@@ -244,7 +232,7 @@ int ode23tb (struct state_struct *state, double *concs) {
   int nysq;
   int info;
 
-  int delta_concs_choice;
+  int gradient_choice;
   int nnreset_znew;
 
   int print_output;
@@ -268,7 +256,7 @@ int ode23tb (struct state_struct *state, double *concs) {
 
 
   FILE *lfp;
-  FILE *ode_dconcs_fp;
+  FILE *ode_grad_fp;
 
   success = 1;
   ode23tb_params = state->ode23tb_params;
@@ -312,14 +300,14 @@ int ode23tb (struct state_struct *state, double *concs) {
   print_output  = state->print_output;
   two_ny        = ny + ny;
   nysq          = ny * ny;
-  delta_concs_choice = (int)state->delta_concs_choice;
+  gradient_choice = (int)state->gradient_choice;
   nrxns         = state->number_reactions;
   /*
   min_conc      = state->min_conc;
   */
   min_conc      = 0.0;
   lfp           = state->lfp;
-  ode_dconcs_fp = state->ode_dconcs_fp;
+  ode_grad_fp = state->ode_grad_fp;
   ode_rxn_view_freq = state->ode_rxn_view_freq;
   if (print_output == 0) {
     ode_rxn_view_freq = 0;
@@ -449,7 +437,7 @@ int ode23tb (struct state_struct *state, double *concs) {
     if (ode_jacobian_choice != 0) {
       /* 
 	 We need to allocate vectors pointed to by cvodes_params,
-	 for use in approximate_delta_concs.
+	 for use in gradient;
       */
       drfc_len = state->number_molecules*2;
       /*
@@ -503,9 +491,9 @@ int ode23tb (struct state_struct *state, double *concs) {
     }
   } 
   if (success) {
-    approximate_delta_concs(state,y,f0,delta_concs_choice);
+    gradient(state,y,f0,gradient_choice);
     if (ode_rxn_view_freq > 0) {
-      ode_print_dconcs(state,t,f0);
+      ode_print_grad(state,t,f0);
     }
     nfevals = (int64_t)1;
     /*
@@ -644,10 +632,10 @@ int ode23tb (struct state_struct *state, double *concs) {
       /*
 	f1   = flux at t+tdel, y
 	conc = count/volume
-      approximate_delta_concs(state,y,f1,delta_concs_choice);
+      gradient(state,y,f1,gradient_choice);
       if (ode_rxn_view_freq > 0) {
 	t1 = t + tdel;
-	ode_print_dconcs(state,t1,f1);
+	ode_print_grad(state,t1,f1);
       }
       nfevals += 1;
       recip_tdel = 1.0/tdel;
@@ -660,7 +648,7 @@ int ode23tb (struct state_struct *state, double *concs) {
       }
 	*/
       /*
-	Because f1 = f0 as approxiomate_delta_concs has nodependency on t,
+	Because f1 = f0 as gradient has nodependency on t,
 	and y has not changed value dfdt is 0.
       */
       vec_set_constant(ny,delfdelt,dzero);
@@ -750,8 +738,8 @@ int ode23tb (struct state_struct *state, double *concs) {
 	wt = max(normy,threshold);
 	*/
 #ifdef DBG
-	fprintf(ode_dconcs_fp,"top of inner loop\n");
-	fflush(ode_dconcs_fp);
+	fprintf(ode_grad_fp,"top of inner loop\n");
+	fflush(ode_grad_fp);
 #endif
 	ode23tb_init_wt(normcontrol, ny,normy,threshold, 
 			y, wt);
@@ -761,13 +749,13 @@ int ode23tb (struct state_struct *state, double *concs) {
 	    compute f0 and dfdy. at current y. f0 is set here.
 	    This might becom ode23tb_new_dfdy
 	  */
-	  approximate_delta_concs(state,y,f0,delta_concs_choice);
+	  gradient(state,y,f0,gradient_choice);
 	  if (ode_rxn_view_freq > 0) {
 #ifdef DBG
-	    fprintf(ode_dconcs_fp,"Inner_loop,New j needed, f0 recomputed\n");
-	    fflush(ode_dconcs_fp);
+	    fprintf(ode_grad_fp,"Inner_loop,New j needed, f0 recomputed\n");
+	    fflush(ode_grad_fp);
 #endif
-	    ode_print_dconcs(state,t,f0);
+	    ode_print_grad(state,t,f0);
 	    
 	  }
 	  /*
@@ -801,7 +789,7 @@ int ode23tb (struct state_struct *state, double *concs) {
 	    This could be its own subroutine say ode23tb_build_factor_miter:
 	  */
 #ifdef DBG
-	  fprintf(ode_dconcs_fp,"Inner loop needs new_lu\n");
+	  fprintf(ode_grad_fp,"Inner loop needs new_lu\n");
 #endif
 	  success = ode23tb_build_factor_miter(ny,nysq,d,h,dfdy,
 					       miter,ipivot,&info,lfp);
@@ -816,7 +804,7 @@ int ode23tb (struct state_struct *state, double *concs) {
 	  Stage 1.
 	*/
 #ifdef DBG
-	fprintf(ode_dconcs_fp,"Inner loop Stage 1\n");
+	fprintf(ode_grad_fp,"Inner loop Stage 1\n");
 #endif
 
 	
@@ -841,13 +829,13 @@ int ode23tb (struct state_struct *state, double *concs) {
 	if (lfp) {
 	  fprintf(lfp," Stage1 y2, y2_counts, and z2 before ode_it_solve\n");
 	  origin = 3; 
-	  print_concs_dconcs(state,ny,z2,y2,t,h,nsteps,origin);
+	  print_concs_grad(state,ny,z2,y2,t,h,nsteps,origin);
 	}
 #endif
 	*/
 #ifdef DBG
-	fprintf(ode_dconcs_fp,"Calling ode_it_solve in stage 1 to modify y2,z2\n");
-	fflush(ode_dconcs_fp);
+	fprintf(ode_grad_fp,"Calling ode_it_solve in stage 1 to modify y2,z2\n");
+	fflush(ode_grad_fp);
 #endif
 
 	iter_count = 0;
@@ -859,7 +847,7 @@ int ode23tb (struct state_struct *state, double *concs) {
 	if (lfp) {
 	  fprintf(lfp," Stage1 y2, y2_counts, and z2 after ode_it_solve\n");
 	  origin = 4; 
-	  print_concs_dconcs(state,ny,z2,y2,t,h,nsteps,origin);
+	  print_concs_grad(state,ny,z2,y2,t,h,nsteps,origin);
 	}
 #endif
 	*/
@@ -869,7 +857,7 @@ int ode23tb (struct state_struct *state, double *concs) {
 	if (itfail1 == 0) {
 	  /* Stage 2. */
 #ifdef DBG
-	  fprintf(ode_dconcs_fp,"Inner loop Stage 2\n");
+	  fprintf(ode_grad_fp,"Inner loop Stage 2\n");
 #endif
 	  normy2 = dnrm2_(&ny,y2,&inc1);
 	  ode23tb_update_wt(normcontrol, ny,normy2,y2, wt);
@@ -879,8 +867,8 @@ int ode23tb (struct state_struct *state, double *concs) {
 	    tnew = tfinal;
 	  }
 #ifdef DBG
-	  fprintf(ode_dconcs_fp,"Stage 2, Computing new ynew,znew\n");
-	  fflush(ode_dconcs_fp);
+	  fprintf(ode_grad_fp,"Stage 2, Computing new ynew,znew\n");
+	  fflush(ode_grad_fp);
 #endif
 	  /*
 	    The following loop may be done via gemv operations
@@ -917,13 +905,13 @@ int ode23tb (struct state_struct *state, double *concs) {
 	    fprintf(lfp," Stage2 ynew, ynew_counts, and znew "
 		    "before ode_it_solve\n");
 	    origin = 5; 
-	    print_concs_dconcs(state,ny,znew,ynew,t,h,nsteps,origin);
+	    print_concs_grad(state,ny,znew,ynew,t,h,nsteps,origin);
 	  }
 #endif
 	  */
 #ifdef DBG
-	  fprintf(ode_dconcs_fp,"Stage 2, calling ode_it_solve to modify ynew,znew\n");
-	  fflush(ode_dconcs_fp);
+	  fprintf(ode_grad_fp,"Stage 2, calling ode_it_solve to modify ynew,znew\n");
+	  fflush(ode_grad_fp);
 #endif
 	  itfail2 = ode_it_solve(state,miter,ipivot,tnew,ynew,znew,
 				 it_solve_del,it_solve_rhs,it_solve_scr,
@@ -936,15 +924,15 @@ int ode23tb (struct state_struct *state, double *concs) {
 	    fprintf(lfp," Stage2 ynew, ynew_counts, and znew "
 		    "after ode_it_solve\n");
 	    origin = 6; 
-	    print_concs_dconcs(state,ny,znew,ynew,t,h,nsteps,origin);
+	    print_concs_grad(state,ny,znew,ynew,t,h,nsteps,origin);
 	  }
 #endif
 	  */
 	} /* end if (itfail1 == 0) */
 	if (itfail1 || itfail2) {
 #ifdef DBG
-	  fprintf(ode_dconcs_fp,"Ode_it_solve failure, itfail1 == %d, itfail2 == %d\n",itfail1, itfail2);
-	  fflush(ode_dconcs_fp);
+	  fprintf(ode_grad_fp,"Ode_it_solve failure, itfail1 == %d, itfail2 == %d\n",itfail1, itfail2);
+	  fflush(ode_grad_fp);
 #endif
 	  nofailed = 0;
 	  nfailed += 1;
@@ -984,8 +972,8 @@ int ode23tb (struct state_struct *state, double *concs) {
 	} else {
 	  /* stage 1 and 2 succeeded, estimate local truncation error.*/
 #ifdef DBG
-	  fprintf(ode_dconcs_fp,"Inner loop stage1 and stage2 converged\n");
-	  fflush(ode_dconcs_fp);
+	  fprintf(ode_grad_fp,"Inner loop stage1 and stage2 converged\n");
+	  fflush(ode_grad_fp);
 #endif
 	  if (normcontrol) {
 	    normynew = dnrm2_(&ny,ynew,&inc1);
@@ -1044,8 +1032,8 @@ int ode23tb (struct state_struct *state, double *concs) {
 	      Step failed.
 	    */
 #ifdef DBG
-	    fprintf(ode_dconcs_fp,"Inner loop step failed err = %ld\n",err);
-	    fflush(ode_dconcs_fp);
+	    fprintf(ode_grad_fp,"Inner loop step failed err = %ld\n",err);
+	    fflush(ode_grad_fp);
 #endif
 	    nfailed = nfailed + 1;
 	    if (absh <= hmin) {
@@ -1102,8 +1090,8 @@ int ode23tb (struct state_struct *state, double *concs) {
       } /* end while (unsuccessful_step && tolerance_met) */
 		
 #ifdef DBG
-      fprintf(ode_dconcs_fp," After inner_loop, info = %d\n",info);
-      fflush(ode_dconcs_fp);
+      fprintf(ode_grad_fp," After inner_loop, info = %d\n",info);
+      fflush(ode_grad_fp);
 #endif
       if (not_done) {
 	nsteps = nsteps + 1;
@@ -1115,8 +1103,8 @@ int ode23tb (struct state_struct *state, double *concs) {
 	  Advance the integration one step. 
 	*/
 #ifdef DBG
-	fprintf(ode_dconcs_fp,"Advancing integration copy ynew,znew to y,z\n");
-	fflush(ode_dconcs_fp);
+	fprintf(ode_grad_fp,"Advancing integration copy ynew,znew to y,z\n");
+	fflush(ode_grad_fp);
 #endif
 	t = tnew;
 	dcopy_(&ny,ynew,&inc1,y,&inc1);
@@ -1134,8 +1122,8 @@ int ode23tb (struct state_struct *state, double *concs) {
 
 	    ode_print_lklhds(state,t,forward_rxn_likelihoods,
 			     reverse_rxn_likelihoods);
-	    approximate_delta_concs(state,y,f0,delta_concs_choice);
-	    ode_print_dconcs(state,t,f0);
+	    gradient(state,y,f0,gradient_choice);
+	    ode_print_grad(state,t,f0);
 	    */
 	    ode_rxn_view_step = ode_rxn_view_freq;
 	  }
@@ -1180,8 +1168,8 @@ int ode23tb (struct state_struct *state, double *concs) {
 	}
       } /* end if (not_done) */
 #ifdef DBG
-      fprintf(ode_dconcs_fp,"Bottom of main_loop\n");
-      fflush(ode_dconcs_fp);
+      fprintf(ode_grad_fp,"Bottom of main_loop\n");
+      fflush(ode_grad_fp);
 #endif      
     } /* end while (not_done) MAIN loop */
   } /* end if success - allocation succeeded */

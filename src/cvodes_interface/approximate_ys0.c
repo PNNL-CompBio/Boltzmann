@@ -14,19 +14,19 @@ int approximate_ys0(struct state_struct *state, double *concs) {
   struct cvodes_params_struct *cvodes_params;
   double *ys0v;
   int    success;
-  int    delta_concs_choice;
+  int    gradient_choice;
   FILE   *lfp;
   FILE   *efp;
   success = 1;
   cvodes_params      = state->cvodes_params;
-  delta_concs_choice = state->delta_concs_choice;
+  gradient_choice    = state->gradient_choice;
   lfp                = state->lfp;
   ys0v               = cvodes_params->ys0v;
-  switch (delta_concs_choice) {
+  switch (gradient_choice) {
   default:
     success = 0;
     if (lfp) {
-      fprintf(lfp,"approximate_ys0: No approximation for delta_concs_choice = %d\n",delta_concs_choice);
+      fprintf(lfp,"approximate_ys0: No approximation for gradient_choice = %d\n",gradient_choice);
     }
     break;
   case 8:

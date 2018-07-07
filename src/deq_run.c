@@ -28,7 +28,7 @@ specific language governing permissions and limitations under the License.
 #include "init_base_reactants.h"
 #include "init_relative_rates.h"
 #include "ode_print_concs_header.h"
-#include "ode_print_dconcs_header.h"
+#include "ode_print_grad_header.h"
 #include "ode_print_bflux_header.h"
 #include "ode_print_lklhd_header.h"
 #include "print_net_likelihood_header.h"
@@ -121,6 +121,7 @@ int deq_run(struct state_struct *state) {
 
 
   FILE *lfp;
+  FILE *ode_kq_fp;
   success = 1;
   one_l   = (int64_t)1;
   zero_l  = (int64_t)0;
@@ -200,10 +201,10 @@ int deq_run(struct state_struct *state) {
   }
   /*
     Fill the relative forward and reverse reaction rate vectors,
-    kf_rel, and kr_rel. For use in the lr6_appproximate_delta_concs.
+    kf_rel, and kr_rel. For use in the lr6_gradient routine.
   */
   if (success) {
-    if (state->delta_concs_choice == 6) {
+    if (state->gradient_choice == 6) {
       success = init_relative_rates(state);
     }
   }
@@ -237,8 +238,10 @@ int deq_run(struct state_struct *state) {
       if (ode_rxn_view_freq > 0) {
 	ode_print_concs_header(state);
 	ode_print_lklhd_header(state);
-	ode_print_dconcs_header(state);
+	ode_print_grad_header(state);
 	ode_print_bflux_header(state);
+	ode_kq_fp = fopen(state->ode_kq_file,"w");
+	state->ode_kq_fp = ode_kq_fp;
 	print_net_likelihood_header(state);
 	print_net_lklhd_bndry_flux_header(state);
       }

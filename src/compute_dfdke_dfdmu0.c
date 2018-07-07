@@ -64,7 +64,7 @@ int compute_dfdke_dfdmu0(struct state_struct *state, double *concs) {
   int mi;
 
   int rj;
-  int delta_concs_choice;
+  int gradient_choice;
 
   int k;
   int mk;
@@ -98,7 +98,7 @@ int compute_dfdke_dfdmu0(struct state_struct *state, double *concs) {
   rcoefficients    = rxn_matrix->coefficients;
   dfdke_file       = state->dfdke_file;
   dfdmu0_file      = state->dfdmu0_file;
-  delta_concs_choice = state->delta_concs_choice;
+  gradient_choice  = state->gradient_choice;
   dfdke_dfdmu0_work  = state->dfdke_dfdmu0_work;
   /*
     Open the files.
@@ -139,7 +139,7 @@ int compute_dfdke_dfdmu0(struct state_struct *state, double *concs) {
 
     
   }
-  switch (delta_concs_choice) {
+  switch (gradient_choice) {
   case 8:
     /*
       Here we have
@@ -229,7 +229,7 @@ int compute_dfdke_dfdmu0(struct state_struct *state, double *concs) {
       } /* end for (k...) */
     } /* end for (i...) */
     break;
-  } /* end switch(delta_concs_choice) */
+  } /* end switch(gradient_choice) */
   if (dfdke_fp) {
     fclose(dfdke_fp);
   }

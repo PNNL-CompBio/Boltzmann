@@ -61,7 +61,7 @@ int alloc0_a(struct state_struct *state) {
        rxn_mat_file,
        dg0ke_file,
        dictionary_file,
-       ode_dconcs_file,
+       ode_grad_file,
        ode_lklhd_file,
        ode_bflux_file,
        concs_out_file,

@@ -1,6 +1,6 @@
 #include "boltzmann_structs.h"
 
-#include "approximate_delta_concs.h"
+#include "gradient.h"
 #include "blas.h"
 #include "lapack.h"
 #include "vec_abs.h"
@@ -31,7 +31,7 @@ int ode_it_solve(struct state_struct *state,
     miter and ipivot contain the LU factorization of I-d*h*dfdy,
     Returns 0 on successful iteration, 1 on a fail.
     Called by: ode23tb
-    Calls:     approximate_delta_concs, fabs, dgetrs,
+    Calls:     gradient, fabs, dgetrs,
   */
   double kappa;
   double errit;
@@ -88,7 +88,7 @@ int ode_it_solve(struct state_struct *state,
 /*
 #define DBG 1
 */
-  choice           = (int)state->delta_concs_choice;
+  choice           = (int)state->gradient_choice;
   max_iter     	   = 5;
   kappa        	   = 0.5;
   itfail       	   = 0;
@@ -141,7 +141,7 @@ int ode_it_solve(struct state_struct *state,
   exit_not = 1;
   for (iter = 0; ((iter<max_iter) && exit_not);iter++) {
     iter_count = iter + 1;
-    approximate_delta_concs(state,y,rhs,choice);
+    gradient(state,y,rhs,choice);
     /*
       for (i=0;i<ny;i++) {
         rhs[i] = h * rhs[i];

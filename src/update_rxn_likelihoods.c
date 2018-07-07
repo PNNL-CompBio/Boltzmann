@@ -9,12 +9,12 @@ int update_rxn_likelihoods(struct state_struct *state, double *counts,
     vectors input counts field.
 
     Called by: deq_run, print_concs_fluxes,
-               lr_approximate_delta_concs,
-	       lr1_approximate_delta_concs,
-	       lr2_approximate_delta_concs,
-	       lr3_approximate_delta_concs,
-	       lr4_approximate_delta_concs,
-	       lr5_approximate_delta_concs,
+               lr0_gradient,
+	       lr1_gradient,
+	       lr2_gradient,
+	       lr3_gradient,
+	       lr4_gradient,
+	       lr5_gradient,
 	       
     Calls      rxn_likelihoods
 

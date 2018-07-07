@@ -1,0 +1,1 @@
+sbml_interface/sbml_lookup_compartment_attribute.c

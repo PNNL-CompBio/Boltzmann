@@ -65,7 +65,7 @@ int echo_params (FILE *lfp, struct state_struct *state) {
     fprintf(lfp,"state->dictionary_file        = %s\n",state->dictionary_file);
     fprintf(lfp,"state->ode_concs_file         = %s\n",state->ode_concs_file);
     fprintf(lfp,"state->ode_lklhd_file         = %s\n",state->ode_lklhd_file);
-    fprintf(lfp,"state->ode_dconcs_file        = %s\n",state->ode_dconcs_file);
+    fprintf(lfp,"state->ode_grad_file          = %s\n",state->ode_grad_file);
     fprintf(lfp,"state->ode_bflux_file         = %s\n",state->ode_bflux_file);
     fprintf(lfp,"state->net_lklhd_file         = %s\n",state->net_lklhd_file);
     fprintf(lfp,"state->ode_sens_file          = %s\n",state->ode_sens_file);
@@ -103,7 +103,7 @@ int echo_params (FILE *lfp, struct state_struct *state) {
     fprintf(lfp,"state->compute_sensitivities  = %ld\n",state->compute_sensitivities);
     fprintf(lfp,"state->base_reaction          = %ld\n",state->base_reaction);
     fprintf(lfp,"state->ode_solver_choice      = %ld\n",state->ode_solver_choice);
-    fprintf(lfp,"state->delta_concs_choice     = %ld\n",state->delta_concs_choice);
+    fprintf(lfp,"state->gradient_choice        = %ld\n",state->gradient_choice);
     fprintf(lfp,"state->ode_jacobian_choice    = %ld\n",state->ode_jacobian_choice);
     fprintf(lfp,"state->ode_stop_norm          = %ld\n",state->ode_stop_norm);
     fprintf(lfp,"state->ode_stop_rel           = %ld\n",state->ode_stop_rel);
