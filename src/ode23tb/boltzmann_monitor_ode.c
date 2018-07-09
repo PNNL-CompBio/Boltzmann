@@ -6,6 +6,7 @@
 #include "gradient.h"
 #include "ode_print_grad.h"
 #include "ode_print_kq_kqi.h"
+#include "ode_print_skq_skqi.h"
 #include "boltzmann_monitor_ode.h"
 void boltzmann_monitor_ode(struct state_struct *state,
 			   double time,
@@ -45,5 +46,6 @@ void boltzmann_monitor_ode(struct state_struct *state,
   gradient(state,concs,f,gradient_choice);
   ode_print_grad(state,time,f);
   ode_print_kq_kqi(state,time,kq,kqi);
+  ode_print_skq_skqi(state,time,kq,kqi);
 }
   
