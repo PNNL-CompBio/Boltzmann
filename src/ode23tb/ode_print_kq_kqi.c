@@ -60,7 +60,7 @@ void ode_print_kq_kqi(struct state_struct *state, double time, double *kq,
   if (ode_kq_fp) {
     fprintf(ode_kq_fp,"%le",time);
     for(j=0;j<nrxns;j++) {
-      fprintf(ode_kq_fp,"\t%le\t%le\n",kq[j],kqi[j]);
+      fprintf(ode_kq_fp,"\t%le\t%le",kq[j],kqi[j]);
     }
     fprintf(ode_kq_fp,"\n");
     fflush(ode_kq_fp);

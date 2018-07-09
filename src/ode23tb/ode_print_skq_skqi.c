@@ -59,7 +59,7 @@ void ode_print_skq_skqi(struct state_struct *state,
   if (ode_skq_fp) {
     fprintf(ode_skq_fp,"%le",time);
     for(j=0;j<nrxns;j++) {
-      fprintf(ode_skq_fp,"\t%le\t%le\n",skq[j],skqi[j]);
+      fprintf(ode_skq_fp,"\t%le\t%le",skq[j],skqi[j]);
     }
     fprintf(ode_skq_fp,"\n");
     fflush(ode_skq_fp);
