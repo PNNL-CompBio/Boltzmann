@@ -61,6 +61,8 @@ int lr8_gradient(struct state_struct *state,
   double  *conc_to_count;
   double  *kq;
   double  *kqi;
+  double  *skq;
+  double  *skqi;
   double  flux_scaling;
   double  pt;
   double  rt;
@@ -137,6 +139,8 @@ int lr8_gradient(struct state_struct *state,
   use_regulation   = state->use_regulation;
   kq               = state->ode_kq;
   kqi              = state->ode_kqi;
+  skq              = state->ode_skq;
+  skqi             = state->ode_skqi;
   ode_solver_choice = state->ode_solver_choice;
   compute_sensitivities = state->compute_sensitivities;
   factorial           = 0.0;
@@ -242,8 +246,10 @@ int lr8_gradient(struct state_struct *state,
     */
     forward_lklhd[i] = ke[i] * (rt/tp);
     kq[i]            = forward_lklhd[i];
+    skq[i]           = kq[i] * activities[i];
     reverse_lklhd[i] = rke[i] * (pt/tr);
     kqi[i]           = reverse_lklhd[i];
+    skqi[i]          = kqi[i] * activities[i];
     /*
     rfc[i] = (ke[i] * (rt/tp)) - (rke[i] * (pt/tr));
     NB if use_activities is not set activities[i] will be 1.0 for all i.

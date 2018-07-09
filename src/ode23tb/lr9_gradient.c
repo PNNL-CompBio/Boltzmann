@@ -61,6 +61,8 @@ int lr9_gradient(struct state_struct *state,
   double  *coeff_sum;
   double  *kq;
   double  *kqi;
+  double  *skq;
+  double  *skqi;
   int64_t *molecules_ptrs;
   int64_t *rxn_indices;
   int64_t *rxn_ptrs;
@@ -144,6 +146,8 @@ int lr9_gradient(struct state_struct *state,
   rfc              = state->product_term;
   kq               = state->ode_kq;
   kqi              = state->ode_kqi;
+  skq              = state->ode_skq;
+  skqi             = state->ode_skqi;
   /*
   counts           = state->ode_counts;
   conc_to_count    = state->conc_to_count;
@@ -289,6 +293,8 @@ int lr9_gradient(struct state_struct *state,
       rfc[i] = (forward_rc[i] * rt - reverse_rc[i] * pt) * activities[i];
       kq[i] = forward_rc[i] * rt;
       kqi[i] = reverse_rc[i] * pt;
+      skq[i] = kq[i] * activities[i];
+      skqi[i] = kqi[i] * activities[i];
     } /* end for (i..._) */
     molecule = molecules;
     for (i=0;i<num_species;i++) {

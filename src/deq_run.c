@@ -31,6 +31,8 @@ specific language governing permissions and limitations under the License.
 #include "ode_print_grad_header.h"
 #include "ode_print_bflux_header.h"
 #include "ode_print_lklhd_header.h"
+#include "ode_print_kq_header.h"
+#include "ode_print_skq_header.h"
 #include "print_net_likelihood_header.h"
 #include "print_net_lklhd_bndry_flux_header.h"
 #include "get_counts.h"
@@ -240,8 +242,12 @@ int deq_run(struct state_struct *state) {
 	ode_print_lklhd_header(state);
 	ode_print_grad_header(state);
 	ode_print_bflux_header(state);
+	ode_print_kq_header(state);
+	ode_print_skq_header(state);
+	/*
 	ode_kq_fp = fopen(state->ode_kq_file,"w");
 	state->ode_kq_fp = ode_kq_fp;
+	*/
 	print_net_likelihood_header(state);
 	print_net_lklhd_bndry_flux_header(state);
       }

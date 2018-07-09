@@ -23,27 +23,33 @@ specific language governing permissions and limitations under the License.
 #include "boltzmann_structs.h"
 #include "print_rxns_f_and_r_header.h"
 
-#include "ode_print_lklhd_header.h"
-void ode_print_lklhd_header(struct state_struct *state) {
+#include "ode_print_skq_header.h"
+void ode_print_skq_header(struct state_struct *state) {
   /*
-    Print the header lines for the ode reaction likelihoods output file.
+    Print the header lines for the ode_kq output file.
     Called by: deq_run .
-    Calls    : print_rxns_f_and_r_header, fopen, fprintf
+    Calls    : print_rxns_f_and_r_header, fopen, fprintf, fflush
   */
   struct reaction_struct *reactions;
   char *rxn_title_text;
   char *title;
   int i;
   int nrxns;
-  FILE *ode_lklhd_fp;
+  FILE *ode_skq_fp;
   FILE *lfp;
   rxn_title_text = state->rxn_title_text;
-  ode_lklhd_fp   = fopen(state->ode_lklhd_file,"w");
-  state->ode_lklhd_fp = ode_lklhd_fp;
-  nrxns = state->number_reactions;
-  if (ode_lklhd_fp) {
-    fprintf(ode_lklhd_fp,"Reaction Likelihoods: forward_likelihood reverse_likelihood\n");
-    print_rxns_f_and_r_header(state,"Time",ode_lklhd_fp);
+  lfp            = state->lfp;
+  ode_skq_fp   = fopen(state->ode_skq_file,"w");
+  state->ode_skq_fp = ode_skq_fp;
+  if (ode_skq_fp) {
+    fprintf(ode_skq_fp,"Reactions scaled KQ and scaled KQ^(-1)\n");
+    print_rxns_f_and_r_header(state,"Time",ode_skq_fp);
+  } else {
+    if (lfp) {
+      fprintf(lfp,"ode_print_skq_header: Error, unable to open %s for writing\n",
+	      state->ode_skq_file);
+      fflush(lfp);
+    }
   }
   return;
 }

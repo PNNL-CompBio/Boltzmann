@@ -77,6 +77,9 @@ int lr6_gradient(struct state_struct *state,
   double  *rcoefficients;
   double  *kq;
   double  *kqi;
+  double  *skq;
+  double  *skqi;
+  double  *activities;
   int64_t *molecules_ptrs;
   int64_t *rxn_indices;
   int64_t *rxn_ptrs;
@@ -128,6 +131,9 @@ int lr6_gradient(struct state_struct *state,
   molecules   = state->sorted_molecules;
   kq          = state->ode_kq;
   kqi         = state->ode_kqi;
+  skq         = state->ode_skq;
+  skqi        = state->ode_skqi;
+  activities  = state->activities;
   molecules_matrix = state->molecules_matrix;
   molecules_ptrs   = molecules_matrix->molecules_ptrs;
   rxn_indices      = molecules_matrix->reaction_indices;
@@ -273,6 +279,8 @@ int lr6_gradient(struct state_struct *state,
 	b = (ke[i] * rt) - pt;
 	base = log_kr_rel[i] * dg0_scale_factor;
       }
+      skq[i] = kq[i] * activities[i];
+      skqi[i] = kqi[i] * activities[i];
       if (b == 0.0) {
 	/*
 	  reaction is at equilbrium

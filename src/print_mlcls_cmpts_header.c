@@ -1,4 +1,4 @@
-/* ode_print_grad_header.c
+/* print_mlcls_cmpts_header.c
 *******************************************************************************
 boltzmann
 
@@ -22,13 +22,14 @@ specific language governing permissions and limitations under the License.
 ******************************************************************************/
 #include "boltzmann_structs.h"
 #include "print_mlcls_cmpts_header.h"
-#include "ode_print_grad_header.h"
-void ode_print_grad_header(struct state_struct *state) {
+void print_mlcls_cmpts_header(struct state_struct *state,
+			      char *index_str,
+			      FILE *ofp) {
   /*
-    Open ode_grad_file and
-    Print molecule header ("Time" followed by sorted molecule names and
-    compartments)
-    Called by: deq_run;
+    print sorted molecule names with compartments (separated by :)
+    title line.
+    Called by: ode_print_grad_header,
+               ode_print_concs_header,
     Calls:     fopen, fprintf, fflush
   */
   struct molecule_struct *cur_molecule;
@@ -45,8 +46,8 @@ void ode_print_grad_header(struct state_struct *state) {
   int nu_molecules;
   int padi;
 
-  FILE *ode_grad_fp;
   FILE *lfp;
+  FILE *efp;
   nu_molecules     = state->nunique_molecules;
   cur_molecule     = state->sorted_molecules;
   cur_cmpts        = state->sorted_compartments;
@@ -55,15 +56,22 @@ void ode_print_grad_header(struct state_struct *state) {
   ode_grad_file    = state->ode_grad_file;
   lfp              = state->lfp;
 
-  ode_grad_fp = fopen(ode_grad_file,"w+");
-  state->ode_grad_fp  = ode_grad_fp;
-  if (ode_grad_fp == NULL) {
-    if (lfp) {
-      fprintf(lfp,"ode_print_grad_header: Error could not open %s\n",
-	      ode_grad_file);
-      fflush(lfp);
+  if (ofp) {
+    fprintf(ofp,"%s",index_str);
+    for (i=0;i<nu_molecules;i++) {
+      if ((cur_molecule->solvent == 0) || (cur_molecule->variable == 1)) {
+	ci = cur_molecule->c_index;
+	molecule = (char*)&molecules_text[cur_molecule->string];
+	fprintf(ofp,"\t%s",molecule);
+	if (ci >= 0) {
+	  cur_cmpt   = (struct compartment_struct *)&(cur_cmpts[ci]);
+	  cmpt_string = (char*)&compartment_text[cur_cmpt->string];
+	  fprintf(ofp,":%s",cmpt_string);
+	}
+      }
+      cur_molecule += 1; /* caution address arithmetic.*/
     }
-  } else {
-    print_mlcls_cmpts_header(state,"Time",ode_grad_fp);
+    fprintf(ofp,"\n");
+    fflush(ofp);
   }
 }

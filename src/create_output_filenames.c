@@ -39,6 +39,7 @@ int create_output_filenames(struct state_struct *state) {
   char *arxn_mat_filename;
   char *cmpts_echo_filename;
   char *ode_kq_filename;
+  char *ode_skq_filename;
   int64_t output_filename_base_length;
   int output_filename_length;
   int success;
@@ -77,6 +78,7 @@ int create_output_filenames(struct state_struct *state) {
   arxn_mat_filename    = state->arxn_mat_file;
   cmpts_echo_filename  = state->cmpts_echo_file;
   ode_kq_filename      = state->ode_kq_file;
+  ode_skq_filename     = state->ode_skq_file;
   output_filename_empty = 0;
   output_filename_length = strlen(output_filename);
   if (output_filename_length == 0) {
@@ -159,6 +161,8 @@ int create_output_filenames(struct state_struct *state) {
     strcpy((char*)&ode_lklhd_filename[output_filename_base_length],".ode_lklhd");
     strncpy(ode_kq_filename,output_filename,output_filename_base_length);
     strcpy((char*)&ode_kq_filename[output_filename_base_length],".ode_kq");
+    strncpy(ode_skq_filename,output_filename,output_filename_base_length);
+    strcpy((char*)&ode_skq_filename[output_filename_base_length],".ode_skq");
     strncpy(ode_bflux_filename,output_filename,output_filename_base_length);
     strcpy((char*)&ode_bflux_filename[output_filename_base_length],".ode_bflux");
     strncpy(net_lklhd_filename,output_filename,output_filename_base_length);

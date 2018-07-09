@@ -21,29 +21,34 @@ CONDITIONS OF ANY KIND, either express or implied. See the License for the
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
 #include "boltzmann_structs.h"
-#include "print_rxns_f_and_r_header.h"
 
-#include "ode_print_lklhd_header.h"
-void ode_print_lklhd_header(struct state_struct *state) {
+#include "print_rxns_f_and_r_header.h"
+void print_rxns_f_and_r_header(struct state_struct *state, char *index_str,
+			       FILE *ofp) {
   /*
-    Print the header lines for the ode reaction likelihoods output file.
-    Called by: deq_run .
-    Calls    : print_rxns_f_and_r_header, fopen, fprintf
+    Print a  header lines for reaction related 
+    quantities forward and reverse.
+    Called by: ode_print_lklhd_header, ode_print_kq_header, 
+               ode_print_sqk_header
+    Calls    : fprintf,fflush.
   */
   struct reaction_struct *reactions;
   char *rxn_title_text;
   char *title;
   int i;
   int nrxns;
-  FILE *ode_lklhd_fp;
-  FILE *lfp;
   rxn_title_text = state->rxn_title_text;
-  ode_lklhd_fp   = fopen(state->ode_lklhd_file,"w");
-  state->ode_lklhd_fp = ode_lklhd_fp;
   nrxns = state->number_reactions;
-  if (ode_lklhd_fp) {
-    fprintf(ode_lklhd_fp,"Reaction Likelihoods: forward_likelihood reverse_likelihood\n");
-    print_rxns_f_and_r_header(state,"Time",ode_lklhd_fp);
+  if (ofp) {
+    fprintf(ofp,"%s",index_str);
+    reactions                   = state->reactions;
+    for (i=0;i<nrxns;i++) {
+      title = (char*)&rxn_title_text[reactions->title];
+      fprintf(ofp,"\tf_%s\tr_%s",title,title);
+      reactions += 1; /* Caution address arithmetic */
+    }
+    fprintf(ofp,"\n");
+    fflush(ofp);
   }
   return;
 }

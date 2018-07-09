@@ -74,6 +74,8 @@ int lr13_gradient(struct state_struct *state,
   double  *rcoefficients;
   double  *kq;
   double  *kqi;
+  double  *skq;
+  double  *skqi;
   int64_t *molecules_ptrs;
   int64_t *rxn_indices;
   int64_t *rxn_ptrs;
@@ -152,6 +154,8 @@ int lr13_gradient(struct state_struct *state,
   m_r_rt           = state->m_r_rt;
   kq               = state->ode_kq;
   kqi              = state->ode_kqi;
+  skq              = state->ode_skq;
+  skqi             = state->ode_skqi;
   ode_solver_choice = state->ode_solver_choice;
   compute_sensitivities = state->compute_sensitivities;
   factorial           = 0.0;
@@ -249,7 +253,9 @@ int lr13_gradient(struct state_struct *state,
     qii = rt/tp;
     rfc[i] = log(ke[i]*qii);    
     kq[i] = rfc[i];
+    skq[i] = kq[i] * activities[i];
     kqi[i] = 0.0;
+    skqi[i] = 0.0;
   }
   if (success) {
     molecule = molecules;

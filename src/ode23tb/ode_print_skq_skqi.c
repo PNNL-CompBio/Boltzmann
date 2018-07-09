@@ -1,4 +1,4 @@
-/* ode_print_kq_kqi.c
+/* ode_print_skq_skqi.c
 *******************************************************************************
 boltzmann
 
@@ -22,14 +22,14 @@ specific language governing permissions and limitations under the License.
 ******************************************************************************/
 #include "boltzmann_structs.h"
 
-#include "ode_print_kq_kqi.h"
-void ode_print_kq_kqi(struct state_struct *state, double time, double *kq,
-		      double *kqi) {
+#include "ode_print_skq_skqi.h"
+void ode_print_skq_skqi(struct state_struct *state, 
+			double time, 
+			double *skq,
+			double *skqi) {
   /* 
-    print the gradient forward and reverse parts, kq and kqi, corresponding
-    to the forward and reverse likeilhood approximations used by the
-    gradient routine.
-    Prints out the current time and kq, kqi pairs for each reaction
+    print the scaled KQ and scaled KQ^-1 values per rreaction per time step.
+    Prints out the current skq and skqi.
     in a tab delimited row terminated by a newline.
 
     Called by: boltzmann_monidtor_ode.
@@ -40,29 +40,28 @@ void ode_print_kq_kqi(struct state_struct *state, double time, double *kq,
 
     state         G*I      state structure :
                            input fields are nrxns,
-			                    ode_kq_fp,
+			                    ode_skq_fp,
                            no fields of state are modified.
-
+    
     time          dsi      time stamp
                   
-    kq  	  D*I      vector of KQ be printed.
+    skq 	  D*I      vector of scaled KQ to be printed
 
-    kqi  	  D*I      vector of KQ^-1 be printed.
+    skqi 	  D*I      vector of scaled KQ^-1 to be printed
 
-    
   */
   int nrxns;
   int j;
 
-  FILE *ode_kq_fp;
+  FILE *ode_skq_fp;
   nrxns                  = state->number_reactions;
-  ode_kq_fp              = state->ode_kq_fp;
-  if (ode_kq_fp) {
-    fprintf(ode_kq_fp,"%le",time);
+  ode_skq_fp             = state->ode_skq_fp;
+  if (ode_skq_fp) {
+    fprintf(ode_skq_fp,"%le",time);
     for(j=0;j<nrxns;j++) {
-      fprintf(ode_kq_fp,"\t%le\t%le\n",kq[j],kqi[j]);
+      fprintf(ode_skq_fp,"\t%le\t%le\n",skq[j],skqi[j]);
     }
-    fprintf(ode_kq_fp,"\n");
-    fflush(ode_kq_fp);
+    fprintf(ode_skq_fp,"\n");
+    fflush(ode_skq_fp);
   }
 }

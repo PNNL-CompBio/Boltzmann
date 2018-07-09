@@ -47,6 +47,9 @@ int lr5_gradient(struct state_struct *state,
   double  *rcoefficients;
   double  *kq;
   double  *kqi;
+  double  *skq;
+  double  *skqi;
+  double  *activities;
   int64_t *molecules_ptrs;
   int64_t *rxn_indices;
   int64_t *rxn_ptrs;
@@ -92,6 +95,9 @@ int lr5_gradient(struct state_struct *state,
   reverse_rxn_likelihoods = state->ode_reverse_lklhds;
   kq                      = state->ode_kq;
   kqi                     = state->ode_kqi;
+  skq                     = state->ode_skq;
+  skqi                    = state->ode_skqi;
+  activities              = state->activities;
   flux_scaling     = compute_flux_scaling(state,concs);
 
   lfp      = state->lfp;
@@ -125,6 +131,8 @@ int lr5_gradient(struct state_struct *state,
     for (j=0;j<num_rxns;j++) {
       kq[i] = forward_rxn_likelihoods[i] * recip_lr_total;
       kqi[i] = reverse_rxn_likelihoods[i] * recip_lr_total;
+      skq[i] = kq[i] * activities[i];
+      skqi[i] = kqi[i] * activities[i];
     }
   }
   if (success) {

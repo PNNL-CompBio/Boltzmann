@@ -55,6 +55,8 @@ int lr7_gradient(struct state_struct *state,
   double  *coeff_sum;
   double  *kq;
   double  *kqi;
+  double  *skq;
+  double  *skqi;
 
   int64_t *molecules_ptrs;
   int64_t *rxn_indices;
@@ -136,6 +138,8 @@ int lr7_gradient(struct state_struct *state,
   use_regulation   = state->use_regulation;
   kq               = state->ode_kq;
   kqi              = state->ode_kqi;
+  skq              = state->ode_skq;
+  skqi             = state->ode_skqi;
   factorial      = 0.0;
   /*
     If we are using cvodes and computing sensitivites the 
@@ -269,6 +273,8 @@ int lr7_gradient(struct state_struct *state,
     kq[i] = keq_adj * ke[i] * (rt/tp);
     kqi[i] = rkeq_adj * rke[i] * pt/tr;
     rfc[i] = ((ke[i] * keq_adj * (rt/tp)) - (rke[i] * rkeq_adj * (pt/tr))) * activities[i];
+    skq[i] = kq[i] * activities[i];
+    skqi[i] = kqi[i] * activities[i];
     /*
     fprintf(stderr,"Rxn %d: KQ = %e K = %e  Q^-1 = %e  keq_adj = %e  activities = %e\n", i, rfc[i], ke[i], rt/tp, keq_adj, activities[i]);
     */

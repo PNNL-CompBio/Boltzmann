@@ -70,6 +70,8 @@ int alloc0_a(struct state_struct *state) {
        ode_dsens_file,
        dfdke_file,
        dfdmu0_file,
+       ode_kq_file,
+       ode_skq_file,
        arxn_mat_file,
        solvent_string
   */

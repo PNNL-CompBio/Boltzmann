@@ -69,6 +69,8 @@ int lr11_gradient(struct state_struct *state,
   double  *rcoefficients;
   double  *kq;
   double  *kqi;
+  double  *skq;
+  double  *skqi;
   int64_t *molecules_ptrs;
   int64_t *rxn_indices;
   int64_t *rxn_ptrs;
@@ -149,6 +151,8 @@ int lr11_gradient(struct state_struct *state,
   ode_solver_choice = state->ode_solver_choice;
   kq               = state->ode_kq;
   kqi              = state->ode_kqi;
+  skq              = state->ode_skq;
+  skqi             = state->ode_skqi;
   factorial       = 0.0;
   compute_sensitivities = state->compute_sensitivities;
   if ((ode_solver_choice == 1) && compute_sensitivities) {
@@ -260,6 +264,8 @@ int lr11_gradient(struct state_struct *state,
     rfc[ii+1] = -reverse_lklhd[i] * activities[i];
     kq[i] = forward_lklhd[i];
     kqi[i] = reverse_lklhd[i];
+    skq[i] = kq[i] * activities[i];
+    skqi[i] = kqi[i] * activities[i];
     ii += 2;
   } /* end for (i... ) */
   if (success) {

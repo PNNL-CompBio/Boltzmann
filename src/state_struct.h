@@ -360,6 +360,7 @@ struct state_struct {
   char *arxn_mat_file;     /* max_filename_len */
   char *cmpts_echo_file;   /* max_filename_len */
   char *ode_kq_file;       /* max_filename_len */
+  char *ode_skq_file;      /* max_filename_len */
   
   char *solvent_string;    /* Length is 64. Allocated in alloc0 */
 
@@ -407,6 +408,8 @@ struct state_struct {
   double *ode_f;      /* vector used for computing delta concs for printing */
   double *ode_kq;
   double *ode_kqi;
+  double *ode_skq;
+  double *ode_skqi;
   double *ode_forward_lklhds;
   double *ode_reverse_lklhds;
   int *rxn_has_flux; /* Indicator as to whether a reaction contributes to 
@@ -468,6 +471,9 @@ struct state_struct {
 
   FILE *cmpts_echo_fp;
   FILE *ode_kq_fp;
+
+  FILE *ode_skq_fp;
+  FILE *efp;
 }
 ;
 #endif
