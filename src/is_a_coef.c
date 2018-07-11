@@ -66,13 +66,24 @@ int is_a_coef(int sl, char *line, double *coeff_p) {
   char c_sl;
   c_sl = line[sl];
   line[sl] = '\0';
-  ns = sscanf(line,"%le%c",&coeff,&c);
-  result = 0;
-  if (ns == 1) {
-    result = 1;
-    *coeff_p = coeff;
+  /*
+    Check for a - token in which case we want to return a 1 and a value of
+    -1 for the coeff.
+  */
+  if (sl == 1) {
+    if (line[0] == '-') {
+      result = 1;
+      *coeff_p = -1.0;
+    }
   } else {
-    *coeff_p = 0.0;
+    ns = sscanf(line,"%le%c",&coeff,&c);
+    result = 0;
+    if (ns == 1) {
+      result = 1;
+      *coeff_p = coeff;
+    } else {
+      *coeff_p = 0.0;
+    }
   }
   line[sl] = c_sl;
   return(result);
