@@ -133,7 +133,10 @@ int compute_molecule_dg0tf(double ph,
 	  }
 	}
 	count1 = count1+1;
+	/*
       }	else if((pseudoisomer->priority_level==2) && (priority_level!=1)){
+	*/
+      }	else if(pseudoisomer->priority_level==2){
 	check = 1;
 	/*
 	deltag_temp[count2] = pseudoisomer_dg0tf(ph,m_rt,
