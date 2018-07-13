@@ -1,1 +1,1 @@
-lapack/lsame.h
+blas/lsame.h

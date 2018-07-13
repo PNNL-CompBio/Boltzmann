@@ -1,1 +1,1 @@
-lapack/dswap.h
+blas/dswap.h

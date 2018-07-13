@@ -176,10 +176,10 @@ SERIAL_OBJS2 = energy_init.o compute_standard_energies.o size_pseudoisomer_file.
 SERIAL_OBJS3 = boltzmann_build_agent_data_block.o boltzmann_run.o boltzmann_load_agent_data.o update_rxn_log_likelihoods.o rxn_log_likelihoods.o rxn_likelihoods.o rxn_likelihood.o conc_to_pow.o choose_rxn.o candidate_rxn.o binary_search_l_u_b.o update_regulations.o update_regulation.o rxn_count_update.o bndry_flux_update.o metropolis.o rxn_likelihood_postselection.o compute_delta_g_forward_entropy_free_energy.o boltzmann_watch.o print_rxn_choice.o print_counts.o print_likelihoods.o save_likelihoods.o print_free_energy.o print_boundary_flux.o print_restart_file.o print_reactions_view.o boltzmann_save_agent_data.o boltzmann_flatten_vgrng_state.o 
 SERIAL_OBJS7 = deq_run.o alloc7.o ode_solver.o ode23tb.o \
 	init_base_reactants.o init_relative_rates.o ode_num_jac.o \
-	num_jac_col.o blas.o ode_it_solve.o compute_flux_scaling.o \
-	gradient.o compute_net_likelihoods.o \
-	compute_net_lklhd_bndry_flux.o print_net_likelihood_header.o \
-	print_net_likelihoods.o print_net_lklhd_bndry_flux_header.o \
+	num_jac_col.o ode_it_solve.o compute_flux_scaling.o gradient.o \
+	compute_net_likelihoods.o compute_net_lklhd_bndry_flux.o \
+	print_net_likelihood_header.o print_net_likelihoods.o \
+	print_net_lklhd_bndry_flux_header.o \
 	print_net_lklhd_bndry_flux.o vec_abs.o vec_div.o vec_max.o \
 	vec_mul.o lr0_gradient.o lr1_gradient.o lr2_gradient.o \
 	lr3_gradient.o lr4_gradient.o lr5_gradient.o lr6_gradient.o \
@@ -188,7 +188,7 @@ SERIAL_OBJS7 = deq_run.o alloc7.o ode_solver.o ode23tb.o \
 	dsort_pairs_in_place.o dsort_pairs.o pairwise_sum.o \
 	dreverse_list.o lr12_gradient.o lr13_gradient.o \
 	lr14_gradient.o update_rxn_likelihoods.o print_concs_grad.o \
-	lsame.o dtrsm.o dlaswp.o dgetrf2.o dgetrf.o dgetrs.o dgemm.o \
+	dtrsm.o dlaswp.o dgetrf2.o dgetrf.o dgetrs.o \
 	ode_print_concs_header.o ode_print_concs.o \
 	ode_print_grad_header.o ode_print_grad.o \
 	ode_print_lklhd_header.o ode_print_lklhds.o \
@@ -201,7 +201,8 @@ SERIAL_OBJS7 = deq_run.o alloc7.o ode_solver.o ode23tb.o \
 	ode_print_kq_kqi.o compute_dfdke_dfdmu0.o \
 	ode_print_kq_header.o ode_print_skq_header.o \
 	ode_print_skq_skqi.o
-SERIAL_OBJS8 = boltzmann_cvodes.o boltzmann_size_jacobian.o boltzmann_cvodes_rhs.o boltzmann_print_cvodeinit_errors.o boltzmann_cvodes_init.o boltzmann_check_cvodeset_errors.o boltzmann_check_tol_errors.o boltzmann_set_cvodes_linear_solver.o boltzmann_check_cvdls_errors.o boltzmann_check_cvspils_errors.o boltzmann_check_cvodesens_errors.o approximate_ys0.o lr8_approximate_ys0.o boltzmann_cvodes_psetup.o approximate_jacobian.o boltzmann_sparse_to_dense.o boltzmann_dense_to_sparse.o lr8_approximate_jacobian.o crs_column_sort_rows.o build_newton_matrix.o precondition_newton_matrix.o iluvf.o dcrsng_mag_sort.o dcrsng_mag_merge.o isort.o imerge.o boltzmann_cvodes_psolve.o boltzmann_cvodes_bsolve.o boltzmann_cvodes_fsolve.o boltzmann_cvodes_jtimes.o boltzmann_sparse_mvp.o boltzmann_print_cvode_error.o dgbtrf.o dgbtf2.o dger.o dgbtrs.o dswap.o dtbsv.o print_sparse_jacobian.o boltzmann_print_sensitivities.o
+SERIAL_OBJS8 = boltzmann_cvodes.o boltzmann_size_jacobian.o boltzmann_cvodes_rhs.o boltzmann_print_cvodeinit_errors.o boltzmann_cvodes_init.o boltzmann_check_cvodeset_errors.o boltzmann_check_tol_errors.o boltzmann_set_cvodes_linear_solver.o boltzmann_check_cvdls_errors.o boltzmann_check_cvspils_errors.o boltzmann_check_cvodesens_errors.o approximate_ys0.o lr8_approximate_ys0.o boltzmann_cvodes_psetup.o approximate_jacobian.o boltzmann_sparse_to_dense.o boltzmann_dense_to_sparse.o lr8_approximate_jacobian.o crs_column_sort_rows.o build_newton_matrix.o precondition_newton_matrix.o iluvf.o dcrsng_mag_sort.o dcrsng_mag_merge.o isort.o imerge.o boltzmann_cvodes_psolve.o boltzmann_cvodes_bsolve.o boltzmann_cvodes_fsolve.o boltzmann_cvodes_jtimes.o boltzmann_sparse_mvp.o boltzmann_print_cvode_error.o dgbtrf.o dgbtf2.o dger.o dgbtrs.o dtbsv.o print_sparse_jacobian.o boltzmann_print_sensitivities.o
+SERIAL_OBJS9 = daxpy.o dcopy.o ddot.o dgemm.o dgemv.o dnrm2.o dscal.o dswap.o idamax.o lsame.o 
 SBML_OBJS = sbml_to_boltzmann.o size_ms2js_file.o size_kg2js_file.o sbml_alloc0.o sbml_set_file_names.o sbml_alloc2.o read_ms2js.o read_kg2js.o sort_json_ids.o merge_sorted_strings.o sbml_count_cmpts.o sbml_count_species.o sbml_alloc1.o parse_sbml.o sbml_find_section.o sbml_process_list_of_compartments.o sbml_read_key_value.o sbml_lookup_compartment_attribute.o sbml_volume_units_conversion.o sbml_process_list_of_species.o sbml_start_species_def.o sbml_parse_species_key_value.o sbml_lookup_species_attribute.o sbml_process_substanceunits.o sbml_generate_init_conc_line.o boltzmannize_string.o sbml_find_string.o sbml_sort_species_trans.o sbml_merge_species_trans.o sbml_process_list_of_reactions.o sbml_look_for_in_reaction_tag.o sbml_process_reaction_tag.o sbml_lookup_reaction_attribute.o sbml_process_list_of_reactants_tag.o  sbml_process_list_of_products_tag.o sbml_process_species_reference_tag.o sbml_lookup_speciesref_attribute.o count_ntb.o
 KFP_OBJS = kegg_from_pseudoisomer.o count_ws.o count_nlb.o check_for_ws.o boltzmannize_json_id.o
 KFM_OBJS = kegg_from_modelseed.o count_ws.o count_ntb.o count_nor.o check_for_ws.o boltzmannize_json_id.o
@@ -556,7 +557,7 @@ count_nor.o: count_nor.c count_nor.h $(SERIAL_INCS)
 check_for_ws.o: check_for_ws.c check_for_ws.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS)  -c check_for_ws.c
 
-libboltzmann.a: $(SERIAL_OBJS1)  $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SBML_OBJS) $(KFM_OBJS) $(KFP_OBJS) $(KPM_OBJS) $(SERIAL_OBJS7) $(SERIAL_OBJS8) bwarmup_run.o
+libboltzmann.a: $(SERIAL_OBJS1)  $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SBML_OBJS) $(KFM_OBJS) $(KFP_OBJS) $(KPM_OBJS) $(SERIAL_OBJS7) $(SERIAL_OBJS8) $(SERIAL_OBJS9) bwarmup_run.o
 	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_init.o
 	$(AR) $(ARFLAGS) libboltzmann.a alloc0.o
 	$(AR) $(ARFLAGS) libboltzmann.a alloc0_a.o
@@ -772,19 +773,25 @@ libboltzmann.a: $(SERIAL_OBJS1)  $(SERIAL_OBJS2) $(SERIAL_OBJS3) $(SBML_OBJS) $(
 	$(AR) $(ARFLAGS) libboltzmann.a init_base_reactants.o
 	$(AR) $(ARFLAGS) libboltzmann.a init_relative_rates.o
 	$(AR) $(ARFLAGS) libboltzmann.a boltzmann_print_sensitivities.o
-	$(AR) $(ARFLAGS) libboltzmann.a blas.o
+	$(AR) $(ARFLAGS) libboltzmann.a daxpy.o
+	$(AR) $(ARFLAGS) libboltzmann.a dcopy.o
+	$(AR) $(ARFLAGS) libboltzmann.a ddot.o
+	$(AR) $(ARFLAGS) libboltzmann.a dgemm.o
+	$(AR) $(ARFLAGS) libboltzmann.a dgemv.o
+	$(AR) $(ARFLAGS) libboltzmann.a dnrm2.o
+	$(AR) $(ARFLAGS) libboltzmann.a dscal.o
+	$(AR) $(ARFLAGS) libboltzmann.a dswap.o
+	$(AR) $(ARFLAGS) libboltzmann.a idamax.o
 	$(AR) $(ARFLAGS) libboltzmann.a lsame.o
 	$(AR) $(ARFLAGS) libboltzmann.a dtrsm.o
 	$(AR) $(ARFLAGS) libboltzmann.a dlaswp.o
 	$(AR) $(ARFLAGS) libboltzmann.a dgetrf2.o
 	$(AR) $(ARFLAGS) libboltzmann.a dgetrf.o
 	$(AR) $(ARFLAGS) libboltzmann.a dgetrs.o
-	$(AR) $(ARFLAGS) libboltzmann.a dgemm.o
 	$(AR) $(ARFLAGS) libboltzmann.a dgbtrf.o
 	$(AR) $(ARFLAGS) libboltzmann.a dgbtf2.o
 	$(AR) $(ARFLAGS) libboltzmann.a dger.o
 	$(AR) $(ARFLAGS) libboltzmann.a dgbtrs.o
-	$(AR) $(ARFLAGS) libboltzmann.a dswap.o
 	$(AR) $(ARFLAGS) libboltzmann.a dtbsv.o
 	$(AR) $(ARFLAGS) libboltzmann.a ode_num_jac.o
 	$(AR) $(ARFLAGS) libboltzmann.a compute_flux_scaling.o
@@ -1494,8 +1501,32 @@ lr14_gradient.o: ode23tb/lr14_gradient.c ode23tb/lr14_gradient.h get_counts.h up
 ode_num_jac.o: ode23tb/ode_num_jac.c ode23tb/ode_num_jac.h $(SERIAL_INCS) ode23tb/num_jac_col.h blas/blas.h
 	$(CC) $(DCFLAGS)  -c ode23tb/ode_num_jac.c 
 
-blas.o: blas/blas.c blas/blas.h $(SERIAL_INCS)
-	$(CC) $(DCFLAGS)  -c blas/blas.c
+daxpy.o: blas/daxpy.c blas/daxpy.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS)  -c blas/daxpy.c
+
+dcopy.o: blas/dcopy.c blas/dcopy.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS)  -c blas/dcopy.c
+
+ddot.o: blas/ddot.c blas/ddot.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS)  -c blas/ddot.c
+
+dgemv.o: blas/dgemv.c blas/dgemv.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS)  -c blas/dgemv.c
+
+dgemm.o: blas/dgemm.c blas/dgemm.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS)  -c blas/dgemm.c
+
+dnrm2.o: blas/dnrm2.c blas/dnrm2.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS)  -c blas/dnrm2.c
+
+dscal.o: blas/dscal.c blas/dscal.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS)  -c blas/dscal.c
+
+idamax.o: blas/idamax.c blas/idamax.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS)  -c blas/idamax.c
+
+lsame.o: blas/lsame.c blas/lsame.h $(SERIAL_INCS)
+	$(CC) $(DCFLAGS)  -c blas/lsame.c
 
 num_jac_col.o: ode23tb/num_jac_col.c ode23tb/num_jac_col.h $(SERIAL_INCS) ode23tb/gradient.h 
 	$(CC) $(DCFLAGS)  -c ode23tb/num_jac_col.c 
@@ -1608,49 +1639,43 @@ boltzmann_sparse_mvp.o: boltzmann_sparse_mvp.c boltzmann_sparse_mvp.h $(SERIAL_I
 boltzmann_print_sensitivities.o: boltzmann_print_sensitivities.c boltzmann_print_sensitivities.h cvodes_interface/boltzmann_check_cvodesens_errors.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS)  -c boltzmann_print_sensitivities.c
 
-$(BOLTZMANN_BIN)/lapack_test: lapack_test.o blas.o lsame.o dgemm.o dtrsm.o dgetrf.o dgetrs.o dgetrf2.o dlaswp.o
-	     $(CLINKER) $(LFLAGS) -o $(BOLTZMANN_BIN)/lapack_test lapack_test.o blas.o lsame.o dgemm.o dtrsm.o dgetrf.o dgetrs.o dgetrf2.o dlaswp.o -lm $(LIBS) libboltzmann.a
+$(BOLTZMANN_BIN)/lapack_test: lapack_test.o daxpy.o dcopy.o dnrm2.o ddot.o dgemv.o idamax.o dscal.o lsame.o dgemm.o dtrsm.o dgetrf.o dgetrs.o dgetrf2.o dlaswp.o
+	     $(CLINKER) $(LFLAGS) -o $(BOLTZMANN_BIN)/lapack_test lapack_test.o daxpy.o dcopy.o ddot.o dgemv.o dnrm2.o dscal.o lsame.o idamax.o dgemm.o dtrsm.o dgetrf.o dgetrs.o dgetrf2.o dlaswp.o -lm $(LIBS) libboltzmann.a
 
-lapack_test.o: tools/lapack_test.c blas/blas.h blas/blas.c lapack/lsame.h lapack/lsame.c lapack/dgemm.c lapack/dgemm.h system_includes.h lapack/dtrsm.h 
+lapack_test.o: tools/lapack_test.c blas/blas.h blas/daxpy.h blas/daxpy.c blas/dcopy.c blas/dcopy.h blas/ddot.c blas/ddot.h blas/dgemv.h blas/dnrm2.c blas/dnrm2.h blas/dscal.c blas/dscal.h blas/idamax.c blas/idamax.h blas/lsame.h blas/lsame.c blas/dgemm.c blas/dgemm.h system_includes.h lapack/dtrsm.h 
 	       $(CC) $(DCFLAGS)  -c tools/lapack_test.c
 
-lsame.o: lapack/lsame.c lapack/lsame.h system_includes.h
-	 $(CC) $(DCFLAGS)  -c lapack/lsame.c
-
-dgemm.o: lapack/dgemm.c lapack/dgemm.h system_includes.h lapack/lsame.h
-	 $(CC) $(DCFLAGS)  -c lapack/dgemm.c
-
-dtrsm.o: lapack/dtrsm.c lapack/dtrsm.h lapack/lsame.h system_includes.h
+dtrsm.o: lapack/dtrsm.c lapack/dtrsm.h blas/lsame.h system_includes.h
 	 $(CC) $(DCFLAGS)  -c lapack/dtrsm.c
 
-dgetrf.o: lapack/dgetrf.c lapack/dgetrf.h system_includes.h lapack/dgetrf2.h lapack/dlaswp.h lapack/dgemm.h lapack/dtrsm.h
+dgetrf.o: lapack/dgetrf.c lapack/dgetrf.h system_includes.h lapack/dgetrf2.h lapack/dlaswp.h blas/dgemm.h lapack/dtrsm.h
 	 $(CC) $(DCFLAGS)  -c lapack/dgetrf.c
 
-dgetrf2.o: lapack/dgetrf2.c lapack/dgetrf2.h system_includes.h lapack/dlaswp.h lapack/dgemm.h lapack/dtrsm.h
+dgetrf2.o: lapack/dgetrf2.c lapack/dgetrf2.h system_includes.h lapack/dlaswp.h blas/dgemm.h lapack/dtrsm.h
 	 $(CC) $(DCFLAGS)  -c lapack/dgetrf2.c
 
 dlaswp.o: lapack/dlaswp.c lapack/dlaswp.h system_includes.h
 	 $(CC) $(DCFLAGS)  -c lapack/dlaswp.c
 
-dgetrs.o: lapack/dgetrs.c lapack/dgetrs.h system_includes.h lapack/lsame.h lapack/dlaswp.h lapack/dtrsm.h
+dgetrs.o: lapack/dgetrs.c lapack/dgetrs.h system_includes.h blas/lsame.h lapack/dlaswp.h lapack/dtrsm.h
 	 $(CC) $(DCFLAGS)  -c lapack/dgetrs.c
 
-dgbtrf.o: lapack/dgbtrf.c lapack/dgbtrf.h $(SERIAL_INCS) blas/blas.h lapack/dgbtf2.h lapack/dlaswp.h lapack/dger.h lapack/dgemm.h lapack/dtrsm.h
+dgbtrf.o: lapack/dgbtrf.c lapack/dgbtrf.h $(SERIAL_INCS) blas/blas.h lapack/dgbtf2.h lapack/dlaswp.h lapack/dger.h blas/dgemm.h lapack/dtrsm.h
 	 $(CC) $(DCFLAGS)  -c lapack/dgbtrf.c
 
-dgbtf2.o: lapack/dgbtf2.c lapack/dgbtf2.h $(SERIAL_INCS) blas/blas.h lapack/dswap.h lapack/dger.h
+dgbtf2.o: lapack/dgbtf2.c lapack/dgbtf2.h $(SERIAL_INCS) blas/blas.h blas/dswap.h lapack/dger.h
 	 $(CC) $(DCFLAGS)  -c lapack/dgbtf2.c
 
 dger.o: lapack/dger.c lapack/dger.h $(SERIAL_INCS) 
 	 $(CC) $(DCFLAGS)  -c lapack/dger.c
 
-dgbtrs.o: lapack/dgbtrs.c lapack/dgbtrs.h $(SERIAL_INCS) blas/blas.h lapack/dger.h lapack/dswap.h lapack/dtbsv.h
+dgbtrs.o: lapack/dgbtrs.c lapack/dgbtrs.h $(SERIAL_INCS) blas/blas.h lapack/dger.h blas/dswap.h lapack/dtbsv.h
 	 $(CC) $(DCFLAGS)  -c lapack/dgbtrs.c
 
-dswap.o: lapack/dswap.c lapack/dswap.h $(SERIAL_INCS) 
-	 $(CC) $(DCFLAGS)  -c lapack/dswap.c
+dswap.o: blas/dswap.c blas/dswap.h $(SERIAL_INCS) 
+	 $(CC) $(DCFLAGS)  -c blas/dswap.c
 
-dtbsv.o: lapack/dtbsv.c lapack/dtbsv.h $(SERIAL_INCS) lapack/lsame.h
+dtbsv.o: lapack/dtbsv.c lapack/dtbsv.h $(SERIAL_INCS) blas/lsame.h
 	 $(CC) $(DCFLAGS)  -c lapack/dtbsv.c
 
 boltzmann_flatten_vgrng_state.o: boltzmann_flatten_vgrng_state.c boltzmann_flatten_vgrng_state.h $(SERIAL_INCS)

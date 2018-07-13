@@ -45,6 +45,8 @@ int compute_ke(struct state_struct *state) {
   double *rke;
   double m_r_rt;
   double cals_per_joule;
+  double log_ke;
+  double abs_log_ke;
 
   int success;
   int nrxns;
@@ -87,21 +89,43 @@ int compute_ke(struct state_struct *state) {
       dg0 = reaction->delta_g0 / cals_per_joule;
     }
     dg0s[i] = dg0;
-    ke[i] = exp(dg0 * m_r_rt);
-    if (ke[i] == 0.0) {
-      success = 0;
-      if (lfp) {
-	fprintf(lfp,"compute_ke: Error zero equilibrium constants\n");
-	fflush(lfp);
-      }
-    } else {
-      rke[i] = 1.0/ke[i];
+    log_ke = dg0 * m_r_rt;
+    abs_log_ke = log_ke;
+    if (abs_log_ke < 0.0) {
+      abs_log_ke = 0.0 - abs_log_ke;
     }
-
-    if (print_output) {
-      if (lfp) {
-	fprintf(lfp,"dg0s[%d] = %le, ke[%d] = %le\n",
-		i,dg0s[i],i,ke[i]);
+    if (abs_log_ke > 709.0) {
+      success = 0;
+      fprintf(lfp,"compute_ke: Error infinite equilibrium constant "
+	      "(dg0 magnitude too large) for reaction %d\n",i);
+      fflush(lfp);
+    } else {
+      ke[i] = exp(log_ke);
+      /*
+	Here we also want to check if ke is inf.
+	We want to error out if it is.
+	Could also do this by checking on whether dg0 * m_r_rt  is
+	outside of valid exp range [log(min_double,log(max_double)]
+	it is safer to 
+	test on the range of dg0 * m_r_rt
+      */
+      if (ke[i] == 0.0) {
+	success = 0;
+	if (lfp) {
+	  fprintf(lfp,"compute_ke: Error zero equilibrium constant "
+		  "for reacion %d\n",i);
+	  fflush(lfp);
+	}
+      } else {
+	rke[i] = 1.0/ke[i];
+      }
+    }
+    if (success) {
+      if (print_output) {
+	if (lfp) {
+	  fprintf(lfp,"dg0s[%d] = %le, ke[%d] = %le\n",
+		  i,dg0s[i],i,ke[i]);
+	}
       }
     }
     reaction += 1; /* Caution address arithmetic */

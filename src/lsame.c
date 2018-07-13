@@ -1,1 +1,1 @@
-lapack/lsame.c
+blas/lsame.c

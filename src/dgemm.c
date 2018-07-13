@@ -1,1 +1,1 @@
-lapack/dgemm.c
+blas/dgemm.c
