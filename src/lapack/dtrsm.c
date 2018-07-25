@@ -99,8 +99,8 @@ void dtrsm_(char *side_p, char *uplo_p, char *transa_p, char *diag_p,
           in  the  calling  (sub)  program.   LDB  must  be  at  least
           max( 1, m ).
 
-        Called by dgetrf, dgetrf2, dgetrs
-	Calls lsame, dscal, daxpy, ddot
+        Called by: dgetrf_, dgetrf2_, dgetrs_, dtrtrs
+	Calls:     lsame_, dscal_, daxpy_, ddot_
   */
   double temp;
   double alpha;

@@ -70,12 +70,18 @@ int is_a_coef(int sl, char *line, double *coeff_p) {
     Check for a - token in which case we want to return a 1 and a value of
     -1 for the coeff.
   */
+  *coeff_p = 0.0;
+  result = 0;
   if (sl == 1) {
     if (line[0] == '-') {
       result = 1;
       *coeff_p = -1.0;
     }
-  } else {
+  }
+  if (result == 0) {
+    /*
+      It wasn't just a single minus sign, try to parse it as a real number.
+    */
     ns = sscanf(line,"%le%c",&coeff,&c);
     result = 0;
     if (ns == 1) {
