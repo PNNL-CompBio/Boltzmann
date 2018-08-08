@@ -588,7 +588,7 @@ print_dg0_ke.o: $(SERIAL_INCS) print_dg0_ke.c print_dg0_ke.h recover_solvent_coe
 recover_solvent_coefficients.o: $(SERIAL_INCS) recover_solvent_coefficients.c recover_solvent_coefficients.h
 	$(CC) $(DCFLAGS)  -c recover_solvent_coefficients.c
 
-run_init.o: $(SERIAL_INCS) run_init.c run_init.h vgrng_init.h print_rxn_likelihoods_header.h print_free_energy_header.h alloc8.h alloc9.h print_reactions_matrix.h print_active_reactions_matrix.h
+run_init.o: $(SERIAL_INCS) run_init.c run_init.h vgrng_init.h print_rxn_likelihoods_header.h print_free_energy_header.h alloc8.h update_rxn_log_likelihoods.h alloc9.h print_reactions_matrix.h print_active_reactions_matrix.h
 	$(CC) $(DCFLAGS)  -c run_init.c
 
 vgrng_init.o: $(SERIAL_INCS) vgrng_init.c vgrng_init.h vgrng.h
@@ -835,7 +835,7 @@ sbml_process_species_reference_tag.o: sbml_interface/sbml_process_species_refere
 sbml_lookup_speciesref_attribute.o: sbml_interface/sbml_lookup_speciesref_attribute.c sbml_interface/sbml_lookup_speciesref_attribute.h $(SERIAL_INCS)
 	$(CC) $(DCFLAGS)  -c sbml_interface/sbml_lookup_speciesref_attribute.c
 
-deq_run.o: deq_run.c deq_run.h $(SERIAL_INCS) ode23tb/alloc7.h ode23tb/init_base_reactants.h ode23tb/init_relative_rates.h ode_solver.h ode23tb/ode_print_concs_header.h ode23tb/ode_print_grad_header.h ode23tb/ode_print_lklhd_header.h ode23tb/ode_print_bflux_header.h print_net_lklhd_bndry_flux_header.h print_net_likelihood_header.h get_counts.h ode23tb/ode_print_kq_header.h ode23tb/ode_print_skq_header.h
+deq_run.o: deq_run.c deq_run.h $(SERIAL_INCS) ode23tb/alloc7.h ode23tb/init_base_reactants.h ode23tb/init_relative_rates.h update_rxn_likelihoods.h ode_solver.h ode23tb/ode_print_concs_header.h ode23tb/ode_print_grad_header.h ode23tb/ode_print_lklhd_header.h ode23tb/ode_print_bflux_header.h print_net_lklhd_bndry_flux_header.h print_net_likelihood_header.h get_counts.h ode23tb/ode_print_kq_header.h ode23tb/ode_print_skq_header.h
 	   $(CC) $(DCFLAGS)  -c deq_run.c
 
 alloc7.o: ode23tb/alloc7.c ode23tb/alloc7.h $(SERIAL_INCS)

@@ -27,6 +27,7 @@ specific language governing permissions and limitations under the License.
 #include "alloc7.h"
 #include "init_base_reactants.h"
 #include "init_relative_rates.h"
+#include "update_rxn_likelihoods.h"
 #include "ode_print_concs_header.h"
 #include "ode_print_grad_header.h"
 #include "ode_print_bflux_header.h"
@@ -52,9 +53,9 @@ int deq_run(struct state_struct *state) {
   
 
     Called by: deq, boltzmann_run
-    Calls:     alloc7,
-	       init_base_reactants,
+    Calls:     init_base_reactants,
 	       init_relative_rates,
+	       update_rxn_likelihoods,
 	       ode_solver
   */
   struct molecule_struct *molecules;
@@ -137,8 +138,12 @@ int deq_run(struct state_struct *state) {
   activities        	 = state->activities;
   rxn_fire          	 = state->rxn_fire;
   no_op_likelihood  	 = state->no_op_likelihood;
+  forward_rxn_likelihood = state->ode_forward_lklhds;
+  reverse_rxn_likelihood = state->ode_reverse_lklhds;
+  /*
   forward_rxn_likelihood = state->forward_rxn_likelihood;
   reverse_rxn_likelihood = state->reverse_rxn_likelihood;
+  */
   print_output           = (int)state->print_output;
   conc_to_count          = state->conc_to_count;
   count_to_conc          = state->count_to_conc;
@@ -210,10 +215,17 @@ int deq_run(struct state_struct *state) {
       success = init_relative_rates(state);
     }
   }
+  counts = current_counts;
+  /*
+    Initialize the ode_forward_lklhds and ode_reverse_lklhds fields.
+  */
+  if (success) {
+    success = update_rxn_likelihoods(state,counts,forward_rxn_likelihood,
+				     reverse_rxn_likelihood);
+  }
   /*
     Compute concentrations from counts;
   */
-  counts = current_counts;
   if (success) {
     molecule    = molecules;
     for(i=0;i<unique_molecules;i++) {
