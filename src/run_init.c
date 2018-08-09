@@ -4,6 +4,7 @@
 #include "print_free_energy_header.h"
 #include "alloc7.h"
 #include "alloc8.h"
+#include "update_rxn_log_likelihoods.h"
 #include "alloc9.h"
 #include "print_reactions_matrix.h"
 #include "print_active_reactions_matrix.h"
@@ -22,13 +23,13 @@ int run_init(struct state_struct *state) {
 	       print_free_energy_header,
 	       alloc7,
 	       alloc8,
+	       update_rxn_log_likelihoods.h,
                alloc9,
 	       print_reactions_matrix
 
   */
   struct vgrng_state_struct *vgrng_state;
   struct vgrng_state_struct *vgrng2_state;
-  void   *dummy_addr;
   double *activities;
   int64_t vgrng_start;
   int64_t i;
@@ -37,7 +38,7 @@ int run_init(struct state_struct *state) {
   int vgrng_start_steps;
 
   int print_output;
-  int direction;
+  int padi;
   
   success = 1;
   print_output = state->print_output;
@@ -81,20 +82,24 @@ int run_init(struct state_struct *state) {
   */
   if (success) {
     if (state->use_deq || state->use_lsqnonlin) {
-      direction = 0;
-      dummy_addr = NULL;
       success = alloc7(state);
     }
   }
   if (success) {
-    direction = 0;
-    dummy_addr = NULL;
     success = alloc8(state);
+  }
+  /*
+    Intialize the likelihood and log_likelihood values for reactions.
+    Need to make sure this happens after energy_init as it computes
+    the ke's used in the likelihood computation. Also need to make sure
+    it comes after alloc8 which is where the likelihood and log_likelihood
+    fields of state are allocated.
+  */
+  if (success) {
+      success = update_rxn_log_likelihoods(state);
   }
   if (success) {
     if (state->print_output) {
-      direction = 0;
-      dummy_addr = NULL;
       success = alloc9(state);
       if (success) {
 	success = print_reactions_matrix(state);

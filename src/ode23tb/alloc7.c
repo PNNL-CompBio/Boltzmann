@@ -67,6 +67,10 @@ int alloc7(struct state_struct *state) {
   double *ode_counts;
   double *ode_concs;
   double *ode_f;
+  double *ode_kq;
+  double *ode_kqi;
+  double *ode_skq;
+  double *ode_skqi;
   double *dfdke_dfdmu0_work;
   int64_t ask_for;
   int64_t one_l;
@@ -142,7 +146,34 @@ int alloc7(struct state_struct *state) {
       state->ode_f = ode_f;
     }
   }
-
+  /*
+    allocate space for the ode_kq, ode_kqi ode_skq, and ode_sqki vectors 
+    for printing.
+  */
+  if (success) {
+    ask_for = num_rxns * sizeof(double);
+    ask_for = ask_for + ask_for;
+    ask_for = ask_for + ask_for;
+    usage += ask_for;
+    run_workspace_bytes  += ask_for;
+    ode_kq = (double*)calloc(one_l,ask_for);
+    if (ode_kq == NULL) {
+      success = 0;
+      if (lfp) {
+	fprintf(lfp,"alloc7: Error unable to allocate %ld bytes for "
+		"ode_kq and ode_kqi\n",ask_for);
+	fflush(lfp);
+      }
+    } else {
+      ode_kqi = (double*)&ode_kq[num_rxns];
+      ode_skq = (double*)&ode_kqi[num_rxns];
+      ode_skqi = (double*)&ode_skq[num_rxns];
+      state->ode_kq = ode_kq;
+      state->ode_kqi = ode_kqi;
+      state->ode_skq = ode_skq;
+      state->ode_skqi = ode_skqi;
+    }
+  }
   /*
     Allocate space for the reactant_terms
   */

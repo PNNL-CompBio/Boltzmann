@@ -1,4 +1,4 @@
-/* ode_print_dconcs_header.c
+/* ode_print_grad_header.c
 *******************************************************************************
 boltzmann
 
@@ -21,11 +21,12 @@ CONDITIONS OF ANY KIND, either express or implied. See the License for the
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
 #include "boltzmann_structs.h"
-#include "ode_print_dconcs_header.h"
-void ode_print_dconcs_header(struct state_struct *state) {
+#include "print_mlcls_cmpts_header.h"
+#include "ode_print_grad_header.h"
+void ode_print_grad_header(struct state_struct *state) {
   /*
-    Open ode_dconcs_file and
-    Print concentration header ("Time" followed by sorted molecule names and
+    Open ode_grad_file and
+    Print molecule header ("Time" followed by sorted molecule names and
     compartments)
     Called by: deq_run;
     Calls:     fopen, fprintf, fflush
@@ -37,47 +38,32 @@ void ode_print_dconcs_header(struct state_struct *state) {
   char *molecule;
   char *molecules_text;
   char *compartment_text;
-  char *ode_dconcs_file;
+  char *ode_grad_file;
   int i;
   int ci;
 
   int nu_molecules;
   int padi;
 
-  FILE *ode_dconcs_fp;
+  FILE *ode_grad_fp;
   FILE *lfp;
   nu_molecules     = state->nunique_molecules;
   cur_molecule     = state->sorted_molecules;
   cur_cmpts        = state->sorted_compartments;
   molecules_text   = state->molecules_text;
   compartment_text = state->compartment_text;
-  ode_dconcs_file  = state->ode_dconcs_file;
+  ode_grad_file    = state->ode_grad_file;
   lfp              = state->lfp;
 
-  ode_dconcs_fp = fopen(ode_dconcs_file,"w+");
-  state->ode_dconcs_fp  = ode_dconcs_fp;
-  if (ode_dconcs_fp == NULL) {
+  ode_grad_fp = fopen(ode_grad_file,"w+");
+  state->ode_grad_fp  = ode_grad_fp;
+  if (ode_grad_fp == NULL) {
     if (lfp) {
-      fprintf(lfp,"ode_print_dconcs_header: Error could not open %s\n",
-	      ode_dconcs_file);
+      fprintf(lfp,"ode_print_grad_header: Error could not open %s\n",
+	      ode_grad_file);
       fflush(lfp);
     }
   } else {
-    fprintf(ode_dconcs_fp,"Time");
-    for (i=0;i<nu_molecules;i++) {
-      if ((cur_molecule->solvent == 0) || (cur_molecule->variable == 1)) {
-	ci = cur_molecule->c_index;
-	molecule = (char*)&molecules_text[cur_molecule->string];
-	fprintf(ode_dconcs_fp,"\t%s",molecule);
-	if (ci >= 0) {
-	  cur_cmpt   = (struct compartment_struct *)&(cur_cmpts[ci]);
-	  cmpt_string = (char*)&compartment_text[cur_cmpt->string];
-	  fprintf(ode_dconcs_fp,":%s",cmpt_string);
-	}
-      }
-      cur_molecule += 1; /* caution address arithmetic.*/
-    }
-    fprintf(ode_dconcs_fp,"\n");
-    fflush(ode_dconcs_fp);
+    print_mlcls_cmpts_header(state,"Time",ode_grad_fp);
   }
 }

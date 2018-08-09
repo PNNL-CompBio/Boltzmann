@@ -13,15 +13,15 @@ double conc_to_pow(double conc, double pow, double factorial) {
 	       rxn_likelihood_postselection,
 	       lr8_approximate_ys0,
 	       lr8_approximate_jacobian,
-	       lr10_approximate_delta_concs,
-	       lr11_approximate_delta_concs,
-	       lr12_approximate_delta_concs,
-	       lr13_approximate_delta_concs,
-	       lr14_approximate_delta_concs,
-	       lr4_approximate_delta_concs,
-	       lr7_approximate_delta_concs,
-	       lr8_approximate_delta_concs,
-	       lr9_approximate_delta_concs
+	       lr10_gradient,
+	       lr11_gradient,
+	       lr12_gradient,
+	       lr13_gradient,
+	       lr14_gradient,
+	       lr4_gradient,
+	       lr7_gradient,
+	       lr8_gradient,
+	       lr9_gradient
 
   */
   int64_t int_part;

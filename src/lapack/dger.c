@@ -1,5 +1,5 @@
-#include "boltzmann_structs.h"
-#include "dger.h"
+#include "system_includes.h"
+#include "lapack.h"
 /*
     1 *> \brief \b DGER
     2 *

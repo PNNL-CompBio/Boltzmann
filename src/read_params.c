@@ -131,7 +131,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
     state->arxn_mat_file[0]    	= '\0';
     state->dg0ke_file[0]       	= '\0';
     state->dictionary_file[0]  	= '\0';
-    state->ode_dconcs_file[0]   = '\0';
+    state->ode_grad_file[0]     = '\0';
     state->ode_bflux_file[0]    = '\0';
     state->ode_lklhd_file[0]    = '\0';
     state->net_lklhd_file[0]    = '\0';
@@ -206,7 +206,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
     state->max_regs_per_rxn    	 = (int64_t)4;
     state->base_reaction       	 = (int64_t)0;
     state->ode_solver_choice   	 = (int64_t)0;
-    state->delta_concs_choice  	 = (int64_t)0;
+    state->gradient_choice  	 = (int64_t)0;
     state->print_concs_or_counts = (int64_t)3;
     state->use_bulk_water        = (int64_t)1;
     state->cvodes_rhs_choice     = (int64_t)0;
@@ -314,8 +314,8 @@ int read_params (char *param_file_name, struct state_struct *state) {
 	sscan_ok = sscanf(value,"%s",state->ode_concs_file);
       } else if (strncmp(key,"ODE_COUNTS_FILE",15) == 0) {
 	sscan_ok = sscanf(value,"%s",state->ode_counts_file);
-      } else if (strncmp(key,"ODE_DCONCS_FILE",15) == 0) {
-	sscan_ok = sscanf(value,"%s",state->ode_dconcs_file);
+      } else if (strncmp(key,"ODE_GRAD_FILE",15) == 0) {
+	sscan_ok = sscanf(value,"%s",state->ode_grad_file);
       } else if (strncmp(key,"ODE_LKLHD_FILE",14) == 0) {
 	sscan_ok = sscanf(value,"%s",state->ode_lklhd_file);
       } else if (strncmp(key,"ODE_BFLUX_FILE",14) == 0) {
@@ -583,7 +583,9 @@ int read_params (char *param_file_name, struct state_struct *state) {
       } else if (strncmp(key,"ODE_SOLVER_CHOICE",17) == 0) {
 	sscan_ok = sscanf(value,"%ld",&(state->ode_solver_choice));
       } else if (strncmp(key,"DELTA_CONCS_CHOICE",18) == 0) {
-	sscan_ok = sscanf(value,"%ld",&(state->delta_concs_choice));
+	sscan_ok = sscanf(value,"%ld",&(state->gradient_choice));
+      } else if (strncmp(key,"GRADIENT_CHOICE",18) == 0) {
+	sscan_ok = sscanf(value,"%ld",&(state->gradient_choice));
       } else if (strncmp(key,"PRINT_OUTPUT",12) == 0) {
 	sscan_ok = sscanf(value,"%ld",&(state->print_output));
       } else if (strncmp(key,"RECORD_STEPS",12) == 0) {

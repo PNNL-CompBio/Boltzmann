@@ -3,8 +3,10 @@
 #include "get_counts.h"
 #include "update_rxn_likelihoods.h"
 #include "ode_print_lklhds.h"
-#include "approximate_delta_concs.h"
-#include "ode_print_dconcs.h"
+#include "gradient.h"
+#include "ode_print_grad.h"
+#include "ode_print_kq_kqi.h"
+#include "ode_print_skq_skqi.h"
 #include "boltzmann_monitor_ode.h"
 void boltzmann_monitor_ode(struct state_struct *state,
 			   double time,
@@ -19,9 +21,11 @@ void boltzmann_monitor_ode(struct state_struct *state,
   double *reverse_rxn_likelihoods;
   double *conc_to_count;
   double *f;
+  double *kq;
+  double *kqi;
   int ny;
   int ierr;
-  int delta_concs_choice;
+  int gradient_choice;
   int padi;
   counts                  = state->ode_counts;
   forward_rxn_likelihoods = state->ode_forward_lklhds;
@@ -29,7 +33,9 @@ void boltzmann_monitor_ode(struct state_struct *state,
   f                       = state->ode_f;
   ny                      = state->nunique_molecules;
   conc_to_count           = state->conc_to_count;
-  delta_concs_choice      = state->delta_concs_choice;
+  gradient_choice         = state->gradient_choice;
+  kq                      = state->ode_kq;
+  kqi                     = state->ode_kqi;
   ode_print_concs(state,time,concs);
   get_counts(ny,concs,conc_to_count,counts);
   ierr = update_rxn_likelihoods(state,counts,forward_rxn_likelihoods,
@@ -37,7 +43,9 @@ void boltzmann_monitor_ode(struct state_struct *state,
 
   ode_print_lklhds(state,time,forward_rxn_likelihoods,
 		   reverse_rxn_likelihoods);
-  approximate_delta_concs(state,concs,f,delta_concs_choice);
-  ode_print_dconcs(state,time,f);
+  gradient(state,concs,f,gradient_choice);
+  ode_print_grad(state,time,f);
+  ode_print_kq_kqi(state,time,kq,kqi);
+  ode_print_skq_skqi(state,time,kq,kqi);
 }
   

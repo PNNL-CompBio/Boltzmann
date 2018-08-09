@@ -27,10 +27,13 @@ specific language governing permissions and limitations under the License.
 #include "alloc7.h"
 #include "init_base_reactants.h"
 #include "init_relative_rates.h"
+#include "update_rxn_likelihoods.h"
 #include "ode_print_concs_header.h"
-#include "ode_print_dconcs_header.h"
+#include "ode_print_grad_header.h"
 #include "ode_print_bflux_header.h"
 #include "ode_print_lklhd_header.h"
+#include "ode_print_kq_header.h"
+#include "ode_print_skq_header.h"
 #include "print_net_likelihood_header.h"
 #include "print_net_lklhd_bndry_flux_header.h"
 #include "get_counts.h"
@@ -50,9 +53,9 @@ int deq_run(struct state_struct *state) {
   
 
     Called by: deq, boltzmann_run
-    Calls:     alloc7,
-	       init_base_reactants,
+    Calls:     init_base_reactants,
 	       init_relative_rates,
+	       update_rxn_likelihoods,
 	       ode_solver
   */
   struct molecule_struct *molecules;
@@ -121,6 +124,7 @@ int deq_run(struct state_struct *state) {
 
 
   FILE *lfp;
+  FILE *ode_kq_fp;
   success = 1;
   one_l   = (int64_t)1;
   zero_l  = (int64_t)0;
@@ -134,8 +138,12 @@ int deq_run(struct state_struct *state) {
   activities        	 = state->activities;
   rxn_fire          	 = state->rxn_fire;
   no_op_likelihood  	 = state->no_op_likelihood;
+  forward_rxn_likelihood = state->ode_forward_lklhds;
+  reverse_rxn_likelihood = state->ode_reverse_lklhds;
+  /*
   forward_rxn_likelihood = state->forward_rxn_likelihood;
   reverse_rxn_likelihood = state->reverse_rxn_likelihood;
+  */
   print_output           = (int)state->print_output;
   conc_to_count          = state->conc_to_count;
   count_to_conc          = state->count_to_conc;
@@ -200,17 +208,24 @@ int deq_run(struct state_struct *state) {
   }
   /*
     Fill the relative forward and reverse reaction rate vectors,
-    kf_rel, and kr_rel. For use in the lr6_appproximate_delta_concs.
+    kf_rel, and kr_rel. For use in the lr6_gradient routine.
   */
   if (success) {
-    if (state->delta_concs_choice == 6) {
+    if (state->gradient_choice == 6) {
       success = init_relative_rates(state);
     }
+  }
+  counts = current_counts;
+  /*
+    Initialize the ode_forward_lklhds and ode_reverse_lklhds fields.
+  */
+  if (success) {
+    success = update_rxn_likelihoods(state,counts,forward_rxn_likelihood,
+				     reverse_rxn_likelihood);
   }
   /*
     Compute concentrations from counts;
   */
-  counts = current_counts;
   if (success) {
     molecule    = molecules;
     for(i=0;i<unique_molecules;i++) {
@@ -237,8 +252,14 @@ int deq_run(struct state_struct *state) {
       if (ode_rxn_view_freq > 0) {
 	ode_print_concs_header(state);
 	ode_print_lklhd_header(state);
-	ode_print_dconcs_header(state);
+	ode_print_grad_header(state);
 	ode_print_bflux_header(state);
+	ode_print_kq_header(state);
+	ode_print_skq_header(state);
+	/*
+	ode_kq_fp = fopen(state->ode_kq_file,"w");
+	state->ode_kq_fp = ode_kq_fp;
+	*/
 	print_net_likelihood_header(state);
 	print_net_lklhd_bndry_flux_header(state);
       }

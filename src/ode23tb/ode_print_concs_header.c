@@ -21,6 +21,7 @@ CONDITIONS OF ANY KIND, either express or implied. See the License for the
 specific language governing permissions and limitations under the License.
 ******************************************************************************/
 #include "boltzmann_structs.h"
+#include "print_mlcls_cmpts_header.h"
 #include "ode_print_concs_header.h"
 void ode_print_concs_header(struct state_struct *state) {
   /*
@@ -90,42 +91,9 @@ void ode_print_concs_header(struct state_struct *state) {
     }
   }
   if (concs_opened) {
-    fprintf(ode_concs_fp,"Time");
+    print_mlcls_cmpts_header(state,"Time",ode_concs_fp);
   }
   if (counts_opened) {
-    fprintf(ode_counts_fp,"Time");
+    print_mlcls_cmpts_header(state,"Time",ode_counts_fp);
   }
-  if (concs_opened || counts_opened) {
-    for (i=0;i<nu_molecules;i++) {
-      if ((cur_molecule->solvent == 0) || (cur_molecule->variable == 1)) {
-      	ci = cur_molecule->c_index;
-      	molecule = (char*)&molecules_text[cur_molecule->string];
-	if (concs_opened) {
-	  fprintf(ode_concs_fp,"\t%s",molecule);
-	}
-	if (counts_opened) {
-	  fprintf(ode_counts_fp,"\t%s",molecule);
-	}
-      	if (ci > 0) {
-	  cur_cmpt   = (struct compartment_struct *)&(cur_cmpts[ci]);
-	  cmpt_string = (char*)&compartment_text[cur_cmpt->string];
-	  if (concs_opened) {
-	    fprintf(ode_concs_fp,":%s",cmpt_string);
-	  }
-	  if (counts_opened) {
-	    fprintf(ode_counts_fp,":%s",cmpt_string);
-	  }
-      	} 
-      }
-      cur_molecule += 1; /* caution address arithmetic.*/
-    }
-    if (concs_opened) {
-      fprintf(ode_concs_fp,"\n");
-      fflush(ode_concs_fp);
-    }
-    if (counts_opened) {
-      fprintf(ode_counts_fp,"\n");
-      fflush(ode_counts_fp);
-    }
-  } /* end if (counts_opened || concs_opened) */
 }

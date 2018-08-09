@@ -67,7 +67,7 @@ int alloc0(struct state_struct **statep, int setup) {
        	rxn_mat_file,
        	dg0ke_file,
        	dictionary_file,
-       	ode_dconcs_file,
+       	ode_grad_file,
        	ode_lklhd_file,
        	ode_bflux_file,
        	concs_out_file,
@@ -136,7 +136,7 @@ int alloc0(struct state_struct **statep, int setup) {
     usage = state->usage;
   }
   if (success && setup) {
-    state->version_no = 5099; /* Checked in revision of state_struct.h */
+    state->version_no = 5109; /* Checked in revision of state_struct.h */
     /*
       Allocate_space for reading the parameter file.
     */

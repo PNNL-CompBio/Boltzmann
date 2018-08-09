@@ -13,7 +13,7 @@ double stable_add(int n, double *v, double *scratch) {
     returns the sum of elements in v.
     
 
-    Called by: lr11_approximate_delta_concs, lr12_approximate_delta_concs,
+    Called by: lr11_gradient, lr12_gradient,
     Calls:     dsort,pairwise_sum, dreverse_list
     
     NB might want to replace pairwise_sum with mr_sum for a still more

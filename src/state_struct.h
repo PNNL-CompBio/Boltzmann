@@ -1,25 +1,5 @@
 /* state_struct.h 
-*******************************************************************************
-Boltzmann
-
-Pacific Northwest National Laboratory, Richland, WA 99352.
-
-Copyright (c) 2010 Battelle Memorial Institute.
-
-Publications based on work performed using the software should include 
-the following citation as a reference:
-
-
-Licensed under the Educational Community License, Version 2.0 (the "License"); 
-you may not use this file except in compliance with the License. 
-The terms and conditions of the License may be found in 
-ECL-2.0_LICENSE_TERMS.TXT in the directory containing this file.
-        
-Unless required by applicable law or agreed to in writing, software distributed
-under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
-CONDITIONS OF ANY KIND, either express or implied. See the License for the 
-specific language governing permissions and limitations under the License.
-******************************************************************************/
+*/
 #ifndef __STATE_STRUCT__
 #define __STATE_STRUCT__ 1
 /* 
@@ -122,7 +102,7 @@ struct state_struct {
   int64_t adjust_steady_state;
   int64_t molecules_or_conc;      
   int64_t ode_solver_choice;
-  int64_t delta_concs_choice;
+  int64_t gradient_choice;
   int64_t warmup_steps;           
   int64_t record_steps;           
   int64_t print_output;
@@ -293,10 +273,6 @@ struct state_struct {
   double  *kss_e_val; /* len = unique_molecules  */
   double  *kss_u_val; /* len = unique_molecules  */
   double  *molecule_dg0tfs; /* len = unique_molecules */
-  /*
-  double  *molecule_probabilities; // len = unique_molecules 
-  double  *molecule_chemical_potentials; // len = unique_molecules 
-  */
   double  *count_to_conc; /* len = unique_molecules */
   double  *conc_to_count; /* len = unique_molecules */
   double  *activities;   /* len = number_reactions */
@@ -371,7 +347,7 @@ struct state_struct {
   char *rxn_mat_file;      /* max_filename_len */
   char *dg0ke_file;        /* max_filename_len */
   char *dictionary_file;   /* max_filename_len */
-  char *ode_dconcs_file;   /* max_filename_len */
+  char *ode_grad_file;   /* max_filename_len */
   char *ode_lklhd_file;    /* max_filename_len */
   char *ode_bflux_file;    /* max_filename_len */
   char *concs_out_file;    /* max_filename_len */
@@ -383,6 +359,8 @@ struct state_struct {
   char *dfdmu0_file;       /* max_filename_len */
   char *arxn_mat_file;     /* max_filename_len */
   char *cmpts_echo_file;   /* max_filename_len */
+  char *ode_kq_file;       /* max_filename_len */
+  char *ode_skq_file;      /* max_filename_len */
   
   char *solvent_string;    /* Length is 64. Allocated in alloc0 */
 
@@ -428,6 +406,10 @@ struct state_struct {
   double *ode_counts; /* counts from concentrations */
   double *ode_concs;  /* concentrations from counts. */
   double *ode_f;      /* vector used for computing delta concs for printing */
+  double *ode_kq;
+  double *ode_kqi;
+  double *ode_skq;
+  double *ode_skqi;
   double *ode_forward_lklhds;
   double *ode_reverse_lklhds;
   int *rxn_has_flux; /* Indicator as to whether a reaction contributes to 
@@ -473,7 +455,7 @@ struct state_struct {
   FILE *bndry_flux_fp;
 
   FILE *cmpt_fp;
-  FILE *ode_dconcs_fp;
+  FILE *ode_grad_fp;
 
   FILE *ode_lklhd_fp;
   FILE *ode_bflux_fp;
@@ -488,6 +470,9 @@ struct state_struct {
   FILE *dfdmu0_fp;
 
   FILE *cmpts_echo_fp;
+  FILE *ode_kq_fp;
+
+  FILE *ode_skq_fp;
   FILE *efp;
 }
 ;

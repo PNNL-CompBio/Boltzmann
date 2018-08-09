@@ -1,4 +1,4 @@
-/* ode_print_dconcs.c
+/* ode_print_kq_kqi.c
 *******************************************************************************
 boltzmann
 
@@ -22,47 +22,47 @@ specific language governing permissions and limitations under the License.
 ******************************************************************************/
 #include "boltzmann_structs.h"
 
-#include "ode_print_dconcs.h"
-void ode_print_dconcs(struct state_struct *state, double time, double *dconcs) {
+#include "ode_print_kq_kqi.h"
+void ode_print_kq_kqi(struct state_struct *state, double time, double *kq,
+		      double *kqi) {
   /* 
-    print the molecule concentraion derivatives.
-    Prints out the current derivatives of the concentrations.
+    print the gradient forward and reverse parts, kq and kqi, corresponding
+    to the forward and reverse likeilhood approximations used by the
+    gradient routine.
+    Prints out the current time and kq, kqi pairs for each reaction
     in a tab delimited row terminated by a newline.
 
-    Called by: ode23tb
+    Called by: boltzmann_monidtor_ode.
 
     Arguments:
     
     Name          TMF      Description
 
     state         G*I      state structure :
-                           input fields are unique_molecules,
-			                    sorted_molecules
-					    ode_dconcs_fp
+                           input fields are nrxns,
+			                    ode_kq_fp,
                            no fields of state are modified.
-    dconcs 	  D*I      vector of delta concentrations to be printed.
 
     time          dsi      time stamp
                   
+    kq  	  D*I      vector of KQ be printed.
+
+    kqi  	  D*I      vector of KQ^-1 be printed.
+
     
   */
-  struct molecule_struct *cur_molecule;
-  int unique_molecules;
+  int nrxns;
   int j;
 
-  FILE *ode_dconcs_fp;
-  ode_dconcs_fp          = state->ode_dconcs_fp;
-  unique_molecules       = state->nunique_molecules;
-  cur_molecule           = state->sorted_molecules;
-  if (ode_dconcs_fp) {
-    fprintf(ode_dconcs_fp,"%le",time);
-    for (j=0;j<unique_molecules;j++) {
-      if ((cur_molecule->solvent == 0) || (cur_molecule->variable == 1)) {
-	fprintf(ode_dconcs_fp,"\t%le",dconcs[j]);
-      }
-      cur_molecule += 1; /* caution address arithmetic.*/
+  FILE *ode_kq_fp;
+  nrxns                  = state->number_reactions;
+  ode_kq_fp              = state->ode_kq_fp;
+  if (ode_kq_fp) {
+    fprintf(ode_kq_fp,"%le",time);
+    for(j=0;j<nrxns;j++) {
+      fprintf(ode_kq_fp,"\t%le\t%le",kq[j],kqi[j]);
     }
-    fprintf(ode_dconcs_fp,"\n");
-    fflush(ode_dconcs_fp);
+    fprintf(ode_kq_fp,"\n");
+    fflush(ode_kq_fp);
   }
 }

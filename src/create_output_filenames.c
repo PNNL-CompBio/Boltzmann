@@ -16,7 +16,7 @@ int create_output_filenames(struct state_struct *state) {
   char *counts_out_filename;
   char *concs_out_filename;
   char *ode_concs_filename;
-  char *ode_dconcs_filename;
+  char *ode_grad_filename;
   char *ode_lklhd_filename;
   char *ode_bflux_filename;
   char *net_lklhd_filename;
@@ -38,6 +38,8 @@ int create_output_filenames(struct state_struct *state) {
   char *dfdmu0_filename;
   char *arxn_mat_filename;
   char *cmpts_echo_filename;
+  char *ode_kq_filename;
+  char *ode_skq_filename;
   int64_t output_filename_base_length;
   int output_filename_length;
   int success;
@@ -64,7 +66,7 @@ int create_output_filenames(struct state_struct *state) {
   rxn_echo_filename    = state->rxn_echo_file;
   rxn_mat_filename     = state->rxn_mat_file;
   dg0ke_filename       = state->dg0ke_file;
-  ode_dconcs_filename  = state->ode_dconcs_file;
+  ode_grad_filename  = state->ode_grad_file;
   ode_lklhd_filename   = state->ode_lklhd_file;
   ode_bflux_filename   = state->ode_bflux_file;
   aux_data_filename    = state->aux_data_file;
@@ -75,6 +77,8 @@ int create_output_filenames(struct state_struct *state) {
   dictionary_filename  = state->dictionary_file;
   arxn_mat_filename    = state->arxn_mat_file;
   cmpts_echo_filename  = state->cmpts_echo_file;
+  ode_kq_filename      = state->ode_kq_file;
+  ode_skq_filename     = state->ode_skq_file;
   output_filename_empty = 0;
   output_filename_length = strlen(output_filename);
   if (output_filename_length == 0) {
@@ -151,10 +155,14 @@ int create_output_filenames(struct state_struct *state) {
       strncpy(ode_counts_filename,output_filename,output_filename_base_length);      
       strcpy((char*)&ode_counts_filename[output_filename_base_length],".ode_counts");
     }
-    strncpy(ode_dconcs_filename,output_filename,output_filename_base_length);
-    strcpy((char*)&ode_dconcs_filename[output_filename_base_length],".ode_dconcs");
+    strncpy(ode_grad_filename,output_filename,output_filename_base_length);
+    strcpy((char*)&ode_grad_filename[output_filename_base_length],".ode_grad");
     strncpy(ode_lklhd_filename,output_filename,output_filename_base_length);
     strcpy((char*)&ode_lklhd_filename[output_filename_base_length],".ode_lklhd");
+    strncpy(ode_kq_filename,output_filename,output_filename_base_length);
+    strcpy((char*)&ode_kq_filename[output_filename_base_length],".ode_kq");
+    strncpy(ode_skq_filename,output_filename,output_filename_base_length);
+    strcpy((char*)&ode_skq_filename[output_filename_base_length],".ode_skq");
     strncpy(ode_bflux_filename,output_filename,output_filename_base_length);
     strcpy((char*)&ode_bflux_filename[output_filename_base_length],".ode_bflux");
     strncpy(net_lklhd_filename,output_filename,output_filename_base_length);
