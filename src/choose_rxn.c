@@ -88,14 +88,16 @@ int choose_rxn(struct state_struct *state,
       the state structure.
     */
     rxn_choice = candidate_rxn(state,&scaling,r_sum_likelihoodp);
+    /*
     if ((1.0 - *r_sum_likelihoodp) < state->epsilon) {
-    	/*
+    	//
     	  If no reaction other than the no-op is very likely 
     	  return a -1 for reaction choice.
-    	*/
+    	//
       accept = 0;
       break;
     }
+    */
     /*
       Compute the likelihood for this reaction.
       -1 for reverse, 1 for forward;
