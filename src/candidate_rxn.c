@@ -100,8 +100,9 @@ int candidate_rxn(struct state_struct *state, double *scalingp,
   /*
     1.0 is added to the likelihoods to account for the 
     likeilhood that the state does not change.
-  */
   vall = 1.0 + rxn_likelihood_ps[num_rxns+num_rxns-1];
+  */
+  vall = rxn_likelihood_ps[num_rxns+num_rxns-1];
   if (vall > 0.0) {
     r_sum_likelihood = 1.0/vall;
   } else {
