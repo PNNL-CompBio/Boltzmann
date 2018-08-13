@@ -201,7 +201,7 @@ int read_params (char *param_file_name, struct state_struct *state) {
     state->print_output        	 = (int64_t)0;
     state->use_pseudoisomers   	 = (int64_t)1;
     state->use_dgzero          	 = (int64_t)0;
-    state->use_metropolis      	 = (int64_t)1;
+    state->use_metropolis      	 = (int64_t)0;
     state->use_regulation      	 = (int64_t)1;
     state->max_regs_per_rxn    	 = (int64_t)4;
     state->base_reaction       	 = (int64_t)0;
