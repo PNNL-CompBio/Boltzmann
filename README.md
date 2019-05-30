@@ -520,5 +520,5 @@ flatten_state is recommended.
 
 --------------------------------------------------------------------------
 
-Still to write, reactions file format, initial_concentrations_file formats
+Still to write, reactions file format, initial_concentrations_file formats.
 
